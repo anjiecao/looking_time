@@ -76,124 +76,116 @@
     //timeline = timeline.concat(practice_block)
     
 // Setting up the main task
-var NUM_SIMPLE_STIMULI = 18
-var NUM_COMPLEX_STIMULI = 18
+var SET_NUM = 1
+    
+    
 
-
+BLOCK_LENGTH = 3
 ALL_STIMULI_PATH = get_all_stimuli() // all stimuli 
-stimuli_tracker = ALL_STIMULI_PATH // make a copy to keep track of stimuli that has been chosen
-
-
-// simple-simple 
-test_block = generate_block(identical_background = true, 
-               background_type = "simple", // simple or complex
-               background_num = 2, //a random number between 0 or above 
-               deviant_type = "simple", // simple or complex
-               deviant_num = 2, // 0 or above
-               meta_stimuli_path = ALL_STIMULI_PATH // currently not working, how to keep track of the repetition stimuli
-              )  
+ALL_SET_COMBINATION = generate_set_combination(ALL_STIMULI_PATH)
     
-// simple-complex   
-generate_block(identical_background = true, 
-               background_type = "simple", // simple or complex
-               background_num = 2, //a random number between 0 or above 
-               deviant_type = "complex", // simple or complex
-               deviant_num = 2, // 0 or above
-               meta_stimuli_path = ALL_STIMULI_PATH // currently not working, how to keep track of the repetition stimuli
-                        )    
-
-// complex-complex 
-generate_block(identical_background = true, 
-               background_type = "complex", // simple or complex
-               background_num = 2, //a random number between 0 or above 
-               deviant_type = "complex", // simple or complex
-               deviant_num = 2, // 0 or above
-               meta_stimuli_path = ALL_STIMULI_PATH // currently not working, how to keep track of the repetition stimuli
-                        )   
+console.log(ALL_STIMULI_PATH)
+console.log(ALL_SET_COMBINATION)
     
-// complex-simple 
-generate_block(identical_background = true, 
-               background_type = "complex", // simple or complex
-               background_num = 2, //a random number between 0 or above 
-               deviant_type = "simple", // simple or complex
-               deviant_num = 2, // 0 or above
-               meta_stimuli_path = ALL_STIMULI_PATH // currently not working, how to keep track of the repetition stimuli
-            )
-    
-    
-    
-    
-    
-    
-    
-  /*  example test block
  
-     var task_info = {
-        background_stim: background_stim, 
-        deviant_stim: deviant_stim, 
-        background_type: background_type,
-        background_num: background_num,
-        deviant_type: deviant_type,
-        blocks_array: block_array,
-        remaining_stimuli:meta_stimuli_path
+POSSIBLE_DEV_POSITION = [2] 
+BLOCK_GROUP_TYPE = ["simple_a", "simple_b", "complex_a", "complex_b"]    
+BLOCK_TYPE = ["simple_similar", "simple_dissimilar", "complex_similar", "complex_dissimilar"]   
+    
+//BLOCK_GROUP_TYPE = ["simple_a"]
+//BLOCK_TYPE = ["simple_similar"]
+    
+    
+for (i = 0; i < ALL_SET_COMBINATION.length; i ++ ){
+    current_set_combination = ALL_SET_COMBINATION[i]
+    ALL_TASK_BLOCK = []
+    
+    // loop through all possible deviant positions
+    for (dev_p = 0; dev_p < POSSIBLE_DEV_POSITION.length; dev_p ++){
+        current_deviant_position = POSSIBLE_DEV_POSITION[dev_p]
+        // loop through all possible block group type 
+        for (block_group_i = 0; block_group_i < BLOCK_GROUP_TYPE.length; block_group_i ++){
+            current_block_group_type = BLOCK_GROUP_TYPE[block_group_i]
+            // loop through all possible block type
+            for (block_type_i = 0; block_type_i < BLOCK_TYPE.length; block_type_i ++){
+                current_block_type = BLOCK_TYPE[block_type_i]
+        
+                current_background = current_set_combination[current_block_group_type][current_block_type].background
+                current_deviant = current_set_combination[current_block_group_type][current_block_type].deviant
+
+                current_block_array = generate_block_array(current_background, 
+                                                          current_deviant, 
+                                                          BLOCK_LENGTH, 
+                                                          current_deviant_position)
+                
+                
+                
+                
+                 var current_task_block = {
+                        timeline: [
+
+                            {
+                                type: 'html-keyboard-response',
+                                stimulus: '<img src=images/blank.png width ="500" height = "500" style="border:5px solid black">',
+                                trial_duration: function(){ 
+                                    var random_duration = 800 + 500 * Math.random()
+                                    return random_duration  } , //The interval between the offset of one stimulus and the onset of the next stimulus ranged between 800 and 1300 msec
+                                choices: jsPsych.NO_KEYS
+                            },
+
+                            {
+                                type: 'stimulus-presentation',
+                                stimulus: function(){
+                                    var html="<img src='"+jsPsych.timelineVariable('pic', true)+"' width ='500' height = '500' style='border:5px solid black'>";
+                                    return html;
+                                },
+                                choices_for_target: [32],
+                                choices: [40],
+                                block_group_type: current_block_group_type, 
+                                block_type: current_block_type, 
+                                block_background: current_background, 
+                                block_deviant: current_deviant, 
+                                deviant_position: current_deviant_position,
+                                block_length: BLOCK_LENGTH,
+                                minimum_viewing_duration: 200, // daffner2000's info was 600, changed to 200
+                                response_ends_trial: true, 
+                                
+                            } 
+
+
+                        ],
+
+                        timeline_variables: convert_path_to_timeline_variables(current_block_array)  
+                    }
+                 
+                 // add test block here!
+                 
+                 
+                 
+                 
+                
+                 
+                 ALL_TASK_BLOCK.push(current_task_block)
+
+                
+            }
+        
+        }
+        
     }
-     
- */ 
-    
-console.log(test_block)
-console.log(convert_path_to_timeline_variables(test_block.blocks_array)  )
-    
-// JUST MAKE SURE ONE TASK BLOCK WORKS FIRST!!! 
-var task_block = {
-        timeline: [
-
-            {
-                type: 'html-keyboard-response',
-                stimulus: '<img src=images/blank.png width ="500" height = "500" style="border:5px solid black">',
-                trial_duration: function(){ 
-                    var random_duration = 800 + 500 * Math.random()
-                    return random_duration  } , //The interval between the offset of one stimulus and the onset of the next stimulus ranged between 800 and 1300 msec
-                choices: jsPsych.NO_KEYS
-            },
-
-            {
-                type: 'stimulus-presentation',
-                stimulus: function(){
-                    var html="<img src='"+jsPsych.timelineVariable('pic', true)+"' width ='500' height = '500' style='border:5px solid black'>";
-                    return html;
-                },
-                choices_for_target: [32],
-                choices: [40],
-                minimum_viewing_duration: 200, // daffner2000's info was 600, changed to 200
-                response_ends_trial: true, 
-                background_stim: test_block.background_stim, 
-                block_type: test_block.block_type, 
-                deviant_stim: test_block.deviant_stim, 
-                background_type: test_block.background_type, 
-                background_num: test_block.background_num,
-                deviant_type: test_block.deviant_type,
-            } 
-        
-           
-        ],
-        
-        timeline_variables: convert_path_to_timeline_variables(test_block.blocks_array)  
-    }
     
 
-
     
-var test_block =  {
-                type: 'html-keyboard-response',
-                stimulus: "<img src='"+test_block.deviant_stim + "' width ='500' height = '500' style='border:5px solid black'>", // temporarily just test on deviant
-                choices: ['z', 'm'],
-                prompt: "<p>have you seen this before? Press 'z' for yes and 'm' for nope.</p>"
-            }       
-        
-        
+}
+    
+shuffleArray(ALL_TASK_BLOCK)
+timeline = timeline.concat(ALL_TASK_BLOCK)
+    
+    
+    
+    
+    
 
-     timeline.push(task_block)
-     timeline.push(test_block)
      //timeline.push(task_instruction)
     
     
@@ -202,180 +194,22 @@ var test_block =  {
     
     
     
-/*    
-    
-    
-    
-    
-if (verbose){
-console.log("all sim path")
-console.log(stimuli_tracker)
-}
-var simple_test_blocks = create_all_stimuli_no_block(meta_stimuli_path = stimuli_tracker, 
-                                     type = "all_simple", 
-                                     n_trial = 50, 
-                                     bkgd_freq = 0.7, 
-                                     tg_freq = 0.15, 
-                                     dvt_freq = 0.15)    
-   
-stimuli_tracker = simple_test_blocks.remaining_stimuli
-if (verbose){
-console.log("first batch out")
-console.log(stimuli_tracker)  
-}
 
-var complex_test_blocks = create_all_stimuli_no_block(meta_stimuli_path = stimuli_tracker, 
-                                     type = "all_complex", 
-                                     n_trial = 50, 
-                                     bkgd_freq = 0.7, 
-                                     tg_freq = 0.15, 
-                                     dvt_freq = 0.15)  
-stimuli_tracker = complex_test_blocks.remaining_stimuli
-if (verbose){
-console.log("second batch out")
-console.log(stimuli_tracker)
-}    
-    
-var mixed_simple_test_blocks = create_all_stimuli_no_block(meta_stimuli_path = stimuli_tracker, 
-                                     type = "mixed_simple_deviant", 
-                                     n_trial = 50, 
-                                     bkgd_freq = 0.7, 
-                                     tg_freq = 0.15, 
-                                     dvt_freq = 0.15)
-stimuli_tracker = mixed_simple_test_blocks.remaining_stimuli
-if (verbose){
-console.log("third batch out")
-console.log(stimuli_tracker)
-}
-
-var mixed_complex_test_blocks = create_all_stimuli_no_block(meta_stimuli_path = stimuli_tracker, 
-                                     type = "mixed_complex_deviant", 
-                                     n_trial = 50, 
-                                     bkgd_freq = 0.7, 
-                                     tg_freq = 0.15, 
-                                     dvt_freq = 0.15)
-
-stimuli_tracker = mixed_complex_test_blocks.remaining_stimuli
-if (verbose){
-console.log("fourth batch out")
-console.log(stimuli_tracker)
-}
-    
-// just double check there were no duplicates
-var duplicate = check_duplicates([simple_test_blocks, complex_test_blocks, mixed_simple_test_blocks,mixed_complex_test_blocks])   
-if (duplicate){
-    alert("sampling script broken! detect duplicates!")
-    assert()    
-}
-
-var ALL_TASKS = [simple_test_blocks,
-                       complex_test_blocks, mixed_simple_test_blocks,mixed_complex_test_blocks]
-
-shuffleArray(ALL_TASKS)
-    
-    
-// The main task 
-for (var task_num = 0; task_num < ALL_TASKS.length; task_num++){
-
-    var current_task = ALL_TASKS[task_num]
-    var current_target = current_task.target    
-    
-     console.log("current task")
-     console.log(current_task)
-
-     task_order_print = ""
-     if (task_num === 0){
-         task_order_print = "first"
-     }else if (task_num === 1){
-         task_order_print = "second"
-     }else if (task_num === 2){
-         task_order_print = "third"
-     }else if (task_num === 3){
-         task_order_print ="last"
-     }
-    
-    
-    
-
-    
-    
-     var task_instruction = {
-         type: "instructions",
-         pages:[
-             "<p>This is the "+ task_order_print + " task.</p><p>You will look at a group of pictures, and you should feel free to spend as long as you want on each picture.</p><p>When you are done with looking at one picture, press the <b>down arrow</b> on your keyboard.</p>",
-             "You should also press the <b>space bar</b> when you see the target picture. The target picture for this task is shown below." + '<p><img src="'+ current_target + '" width ="500" height = "500" style="border:5px solid black"></img></p>',
-             "When you are ready, go to the next page and start the task.",
-         ],
-         show_clickable_nav: true
-
-     }
- 
-    var post_task_break = {
-        type: 'task-instructions',
-        pages: ["<p>You have just finished the "+ task_order_print + " task.</p><p>You can take a short break before proceeding to the next task.</p><p>When you are ready, press the button below and start the next task.</p>"],
-        allow_backward: false, 
-        show_clickable_nav: true,
-        button_label_next: "I'm ready!",
-        show_page_number: false
-    }
- 
-     
-    var task_block = {
-        timeline: [
-
-            {
-                type: 'html-keyboard-response',
-                stimulus: '<img src=images/blank.png width ="500" height = "500" style="border:5px solid black">',
-                trial_duration: function(){ 
-                    var random_duration = 800 + 500 * Math.random()
-                    return random_duration  } , //The interval between the offset of one stimulus and the onset of the next stimulus ranged between 800 and 1300 msec
-                choices: jsPsych.NO_KEYS
-            },
-
-            {
-                type: 'stimulus-presentation',
-                stimulus: function(){
-                    var html="<img src='"+jsPsych.timelineVariable('pic', true)+"' width ='500' height = '500' style='border:5px solid black'>";
-                    return html;
-                },
-                choices_for_target: [32],
-                choices: [40],
-                minimum_viewing_duration: 200, // daffner2000's info was 600, changed to 200
-                response_ends_trial: true, 
-                task_type:current_task.type,
-                task_target_stimulus:current_task.target,
-             task_background_stimulus:current_task.background,
-                task_deviant_stimulus:current_task.deviant,
-                task_order_number:task_num
-
-            }],
-        
-        timeline_variables: convert_path_to_timeline_variables(current_task.blocks_info)  
-    }
-    
-   
-     timeline.push(task_instruction)
-     timeline.push(task_block)
-     //timeline.push(task_instruction)
-     if (task_order_print != "last"){
-         timeline.push(post_task_break)
-     }   
-  
-}
-    
     
 // after the main task   
 
     
     
     
-  
+/*  
    timeline.push(final_instructions)
    timeline = timeline.concat(demog_questions)
    timeline.push(final_thank_you)
   timeline.push(survey_code_page)
+  
+*/
    ///afs/ir.stanford.edu/users/a/n/anjiecao/cgi-bin/daffner2020/write_data.php
- */  
+  
     //'../../../cgi-bin/RR_adults/write_data.php')
     //TO FIX!!!
     function saveData(name, data){

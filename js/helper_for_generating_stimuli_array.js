@@ -105,51 +105,202 @@ function pop_multiple(array, n){
 
 function get_all_stimuli(){
     
-    ALL_STIMULI_PATH = []
-    SIMPLE_DIR = "images/simple/" 
-    COMPLEX_DIR = "images/complex/"
+    all_sets = []
+    MAIN_DIR = "images/training/"
     
-    for (var i = 1; i < NUM_SIMPLE_STIMULI + 1; i++){
-            path = SIMPLE_DIR + i + ".png"
-            ALL_STIMULI_PATH.push(path)
+    // set number is specified in experiment.html
+    for (var i = 1; i < SET_NUM + 1; i++){
+        
+        var current_set = i 
+        
+        background_array = []
+        for (var background_index = 1; background_index < 5; background_index++){
+            background_path = MAIN_DIR + current_set + "/" + "background/" + background_index + ".png"
+            background_array.push(background_path)
+        }
+        
+        deviant_array = []
+        for (var deviant_index = 1; deviant_index < 5; deviant_index++){
+            deviant_path = MAIN_DIR + current_set + "/" + "deviant/" + deviant_index + ".png"
+            deviant_array.push(deviant_path)
+        }
+        
+        
+        block_stim_set = {
+            background: background_array,
+            deviant: deviant_array
+        }
+        
+        all_sets.push(block_stim_set)
     }
     
-    for (var i = 1; i < NUM_COMPLEX_STIMULI + 1; i++){
-        path = COMPLEX_DIR + i + ".png"
-        ALL_STIMULI_PATH.push(path)
-    }
-    
-    return ALL_STIMULI_PATH
+    return (all_sets)
     
 }
     
-
-// only has simple and complex 
-// randomly select [number] of stimuli from the [type] array
-function get_from_stimuli(type, number , meta_stimuli_paths){
+  
+function generate_set_combination(all_sets_array){
     
+    all_sets_combination_array = []
     
-    if (type !== "simple" && type !== "complex"){
-        alert("get_from_stimuli wrong argument!")
-    }else{
+    for (i = 0; i < all_sets_array.length; i ++){
         
-        var selected = meta_stimuli_paths.filter(function(item){
-            return item.includes(type)})
-        var return_array = getRandomSubarray(selected, number)
-        return return_array
-        } 
+        current_set = all_sets_array[i]
+        current_background = current_set.background 
+        current_deviants = current_set.deviant
+        
+        //b_i = 0, b_i = 1 => simple background
+        //b_i = 2, b_i = 3 => complex background
+        //d_i = 0, d_i = 1 => simple deviant
+        //d_i = 2, d_i = 3 => complex deviant
+        // deviants with same numbers are more similar to the background
+        
+        set_combination = {
+            simple_a: {
+                simple_similar: {background:"", deviant: ""},
+                simple_dissimilar: {background:"", deviant: ""},
+                complex_similar: {background:"", deviant: ""},
+                complex_dissimilar:{background:"", deviant: ""},
+            },
+            simple_b: {
+                simple_similar: {background:"", deviant: ""},
+                simple_dissimilar: {background:"", deviant: ""},
+                complex_similar: {background:"", deviant: ""},
+                complex_dissimilar:{background:"", deviant: ""},
+            },
+            complex_a: {
+                simple_similar: {background:"", deviant: ""},
+                simple_dissimilar: {background:"", deviant: ""},
+                complex_similar: {background:"", deviant: ""},
+                complex_dissimilar:{background:"", deviant: ""},
+            },
+            complex_b: {
+                simple_similar: {background:"", deviant: ""},
+                simple_dissimilar: {background:"", deviant: ""},
+                complex_similar: {background:"", deviant: ""},
+                complex_dissimilar:{background:"", deviant: ""},
+            },    
+            
+        }
+        
+        for (b_i = 0; b_i < current_background.length; b_i ++){
+            
+            current_b = current_background[b_i]
+            
+            if (b_i == 0){
+                set_combination.simple_a.simple_similar.background = current_b
+                set_combination.simple_a.simple_dissimilar.background = current_b
+                set_combination.simple_a.complex_similar.background = current_b
+                set_combination.simple_a.complex_dissimilar.background = current_b
+                
+                for (d_i = 0; d_i < current_deviants.length; d_i ++){
+                    current_d = current_deviants[d_i]
+                    
+                    if (d_i == 0){
+                        set_combination.simple_a.simple_similar.deviant = current_d
+                    }else if (d_i == 1){
+                        set_combination.simple_a.simple_dissimilar.deviant = current_d
+                    }else if (d_i == 2){
+                        set_combination.simple_a.complex_similar.deviant = current_d
+                    }else if (d_i == 3){
+                        set_combination.simple_a.complex_dissimilar.deviant = current_d
+                    }
+                }
+            }else if (b_i == 1){
+                set_combination.simple_b.simple_similar.background = current_b
+                set_combination.simple_b.simple_dissimilar.background = current_b
+                set_combination.simple_b.complex_similar.background = current_b
+                set_combination.simple_b.complex_dissimilar.background = current_b
+                
+                for (d_i = 0; d_i < current_deviants.length; d_i ++){
+                    current_d = current_deviants[d_i]
+                    
+                    if (d_i == 0){
+                        set_combination.simple_b.simple_dissimilar.deviant = current_d
+                    }else if (d_i == 1){
+                        set_combination.simple_b.simple_similar.deviant = current_d
+                    }else if (d_i == 2){
+                        set_combination.simple_b.complex_dissimilar.deviant = current_d
+                    }else if (d_i == 3){
+                        set_combination.simple_b.complex_similar.deviant = current_d
+                    }
+                } 
+                
+            }else if (b_i == 2){ 
+                set_combination.complex_a.simple_similar.background = current_b
+                set_combination.complex_a.simple_dissimilar.background = current_b
+                set_combination.complex_a.complex_similar.background = current_b
+                set_combination.complex_a.complex_dissimilar.background = current_b
+                
+                for (d_i = 0; d_i < current_deviants.length; d_i ++){
+                    current_d = current_deviants[d_i]
+                    
+                    if (d_i == 0){
+                        set_combination.complex_a.simple_similar.deviant = current_d
+                    }else if (d_i == 1){
+                        set_combination.complex_a.simple_dissimilar.deviant = current_d
+                    }else if (d_i == 2){
+                        set_combination.complex_a.complex_similar.deviant = current_d
+                    }else if (d_i == 3){
+                        set_combination.complex_a.complex_dissimilar.deviant = current_d
+                    }
+                } 
+                
+            }else if (b_i == 3){
+                set_combination.complex_b.simple_similar.background = current_b
+                set_combination.complex_b.simple_dissimilar.background = current_b
+                set_combination.complex_b.complex_similar.background = current_b
+                set_combination.complex_b.complex_dissimilar.background = current_b
+                
+                for (d_i = 0; d_i < current_deviants.length; d_i ++){
+                    current_d = current_deviants[d_i]
+                    
+                    if (d_i == 0){
+                        set_combination.complex_b.simple_dissimilar.deviant = current_d                        
+                    }else if (d_i == 1){
+                        set_combination.complex_b.simple_similar.deviant = current_d
+                    }else if (d_i == 2){
+                        set_combination.complex_b.complex_dissimilar.deviant = current_d
+                    }else if (d_i == 3){
+                        set_combination.complex_b.complex_similar.deviant = current_d
+                    }
+                } 
+                
+            }
+                
+        
+        }
+        all_sets_combination_array.push(set_combination)
+        
+    }
     
+    return (all_sets_combination_array)
+}
+
+
+
     
+function generate_block_array(background, 
+                        deviant, 
+                        block_length, 
+                        deviant_position //0 - 9
+                        ){
+    
+    // populate the array with background
+    var block_array = fillArray(background, block_length)
+    
+    // replace one with the deviant 
+    block_array[deviant_position] = deviant
+    
+    return (block_array)
+    
+}
 
-}  
-   
 
 
 
 
-
-
-
+/*
 
 function generate_block(identical_background, 
                         background_type, // simple or complex
@@ -196,7 +347,7 @@ function generate_block(identical_background,
 
     
 }
-
+*/
 
 
 

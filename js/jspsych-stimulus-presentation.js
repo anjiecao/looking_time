@@ -72,50 +72,54 @@ jsPsych.plugins["stimulus-presentation"] = (function() {
         description: 'If true, trial will end when subject makes a response.'
       },
         
+        
+      block_group_type: {
+        type: jsPsych.plugins.parameterType.STRING,
+        pretty_name: 'Block group type',
+        default: null,
+        description: 'type of background stimuli used, "simple_a", "simple_b", "complex_a", "complex_b"'  
+      },    
+        
       block_type:{
         type: jsPsych.plugins.parameterType.STRING,
         pretty_name: 'Block type',
         default: null,
-        description: 'type of mis-match between complex and simple'  
+        description: 'relationship between the background and the deviant, "simple_similar", "simple_dissimilar", "complex_similar", "complex_dissimilar"'  
       },
         
-      task_target_stimulus:{
+      block_background: {
         type: jsPsych.plugins.parameterType.STRING,
-        pretty_name: 'Task Target Stimulus',
+        pretty_name: 'Block background',
         default: null,
-        description: 'The target stimulus the participants need to respond to in the current task.'  
+        description: 'the background stimulus used in this block'  
       },
-      task_background_stimulus:{
+        
+      block_deviant: {
         type: jsPsych.plugins.parameterType.STRING,
-        pretty_name: 'Task Background Stimulus',
+        pretty_name: 'Block deviant',
         default: null,
-        description: 'The background stimulus the participants will see a lot in this task'  
-      }, 
-      task_deviant_stimulus:{
-        type: jsPsych.plugins.parameterType.ARRAY, 
-        pretty_name: "Task Deviant Stimulus",
-        default: null, 
-        description: "The deviant stimulus used in the current task" 
+        description: 'the deviant stimulus used in this block'  
       },
-      task_order_number:{
+        
+      deviant_position: {
         type: jsPsych.plugins.parameterType.INT,
-        pretty_name: 'Task Order',
-        default: null,
-        description: 'the order in which the current task appears on' 
-      },
-      block_order_number:{
-        type: jsPsych.plugins.parameterType.INT,
-        pretty_name: 'Block Order',
-        default: null,
-        description: 'the order in which the current block appears on'   
-      }
-      
+        pretty_name: 'deviant position',
+        default: 8,
+        description: 'the position that deviant stimulus occurs'
           
-    
+      },
+        
+      block_length: {
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'block length',
+        default: 10,
+        description: 'the number of trials in one block'
+          
+      }
+        
 
-    }
   }
-
+  }
   plugin.trial = function(display_element, trial) {
 
     var new_html = '<div id="jspsych-html-keyboard-response-stimulus">'+trial.stimulus+'</div>';
@@ -148,8 +152,8 @@ jsPsych.plugins["stimulus-presentation"] = (function() {
       // gather the stimulus trial type
         
       var trial_stimulus_type = ""  
-      var deviant = trial.deviant_stim
-      var background = trial.background_stim
+      var deviant = trial.block_deviant
+      var background = trial.block_background
       if (trial.stimulus.includes(deviant)){
           trial_stimulus_type = "deviant"
       }else if (trial.stimulus.includes(background)){
@@ -177,8 +181,7 @@ jsPsych.plugins["stimulus-presentation"] = (function() {
         "key_press": response.key, 
         "minimum_viewing_duration":trial.minimum_viewing_duration,
         "trial_looking_time": trial.minimum_viewing_duration + response.rt,
-        //"trial_pressed_space_bar": trial.press_space_bar,
-         //"trial_space_bar_rt": trial.space_bar_rt 
+      
       };
 
       // clear the display
@@ -194,12 +197,8 @@ jsPsych.plugins["stimulus-presentation"] = (function() {
       // after a valid response, the stimulus will have the CSS class 'responded'
       // which can be used to provide visual feedback that a response was recorded
       display_element.querySelector('#jspsych-html-keyboard-response-stimulus').className += ' responded';
-
-      // only record the first response
       
-      
-      console.log(info)
-      
+          
       // if the does not press the space bar but the down arrow, 
       if (info.key !== 32){
           if (response.key == null){
@@ -210,33 +209,7 @@ jsPsych.plugins["stimulus-presentation"] = (function() {
             end_trial();
           }
       // if pressed the space bar      
-      }else{
-          
-          trial.press_space_bar = "yes"
-          // record the first reaction time of the space bar press
-          if (trial.space_bar_rt == null){
-              trial.space_bar_rt = info.rt
-          }
-          // if it is the target trial 
-          
-          console.log(trial.stimulus)
-          console.log(trial.task_target_stimulus)
-          
-          if (trial.stimulus.includes(trial.task_target_stimulus)){
-              console.log("this is the target!")
-          var black_border_display = display_element.innerHTML
-          var flashing_red_border_display = black_border_display.replace("black", "red")
-          display_element.innerHTML = flashing_red_border_display
-          jsPsych.pluginAPI.setTimeout(function() {
-                                    display_element.innerHTML = black_border_display ;
-                                    }, 300);
-              
-          }
-      
-      
-      }   
-       
-      
+      }
        
       
 
