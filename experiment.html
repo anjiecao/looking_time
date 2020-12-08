@@ -12,6 +12,8 @@
     <script src="js/jspsych-html-keyboard-response.js"></script>
     <script src="js/jspsych-image-keyboard-response.js"></script>
     <script src= "js/jspsych-demog-age.js"></script>
+    <script src= "js/jspsych-survey-text.js"></script>
+    <script src= "js/jspsych-survey-text.js"></script>
     <script src= "js/jspsych-demog-ethnic-US.js"></script>
     <script src= "js/jspsych-demog-gender-and-education.js"></script>
     <script src= "js/jspsych-demog-disorder-history.js"></script>
@@ -21,7 +23,7 @@
 </head>
 <body></body>
 <script>
-    
+
     var verbose = false
     var timenum = Date.now();
     var turkInfo = jsPsych.turk.turkInfo();
@@ -34,7 +36,7 @@
     var subject_id = 'SS' + timenum;
     var survey_code = 'SS' + timenum
     //console.log(turkInfo.workerId)
-    
+
     /*
     if(turkInfo.workerId === "") {
       console.log(turkInfo.workerId)
@@ -42,14 +44,14 @@
     } else {
       var subject_id = 'MT-' + turkInfo.workerId;
     }*/
-    
+
     // store subject in data on every trial
     jsPsych.data.addProperties({ subject: subject_id });
 
-    
+
   var timeline = []
-    
-  
+
+
 
 
     var survey_code_page = {
@@ -58,76 +60,76 @@
          "Your survey code is<p><b>"+ survey_code + "</b></p><p>Please make sure you save this somewhere safe. You will need to enter this code into mturk to be paid.</p>"
      ],
      show_clickable_nav: false
-     
+
  }
-    
-    
 
 
 
-//Before the main task 
-  
-  
-  
+
+
+//Before the main task
+
+
+
 
     //timeline.push(front_page)
     //timeline.push(main_instruction)
     //timeline.push(prepractice_instruction)
     //timeline = timeline.concat(practice_block)
-    
+
 // Setting up the main task
 var SET_NUM = 1
-    
-    
+
+
 
 BLOCK_LENGTH = 3
-ALL_STIMULI_PATH = get_all_stimuli() // all stimuli 
+ALL_STIMULI_PATH = get_all_stimuli() // all stimuli
 ALL_SET_COMBINATION = generate_set_combination(ALL_STIMULI_PATH)
-    
+
 console.log(ALL_STIMULI_PATH)
 console.log(ALL_SET_COMBINATION)
-    
- 
-POSSIBLE_DEV_POSITION = [2] 
-BLOCK_GROUP_TYPE = ["simple_a", "simple_b", "complex_a", "complex_b"]    
-BLOCK_TYPE = ["simple_similar", "simple_dissimilar", "complex_similar", "complex_dissimilar"]   
-    
+
+
+POSSIBLE_DEV_POSITION = [2]
+BLOCK_GROUP_TYPE = ["simple_a", "simple_b", "complex_a", "complex_b"]
+BLOCK_TYPE = ["simple_similar", "simple_dissimilar", "complex_similar", "complex_dissimilar"]
+
 //BLOCK_GROUP_TYPE = ["simple_a"]
 //BLOCK_TYPE = ["simple_similar"]
-    
-    
+
+
 for (i = 0; i < ALL_SET_COMBINATION.length; i ++ ){
     current_set_combination = ALL_SET_COMBINATION[i]
     ALL_TASK_BLOCK = []
-    
+
     // loop through all possible deviant positions
     for (dev_p = 0; dev_p < POSSIBLE_DEV_POSITION.length; dev_p ++){
         current_deviant_position = POSSIBLE_DEV_POSITION[dev_p]
-        // loop through all possible block group type 
+        // loop through all possible block group type
         for (block_group_i = 0; block_group_i < BLOCK_GROUP_TYPE.length; block_group_i ++){
             current_block_group_type = BLOCK_GROUP_TYPE[block_group_i]
             // loop through all possible block type
             for (block_type_i = 0; block_type_i < BLOCK_TYPE.length; block_type_i ++){
                 current_block_type = BLOCK_TYPE[block_type_i]
-        
+
                 current_background = current_set_combination[current_block_group_type][current_block_type].background
                 current_deviant = current_set_combination[current_block_group_type][current_block_type].deviant
 
-                current_block_array = generate_block_array(current_background, 
-                                                          current_deviant, 
-                                                          BLOCK_LENGTH, 
+                current_block_array = generate_block_array(current_background,
+                                                          current_deviant,
+                                                          BLOCK_LENGTH,
                                                           current_deviant_position)
-                
-                
-                
-                
+
+
+                console.log(current_block_array)
+
                  var current_task_block = {
                         timeline: [
 
                             {
                                 type: 'html-keyboard-response',
                                 stimulus: '<img src=images/blank.png width ="500" height = "500" style="border:5px solid black">',
-                                trial_duration: function(){ 
+                                trial_duration: function(){
                                     var random_duration = 800 + 500 * Math.random()
                                     return random_duration  } , //The interval between the offset of one stimulus and the onset of the next stimulus ranged between 800 and 1300 msec
                                 choices: jsPsych.NO_KEYS
@@ -141,90 +143,95 @@ for (i = 0; i < ALL_SET_COMBINATION.length; i ++ ){
                                 },
                                 choices_for_target: [32],
                                 choices: [40],
-                                block_group_type: current_block_group_type, 
-                                block_type: current_block_type, 
-                                block_background: current_background, 
-                                block_deviant: current_deviant, 
+                                block_group_type: current_block_group_type,
+                                block_type: current_block_type,
+                                block_background: current_background,
+                                block_deviant: current_deviant,
                                 deviant_position: current_deviant_position,
                                 block_length: BLOCK_LENGTH,
                                 minimum_viewing_duration: 200, // daffner2000's info was 600, changed to 200
-                                response_ends_trial: true, 
-                                
-                            } 
+                                response_ends_trial: true,
+
+                            }
 
 
                         ],
 
-                        timeline_variables: convert_path_to_timeline_variables(current_block_array)  
+                        timeline_variables: convert_path_to_timeline_variables(current_block_array)
                     }
-                 
+
                  // add test block here!
-                 
-                 
-                 
-                 
-                
-                 
+
+                 var memory_test = {
+                   type: 'survey-text',
+                   questions: [
+                     {prompt: "Have you seen this before?", name: 'memory'},
+                   ],
+                 };
+
+
                  ALL_TASK_BLOCK.push(current_task_block)
+                 ALL_TASK_BLOCK.push(memory_test)
 
-                
+
+
             }
-        
-        }
-        
-    }
-    
 
-    
+        }
+
+    }
+
+
+
 }
-    
+
 shuffleArray(ALL_TASK_BLOCK)
 timeline = timeline.concat(ALL_TASK_BLOCK)
-    
-    
-    
-    
-    
+
+
+
+
+
 
      //timeline.push(task_instruction)
-    
-    
-    
-    
-    
-    
-    
 
-    
-// after the main task   
 
-    
-    
-    
-/*  
+
+
+
+
+
+
+
+// after the main task
+
+
+
+
+/*
    timeline.push(final_instructions)
    timeline = timeline.concat(demog_questions)
    timeline.push(final_thank_you)
   timeline.push(survey_code_page)
-  
+
 */
    ///afs/ir.stanford.edu/users/a/n/anjiecao/cgi-bin/daffner2020/write_data.php
-  
+
     //'../../../cgi-bin/RR_adults/write_data.php')
     //TO FIX!!!
     function saveData(name, data){
         var xhr = new XMLHttpRequest();
-        xhr.open('POST', 'https://web.stanford.edu/~anjiecao/cgi-bin/daffner2000/write_data.php'); 
+        xhr.open('POST', 'https://web.stanford.edu/~anjiecao/cgi-bin/daffner2000/write_data.php');
         //xhr.open('POST', 'write_data.php'); // 'write_data.php' is the path to the php file described above.
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.send(JSON.stringify({filename: name, filedata: data}));
     }
-    
-    
+
+
     var all_images = INSTRCUTION_IMAGES.concat(ALL_STIMULI_PATH)
     var all_images = all_images.concat(PRACTICE_IMAGES)
-    
-    
+
+
 jsPsych.init({
         timeline: timeline,
         show_progress_bar: true,
