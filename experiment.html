@@ -85,14 +85,18 @@ var SET_NUM = 1
 BLOCK_LENGTH = 3
 ALL_STIMULI_PATH = get_all_stimuli() // all stimuli
 ALL_SET_COMBINATION = generate_set_combination(ALL_STIMULI_PATH)
+// add probes so that ALL_SET_COMBINATION will have an additional feature called
+// probe which contains the probe
+
+
 
 console.log(ALL_STIMULI_PATH)
 console.log(ALL_SET_COMBINATION)
 
 
 POSSIBLE_DEV_POSITION = [2]
-BLOCK_GROUP_TYPE = ["simple_a", "simple_b", "complex_a", "complex_b"]
-BLOCK_TYPE = ["simple_similar", "simple_dissimilar", "complex_similar", "complex_dissimilar"]
+BASELINE_TYPE = ["simple_a", "simple_b", "complex_a", "complex_b"]
+DEVIANT_TYPE = ["simple_similar", "simple_dissimilar", "complex_similar", "complex_dissimilar"]
 
 //BLOCK_GROUP_TYPE = ["simple_a"]
 //BLOCK_TYPE = ["simple_similar"]
@@ -106,19 +110,26 @@ for (i = 0; i < ALL_SET_COMBINATION.length; i ++ ){
     for (dev_p = 0; dev_p < POSSIBLE_DEV_POSITION.length; dev_p ++){
         current_deviant_position = POSSIBLE_DEV_POSITION[dev_p]
         // loop through all possible block group type
-        for (block_group_i = 0; block_group_i < BLOCK_GROUP_TYPE.length; block_group_i ++){
-            current_block_group_type = BLOCK_GROUP_TYPE[block_group_i]
+        for (block_group_i = 0; block_group_i < BASELINE_TYPE.length; block_group_i ++){
+            current_block_group_type = BASELINE_TYPE[block_group_i]
             // loop through all possible block type
-            for (block_type_i = 0; block_type_i < BLOCK_TYPE.length; block_type_i ++){
-                current_block_type = BLOCK_TYPE[block_type_i]
+            for (block_type_i = 0; block_type_i < DEVIANT_TYPE.length; block_type_i ++){
+
+
+
+                current_block_type = DEVIANT_TYPE[block_type_i]
 
                 current_background = current_set_combination[current_block_group_type][current_block_type].background
                 current_deviant = current_set_combination[current_block_group_type][current_block_type].deviant
+                // current_probe = current_set_combination[current_block_group_type][current_block_type].probe
+
 
                 current_block_array = generate_block_array(current_background,
                                                           current_deviant,
                                                           BLOCK_LENGTH,
                                                           current_deviant_position)
+
+
 
 
                 console.log(current_block_array)
@@ -154,14 +165,13 @@ for (i = 0; i < ALL_SET_COMBINATION.length; i ++ ){
 
                             }
 
-
                         ],
 
                         timeline_variables: convert_path_to_timeline_variables(current_block_array)
                     }
 
-                 // add test block here!
 
+                 // add test block here! (use current_probe)
                  var memory_test = {
                    type: 'survey-text',
                    questions: [
@@ -169,11 +179,10 @@ for (i = 0; i < ALL_SET_COMBINATION.length; i ++ ){
                    ],
                  };
 
+                 // create package which keeps test trials and memory test together
+                 BLOCK = [current_task_block, memory_test]
 
-                 ALL_TASK_BLOCK.push(current_task_block)
-                 ALL_TASK_BLOCK.push(memory_test)
-
-
+                 ALL_TASK_BLOCK.push(BLOCK)
 
             }
 
@@ -186,7 +195,16 @@ for (i = 0; i < ALL_SET_COMBINATION.length; i ++ ){
 }
 
 shuffleArray(ALL_TASK_BLOCK)
-timeline = timeline.concat(ALL_TASK_BLOCK)
+
+// loop through ALL_TASK_BLOCK and pass each stimulus to timeline
+for (i = 0; i < ALL_TASK_BLOCK.length; i ++ ){
+
+  // add packge containing task block and memory test
+  timeline = timeline.concat(ALL_TASK_BLOCK[i])
+
+  console.log(ALL_TASK_BLOCK[i])
+
+  }
 
 
 
