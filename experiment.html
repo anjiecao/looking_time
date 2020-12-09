@@ -85,6 +85,9 @@ var SET_NUM = 1
 BLOCK_LENGTH = 3
 ALL_STIMULI_PATH = get_all_stimuli() // all stimuli
 ALL_SET_COMBINATION = generate_set_combination(ALL_STIMULI_PATH)
+add_probe(ALL_SET_COMBINATION)
+
+
 // add probes so that ALL_SET_COMBINATION will have an additional feature called
 // probe which contains the probe
 
@@ -190,16 +193,13 @@ for (i = 0; i < ALL_SET_COMBINATION.length; i ++ ){
 
     }
 
-
-
 }
 
 shuffleArray(ALL_TASK_BLOCK)
 
-// loop through ALL_TASK_BLOCK and pass each stimulus to timeline
+// loop through ALL_TASK_BLOCK and pass each sequence + probe to timeline
 for (i = 0; i < ALL_TASK_BLOCK.length; i ++ ){
 
-  // add packge containing task block and memory test
   timeline = timeline.concat(ALL_TASK_BLOCK[i])
 
   console.log(ALL_TASK_BLOCK[i])

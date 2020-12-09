@@ -125,10 +125,16 @@ function get_all_stimuli(){
             deviant_array.push(deviant_path)
         }
 
+        probes_array = []
+        for (var probes_index = 1; probes_index < 5; probes_index++){
+            probes_path = MAIN_DIR + current_set + "/" + "probes/" + probes_index + ".png"
+            probes_array.push(probes_path)
+        }
 
         block_stim_set = {
             background: background_array,
-            deviant: deviant_array
+            deviant: deviant_array,
+            probes: probes_array
         }
 
         all_sets.push(block_stim_set)
@@ -279,7 +285,14 @@ function generate_set_combination(all_sets_array){
 
 
 // here we add the memory probe to the ALL_SET_COMBINATION object
-//function add_probe()
+function add_probe(set_combinations) {
+
+  console.log(set_combinations)
+
+  return(set_combinations)
+}
+
+
 ///
 
 
