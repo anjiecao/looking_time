@@ -285,13 +285,47 @@ function generate_set_combination(all_sets_array){
 
 
 // here we add the memory probe to the ALL_SET_COMBINATION object
-function add_probe(set_combinations) {
 
-  console.log(set_combinations)
+/* function add_probes(set_combinations, paths) {
+
+console.log(set_combinations)
+
+ // loop through sets
+  for (i = 0; i < paths.length; i ++){
+    // loop through probes
+    for (j = 0; j < paths[i].length; i ++){
+
+      paths[i].probes
+
+      set_combinations[i].complex_a.complex_dissimilar.probes
+      set_combinations[i].complex_a.complex_similar
+      set_combinations[i].complex_a.simple_dissimilar
+      set_combinations[i].complex_a.simple_similar
+
+      set_combinations[i].complex_b.complex_dissimilar
+      set_combinations[i].complex_b.complex_similar
+      set_combinations[i].complex_b.simple_dissimilar
+      set_combinations[i].complex_b.simple_similar
+
+      set_combinations[i].simple_a.complex_dissimilar
+      set_combinations[i].simple_a.complex_similar
+      set_combinations[i].simple_a.simple_dissimilar
+      set_combinations[i].simple_a.simple_similar
+
+      set_combinations[i].simple_b.complex_dissimilar
+      set_combinations[i].simple_b.complex_similar
+      set_combinations[i].simple_b.simple_dissimilar
+      set_combinations[i].simple_b.simple_similar
+
+    }
+  }
+
+//console.log(set_combinations)
+
 
   return(set_combinations)
 }
-
+*/
 
 ///
 

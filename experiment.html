@@ -85,16 +85,15 @@ var SET_NUM = 1
 BLOCK_LENGTH = 3
 ALL_STIMULI_PATH = get_all_stimuli() // all stimuli
 ALL_SET_COMBINATION = generate_set_combination(ALL_STIMULI_PATH)
-add_probe(ALL_SET_COMBINATION)
 
+// console.log(ALL_STIMULI_PATH)
 
 // add probes so that ALL_SET_COMBINATION will have an additional feature called
 // probe which contains the probe
+//add_probes(ALL_SET_COMBINATION, ALL_STIMULI_PATH)
 
-
-
-console.log(ALL_STIMULI_PATH)
-console.log(ALL_SET_COMBINATION)
+//console.log(ALL_STIMULI_PATH)
+//console.log(ALL_SET_COMBINATION)
 
 
 POSSIBLE_DEV_POSITION = [2]
@@ -135,7 +134,7 @@ for (i = 0; i < ALL_SET_COMBINATION.length; i ++ ){
 
 
 
-                console.log(current_block_array)
+                // console.log(current_block_array)
 
                  var current_task_block = {
                         timeline: [
@@ -202,7 +201,7 @@ for (i = 0; i < ALL_TASK_BLOCK.length; i ++ ){
 
   timeline = timeline.concat(ALL_TASK_BLOCK[i])
 
-  console.log(ALL_TASK_BLOCK[i])
+  // console.log(ALL_TASK_BLOCK[i])
 
   }
 
