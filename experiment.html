@@ -176,9 +176,8 @@ for (i = 0; i < ALL_SET_COMBINATION.length; i ++ ){
                  //index into probes
                  current_probe = current_set_combination[current_block_group_type][current_block_type].probes[random_probe_idx]
 
-
                  // track whether the probe is correct (i.e. was shown in the sequence)
-                 if (random_probe_idx < 3) {correct_probe = true} else {correct_probe = false}
+                 if (random_probe_idx < 2) {correct_probe = true} else {correct_probe = false}
 
                  // define which key is the correct button press
                  // (currently assuming possible responses are Y for 'yes, seen before'

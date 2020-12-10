@@ -288,8 +288,6 @@ function generate_set_combination(all_sets_array){
 
 function add_probes(set_combinations, paths) {
 
-
-
  // loop through sets (this assumes that # of probes is identical in all sets, 16)
   for (i = 0; i < paths.length; i ++){
 
@@ -316,6 +314,18 @@ function add_probes(set_combinations, paths) {
 
     // loop through probes
     for (j = 0; j < paths[i].probes.length; j++){
+
+
+      // if background = 1, deviant = 1 --> memory probes [1, 9, 5, 13]
+      // if background = 1, deviant = 2 --> memory probes [1, 10, 5, 14]
+      // if background = 2, deviant = 1 --> memory probes [2, 9, 6, 13]
+
+      // probes numbering scheme:
+      // 1-4 --> identical to 1.png, 2.png, 3.png, 4.png in background folder
+      // 5-9 --> identical to 1.png, 2.png, 3.png, 4.png in deviant folder
+      // 9-12 --> similar to baselines
+      // 13-16 --> either similar to deviants or novel
+
 
       // insert all the probes that are identical and similar to the background
         if (j==0 || j==8) {
