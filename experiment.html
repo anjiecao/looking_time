@@ -13,7 +13,7 @@
     <script src="js/jspsych-image-keyboard-response.js"></script>
     <script src= "js/jspsych-demog-age.js"></script>
     <script src= "js/jspsych-survey-text.js"></script>
-    <script src= "js/jspsych-survey-text.js"></script>
+    <script src= "js/jspsych-categorize-image.js"></script>
     <script src= "js/jspsych-demog-ethnic-US.js"></script>
     <script src= "js/jspsych-demog-gender-and-education.js"></script>
     <script src= "js/jspsych-demog-disorder-history.js"></script>
@@ -90,10 +90,11 @@ ALL_SET_COMBINATION = generate_set_combination(ALL_STIMULI_PATH)
 
 // add probes so that ALL_SET_COMBINATION will have an additional feature called
 // probe which contains the probe
-//add_probes(ALL_SET_COMBINATION, ALL_STIMULI_PATH)
+add_probes(ALL_SET_COMBINATION, ALL_STIMULI_PATH)
+
 
 //console.log(ALL_STIMULI_PATH)
-//console.log(ALL_SET_COMBINATION)
+console.log(ALL_SET_COMBINATION)
 
 
 POSSIBLE_DEV_POSITION = [2]
@@ -123,16 +124,11 @@ for (i = 0; i < ALL_SET_COMBINATION.length; i ++ ){
 
                 current_background = current_set_combination[current_block_group_type][current_block_type].background
                 current_deviant = current_set_combination[current_block_group_type][current_block_type].deviant
-                // current_probe = current_set_combination[current_block_group_type][current_block_type].probe
-
 
                 current_block_array = generate_block_array(current_background,
                                                           current_deviant,
                                                           BLOCK_LENGTH,
                                                           current_deviant_position)
-
-
-
 
                 // console.log(current_block_array)
 
@@ -172,13 +168,36 @@ for (i = 0; i < ALL_SET_COMBINATION.length; i ++ ){
                         timeline_variables: convert_path_to_timeline_variables(current_block_array)
                     }
 
+                 // memory test here
 
-                 // add test block here! (use current_probe)
+                 // random index for probe
+                 random_probe_idx = Math.floor(Math.random() * 4);
+
+                 //index into probes
+                 current_probe = current_set_combination[current_block_group_type][current_block_type].probes[random_probe_idx]
+
+
+                 // track whether the probe is correct (i.e. was shown in the sequence)
+                 if (random_probe_idx < 3) {correct_probe = true} else {correct_probe = false}
+
+                 // define which key is the correct button press
+                 // (currently assuming possible responses are Y for 'yes, seen before'
+                 // or N for 'no, haven't seen'.
+                 // see here for keycodes: http://gcctech.org/csc/javascript/javascript_keycodes.htm
+                 if (correct_probe == true) {
+                   correct_key = 89
+                 incorrect_key = 78}
+                 else {
+                   correct_key = 78
+                   incorrect_key = 89
+                 }
+
                  var memory_test = {
-                   type: 'survey-text',
-                   questions: [
-                     {prompt: "Have you seen this before?", name: 'memory'},
-                   ],
+                   type: 'categorize-image',
+                   stimulus: current_probe,
+                   prompt: "<p> Have you seen this before? Press (Y) or (N) </p>",
+                   key_answer: correct_key,
+                   choices: [correct_key, incorrect_key]
                  };
 
                  // create package which keeps test trials and memory test together

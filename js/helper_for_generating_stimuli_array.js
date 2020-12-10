@@ -126,7 +126,7 @@ function get_all_stimuli(){
         }
 
         probes_array = []
-        for (var probes_index = 1; probes_index < 5; probes_index++){
+        for (var probes_index = 1; probes_index < 17; probes_index++){
             probes_path = MAIN_DIR + current_set + "/" + "probes/" + probes_index + ".png"
             probes_array.push(probes_path)
         }
@@ -286,46 +286,99 @@ function generate_set_combination(all_sets_array){
 
 // here we add the memory probe to the ALL_SET_COMBINATION object
 
-/* function add_probes(set_combinations, paths) {
+function add_probes(set_combinations, paths) {
 
-console.log(set_combinations)
 
- // loop through sets
+
+ // loop through sets (this assumes that # of probes is identical in all sets, 16)
   for (i = 0; i < paths.length; i ++){
+
+    // initialize probes array
+    set_combinations[i].simple_a.simple_similar.probes = []
+    set_combinations[i].simple_a.simple_dissimilar.probes = []
+    set_combinations[i].simple_a.complex_similar.probes = []
+    set_combinations[i].simple_a.complex_dissimilar.probes = []
+
+    set_combinations[i].simple_b.simple_similar.probes = []
+    set_combinations[i].simple_b.simple_dissimilar.probes = []
+    set_combinations[i].simple_b.complex_similar.probes = []
+    set_combinations[i].simple_b.complex_dissimilar.probes = []
+
+    set_combinations[i].complex_a.simple_similar.probes = []
+    set_combinations[i].complex_a.simple_dissimilar.probes = []
+    set_combinations[i].complex_a.complex_similar.probes = []
+    set_combinations[i].complex_a.complex_dissimilar.probes = []
+
+    set_combinations[i].complex_b.simple_similar.probes = []
+    set_combinations[i].complex_b.simple_dissimilar.probes = []
+    set_combinations[i].complex_b.complex_similar.probes = []
+    set_combinations[i].complex_b.complex_dissimilar.probes = []
+
     // loop through probes
-    for (j = 0; j < paths[i].length; i ++){
+    for (j = 0; j < paths[i].probes.length; j++){
 
-      paths[i].probes
+      // insert all the probes that are identical and similar to the background
+        if (j==0 || j==8) {
+        set_combinations[i].simple_a.simple_similar.probes.push(paths[i].probes[j])
+        set_combinations[i].simple_a.simple_dissimilar.probes.push(paths[i].probes[j])
+        set_combinations[i].simple_a.complex_similar.probes.push(paths[i].probes[j])
+        set_combinations[i].simple_a.complex_dissimilar.probes.push(paths[i].probes[j])
 
-      set_combinations[i].complex_a.complex_dissimilar.probes
-      set_combinations[i].complex_a.complex_similar
-      set_combinations[i].complex_a.simple_dissimilar
-      set_combinations[i].complex_a.simple_similar
+      }else if (j==1 || j==9) {
+        set_combinations[i].simple_b.simple_similar.probes.push(paths[i].probes[j])
+        set_combinations[i].simple_b.simple_dissimilar.probes.push(paths[i].probes[j])
+        set_combinations[i].simple_b.complex_similar.probes.push(paths[i].probes[j])
+        set_combinations[i].simple_b.complex_dissimilar.probes.push(paths[i].probes[j])
 
-      set_combinations[i].complex_b.complex_dissimilar
-      set_combinations[i].complex_b.complex_similar
-      set_combinations[i].complex_b.simple_dissimilar
-      set_combinations[i].complex_b.simple_similar
+      }else if (j==2 || j==10) {
+        set_combinations[i].complex_a.simple_similar.probes.push(paths[i].probes[j])
+        set_combinations[i].complex_a.simple_dissimilar.probes.push(paths[i].probes[j])
+        set_combinations[i].complex_a.complex_similar.probes.push(paths[i].probes[j])
+        set_combinations[i].complex_a.complex_dissimilar.probes.push(paths[i].probes[j])
 
-      set_combinations[i].simple_a.complex_dissimilar
-      set_combinations[i].simple_a.complex_similar
-      set_combinations[i].simple_a.simple_dissimilar
-      set_combinations[i].simple_a.simple_similar
+      }else if (j==3 || j==11) {
+        set_combinations[i].complex_b.simple_similar.probes.push(paths[i].probes[j])
+        set_combinations[i].complex_b.simple_dissimilar.probes.push(paths[i].probes[j])
+        set_combinations[i].complex_b.complex_similar.probes.push(paths[i].probes[j])
+        set_combinations[i].complex_b.complex_dissimilar.probes.push(paths[i].probes[j])
 
-      set_combinations[i].simple_b.complex_dissimilar
-      set_combinations[i].simple_b.complex_similar
-      set_combinations[i].simple_b.simple_dissimilar
-      set_combinations[i].simple_b.simple_similar
+      // now we group by deviant, inserting deviant and d' (or novel)
+    }else if (j==4|| j==12) {
+        set_combinations[i].simple_a.simple_similar.probes.push(paths[i].probes[j])
+        set_combinations[i].simple_b.simple_similar.probes.push(paths[i].probes[j])
+        set_combinations[i].complex_a.simple_similar.probes.push(paths[i].probes[j])
+        set_combinations[i].complex_b.simple_similar.probes.push(paths[i].probes[j])
 
-    }
+      }else if (j==5 || j==13) {
+        set_combinations[i].simple_a.simple_dissimilar.probes.push(paths[i].probes[j])
+        set_combinations[i].simple_b.simple_dissimilar.probes.push(paths[i].probes[j])
+        set_combinations[i].complex_a.simple_dissimilar.probes.push(paths[i].probes[j])
+        set_combinations[i].complex_b.simple_dissimilar.probes.push(paths[i].probes[j])
+
+      }else if (j==6 || j==14) {
+        set_combinations[i].simple_a.complex_similar.probes.push(paths[i].probes[j])
+        set_combinations[i].simple_b.complex_similar.probes.push(paths[i].probes[j])
+        set_combinations[i].complex_a.complex_similar.probes.push(paths[i].probes[j])
+        set_combinations[i].complex_b.complex_similar.probes.push(paths[i].probes[j])
+
+      }else if (j==7 || j==15) {
+        set_combinations[i].simple_a.complex_dissimilar.probes.push(paths[i].probes[j])
+        set_combinations[i].simple_b.complex_dissimilar.probes.push(paths[i].probes[j])
+        set_combinations[i].complex_a.complex_dissimilar.probes.push(paths[i].probes[j])
+        set_combinations[i].complex_b.complex_dissimilar.probes.push(paths[i].probes[j])
+      }
   }
+}
+
+  console.log(set_combinations[0])
+
 
 //console.log(set_combinations)
 
 
   return(set_combinations)
 }
-*/
+
 
 ///
 
