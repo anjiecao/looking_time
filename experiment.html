@@ -51,9 +51,6 @@
 
   var timeline = []
 
-
-
-
     var survey_code_page = {
      type: "instructions",
      pages:[
@@ -63,14 +60,7 @@
 
  }
 
-
-
-
-
 //Before the main task
-
-
-
 
     //timeline.push(front_page)
     //timeline.push(main_instruction)
@@ -79,14 +69,12 @@
 
 // Setting up the main task
 var SET_NUM = 1
-
-
-
-BLOCK_LENGTH = 3
+var BLOCK_LENGTH = 3
 ALL_STIMULI_PATH = get_all_stimuli() // all stimuli
 ALL_SET_COMBINATION = generate_set_combination(ALL_STIMULI_PATH)
 
-// console.log(ALL_STIMULI_PATH)
+console.log(ALL_STIMULI_PATH)
+console.log(ALL_SET_COMBINATION)
 
 // add probes so that ALL_SET_COMBINATION will have an additional feature called
 // probe which contains the probe

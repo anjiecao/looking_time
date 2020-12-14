@@ -106,7 +106,7 @@ function pop_multiple(array, n){
 function get_all_stimuli(){
 
     all_sets = []
-    MAIN_DIR = "images/training/"
+    MAIN_DIR = "images/stimuli/"
 
     // set number is specified in experiment.html
     for (var i = 1; i < SET_NUM + 1; i++){
