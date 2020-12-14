@@ -35,6 +35,7 @@ The folder structure is as follows:
 
 The names of the .png files are important and determine the relationship of the stimuli to one another. When we plot the complexity of the four deviants, as well as their similarity to the various particular background images, we get the following:
 
+![alt text](https://github.com/anjiecao/looking_time/images/readme/image.jpg?raw=true)
 
 
 
@@ -55,4 +56,4 @@ Furthermore, there are 16 images in the 'Probes' folder. The numbering scheme wo
 
 This folder contains scripts of two types:
 - 1. jspsych-scripts for displaying certain stimuli.
-- 2. Helper functions 
+- 2. Helper functions
