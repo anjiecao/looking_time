@@ -60,7 +60,7 @@ Furthermore, there are 16 images in the 'Probes' folder. The numbering scheme is
 That is, images 1 to 4 are identical to the background images (in that order), images 5 to 8 are identical to the deviant images.
 images 9 to 12 are similar to the background, and images 13 to 16 are novel memory probes (subject to change).
 
-If you go back to the first section about the output of the command, you should be able to understand why the output of `obj.complex_a.simple_dissimilar` would return:
+You should now be able to understand why the output of `obj.complex_a.simple_dissimilar` would return:
 
          {background: "images/stimuli/1/background/3.png",
            deviant: "images/stimuli/1/deviant/2.png",
