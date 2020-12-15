@@ -68,8 +68,6 @@
     //timeline = timeline.concat(practice_block)
 
 // Setting up the main task
-var SET_NUM = 1
-var BLOCK_LENGTH = 3
 ALL_STIMULI_PATH = get_all_stimuli() // all stimuli
 ALL_SET_COMBINATION = generate_set_combination(ALL_STIMULI_PATH)
 
@@ -84,14 +82,12 @@ add_probes(ALL_SET_COMBINATION, ALL_STIMULI_PATH)
 //console.log(ALL_STIMULI_PATH)
 console.log(ALL_SET_COMBINATION)
 
-
+// main experimental parameters
+SET_NUM = 1
+BLOCK_LENGTH = 3
 POSSIBLE_DEV_POSITION = [2]
 BASELINE_TYPE = ["simple_a", "simple_b", "complex_a", "complex_b"]
 DEVIANT_TYPE = ["simple_similar", "simple_dissimilar", "complex_similar", "complex_dissimilar"]
-
-//BLOCK_GROUP_TYPE = ["simple_a"]
-//BLOCK_TYPE = ["simple_similar"]
-
 
 for (i = 0; i < ALL_SET_COMBINATION.length; i ++ ){
     current_set_combination = ALL_SET_COMBINATION[i]
