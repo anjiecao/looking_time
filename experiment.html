@@ -67,24 +67,23 @@
     //timeline.push(prepractice_instruction)
     //timeline = timeline.concat(practice_block)
 
-// Setting up the main task
-ALL_STIMULI_PATH = get_all_stimuli() // all stimuli
-ALL_SET_COMBINATION = generate_set_combination(ALL_STIMULI_PATH)
+  // Setting up the main task
+  var SET_NUM = 1
 
-console.log(ALL_STIMULI_PATH)
-console.log(ALL_SET_COMBINATION)
+  BLOCK_LENGTH = 3
+  ALL_STIMULI_PATH = get_all_stimuli() // all stimuli
+  ALL_SET_COMBINATION = generate_set_combination(ALL_STIMULI_PATH)
 
-// add probes so that ALL_SET_COMBINATION will have an additional feature called
-// probe which contains the probe
-add_probes(ALL_SET_COMBINATION, ALL_STIMULI_PATH)
+  // console.log(ALL_STIMULI_PATH)
+
+  // add probes so that ALL_SET_COMBINATION will have an additional feature called
+  // probe which contains the probe
+  add_probes(ALL_SET_COMBINATION, ALL_STIMULI_PATH)
 
 
-//console.log(ALL_STIMULI_PATH)
-console.log(ALL_SET_COMBINATION)
+  //console.log(ALL_STIMULI_PATH)
+  console.log(ALL_SET_COMBINATION)
 
-// main experimental parameters
-SET_NUM = 1
-BLOCK_LENGTH = 3
 POSSIBLE_DEV_POSITION = [2]
 BASELINE_TYPE = ["simple_a", "simple_b", "complex_a", "complex_b"]
 DEVIANT_TYPE = ["simple_similar", "simple_dissimilar", "complex_similar", "complex_dissimilar"]

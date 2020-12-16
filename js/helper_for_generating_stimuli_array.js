@@ -380,7 +380,7 @@ function add_probes(set_combinations, paths) {
   }
 }
 
-  console.log(set_combinations[0])
+console.log(set_combinations)
 
 
 //console.log(set_combinations)
