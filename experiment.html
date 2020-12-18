@@ -83,6 +83,65 @@
 
   //console.log(ALL_STIMULI_PATH)
   console.log(ALL_SET_COMBINATION)
+    
+    
+    
+    
+    
+// try out the new stimuli 
+var new_task_block = {
+                        timeline: [
+
+                            {
+                                type: 'html-keyboard-response',
+                                stimulus: '<img src=images/blank.png width ="500" height = "500" style="border:5px solid black">',
+                                trial_duration: function(){
+                                    var random_duration = 800 + 500 * Math.random()
+                                    return random_duration  } , //The interval between the offset of one stimulus and the onset of the next stimulus ranged between 800 and 1300 msec
+                                choices: jsPsych.NO_KEYS
+                            },
+
+                            {
+                                type: 'stimulus-presentation',
+                                stimulus: function(){
+                                    var html="<img src='"+jsPsych.timelineVariable('stimuli', true)+"' width ='200' height = '200' style='float:" + jsPsych.timelineVariable('location', true) + "'><p><img src='"+jsPsych.timelineVariable('poke_ball', true)+"' width ='800' height = '500' style='border:5px solid black'></p>";
+                                    return html;
+                                },
+                                choices_for_target: [32],
+                                choices: [40],
+                                //block_group_type: current_block_group_type,
+                                //block_type: current_block_type,
+                                //block_background: current_background,
+                                //block_deviant: current_deviant,
+                                //deviant_position: current_deviant_position,
+                                //block_length: BLOCK_LENGTH,
+                                minimum_viewing_duration: 200, // daffner2000's info was 600, changed to 200
+                                response_ends_trial: true,
+
+                            }
+
+                        ],
+    
+                        
+                        // need to have helper scripts to generate this automatically 
+                        timeline_variables: [
+                                {poke_ball: "images/stimuli/pokeball_1.gif",
+                                 stimuli: "images/stimuli/black-cat-dance.gif", 
+                                 location: "right"}, 
+                                {poke_ball: "images/stimuli/pokeball_1.gif", 
+                                 stimuli: "images/stimuli/penguin-dance.gif", 
+                                 location: "left"}, 
+                                {poke_ball: "images/stimuli/pokeball_1.gif", 
+                                 stimuli: "images/stimuli/pink-dog-dance.gif", 
+                                location: "middle"}
+                    ]
+}
+    
+    
+timeline.push(new_task_block) 
+    
+    
+/*    
 
 POSSIBLE_DEV_POSITION = [2]
 BASELINE_TYPE = ["simple_a", "simple_b", "complex_a", "complex_b"]
@@ -208,7 +267,7 @@ for (i = 0; i < ALL_TASK_BLOCK.length; i ++ ){
 
 
 
-
+*/
 
 
      //timeline.push(task_instruction)

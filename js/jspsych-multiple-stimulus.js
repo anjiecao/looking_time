@@ -1,4 +1,4 @@
-/**
+/**adapated from:
  * jspsych-html-keyboard-response
  * Josh de Leeuw
  *
@@ -9,7 +9,7 @@
  **/
 
 
-jsPsych.plugins["stimulus-presentation"] = (function() {
+jsPsych.plugins["multiple-stimulus-presentation"] = (function() {
 
   var plugin = {};
 
@@ -151,8 +151,6 @@ jsPsych.plugins["stimulus-presentation"] = (function() {
         
       // gather the stimulus trial type
         
-      // currently not relevant 
-      /*        
       var trial_stimulus_type = ""  
       var deviant = trial.block_deviant
       var background = trial.block_background
@@ -168,7 +166,7 @@ jsPsych.plugins["stimulus-presentation"] = (function() {
     
       trial.trial_stimulus_type = trial_stimulus_type
         
-        */
+        
         
       
         
@@ -177,9 +175,9 @@ jsPsych.plugins["stimulus-presentation"] = (function() {
       // gather the data to store for the trial
       var trial_data = {
         "rt": response.rt,
-        //"block_type": trial.block_type, 
+        "block_type": trial.block_type, 
         "trial_stimulus": trial.stimulus,
-        //"trial_stimulus_type": trial_stimulus_type,
+        "trial_stimulus_type": trial_stimulus_type,
         "key_press": response.key, 
         "minimum_viewing_duration":trial.minimum_viewing_duration,
         "trial_looking_time": trial.minimum_viewing_duration + response.rt,
