@@ -7,6 +7,9 @@
   <script src = "js/demog_question_package.js"></script>
   <script src="js/jspsych-pratctice-block.js"></script>
   <script src="js/jspsych-stimulus-presentation.js"></script>
+<script src="js/jspsych-sequential-stimulus-presentation.js"></script>
+<script src = "js/jspsych-multi-stim-multi-response.js"></script>
+
   <script src="js/jspsych-task-instructions.js"></script>
   <script src="js/jspsych-instructions.js"></script>
     <script src="js/jspsych-html-keyboard-response.js"></script>
@@ -85,8 +88,22 @@
   console.log(ALL_SET_COMBINATION)
     
     
+var block = {
+	type: 'sequential-stimulus-presentation',
+	first_stimulus: "<p><img src= 'images/stimuli/pokeball_1.gif' width ='800' height = '500' style='border:5px solid black'></p>",
+    first_stimulus_final_still: "<p><img src= 'images/stimuli/pokeball_still.png' width ='800' height = '500' style='border:5px solid black'></p>",
+    second_stimulus_placeholder: "<p><img src='images/stimuli/blank.png' width ='200' height = '200'></p>",
+    second_stimulus: "<p><img src='images/stimuli/black-cat-dance.gif' width ='200' height = '200'></p>",
+    two_stimuli_interval: 1200, 
+    key_response: [40],
+    minimum_viewing_duration: 200, // daffner2000's info was 600, changed to 200
+    response_ends_trial: true,
     
     
+    
+}
+
+timeline.push(block)
     
 // try out the new stimuli 
 var new_task_block = {
@@ -123,7 +140,7 @@ var new_task_block = {
                         ],
     
                         
-                        // need to have helper scripts to generate this automatically 
+                        // need to have helper scripts to generate this automatically & take into account the randomization 
                         timeline_variables: [
                                 {poke_ball: "images/stimuli/pokeball_1.gif",
                                  stimuli: "images/stimuli/black-cat-dance.gif", 

@@ -1,4 +1,4 @@
-/**adapated from:
+/**
  * jspsych-html-keyboard-response
  * Josh de Leeuw
  *
@@ -9,35 +9,59 @@
  **/
 
 
-jsPsych.plugins["multiple-stimulus-presentation"] = (function() {
+jsPsych.plugins["sequential-stimulus-presentation"] = (function() {
 
   var plugin = {};
 
   plugin.info = {
-    name: 'stimulus-presentation',
+    name: 'sequential-stimulus-presentation',
     description: '',
     parameters: {
-      stimulus: {
+      first_stimulus: {
         type: jsPsych.plugins.parameterType.HTML_STRING,
-        pretty_name: 'Stimulus',
+        pretty_name: 'first_stimulus',
         default: undefined,
-        description: 'The HTML string to be displayed'
+        description: 'The HTML string to be displayed first'
       },
-      choices: {
+        
+      first_stimulus_final_still: {
+        type: jsPsych.plugins.parameterType.HTML_STRING,
+        pretty_name: 'final_still',
+        default: undefined,
+        description: 'The final still of the first stimulus'  
+      },
+        
+      second_stimulus: {
+        type: jsPsych.plugins.parameterType.HTML_STRING,
+        pretty_name: 'second_stimulus',
+        default: undefined,
+        description: 'The HTML string to be displayed first'
+      },
+        
+      second_stimulus_placeholder: {
+         type: jsPsych.plugins.parameterType.HTML_STRING,
+        pretty_name: 'second_stimulus place holder',
+        default: undefined,
+        description: 'The blank spot waiting for second stimulus to show up'  
+          
+          
+      },
+        
+      two_stimuli_interval: {
+        type: jsPsych.plugins.parameterType.HTML_STRING,
+        pretty_name: 'interval between playing first and second',
+        default: undefined,
+        description: 'The HTML string to be displayed first'
+      },
+        
+      key_response: {
         type: jsPsych.plugins.parameterType.KEYCODE,
         array: true,
         pretty_name: 'Choices',
         default: jsPsych.ALL_KEYS,
         description: 'The keys the subject is allowed to press to respond to the stimulus.'
       },
-      choices_for_target:{
-          type: jsPsych.plugins.parameterType.KEYCODE,
-        array: true,
-        pretty_name: 'Choices',
-        default: jsPsych.ALL_KEYS,
-        description: 'The key the subjects supposed to press when seeing the target'
-          
-      },
+
         
       prompt: {
         type: jsPsych.plugins.parameterType.STRING,
@@ -122,15 +146,25 @@ jsPsych.plugins["multiple-stimulus-presentation"] = (function() {
   }
   plugin.trial = function(display_element, trial) {
 
-    var new_html = '<div id="jspsych-html-keyboard-response-stimulus">'+trial.stimulus+'</div>';
-
+    var first_stimulus = '<div id="jspsych-html-keyboard-response-stimulus">'+trial.second_stimulus_placeholder+ trial.first_stimulus+'</div>';
+    var two_stimuli = '<div id="jspsych-html-keyboard-response-stimulus">'+trial.second_stimulus+trial.first_stimulus_final_still+'</div>';
+      
+      
     // add prompt
     if(trial.prompt !== null){
       new_html += trial.prompt;
     }
 
     // draw
-    display_element.innerHTML = new_html;
+    display_element.innerHTML = first_stimulus;
+   
+      
+    jsPsych.pluginAPI.setTimeout(function() {
+                                    
+                                    display_element.innerHTML = two_stimuli ;
+                                    }, trial.two_stimuli_interval);
+              
+      
 
     // store response
     var response = {
@@ -151,6 +185,8 @@ jsPsych.plugins["multiple-stimulus-presentation"] = (function() {
         
       // gather the stimulus trial type
         
+      // currently not relevant 
+      /*        
       var trial_stimulus_type = ""  
       var deviant = trial.block_deviant
       var background = trial.block_background
@@ -166,7 +202,7 @@ jsPsych.plugins["multiple-stimulus-presentation"] = (function() {
     
       trial.trial_stimulus_type = trial_stimulus_type
         
-        
+        */
         
       
         
@@ -175,9 +211,9 @@ jsPsych.plugins["multiple-stimulus-presentation"] = (function() {
       // gather the data to store for the trial
       var trial_data = {
         "rt": response.rt,
-        "block_type": trial.block_type, 
+        //"block_type": trial.block_type, 
         "trial_stimulus": trial.stimulus,
-        "trial_stimulus_type": trial_stimulus_type,
+        //"trial_stimulus_type": trial_stimulus_type,
         "key_press": response.key, 
         "minimum_viewing_duration":trial.minimum_viewing_duration,
         "trial_looking_time": trial.minimum_viewing_duration + response.rt,
@@ -193,23 +229,24 @@ jsPsych.plugins["multiple-stimulus-presentation"] = (function() {
 
     // function to handle responses by the subject
    var after_response = function(info) {
-
       // after a valid response, the stimulus will have the CSS class 'responded'
       // which can be used to provide visual feedback that a response was recorded
       display_element.querySelector('#jspsych-html-keyboard-response-stimulus').className += ' responded';
       
           
-      // if the does not press the space bar but the down arrow, 
-      if (info.key !== 32){
-          if (response.key == null){
+      
+      
+        if (response.key == null){
           response = info 
-          }   
-          jsPsych.pluginAPI.cancelAllKeyboardResponses()
-          if(trial.response_ends_trial) {
+        }   
+        
+       jsPsych.pluginAPI.cancelAllKeyboardResponses()
+        if(trial.response_ends_trial) {
+            
             end_trial();
-          }
+        }
       // if pressed the space bar      
-      }
+     
        
       
 
@@ -217,13 +254,12 @@ jsPsych.plugins["multiple-stimulus-presentation"] = (function() {
     };
 
 
-if (trial.choices_for_target != jsPsych.NO_KEYS && trial.choices != jsPsych.NO_KEYS){
+if (trial.key_response != jsPsych.NO_KEYS){
         
-        var key_for_target = trial.choices_for_target.concat(trial.choices)
         jsPsych.pluginAPI.setTimeout(function() {
         var keyboardListener = jsPsych.pluginAPI.getKeyboardResponse({
         callback_function: after_response,
-        valid_responses: key_for_target,
+        valid_responses: trial.key_response,
         rt_method: 'performance',
         persist: true,
         allow_held_key: false
@@ -235,11 +271,7 @@ if (trial.choices_for_target != jsPsych.NO_KEYS && trial.choices != jsPsych.NO_K
         
 
         
-        
-        
-        
-        
-    }  
+}  
       
     
 
