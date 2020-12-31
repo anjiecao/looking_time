@@ -103,8 +103,72 @@ var block = {
 
 }
 
-timeline.push(block)
+//timeline.push(block)
 
+    
+    
+    
+var test_task_block = {
+                        timeline: [
+
+                            {
+                                type: 'html-keyboard-response',
+                                stimulus: '<p><img src= images/blank.png width ="200" height = "200" style = "float:right"></p><p><img src=images/blank.png width ="800" height = "200"></p>',
+                                trial_duration: function(){
+                                    var random_duration = 800 + 500 * Math.random()
+                                    return random_duration  } , //The interval between the offset of one stimulus and the onset of the next stimulus ranged between 800 and 1300 msec
+                                choices: jsPsych.NO_KEYS
+                            },
+
+                            {
+                                type: 'sequential-stimulus-presentation',
+                                first_stimulus: function(){
+                                    var html = "<img src= "+jsPsych.timelineVariable('poke_ball_animation', true)+" width ='800' height = '200'></p>"
+                                    return html;
+                                },
+                                first_stimulus_final_still: function(){
+                                    var html = "<p><img src="+jsPsych.timelineVariable('poke_ball_still', true) + " width ='800' height = '200'></p>"
+                                    return html 
+                                }, 
+                                second_stimulus_placeholder: "<p><img src='images/stimuli/blank.png' width ='200' height = '200'></p>",
+                                second_stimulus: function(){
+                                    var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='200' height = '200'></p>"
+                                    return html 
+                                },
+                                two_stimuli_interval: 1200,
+                                key_response: [40],
+                                minimum_viewing_duration: 200, // daffner2000's info was 600, changed to 200
+                                response_ends_trial: true,
+                            }
+                            ],
+                                
+                                
+
+                        // need to have helper scripts to generate this automatically & take into account the randomization
+                        timeline_variables: [
+                                {poke_ball_animation: 'images/stimuli/pokeball_2.gif',
+                                 poke_ball_still: 'images/stimuli/pokeball_still.png',
+                                 stimuli: "images/stimuli/black-cat-dance.gif",
+                                 location: "right"},
+                                {poke_ball_animation: 'images/stimuli/pokeball_2.gif',
+                                 poke_ball_still: 'images/stimuli/pokeball_still.png',
+                                 stimuli: "images/stimuli/black-cat-dance.gif",
+                                 location: "right"}
+                                
+                    ]
+}
+
+timeline.push(test_task_block)    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 // try out the new stimuli
 var new_task_block = {
                         timeline: [
@@ -151,9 +215,22 @@ var new_task_block = {
                     ]
 }
 
-timeline.push(new_task_block)
+//timeline.push(new_task_block)
 
 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 /*
 
 POSSIBLE_DEV_POSITION = [2]
