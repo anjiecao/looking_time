@@ -90,9 +90,12 @@ var block = {
 
 STIMULI_NUM = 15
 all_stimuli = get_all_stimuli(STIMULI_NUM)
-all_blocks_information = generate_all_block(5, 
-                                           all_stimuli, 
-                                           [7])
+all_blocks_information = generate_all_block(num_blocks = 5,
+                                            num_trial_per_block = 10, 
+                                            stimuli_array = all_stimuli,
+                                            all_novel_position_array = [7])
+    
+
     
 console.log(all_stimuli)
 console.log(all_blocks_information)
@@ -106,7 +109,14 @@ console.log(all_blocks_information)
 // 
     
     
-var test_task_block = {
+// loop through all blocks 
+for (var block_index = 0; block_index < all_blocks_information.length; block_index ++){
+    
+    block_information = all_blocks_information[block_index]
+    block_timeline_variable = generate_timeline_variables(block_information)
+    console.log(block_timeline_variable)
+    
+    var test_block = {
                         timeline: [
 
                             {
@@ -130,7 +140,7 @@ var test_task_block = {
                                 }, 
                                 second_stimulus_placeholder: "<p><img src='images/stimuli/blank.png' width ='200' height = '200'></p>",
                                 second_stimulus: function(){
-                                    var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='200' height = '200'></p>"
+                                    var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='200' height = '200' style='float:" + jsPsych.timelineVariable('location', true) + "'></p>"
                                     return html 
                                 },
                                 two_stimuli_interval: 1200,
@@ -143,22 +153,12 @@ var test_task_block = {
                                 
 
                         // need to have helper scripts to generate this automatically & take into account the randomization
-                        timeline_variables: [
-                                {poke_ball_animation: 'images/stimuli/pokeball_2.gif',
-                                 poke_ball_still: 'images/stimuli/pokeball_still.png',
-                                 stimuli: "images/stimuli/black-cat-dance.gif",
-                                 location: "right"},
-                                {poke_ball_animation: 'images/stimuli/pokeball_2.gif',
-                                 poke_ball_still: 'images/stimuli/pokeball_still.png',
-                                 stimuli: "images/stimuli/black-cat-dance.gif",
-                                 location: "right"}
-                                
-                    ]
+                        timeline_variables: block_timeline_variable
 }
 
-timeline.push(test_task_block)    
+timeline.push(test_block)    
     
-    
+}
     
     
     
@@ -393,8 +393,8 @@ for (i = 0; i < ALL_TASK_BLOCK.length; i ++ ){
     }
 
 
-    var all_images = INSTRCUTION_IMAGES.concat(ALL_STIMULI_PATH)
-    var all_images = all_images.concat(PRACTICE_IMAGES)
+    //var all_images = INSTRCUTION_IMAGES.concat(ALL_STIMULI_PATH)
+    //var all_images = all_images.concat(PRACTICE_IMAGES)
 
 
 jsPsych.init({

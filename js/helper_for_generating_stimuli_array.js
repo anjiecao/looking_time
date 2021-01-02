@@ -49,6 +49,29 @@ function shuffleArray(array) {
     }
 }
 
+// this function loops through an arrayA and check if any of the element has occured in arrayB
+// return boolean 
+function has_duplicate(arrayA, arrayB){
+    
+    duplicate_count = 0 
+    for (var i = 0; i < arrayA.length; i ++){
+        for (var j = 0; j < arrayB.length; j++){
+            if (arrayA[i] == arrayB[j]){
+                duplicate_count = duplicate_count + 1
+            }
+        }
+    }
+    
+    if (duplicate_count == 0){
+        return false 
+    }else{
+        return true 
+    }
+    
+}
+
+
+
 //Generate N-1 random numbers between 0 and 1, add the numbers 0 and 1 themselves to the list, sort them, and take the differences of adjacent numbers.
 // reference: https://stackoverflow.com/questions/2640053/getting-n-random-numbers-whose-sum-is-m
 // this function returns an array of [n_chunk] integer that sums to [sum]
@@ -126,17 +149,15 @@ function get_all_stimuli(STIMULI_NUM){
 
 // -------- V2 generate timeline variable for each block --------- // 
 
-function generate_timeline_variables(novel_position_array, 
-                                     block_length){
+function generate_timeline_variables(block_information){
     
     background_location = block_information.background_location
     novel_location = block_information.novel_location
     background_stimuli = block_information.background_stimuli
     novel_stimuli = block_information.novel_stimuli
     novel_position_array = block_information.novel_position_array
+    block_length = block_information.num_trial_per_block
     
-    // currently set the novel position to be constant 
-    novel_position_array = [2]
     
      // pick the appropriate pokeball animation for background item 
      if (background_location == "right"){
@@ -188,7 +209,9 @@ function generate_timeline_variables(novel_position_array,
     // replace background with novel 
     for (var i = 0; i < novel_position_array.length; i++){
         novel_position = novel_position_array[i]
-        block_array[novel_position] = novel_item
+        block_stimuli[novel_position] = novel_item
+
+    
     }
     
     return (block_stimuli)
@@ -199,6 +222,7 @@ function generate_timeline_variables(novel_position_array,
 // -------- V2 generate all blocks combination --------- // 
 
 function generate_all_block(num_blocks, 
+                            num_trial_per_block,
                             stimuli_array, 
                             all_novel_position_array){
     
@@ -219,19 +243,21 @@ function generate_all_block(num_blocks,
         
         // make sure we don't sample the same stimuli twice 
         block_stimuli = getRandomSubarray(stimuli_array, 2)
-        while (used_stimuli.includes(block_stimuli[0]) && 
-              used_stimuli.includes(block_stimuli[1])){
+        while (has_duplicate(block_stimuli, used_stimuli)){
             
             block_stimuli = getRandomSubarray(stimuli_array, 2)
             
+            
         }
         used_stimuli = used_stimuli.concat(block_stimuli)
+      
+        
         
         background = block_stimuli[0]
         novel = block_stimuli[1]
         
         // get location for the pokeball animation 
-        locations = getRandomSubarray(stimuli_array, 2)
+        locations = getRandomSubarray(LOCATIONS, 2)
         background_location = locations[0]
         novel_location = locations[1]
         
@@ -239,6 +265,7 @@ function generate_all_block(num_blocks,
         novel_position_array = getRandomSubarray(all_novel_position_array, 1)
 
         block_information = {
+            num_trial_per_block: num_trial_per_block, 
             background_stimuli: background,
             novel_stimuli: novel,
             background_location: background_location,
