@@ -101,8 +101,169 @@ function pop_multiple(array, n){
 
 
 
-// ---------- Dealing with Stimuli ---------- //
+// -------- V2 dealing with Stimuli --------- // 
+// currently ignoring inter-relationship between stimuli 
+// just get all stimuli
+function get_all_stimuli(STIMULI_NUM){
+    
 
+    all_stimuli = []
+    MAIN_DIR = "images/stimuli/"
+
+    // set number is specified in experiment.html
+    for (var i = 1; i < STIMULI_NUM + 1; i++){
+        current_stimuli = MAIN_DIR + i + ".gif"
+        
+        all_stimuli.push(current_stimuli)
+    }
+
+    return (all_stimuli)
+
+}
+    
+
+
+
+// -------- V2 generate timeline variable for each block --------- // 
+
+function generate_timeline_variables(novel_position_array, 
+                                     block_length){
+    
+    background_location = block_information.background_location
+    novel_location = block_information.novel_location
+    background_stimuli = block_information.background_stimuli
+    novel_stimuli = block_information.novel_stimuli
+    novel_position_array = block_information.novel_position_array
+    
+    // currently set the novel position to be constant 
+    novel_position_array = [2]
+    
+     // pick the appropriate pokeball animation for background item 
+     if (background_location == "right"){
+         background_pokeball_animation = 'images/stimuli/pokeball_3.gif'
+         background_pokeball_still = 'images/stimuli/pokeball_3_still.png'
+     }else if (background_location == "left"){
+         background_pokeball_animation = 'images/stimuli/pokeball_1.gif'
+         background_pokeball_still = 'images/stimuli/pokeball_1_still.png'
+     // questionable      
+     }else if (background_location == "none"){
+         background_pokeball_animation = 'images/stimuli/pokeball_2.gif'
+         background_pokeball_still = 'images/stimuli/pokeball_2_still.png'
+         
+     }
+    
+    
+     // pick the appropriate pokeball animation for novel item 
+     if (novel_location == "right"){
+         novel_pokeball_animation = 'images/stimuli/pokeball_3.gif'
+         novel_pokeball_still = 'images/stimuli/pokeball_3_still.png'
+     }else if (novel_location == "left"){
+         novel_pokeball_animation = 'images/stimuli/pokeball_1.gif'
+         novel_pokeball_still = 'images/stimuli/pokeball_1_still.png'
+         
+     // questionable      
+     }else if (novel_location == "none"){
+         novel_pokeball_animation = 'images/stimuli/pokeball_2.gif'
+         novel_pokeball_still = 'images/stimuli/pokeball_2_still.png'
+     }
+    
+    
+     background_item = {
+         poke_ball_animation: background_pokeball_animation, 
+         poke_ball_still: background_pokeball_still, 
+         stimuli: background_stimuli, 
+         location: background_location 
+     }
+    
+     novel_item = {
+         poke_ball_animation: novel_pokeball_animation, 
+         poke_ball_still: novel_pokeball_still, 
+         stimuli: novel_stimuli, 
+         location: novel_location 
+     }
+    
+    
+    block_stimuli = fillArray(background_item, block_length)
+    
+    // replace background with novel 
+    for (var i = 0; i < novel_position_array.length; i++){
+        novel_position = novel_position_array[i]
+        block_array[novel_position] = novel_item
+    }
+    
+    return (block_stimuli)
+       
+}
+
+
+// -------- V2 generate all blocks combination --------- // 
+
+function generate_all_block(num_blocks, 
+                            stimuli_array, 
+                            all_novel_position_array){
+    
+    
+    LOCATIONS = ["left", "right", "none"]
+    
+    //shuffle the stimuli array 
+    shuffleArray(stimuli_array)
+    
+    all_block_information = []
+
+    // loop through the num_blocks we want to create 
+    // currently the method will be randomly grabbing stimuli from the bag 
+        // in the future might want to modify to reflect complexity differences
+        // maybe complexity is something we should import after? 
+    used_stimuli = []
+    for (var i = 1; i < num_blocks + 1; i++){
+        
+        // make sure we don't sample the same stimuli twice 
+        block_stimuli = getRandomSubarray(stimuli_array, 2)
+        while (used_stimuli.includes(block_stimuli[0]) && 
+              used_stimuli.includes(block_stimuli[1])){
+            
+            block_stimuli = getRandomSubarray(stimuli_array, 2)
+            
+        }
+        used_stimuli = used_stimuli.concat(block_stimuli)
+        
+        background = block_stimuli[0]
+        novel = block_stimuli[1]
+        
+        // get location for the pokeball animation 
+        locations = getRandomSubarray(stimuli_array, 2)
+        background_location = locations[0]
+        novel_location = locations[1]
+        
+        // get the position in which novel trial appears 
+        novel_position_array = getRandomSubarray(all_novel_position_array, 1)
+
+        block_information = {
+            background_stimuli: background,
+            novel_stimuli: novel,
+            background_location: background_location,
+            novel_location: novel_location,
+            novel_position_array: novel_position_array
+        }
+        
+        all_block_information.push(block_information)
+        
+          
+        
+    }
+    
+    
+    
+    
+    return (all_block_information)
+    
+    
+}
+
+
+
+// ---------- Dealing with Stimuli ---------- //
+/*
 function get_all_stimuli(){
 
     all_sets = []
@@ -409,7 +570,7 @@ function generate_block_array(background,
 
 }
 
-
+*/
 
 
 

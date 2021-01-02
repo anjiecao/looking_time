@@ -70,23 +70,7 @@
     //timeline.push(prepractice_instruction)
     //timeline = timeline.concat(practice_block)
 
-  // Setting up the main task
-  var SET_NUM = 1
-
-  BLOCK_LENGTH = 3
-  ALL_STIMULI_PATH = get_all_stimuli() // all stimuli
-  ALL_SET_COMBINATION = generate_set_combination(ALL_STIMULI_PATH)
-
-  // console.log(ALL_STIMULI_PATH)
-
-  // add probes so that ALL_SET_COMBINATION will have an additional feature called
-  // probe which contains the probe
-  add_probes(ALL_SET_COMBINATION, ALL_STIMULI_PATH)
-
-
-  //console.log(ALL_STIMULI_PATH)
-  console.log(ALL_SET_COMBINATION)
-
+ 
 
 var block = {
 	type: 'sequential-stimulus-presentation',
@@ -103,9 +87,23 @@ var block = {
 
 }
 
+
+STIMULI_NUM = 15
+all_stimuli = get_all_stimuli(STIMULI_NUM)
+all_blocks_information = generate_all_block(5, 
+                                           all_stimuli, 
+                                           [7])
+    
+console.log(all_stimuli)
+console.log(all_blocks_information)
+
+
 //timeline.push(block)
 
-    
+// need to loop through an outer loop that has all the blocks 
+// each block is a timeline variable array 
+// each timeline variable arrays contain the combination needed: N background + 10-N deviant, currently set to all 9 + 1
+// 
     
     
 var test_task_block = {
