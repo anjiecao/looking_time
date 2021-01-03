@@ -70,23 +70,7 @@
     //timeline.push(prepractice_instruction)
     //timeline = timeline.concat(practice_block)
 
-  // Setting up the main task
-  var SET_NUM = 1
-
-  BLOCK_LENGTH = 3
-  ALL_STIMULI_PATH = get_all_stimuli() // all stimuli
-  ALL_SET_COMBINATION = generate_set_combination(ALL_STIMULI_PATH)
-
-  // console.log(ALL_STIMULI_PATH)
-
-  // add probes so that ALL_SET_COMBINATION will have an additional feature called
-  // probe which contains the probe
-  add_probes(ALL_SET_COMBINATION, ALL_STIMULI_PATH)
-
-
-  //console.log(ALL_STIMULI_PATH)
-  console.log(ALL_SET_COMBINATION)
-
+ 
 
 var block = {
 	type: 'sequential-stimulus-presentation',
@@ -103,10 +87,40 @@ var block = {
 
 }
 
-//timeline.push(block)
+
+STIMULI_NUM = 15
+all_stimuli = get_all_stimuli(STIMULI_NUM)
+all_blocks_information = generate_all_block(num_blocks = 5,
+                                            num_trial_per_block = 10, 
+                                            stimuli_array = all_stimuli,
+                                            all_novel_position_array = [7])
+    
 
     
+console.log(all_stimuli)
+console.log(all_blocks_information)
+
+
+//timeline.push(block)
+
+// need to loop through an outer loop that has all the blocks 
+// each block is a timeline variable array 
+// each timeline variable arrays contain the combination needed: N background + 10-N deviant, currently set to all 9 + 1
+// 
+    
+    
+<<<<<<< HEAD
 var test_task_block = {
+=======
+// loop through all blocks 
+for (var block_index = 0; block_index < all_blocks_information.length; block_index ++){
+    
+    block_information = all_blocks_information[block_index]
+    block_timeline_variable = generate_timeline_variables(block_information)
+    console.log(block_timeline_variable)
+    
+    var test_block = {
+>>>>>>> fff1dde448fe40ad0fdaabac5e2cf025c223e754
                         timeline: [
 
                             {
@@ -130,8 +144,13 @@ var test_task_block = {
                                 },
                                 second_stimulus_placeholder: "<p><img src='images/stimuli/blank.png' width ='200' height = '200'></p>",
                                 second_stimulus: function(){
+<<<<<<< HEAD
                                     var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='200' height = '200'></p>"
                                     return html
+=======
+                                    var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='200' height = '200' style='float:" + jsPsych.timelineVariable('location', true) + "'></p>"
+                                    return html 
+>>>>>>> fff1dde448fe40ad0fdaabac5e2cf025c223e754
                                 },
                                 two_stimuli_interval: 1200,
                                 key_response: [40],
@@ -143,6 +162,7 @@ var test_task_block = {
 
 
                         // need to have helper scripts to generate this automatically & take into account the randomization
+<<<<<<< HEAD
                         timeline_variables: [
                                 {poke_ball_animation: 'images/stimuli/pokeball_2.gif',
                                  poke_ball_still: 'images/stimuli/pokeball_still.png',
@@ -167,6 +187,22 @@ timeline.push(test_task_block)
 
 
 
+=======
+                        timeline_variables: block_timeline_variable
+}
+
+timeline.push(test_block)    
+    
+}
+    
+    
+    
+    
+    
+    
+    
+    
+>>>>>>> fff1dde448fe40ad0fdaabac5e2cf025c223e754
 // try out the new stimuli
 var new_task_block = {
                         timeline: [
@@ -393,8 +429,8 @@ for (i = 0; i < ALL_TASK_BLOCK.length; i ++ ){
     }
 
 
-    var all_images = INSTRCUTION_IMAGES.concat(ALL_STIMULI_PATH)
-    var all_images = all_images.concat(PRACTICE_IMAGES)
+    //var all_images = INSTRCUTION_IMAGES.concat(ALL_STIMULI_PATH)
+    //var all_images = all_images.concat(PRACTICE_IMAGES)
 
 
 jsPsych.init({
