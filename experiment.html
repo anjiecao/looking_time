@@ -106,8 +106,6 @@ var block = {
 //timeline.push(block)
 
     
-    
-    
 var test_task_block = {
                         timeline: [
 
@@ -128,12 +126,12 @@ var test_task_block = {
                                 },
                                 first_stimulus_final_still: function(){
                                     var html = "<p><img src="+jsPsych.timelineVariable('poke_ball_still', true) + " width ='800' height = '200'></p>"
-                                    return html 
-                                }, 
+                                    return html
+                                },
                                 second_stimulus_placeholder: "<p><img src='images/stimuli/blank.png' width ='200' height = '200'></p>",
                                 second_stimulus: function(){
                                     var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='200' height = '200'></p>"
-                                    return html 
+                                    return html
                                 },
                                 two_stimuli_interval: 1200,
                                 key_response: [40],
@@ -141,8 +139,8 @@ var test_task_block = {
                                 response_ends_trial: true,
                             }
                             ],
-                                
-                                
+
+
 
                         // need to have helper scripts to generate this automatically & take into account the randomization
                         timeline_variables: [
@@ -154,21 +152,21 @@ var test_task_block = {
                                  poke_ball_still: 'images/stimuli/pokeball_still.png',
                                  stimuli: "images/stimuli/black-cat-dance.gif",
                                  location: "right"}
-                                
+
                     ]
 }
 
-timeline.push(test_task_block)    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+timeline.push(test_task_block)
+
+
+
+
+
+
+
+
+
+
 // try out the new stimuli
 var new_task_block = {
                         timeline: [
@@ -218,19 +216,19 @@ var new_task_block = {
 //timeline.push(new_task_block)
 
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*
 
 POSSIBLE_DEV_POSITION = [2]
