@@ -17,7 +17,7 @@ jsPsych.plugins['categorize-image'] = (function() {
     description: '',
     parameters: {
       stimulus: {
-        type: jsPsych.plugins.parameterType.IMAGE,
+        type: jsPsych.plugins.parameterType.HTML_STRING,
         pretty_name: 'Stimulus',
         default: undefined,
         description: 'The image content to be displayed.'

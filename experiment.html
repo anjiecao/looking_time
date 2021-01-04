@@ -70,7 +70,7 @@
     //timeline.push(prepractice_instruction)
     //timeline = timeline.concat(practice_block)
 
- 
+
 
 var block = {
 	type: 'sequential-stimulus-presentation',
@@ -91,38 +91,35 @@ var block = {
 STIMULI_NUM = 15
 all_stimuli = get_all_stimuli(STIMULI_NUM)
 all_blocks_information = generate_all_block(num_blocks = 5,
-                                            num_trial_per_block = 10, 
+                                            num_trial_per_block = 2,
                                             stimuli_array = all_stimuli,
-                                            all_novel_position_array = [7])
-    
+                                            all_novel_position_array = [2])
 
-    
+
+
 console.log(all_stimuli)
 console.log(all_blocks_information)
 
 
 //timeline.push(block)
 
-// need to loop through an outer loop that has all the blocks 
-// each block is a timeline variable array 
+// need to loop through an outer loop that has all the blocks
+// each block is a timeline variable array
 // each timeline variable arrays contain the combination needed: N background + 10-N deviant, currently set to all 9 + 1
-// 
-    
-    
-<<<<<<< HEAD
-var test_task_block = {
-=======
-// loop through all blocks 
+//
+
+
+// loop through all blocks
 for (var block_index = 0; block_index < all_blocks_information.length; block_index ++){
-    
+
     block_information = all_blocks_information[block_index]
     block_timeline_variable = generate_timeline_variables(block_information)
     console.log(block_timeline_variable)
-    
-    var test_block = {
->>>>>>> fff1dde448fe40ad0fdaabac5e2cf025c223e754
-                        timeline: [
 
+  //  pref_timeline_variable =
+
+    var test_block = {
+                        timeline: [
                             {
                                 type: 'html-keyboard-response',
                                 stimulus: '<p><img src= images/blank.png width ="200" height = "200" style = "float:right"></p><p><img src=images/blank.png width ="800" height = "200"></p>',
@@ -139,18 +136,13 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
                                     return html;
                                 },
                                 first_stimulus_final_still: function(){
-                                    var html = "<p><img src="+jsPsych.timelineVariable('poke_ball_still', true) + " width ='800' height = '200'></p>"
+                                    var html = "<p><img src="+ jsPsych.timelineVariable('poke_ball_still', true) + " width ='800' height = '200'></p>"
                                     return html
                                 },
                                 second_stimulus_placeholder: "<p><img src='images/stimuli/blank.png' width ='200' height = '200'></p>",
                                 second_stimulus: function(){
-<<<<<<< HEAD
-                                    var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='200' height = '200'></p>"
-                                    return html
-=======
                                     var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='200' height = '200' style='float:" + jsPsych.timelineVariable('location', true) + "'></p>"
-                                    return html 
->>>>>>> fff1dde448fe40ad0fdaabac5e2cf025c223e754
+                                    return html
                                 },
                                 two_stimuli_interval: 1200,
                                 key_response: [40],
@@ -162,47 +154,64 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
 
 
                         // need to have helper scripts to generate this automatically & take into account the randomization
-<<<<<<< HEAD
-                        timeline_variables: [
-                                {poke_ball_animation: 'images/stimuli/pokeball_2.gif',
-                                 poke_ball_still: 'images/stimuli/pokeball_still.png',
-                                 stimuli: "images/stimuli/black-cat-dance.gif",
-                                 location: "right"},
-                                {poke_ball_animation: 'images/stimuli/pokeball_2.gif',
-                                 poke_ball_still: 'images/stimuli/pokeball_still.png',
-                                 stimuli: "images/stimuli/black-cat-dance.gif",
-                                 location: "right"}
-
-                    ]
-}
-
-timeline.push(test_task_block)
-
-
-
-
-
-
-
-
-
-
-=======
                         timeline_variables: block_timeline_variable
 }
 
-timeline.push(test_block)    
-    
+timeline.push(test_block)
+
+      // enter preferences test here
+      var preference_question = {
+        type: 'html-keyboard-response',
+        stimulus: '<img src=images/stimuli/pokeballs_closed.jpg width ="800" height = "200" style="border:5px solid black">',
+        prompt: "<p> Which one would you like to open? </p>",
+        choices: [37, 38, 39],
+        on_finish: function(data){
+          if (data.key_press == 37) {
+            data.ball_pref = 1
+          }
+          else if (data.key_press == 38){
+            data.ball_pref = 2
+          }
+          else if (data.key_press == 39) {
+            data.ball_pref = 3
+          }
+        }
+      }
+
+timeline.push(preference_question)
+
+     var reveal = {
+       type: 'sequential-stimulus-presentation',
+       // var pref =  // get selection from pref question
+
+       first_stimulus: function(){
+       var html = "<p><img src='images/stimuli/pokeball_" + jsPsych.data.get().last(1).values()[0].ball_pref + ".gif' width ='800' height = '200'></p>"
+           return html;
+       },
+       first_stimulus_final_still: function(){ // add still ims
+           var html = "<p><img src='images/stimuli/pokeball_" + jsPsych.data.get().last(1).values()[0].ball_pref + "_still.png' width ='800' height = '200'></p>"
+           return html
+       },
+       second_stimulus_placeholder: "<p><img src='images/stimuli/blank.png' width ='200' height = '200'></p>",
+       second_stimulus: function(){
+//         if (pref == 1) {
+//          html = all_blocks_information[block_index].
+//         }
+
+           var html = "<p><img src='images/stimuli/pokeball_closed.png' width ='200' height = '200'></p>"
+           return html
+       },
+       two_stimuli_interval: 1200,
+       key_response: [40],
+       minimum_viewing_duration: 200, // daffner2000's info was 600, changed to 200
+       response_ends_trial: true,
+     }
+
+timeline.push(reveal)
+
 }
-    
-    
-    
-    
-    
-    
-    
-    
->>>>>>> fff1dde448fe40ad0fdaabac5e2cf025c223e754
+
+
 // try out the new stimuli
 var new_task_block = {
                         timeline: [
@@ -237,17 +246,19 @@ var new_task_block = {
 
                         // need to have helper scripts to generate this automatically & take into account the randomization
                         timeline_variables: [
-                                {poke_ball: "images/stimuli/pokeball_3.gif",
-                                 stimuli: "images/stimuli/black-cat-dance.gif",
-                                 location: "right"},
                                 {poke_ball: "images/stimuli/pokeball_1.gif",
                                  stimuli: "images/stimuli/penguin-dance.gif",
                                  location: "left"},
                                 {poke_ball: "images/stimuli/pokeball_2.gif",
                                  stimuli: "images/stimuli/pink-dog-dance.gif",
-                                location: "middle"}
+                                location: "middle"},
+                                {poke_ball: "images/stimuli/pokeball_3.gif",
+                                 stimuli: "images/stimuli/black-cat-dance.gif",
+                                 location: "right"}
                     ]
 }
+
+
 
 //timeline.push(new_task_block)
 
@@ -266,15 +277,12 @@ var new_task_block = {
 
 
 /*
-
 POSSIBLE_DEV_POSITION = [2]
 BASELINE_TYPE = ["simple_a", "simple_b", "complex_a", "complex_b"]
 DEVIANT_TYPE = ["simple_similar", "simple_dissimilar", "complex_similar", "complex_dissimilar"]
-
 for (i = 0; i < ALL_SET_COMBINATION.length; i ++ ){
     current_set_combination = ALL_SET_COMBINATION[i]
     ALL_TASK_BLOCK = []
-
     // loop through all possible deviant positions
     for (dev_p = 0; dev_p < POSSIBLE_DEV_POSITION.length; dev_p ++){
         current_deviant_position = POSSIBLE_DEV_POSITION[dev_p]
@@ -283,24 +291,16 @@ for (i = 0; i < ALL_SET_COMBINATION.length; i ++ ){
             current_block_group_type = BASELINE_TYPE[block_group_i]
             // loop through all possible block type
             for (block_type_i = 0; block_type_i < DEVIANT_TYPE.length; block_type_i ++){
-
-
-
                 current_block_type = DEVIANT_TYPE[block_type_i]
-
                 current_background = current_set_combination[current_block_group_type][current_block_type].background
                 current_deviant = current_set_combination[current_block_group_type][current_block_type].deviant
-
                 current_block_array = generate_block_array(current_background,
                                                           current_deviant,
                                                           BLOCK_LENGTH,
                                                           current_deviant_position)
-
                 // console.log(current_block_array)
-
                  var current_task_block = {
                         timeline: [
-
                             {
                                 type: 'html-keyboard-response',
                                 stimulus: '<img src=images/blank.png width ="500" height = "500" style="border:5px solid black">',
@@ -309,7 +309,6 @@ for (i = 0; i < ALL_SET_COMBINATION.length; i ++ ){
                                     return random_duration  } , //The interval between the offset of one stimulus and the onset of the next stimulus ranged between 800 and 1300 msec
                                 choices: jsPsych.NO_KEYS
                             },
-
                             {
                                 type: 'stimulus-presentation',
                                 stimulus: function(){
@@ -326,25 +325,17 @@ for (i = 0; i < ALL_SET_COMBINATION.length; i ++ ){
                                 block_length: BLOCK_LENGTH,
                                 minimum_viewing_duration: 200, // daffner2000's info was 600, changed to 200
                                 response_ends_trial: true,
-
                             }
-
                         ],
-
                         timeline_variables: convert_path_to_timeline_variables(current_block_array)
                     }
-
                  // memory test here
-
                  // random index for probe
                  random_probe_idx = Math.floor(Math.random() * 4);
-
                  //index into probes
                  current_probe = current_set_combination[current_block_group_type][current_block_type].probes[random_probe_idx]
-
                  // track whether the probe is correct (i.e. was shown in the sequence)
                  if (random_probe_idx < 2) {correct_probe = true} else {correct_probe = false}
-
                  // define which key is the correct button press
                  // (currently assuming possible responses are Y for 'yes, seen before'
                  // or N for 'no, haven't seen'.
@@ -356,7 +347,6 @@ for (i = 0; i < ALL_SET_COMBINATION.length; i ++ ){
                    correct_key = 78
                    incorrect_key = 89
                  }
-
                  var memory_test = {
                    type: 'categorize-image',
                    stimulus: current_probe,
@@ -364,33 +354,19 @@ for (i = 0; i < ALL_SET_COMBINATION.length; i ++ ){
                    key_answer: correct_key,
                    choices: [correct_key, incorrect_key]
                  };
-
                  // create package which keeps test trials and memory test together
                  BLOCK = [current_task_block, memory_test]
-
                  ALL_TASK_BLOCK.push(BLOCK)
-
             }
-
         }
-
     }
-
 }
-
 shuffleArray(ALL_TASK_BLOCK)
-
 // loop through ALL_TASK_BLOCK and pass each sequence + probe to timeline
 for (i = 0; i < ALL_TASK_BLOCK.length; i ++ ){
-
   timeline = timeline.concat(ALL_TASK_BLOCK[i])
-
   // console.log(ALL_TASK_BLOCK[i])
-
   }
-
-
-
 */
 
 
@@ -414,7 +390,6 @@ for (i = 0; i < ALL_TASK_BLOCK.length; i ++ ){
    timeline = timeline.concat(demog_questions)
    timeline.push(final_thank_you)
   timeline.push(survey_code_page)
-
 */
    ///afs/ir.stanford.edu/users/a/n/anjiecao/cgi-bin/daffner2020/write_data.php
 
