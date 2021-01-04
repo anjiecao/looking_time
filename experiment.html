@@ -194,11 +194,10 @@ timeline.push(preference_question)
        },
        second_stimulus_placeholder: "<p><img src='images/stimuli/blank.png' width ='200' height = '200'></p>",
        second_stimulus: function(){
-//         if (pref == 1) {
-//          html = all_blocks_information[block_index].
-//         }
+         console.log(block_information['stims_in_order'][jsPsych.data.get().last(1).values()[0].ball_pref - 1])
 
-           var html = "<p><img src='images/stimuli/pokeball_closed.png' width ='200' height = '200'></p>"
+// this is temporary, replace with correct stim based on preference
+           var html = "<p><img src='" + block_information['stims_in_order'][jsPsych.data.get().last(1).values()[0].ball_pref - 1] + "' width ='200' height = '200'></p>"
            return html
        },
        two_stimuli_interval: 1200,

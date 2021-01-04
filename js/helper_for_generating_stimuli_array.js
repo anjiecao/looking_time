@@ -163,7 +163,7 @@ function generate_timeline_variables(block_information){
          background_pokeball_animation = 'images/stimuli/pokeball_1.gif'
          background_pokeball_still = 'images/stimuli/pokeball_1_still.png'
      // questionable
-     }else if (background_location == "none"){
+   }else if (background_location == "middle"){
          background_pokeball_animation = 'images/stimuli/pokeball_2.gif'
          background_pokeball_still = 'images/stimuli/pokeball_2_still.png'
 
@@ -179,7 +179,7 @@ function generate_timeline_variables(block_information){
          novel_pokeball_still = 'images/stimuli/pokeball_1_still.png'
 
      // questionable
-     }else if (novel_location == "none"){
+   }else if (novel_location == "middle"){
          novel_pokeball_animation = 'images/stimuli/pokeball_2.gif'
          novel_pokeball_still = 'images/stimuli/pokeball_2_still.png'
      }
@@ -226,7 +226,7 @@ function generate_all_block(num_blocks,
                             all_novel_position_array){
 
 
-    LOCATIONS = ["left", "right", "none"]
+    LOCATIONS = ["left", "middle", "right"]
 
     //shuffle the stimuli array
     shuffleArray(stimuli_array)
@@ -252,23 +252,51 @@ function generate_all_block(num_blocks,
         background = block_stimuli[0]
         novel = block_stimuli[1]
 
+        // put placeholder for unpoened
+        unopened = "images/stimuli/unopened_placeholder.gif"
+        block_stimuli.push(unopened)
+
         // get location for the pokeball animation
         locations = getRandomSubarray(LOCATIONS, 2)
         background_location = locations[0]
         novel_location = locations[1]
 
+        // add the location and path for the unopened ball
+        for (var j = 0; j < LOCATIONS.length; j++){
+
+          // find the location that wasn't assigned yet and set to last index
+          if (locations.indexOf(LOCATIONS[j]) == -1) {
+            locations.push(LOCATIONS[j])
+            unopened_location = LOCATIONS[j]
+          }
+
+        }
+        console.log(locations)
+
+
         // get the position in which novel trial appears
         novel_position_array = getRandomSubarray(all_novel_position_array, 1)
 
         // generate array of stimulus paths to index into for pref tests
-        
+        var stims_in_order = []
+
+        stims_in_order.push(block_stimuli[locations.indexOf('left')])
+        stims_in_order.push(block_stimuli[locations.indexOf('middle')])
+        stims_in_order.push(block_stimuli[locations.indexOf('right')])
+
+        console.log(stims_in_order)
+
+
         block_information = {
             num_trial_per_block: num_trial_per_block,
             background_stimuli: background,
             novel_stimuli: novel,
+            unopened_stimuli: unopened,
             background_location: background_location,
             novel_location: novel_location,
-            novel_position_array: novel_position_array
+            unopened_location: unopened_location,
+            novel_position_array: novel_position_array,
+            stims_in_order: stims_in_order
         }
 
         all_block_information.push(block_information)
