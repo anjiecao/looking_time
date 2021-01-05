@@ -196,7 +196,6 @@ timeline.push(preference_question)
        second_stimulus: function(){
          console.log(block_information['stims_in_order'][jsPsych.data.get().last(1).values()[0].ball_pref - 1])
 
-// this is temporary, replace with correct stim based on preference
            var html = "<p><img src='" + block_information['stims_in_order'][jsPsych.data.get().last(1).values()[0].ball_pref - 1] + "' width ='200' height = '200'></p>"
            return html
        },
