@@ -131,7 +131,7 @@ function get_all_stimuli(STIMULI_NUM){
 
 
     all_stimuli = []
-    MAIN_DIR = "images/stimuli/"
+    MAIN_DIR = "images/stimuli/unity_stims/"
 
     // set number is specified in experiment.html
     for (var i = 1; i < STIMULI_NUM + 1; i++){
