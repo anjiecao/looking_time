@@ -88,12 +88,12 @@ var block = {
 }
 
 
-STIMULI_NUM = 15
+STIMULI_NUM = 3
 all_stimuli = get_all_stimuli(STIMULI_NUM)
-all_blocks_information = generate_all_block(num_blocks = 5,
+all_blocks_information = generate_all_block(num_blocks = 1,
                                             num_trial_per_block = 2,
                                             stimuli_array = all_stimuli,
-                                            all_novel_position_array = [2])
+                                            all_deviant_position_array = [2])
 
 
 
@@ -128,7 +128,6 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
                                     return random_duration  } , //The interval between the offset of one stimulus and the onset of the next stimulus ranged between 800 and 1300 msec
                                 choices: jsPsych.NO_KEYS
                             },
-
                             {
                                 type: 'sequential-stimulus-presentation',
                                 first_stimulus: function(){
@@ -150,9 +149,6 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
                                 response_ends_trial: true,
                             }
                             ],
-
-
-
                         // need to have helper scripts to generate this automatically & take into account the randomization
                         timeline_variables: block_timeline_variable
 }
@@ -168,12 +164,15 @@ timeline.push(test_block)
         on_finish: function(data){
           if (data.key_press ==  49 || data.key_press == 97) {
             data.ball_pref = 1
+            data.location = 'left'
           }
           else if (data.key_press ==  50 || data.key_press == 98){
             data.ball_pref = 2
+            data.location = 'middle'
           }
           else if (data.key_press ==  51 || data.key_press == 99) {
             data.ball_pref = 3
+            data.location = 'right'
           }
         }
       }
@@ -196,7 +195,7 @@ timeline.push(preference_question)
        second_stimulus: function(){
          console.log(block_information['stims_in_order'][jsPsych.data.get().last(1).values()[0].ball_pref - 1])
 
-           var html = "<p><img src='" + block_information['stims_in_order'][jsPsych.data.get().last(1).values()[0].ball_pref - 1] + "' width ='200' height = '200'></p>"
+           var html = "<p><img src='" + block_information['stims_in_order'][jsPsych.data.get().last(1).values()[0].ball_pref - 1] + "' width ='200' height = '200' style='float:" + jsPsych.data.get().last(1).values()[0].location + "'></p>"
            return html
        },
        two_stimuli_interval: 1200,

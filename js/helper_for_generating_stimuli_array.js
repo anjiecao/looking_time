@@ -148,10 +148,10 @@ function get_all_stimuli(STIMULI_NUM){
 function generate_timeline_variables(block_information){
 
     background_location = block_information.background_location
-    novel_location = block_information.novel_location
+    deviant_location = block_information.deviant_location
     background_stimuli = block_information.background_stimuli
-    novel_stimuli = block_information.novel_stimuli
-    novel_position_array = block_information.novel_position_array
+    deviant_stimuli = block_information.deviant_stimuli
+    deviant_position_array = block_information.deviant_position_array
     block_length = block_information.num_trial_per_block
 
 
@@ -159,6 +159,7 @@ function generate_timeline_variables(block_information){
      if (background_location == "right"){
          background_pokeball_animation = 'images/stimuli/pokeball_3.gif'
          background_pokeball_still = 'images/stimuli/pokeball_3_still.png'
+
      }else if (background_location == "left"){
          background_pokeball_animation = 'images/stimuli/pokeball_1.gif'
          background_pokeball_still = 'images/stimuli/pokeball_1_still.png'
@@ -166,22 +167,19 @@ function generate_timeline_variables(block_information){
    }else if (background_location == "middle"){
          background_pokeball_animation = 'images/stimuli/pokeball_2.gif'
          background_pokeball_still = 'images/stimuli/pokeball_2_still.png'
-
      }
 
-
-     // pick the appropriate pokeball animation for novel item
-     if (novel_location == "right"){
-         novel_pokeball_animation = 'images/stimuli/pokeball_3.gif'
-         novel_pokeball_still = 'images/stimuli/pokeball_3_still.png'
-     }else if (novel_location == "left"){
-         novel_pokeball_animation = 'images/stimuli/pokeball_1.gif'
-         novel_pokeball_still = 'images/stimuli/pokeball_1_still.png'
-
+     // pick the appropriate pokeball animation for deviant item
+     if (deviant_location == "right"){
+         deviant_pokeball_animation = 'images/stimuli/pokeball_3.gif'
+         deviant_pokeball_still = 'images/stimuli/pokeball_3_still.png'
+     }else if (deviant_location == "left"){
+        deviant_pokeball_animation = 'images/stimuli/pokeball_1.gif'
+         deviant_pokeball_still = 'images/stimuli/pokeball_1_still.png'
      // questionable
-   }else if (novel_location == "middle"){
-         novel_pokeball_animation = 'images/stimuli/pokeball_2.gif'
-         novel_pokeball_still = 'images/stimuli/pokeball_2_still.png'
+   }else if (deviant_location == "middle"){
+         deviant_pokeball_animation = 'images/stimuli/pokeball_2.gif'
+         deviant_pokeball_still = 'images/stimuli/pokeball_2_still.png'
      }
 
 
@@ -192,20 +190,20 @@ function generate_timeline_variables(block_information){
          location: background_location
      }
 
-     novel_item = {
-         poke_ball_animation: novel_pokeball_animation,
-         poke_ball_still: novel_pokeball_still,
-         stimuli: novel_stimuli,
-         location: novel_location
+     deviant_item = {
+         poke_ball_animation: deviant_pokeball_animation,
+         poke_ball_still: deviant_pokeball_still,
+         stimuli: deviant_stimuli,
+         location: deviant_location
      }
 
 
     block_stimuli = fillArray(background_item, block_length)
 
-    // replace background with novel
-    for (var i = 0; i < novel_position_array.length; i++){
-        novel_position = novel_position_array[i]
-        block_stimuli[novel_position] = novel_item
+    // replace background with deviant
+    for (var i = 0; i < deviant_position_array.length; i++){
+        deviant_position = deviant_position_array[i]
+        block_stimuli[deviant_position] = deviant_item
 
 
     }
@@ -223,7 +221,7 @@ function generate_timeline_variables(block_information){
 function generate_all_block(num_blocks,
                             num_trial_per_block,
                             stimuli_array,
-                            all_novel_position_array){
+                            all_deviant_position_array){
 
 
     LOCATIONS = ["left", "middle", "right"]
@@ -250,16 +248,16 @@ function generate_all_block(num_blocks,
         used_stimuli = used_stimuli.concat(block_stimuli)
 
         background = block_stimuli[0]
-        novel = block_stimuli[1]
+        deviant = block_stimuli[1]
 
-        // put placeholder for unpoened
-        unopened = "images/stimuli/unopened_placeholder.gif"
-        block_stimuli.push(unopened)
+        // put placeholder for novel
+        novel = "images/stimuli/unopened_placeholder.gif"
+        block_stimuli.push(novel)
 
         // get location for the pokeball animation
         locations = getRandomSubarray(LOCATIONS, 2)
         background_location = locations[0]
-        novel_location = locations[1]
+        deviant_location = locations[1]
 
         // add the location and path for the unopened ball
         for (var j = 0; j < LOCATIONS.length; j++){
@@ -267,7 +265,7 @@ function generate_all_block(num_blocks,
           // find the location that wasn't assigned yet and set to last index
           if (locations.indexOf(LOCATIONS[j]) == -1) {
             locations.push(LOCATIONS[j])
-            unopened_location = LOCATIONS[j]
+            novel_location = LOCATIONS[j]
           }
 
         }
@@ -275,7 +273,7 @@ function generate_all_block(num_blocks,
 
 
         // get the position in which novel trial appears
-        novel_position_array = getRandomSubarray(all_novel_position_array, 1)
+        deviant_position_array = getRandomSubarray(all_deviant_position_array, 1)
 
         // generate array of stimulus paths to index into for pref tests
         var stims_in_order = []
@@ -290,12 +288,12 @@ function generate_all_block(num_blocks,
         block_information = {
             num_trial_per_block: num_trial_per_block,
             background_stimuli: background,
+            deviant_stimuli: deviant,
             novel_stimuli: novel,
-            unopened_stimuli: unopened,
             background_location: background_location,
+            deviant_location: deviant_location,
             novel_location: novel_location,
-            unopened_location: unopened_location,
-            novel_position_array: novel_position_array,
+            deviant_position_array: deviant_position_array,
             stims_in_order: stims_in_order
         }
 
