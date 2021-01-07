@@ -17,33 +17,23 @@ jsPsych.plugins["sequential-stimulus-presentation"] = (function() {
     name: 'sequential-stimulus-presentation',
     description: '',
     parameters: {
-      first_stimulus: {
+     
+     poke_ball_animation: {
         type: jsPsych.plugins.parameterType.HTML_STRING,
-        pretty_name: 'first_stimulus',
+        pretty_name: 'poke_ball_animation',
         default: undefined,
         description: 'The HTML string to be displayed first'
       },
 
-      first_stimulus_final_still: {
-        type: jsPsych.plugins.parameterType.HTML_STRING,
-        pretty_name: 'final_still',
-        default: undefined,
-        description: 'The final still of the first stimulus'
-      },
 
-      second_stimulus: {
+      stimuli_animation: {
         type: jsPsych.plugins.parameterType.HTML_STRING,
-        pretty_name: 'second_stimulus',
+        pretty_name: 'stimulus',
         default: undefined,
         description: 'The HTML string to be displayed first'
       },
 
-      second_stimulus_placeholder: {
-         type: jsPsych.plugins.parameterType.HTML_STRING,
-        pretty_name: 'second_stimulus place holder',
-        default: undefined,
-        description: 'The blank spot waiting for second stimulus to show up'
-      },
+    
         
       two_stimuli_interval: {
         type: jsPsych.plugins.parameterType.HTML_STRING,
@@ -144,24 +134,21 @@ jsPsych.plugins["sequential-stimulus-presentation"] = (function() {
   }
   plugin.trial = function(display_element, trial) {
 
-    var first_stimulus = '<div id="jspsych-html-keyboard-response-stimulus">'+trial.second_stimulus_placeholder+ trial.first_stimulus+'</div>';
-    var two_stimuli = '<div id="jspsych-html-keyboard-response-stimulus">'+trial.second_stimulus+trial.first_stimulus_final_still+'</div>';
+    
+    var html_string = '<div id="stimuli-animation">' +trial.stimuli_animation + '</div>' + '<div id="pokeball">'+ trial.poke_ball_animation+'</div>';
+    console.log(html_string)  
 
-
-    // add prompt
-    if(trial.prompt !== null){
-      new_html += trial.prompt;
-    }
-
-    // draw
-    display_element.innerHTML = first_stimulus;
-
+    display_element.innerHTML = html_string;
+    display_element.querySelector('#stimuli-animation').style.visibility = 'hidden'  
+      
 
     jsPsych.pluginAPI.setTimeout(function() {
-
-                                    display_element.innerHTML = two_stimuli ;
+                                    
+        display_element.querySelector('#stimuli-animation').style.visibility = 'visible';
                                     }, trial.two_stimuli_interval);
 
+  
+      
 
 
     // store response
@@ -180,28 +167,6 @@ jsPsych.plugins["sequential-stimulus-presentation"] = (function() {
       if (typeof keyboardListener !== 'undefined') {
         jsPsych.pluginAPI.cancelKeyboardResponse(keyboardListener);
       }
-
-      // gather the stimulus trial type
-
-      // currently not relevant
-      /*
-      var trial_stimulus_type = ""
-      var deviant = trial.block_deviant
-      var background = trial.block_background
-      if (trial.stimulus.includes(deviant)){
-          trial_stimulus_type = "deviant"
-      }else if (trial.stimulus.includes(background)){
-          trial_stimulus_type = "background"
-      }else{
-
-         alert("stimulus selection in stimulus presentation! not belonging to any category!")
-      }
-
-
-      trial.trial_stimulus_type = trial_stimulus_type
-
-        */
-
 
 
 
@@ -229,7 +194,7 @@ jsPsych.plugins["sequential-stimulus-presentation"] = (function() {
    var after_response = function(info) {
       // after a valid response, the stimulus will have the CSS class 'responded'
       // which can be used to provide visual feedback that a response was recorded
-      display_element.querySelector('#jspsych-html-keyboard-response-stimulus').className += ' responded';
+      display_element.querySelector('#stimuli-animation').className += ' responded';
 
 
 
@@ -245,7 +210,7 @@ jsPsych.plugins["sequential-stimulus-presentation"] = (function() {
         }
       // if pressed the space bar
 
-
+   display_element.querySelector('#stimuli-animation').className = '';
 
 
 
