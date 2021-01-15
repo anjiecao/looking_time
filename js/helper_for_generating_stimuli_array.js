@@ -369,15 +369,84 @@ function generate_all_block(num_blocks,
     console.log(simple_stims)
 
 
+  // complex blocks
+  // get paths to all simple stimuli
+  complex_stims = []
+  for (var i = 0; i < stimuli_array.length; i++) {
+    if (stimuli_array[i].includes('complex')) {
+      complex_stims.push(stimuli_array[i])
+    }
+  }
+
     // generate complex, similar blocks:
     // -> get random complex creature,
     // and choose its modification with the same movement
 
+    // choose random complex creature
+    var randomIdx = Math.floor(Math.random() * simple_stims.length)
+    var stim1 = complex_stims[randomIdx];
+
+    // choose its modification
+    if (stim1.includes('A')){
+      stim2 = stim1.replace('A', 'B')
+
+    }
+    else {
+      if (stim1.includes('B')){
+        stim2 = stim1.replace('B', 'A')
+      }
+    }
+
+    console.log('complex, similar block')
+    console.log('stim1: ' + stim1)
+    console.log('stim2: ' + stim2)
+
+    // get species info
+    speciesInfo = stim1.slice(0, stim1.length-7)
+
+    // remove that species from pool
+    simple_stims = complex_stims.filter(x => !(x.includes(speciesInfo)))
+
+    console.log('complex stims after removal: ')
+    console.log(complex_stims)
+
     // generate complex, dissimilar blocks:
     // -> get random complex creature,
     // and choose another complex creature that differs in species and movement
+    var randomIdx = Math.floor(Math.random() * simple_stims.length)
+    var stim1 = complex_stims[randomIdx];
+
+    // and choose another simple creature that differs in species and movement
+    speciesInfo_1 = stim1.slice(stim1.length-10, stim1.length-8)
+    movementInfo_1 = stim1.slice(stim1.length-5, stim1.length-4)
+    modificationInfo_1 = stim1.slice(stim1.length-7, stim1.length-6)
+
+    // remove these creatures from the list for next iteration (not including their modification)
+    complex_stims = complex_stims.filter(x => !(x.includes(speciesInfo_1) && x.includes(modificationInfo_1)))
+
+    sampleFrom = complex_stims.filter(x => !(x.includes(speciesInfo_1) && x.includes(movementInfo_1)))
+
+    var randomIdx = Math.floor(Math.random() * sampleFrom.length)
+    var stim2 = sampleFrom[randomIdx]
+
+    speciesInfo_2 = stim2.slice(stim2.length-10, stim1.length-8)
+    movementInfo_2 = stim2.slice(stim2.length-5, stim1.length-4)
+    modificationInfo_2 = stim1.slice(stim1.length-7, stim1.length-6)
+
+    // remove these creatures from the list for next iteration (not including their modification)
+    complex_stims = complex_stims.filter(x => !(x.includes(speciesInfo_2) && x.includes(modificationInfo_2)))
+
+    console.log('complex, dissimilar block:')
+    console.log('stim1: ' + stim1)
+    console.log('stim2: ' + stim2)
+
+    console.log('complex_stims after removal of more: ')
+    console.log(complex_stims)
 
 
+    // end loop here
+
+    //
     LOCATIONS = ["left", "middle", "right"]
 
     //shuffle the stimuli array
