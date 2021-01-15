@@ -127,23 +127,82 @@ function pop_multiple(array, n){
 // -------- V2 dealing with Stimuli --------- //
 // currently ignoring inter-relationship between stimuli
 // just get all stimuli
-function get_all_stimuli(STIMULI_NUM){
+function get_all_stimuli(TEST_RUN){
 
 
     all_stimuli = []
-    MAIN_DIR = "images/stimuli/unity_stims/"
+    MAIN_DIR = "images/stimuli/spore_stims/"
 
-    // set number is specified in experiment.html
-    for (var i = 1; i < STIMULI_NUM + 1; i++){
-        current_stimuli = MAIN_DIR + i + ".gif"
+    // 2 complexity levels
+    complexity_levels = ['simple', 'complex', 'novel']
 
-        all_stimuli.push(current_stimuli)
+    if (TEST_RUN == 1) {
+      // 30 species
+      species = Array.from({length: 4}, (_, i) => i + 1)
+
+      // 2 versions per species
+      version = ['A', 'B']
+
+      // 6 actions per creature
+      action = ['a', 'b']
+    }
+    else {
+      // 30 species
+      species = Array.from({length: 30}, (_, i) => i + 1)
+
+      // 2 versions per species
+      version = ['A', 'B']
+
+      // 6 actions per creature
+      action = ['a', 'b', 'c', 'd']
     }
 
+
+    // set number is specified in experiment.html
+    for (var i = 0; i < complexity_levels.length; i++){
+        for (var j = 0; j < species.length; j++){
+
+          // add 0's before number for species number less than 0
+          if (species[j] < 10) {
+            current_species = '0' + species[j]
+          }
+          else {
+            current_species = species[j]
+          }
+
+          for (var k = 0; k < version.length; k++){
+
+            if (complexity_levels[i] == 'novel') {
+
+              // compute index for novel stimuli
+              novel_stim_num = version.length*j+k+1
+
+              current_stimuli = MAIN_DIR + complexity_levels[i] + '_'
+                                + novel_stim_num + '.gif'
+
+              all_stimuli.push(current_stimuli)
+
+            }
+
+            for (var l = 0; l < action.length; l++){
+
+              if (complexity_levels[i] == 'simple' || complexity_levels[i] == 'complex') {
+                current_stimuli = MAIN_DIR + complexity_levels[i] + '_'
+                                            + current_species + '_'
+                                            + version[k] + '_'
+                                            + action[l]
+                                             + ".gif"
+
+             all_stimuli.push(current_stimuli)
+                       }
+          }
+          }
+        }
+      }
     return (all_stimuli)
 
 }
-                                                                                                                                                                                                                                                                                                                                                                                  // -------- V2 generate timeline variable for each bl
+                                                                                                                                                                                                                                                                                                                                                                    // -------- V2 generate timeline variable for each bl
 function generate_timeline_variables(block_information){
 
     background_location = block_information.background_location
@@ -156,18 +215,18 @@ function generate_timeline_variables(block_information){
 
      // pick the appropriate pokeball animation for background item
      if (background_location == "right"){
-         
+
          background_pokeball_animation = 'images/stimuli/pokeball_3.gif'
-    
+
 
      }else if (background_location == "left"){
-         
+
          background_pokeball_animation = 'images/stimuli/pokeball_1.gif'
-    
+
      }else if (background_location == "middle"){
-         
+
          background_pokeball_animation = 'images/stimuli/pokeball_2.gif'
-        
+
      }
 
      // pick the appropriate pokeball animation for deviant item
@@ -209,14 +268,114 @@ function generate_timeline_variables(block_information){
 
 
 
-
-
 // -------- V2 generate all blocks combination --------- //
 
 function generate_all_block(num_blocks,
                             num_trial_per_block,
                             stimuli_array,
                             all_deviant_position_array){
+
+    // check that number of blocks is divisible by 4
+    if (num_blocks % 4 != 0){
+      throw 'Number of blocks should be divisible by 4, to have equal number of each block type';
+    }
+
+    // check that there's no deviant position larger than the total number of trials per block
+    if (all_deviant_position_array.some(el => el > num_trial_per_block)){
+      throw 'Can not have deviant position larger than number of trials per block';
+    }
+
+    // get paths to all simple stimuli
+    simple_stims = []
+    for (var i = 0; i < stimuli_array.length; i++) {
+      if (stimuli_array[i].includes('simple')) {
+        simple_stims.push(stimuli_array[i])
+      }
+    }
+
+    // generate simple, similar blocks:
+    // -> repeatedly choose random simple creature,
+    // and choose its modification with the same movement
+
+    // put a loop around this with the number of blocks of this type
+
+    // for (i = 0; i < num_blocks/4; i++) {
+
+    // choose random simple creature
+    var randomIdx = Math.floor(Math.random() * simple_stims.length)
+    var stim1 = simple_stims[randomIdx];
+
+    // choose its modification
+    if (stim1.includes('A')){
+      stim2 = stim1.replace('A', 'B')
+
+    }
+    else {
+      if (stim1.includes('B')){
+        stim2 = stim1.replace('B', 'A')
+      }
+    }
+
+    console.log('simple, similar block')
+    console.log('stim1: ' + stim1)
+    console.log('stim2: ' + stim2)
+
+    // get species info
+    speciesInfo = stim1.slice(0, stim1.length-7)
+
+    // remove that species from pool
+    simple_stims = simple_stims.filter(x => !(x.includes(speciesInfo)))
+
+    console.log('simple stims after removal: ')
+    console.log(simple_stims)
+
+
+    // generate simple, dissimilar blocks:
+    // -> get random simple creature,
+    // and choose another simple creature that differs in species and movement
+
+    // choose random simple creature
+    // TO DO: check that both modificaitons are still present (if we don't discard both modifications in the dissimilar trials)
+
+    var randomIdx = Math.floor(Math.random() * simple_stims.length)
+    var stim1 = simple_stims[randomIdx];
+
+    // and choose another simple creature that differs in species and movement
+    speciesInfo_1 = stim1.slice(stim1.length-10, stim1.length-8)
+    movementInfo_1 = stim1.slice(stim1.length-5, stim1.length-4)
+    modificationInfo_1 = stim1.slice(stim1.length-7, stim1.length-6)
+
+    // remove these creatures from the list for next iteration (not including their modification)
+    simple_stims = simple_stims.filter(x => !(x.includes(speciesInfo_1) && x.includes(modificationInfo_1)))
+
+    sampleFrom = simple_stims.filter(x => !(x.includes(speciesInfo_1) && x.includes(movementInfo_1)))
+
+    var randomIdx = Math.floor(Math.random() * sampleFrom.length)
+    var stim2 = sampleFrom[randomIdx]
+
+    speciesInfo_2 = stim2.slice(stim2.length-10, stim1.length-8)
+    movementInfo_2 = stim2.slice(stim2.length-5, stim1.length-4)
+    modificationInfo_2 = stim1.slice(stim1.length-7, stim1.length-6)
+
+    // remove these creatures from the list for next iteration (not including their modification)
+    simple_stims = simple_stims.filter(x => !(x.includes(speciesInfo_2) && x.includes(modificationInfo_2)))
+
+    console.log('simple, dissimilar block:')
+    console.log('stim1: ' + stim1)
+    console.log('stim2: ' + stim2)
+
+
+    console.log('simple_stims after removal of more: ')
+    console.log(simple_stims)
+
+
+    // generate complex, similar blocks:
+    // -> get random complex creature,
+    // and choose its modification with the same movement
+
+    // generate complex, dissimilar blocks:
+    // -> get random complex creature,
+    // and choose another complex creature that differs in species and movement
 
 
     LOCATIONS = ["left", "middle", "right"]
@@ -232,6 +391,8 @@ function generate_all_block(num_blocks,
         // maybe complexity is something we should import after?
     used_stimuli = []
     for (var i = 1; i < num_blocks + 1; i++){
+
+        //
 
         // make sure we don't sample the same stimuli twice
         block_stimuli = getRandomSubarray(stimuli_array, 2)

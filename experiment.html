@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <script src = "js/require.js"></script>
   <script src="js/jspsych.js"></script>
   <script src="js/instruction_and_transition.js"></script>
   <script src = "js/practice_trial_package.js"></script>
@@ -9,7 +10,6 @@
   <script src="js/jspsych-stimulus-presentation.js"></script>
 <script src="js/jspsych-sequential-stimulus-presentation.js"></script>
 <script src = "js/jspsych-multi-stim-multi-response.js"></script>
-
   <script src="js/jspsych-task-instructions.js"></script>
   <script src="js/jspsych-instructions.js"></script>
     <script src="js/jspsych-html-keyboard-response.js"></script>
@@ -23,7 +23,7 @@
 <body></body>
 <script>
 
-// Experiment setup 
+// Experiment setup
     var verbose = false
     var timenum = Date.now();
     var turkInfo = jsPsych.turk.turkInfo();
@@ -36,14 +36,22 @@
 
     var timeline = []
 
-  
 
-// Stimuli setup 
-STIMULI_NUM = 3
-NUM_BLOCKS = 1
-NUM_TRIAL_PER_BLOCK = 2
-    
-all_stimuli = get_all_stimuli(STIMULI_NUM)
+
+// Stimuli setup
+TEST_RUN = 1 //test run with smaller number of species etc.
+
+if (TEST_RUN == 1) {
+  NUM_BLOCKS = 4
+  NUM_TRIAL_PER_BLOCK = 2
+}
+else {
+  NUM_BLOCKS = 40
+  NUM_TRIAL_PER_BLOCK = 8
+}
+
+
+all_stimuli = get_all_stimuli(TEST_RUN)
 all_blocks_information = generate_all_block(num_blocks = NUM_BLOCKS,
                                             num_trial_per_block = NUM_TRIAL_PER_BLOCK,
                                             stimuli_array = all_stimuli,
@@ -54,11 +62,11 @@ if (verbose){
 console.log("All stimuli path: ")
 console.log(all_stimuli)
 console.log("All blocks information:")
-console.log(all_blocks_information)    
-}    
-    
-  
-  
+console.log(all_blocks_information)
+}
+
+
+
 
 //timeline.push(block)
 
@@ -141,7 +149,7 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
        var html = "<p><img src='images/stimuli/pokeball_" + jsPsych.data.get().last(1).values()[0].ball_pref + ".gif' width ='800' height = '200'></p>"
            return html;
        },
-    
+
        stimuli_animation: function(){
 
            var html = "<p><img src='" + block_information['stims_in_order'][jsPsych.data.get().last(1).values()[0].ball_pref - 1] + "' width ='200' height = '200' style='float:" + jsPsych.data.get().last(1).values()[0].location + "'></p>"
@@ -166,7 +174,7 @@ function saveData(name, data){
         xhr.send(JSON.stringify({filename: name, filedata: data}));
     }
 
-// For loading 
+// For loading
 
     //var all_images = INSTRCUTION_IMAGES.concat(ALL_STIMULI_PATH)
     //var all_images = all_images.concat(PRACTICE_IMAGES)
