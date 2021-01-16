@@ -273,7 +273,8 @@ function generate_timeline_variables(block_information){
 function generate_all_block(num_blocks,
                             num_trial_per_block,
                             stimuli_array,
-                            all_deviant_position_array){
+                            all_deviant_position_array,
+                            num_species){
 
     // check that number of blocks is divisible by 4
     if (num_blocks % 4 != 0){
@@ -293,249 +294,266 @@ function generate_all_block(num_blocks,
       }
     }
 
-    // generate simple, similar blocks:
-    // -> repeatedly choose random simple creature,
-    // and choose its modification with the same movement
-
-    // put a loop around this with the number of blocks of this type
-
-    // for (i = 0; i < num_blocks/4; i++) {
-
-    // choose random simple creature
-    var randomIdx = Math.floor(Math.random() * simple_stims.length)
-    var stim1 = simple_stims[randomIdx];
-
-    // choose its modification
-    if (stim1.includes('A')){
-      stim2 = stim1.replace('A', 'B')
-
-    }
-    else {
-      if (stim1.includes('B')){
-        stim2 = stim1.replace('B', 'A')
+    // get paths to all complex stimuli
+    complex_stims = []
+    for (var i = 0; i < stimuli_array.length; i++) {
+      if (stimuli_array[i].includes('complex')) {
+        complex_stims.push(stimuli_array[i])
       }
     }
-
-    console.log('simple, similar block')
-    console.log('stim1: ' + stim1)
-    console.log('stim2: ' + stim2)
-
-    // get species info
-    speciesInfo = stim1.slice(0, stim1.length-7)
-
-    // remove that species from pool
-    simple_stims = simple_stims.filter(x => !(x.includes(speciesInfo)))
-
-    console.log('simple stims after removal: ')
-    console.log(simple_stims)
-
-
-    // generate simple, dissimilar blocks:
-    // -> get random simple creature,
-    // and choose another simple creature that differs in species and movement
-
-    // choose random simple creature
-    // TO DO: check that both modificaitons are still present (if we don't discard both modifications in the dissimilar trials)
-
-    var randomIdx = Math.floor(Math.random() * simple_stims.length)
-    var stim1 = simple_stims[randomIdx];
-
-    // and choose another simple creature that differs in species and movement
-    speciesInfo_1 = stim1.slice(stim1.length-10, stim1.length-8)
-    movementInfo_1 = stim1.slice(stim1.length-5, stim1.length-4)
-    modificationInfo_1 = stim1.slice(stim1.length-7, stim1.length-6)
-
-    // remove these creatures from the list for next iteration (not including their modification)
-    simple_stims = simple_stims.filter(x => !(x.includes(speciesInfo_1) && x.includes(modificationInfo_1)))
-
-    sampleFrom = simple_stims.filter(x => !(x.includes(speciesInfo_1) && x.includes(movementInfo_1)))
-
-    var randomIdx = Math.floor(Math.random() * sampleFrom.length)
-    var stim2 = sampleFrom[randomIdx]
-
-    speciesInfo_2 = stim2.slice(stim2.length-10, stim1.length-8)
-    movementInfo_2 = stim2.slice(stim2.length-5, stim1.length-4)
-    modificationInfo_2 = stim1.slice(stim1.length-7, stim1.length-6)
-
-    // remove these creatures from the list for next iteration (not including their modification)
-    simple_stims = simple_stims.filter(x => !(x.includes(speciesInfo_2) && x.includes(modificationInfo_2)))
-
-    console.log('simple, dissimilar block:')
-    console.log('stim1: ' + stim1)
-    console.log('stim2: ' + stim2)
-
-
-    console.log('simple_stims after removal of more: ')
-    console.log(simple_stims)
-
-
-  // complex blocks
-  // get paths to all simple stimuli
-  complex_stims = []
-  for (var i = 0; i < stimuli_array.length; i++) {
-    if (stimuli_array[i].includes('complex')) {
-      complex_stims.push(stimuli_array[i])
-    }
-  }
-
-    // generate complex, similar blocks:
-    // -> get random complex creature,
-    // and choose its modification with the same movement
-
-    // choose random complex creature
-    var randomIdx = Math.floor(Math.random() * simple_stims.length)
-    var stim1 = complex_stims[randomIdx];
-
-    // choose its modification
-    if (stim1.includes('A')){
-      stim2 = stim1.replace('A', 'B')
-
-    }
-    else {
-      if (stim1.includes('B')){
-        stim2 = stim1.replace('B', 'A')
-      }
-    }
-
-    console.log('complex, similar block')
-    console.log('stim1: ' + stim1)
-    console.log('stim2: ' + stim2)
-
-    // get species info
-    speciesInfo = stim1.slice(0, stim1.length-7)
-
-    // remove that species from pool
-    simple_stims = complex_stims.filter(x => !(x.includes(speciesInfo)))
-
-    console.log('complex stims after removal: ')
-    console.log(complex_stims)
-
-    // generate complex, dissimilar blocks:
-    // -> get random complex creature,
-    // and choose another complex creature that differs in species and movement
-    var randomIdx = Math.floor(Math.random() * simple_stims.length)
-    var stim1 = complex_stims[randomIdx];
-
-    // and choose another simple creature that differs in species and movement
-    speciesInfo_1 = stim1.slice(stim1.length-10, stim1.length-8)
-    movementInfo_1 = stim1.slice(stim1.length-5, stim1.length-4)
-    modificationInfo_1 = stim1.slice(stim1.length-7, stim1.length-6)
-
-    // remove these creatures from the list for next iteration (not including their modification)
-    complex_stims = complex_stims.filter(x => !(x.includes(speciesInfo_1) && x.includes(modificationInfo_1)))
-
-    sampleFrom = complex_stims.filter(x => !(x.includes(speciesInfo_1) && x.includes(movementInfo_1)))
-
-    var randomIdx = Math.floor(Math.random() * sampleFrom.length)
-    var stim2 = sampleFrom[randomIdx]
-
-    speciesInfo_2 = stim2.slice(stim2.length-10, stim1.length-8)
-    movementInfo_2 = stim2.slice(stim2.length-5, stim1.length-4)
-    modificationInfo_2 = stim1.slice(stim1.length-7, stim1.length-6)
-
-    // remove these creatures from the list for next iteration (not including their modification)
-    complex_stims = complex_stims.filter(x => !(x.includes(speciesInfo_2) && x.includes(modificationInfo_2)))
-
-    console.log('complex, dissimilar block:')
-    console.log('stim1: ' + stim1)
-    console.log('stim2: ' + stim2)
-
-    console.log('complex_stims after removal of more: ')
-    console.log(complex_stims)
-
-
-    // end loop here
-
-    //
-    LOCATIONS = ["left", "middle", "right"]
-
-    //shuffle the stimuli array
-    shuffleArray(stimuli_array)
 
     all_block_information = []
 
-    // loop through the num_blocks we want to create
-    // currently the method will be randomly grabbing stimuli from the bag
-        // in the future might want to modify to reflect complexity differences
-        // maybe complexity is something we should import after?
-    used_stimuli = []
-    for (var i = 1; i < num_blocks + 1; i++){
 
-        //
+    // to do:
+    // - add novel stim procedure
+    // - think what to do with positions
 
-        // make sure we don't sample the same stimuli twice
-        block_stimuli = getRandomSubarray(stimuli_array, 2)
-        while (has_duplicate(block_stimuli, used_stimuli)){
+    // put a loop around this with the number of blocks of this type
+    for (i = 0; i < num_blocks/4; i++) {
 
-            block_stimuli = getRandomSubarray(stimuli_array, 2)
+    // simple similar blocks
+     output = generate_similar_block(simple_stims, num_blocks, num_trial_per_block, all_deviant_position_array, num_species, block_type = 'simple_similar')
 
-        }
-        used_stimuli = used_stimuli.concat(block_stimuli)
+     simple_stims = output[0]
+     block_information = output[1]
 
-        background = block_stimuli[0]
-        deviant = block_stimuli[1]
+     all_block_information.push(block_information)
 
-        // put placeholder for novel
-        novel = "images/stimuli/unopened_placeholder.gif"
-        block_stimuli.push(novel)
+     // simple dissimilar blocks
+     output = generate_dissimilar_block(simple_stims, num_blocks, num_trial_per_block, all_deviant_position_array, block_type = 'simple_dissimilar')
 
-        // get location for the pokeball animation
-        locations = getRandomSubarray(LOCATIONS, 2)
-        background_location = locations[0]
-        deviant_location = locations[1]
+     simple_stims = output[0]
+     block_information = output[1]
 
-        // add the location and path for the unopened ball
-        for (var j = 0; j < LOCATIONS.length; j++){
+     all_block_information.push(block_information)
 
-          // find the location that wasn't assigned yet and set to last index
-          if (locations.indexOf(LOCATIONS[j]) == -1) {
-            locations.push(LOCATIONS[j])
-            novel_location = LOCATIONS[j]
-          }
+     // complex similar blocks
+    output = generate_similar_block(complex_stims, num_blocks, num_trial_per_block, all_deviant_position_array, num_species, block_type = 'complex_similar')
 
-        }
-        console.log(locations)
+    complex_stims = output[0]
+    block_information = output[1]
 
+    all_block_information.push(block_information)
 
-        // get the position in which novel trial appears
-        deviant_position_array = getRandomSubarray(all_deviant_position_array, 1)
+    // complex dissimilar blocks
+    output = generate_dissimilar_block(complex_stims, num_blocks, num_trial_per_block, all_deviant_position_array, block_type = 'complex_dissimilar')
 
-        // generate array of stimulus paths to index into for pref tests
-        var stims_in_order = []
+    complex_stims = output[0]
+    block_information = output[1]
 
-        stims_in_order.push(block_stimuli[locations.indexOf('left')])
-        stims_in_order.push(block_stimuli[locations.indexOf('middle')])
-        stims_in_order.push(block_stimuli[locations.indexOf('right')])
+    all_block_information.push(block_information)
+  }
 
-        console.log(stims_in_order)
-
-
-        block_information = {
-            num_trial_per_block: num_trial_per_block,
-            background_stimuli: background,
-            deviant_stimuli: deviant,
-            novel_stimuli: novel,
-            background_location: background_location,
-            deviant_location: deviant_location,
-            novel_location: novel_location,
-            deviant_position_array: deviant_position_array,
-            stims_in_order: stims_in_order
-        }
-
-        all_block_information.push(block_information)
-
-
-
-    }
-
-
-
+    console.log(all_block_information)
 
     return (all_block_information)
 
 
 }
 
+function generate_similar_block(stims, num_blocks, num_trial_per_block, all_deviant_position_array, num_species, block_type){
+
+  // get paths of species that are complete (i.e. have both modifications)
+  sampleFrom = complete_species_paths(stims, num_species)
+
+  // choose random creature as background
+  var randomIdx = Math.floor(Math.random() * sampleFrom.length)
+  var background = sampleFrom[randomIdx];
+
+  // choose its modification
+  if (background.includes('A')){
+    deviant = background.replace('A', 'B')
+
+  }
+  else {
+    if (background.includes('B')){
+      deviant = background.replace('B', 'A')
+    }
+  }
+
+  console.log(block_type + ' block')
+  console.log('background: ' + background)
+  console.log('deviant: ' + deviant)
+
+  // get species info
+  speciesInfo = background.slice(0, background.length-7)
+
+  // remove that species from pool
+  stims = stims.filter(x => !(x.includes(speciesInfo)))
+
+  console.log('stims after removal: ')
+  console.log(stims)
+
+  // assign locations
+  locations = ["left", "middle", "right"]
+
+
+  novel = "images/stimuli/unopened_placeholder.gif"
+  block_stimuli = [background, deviant, novel]
+
+  // get location for the pokeball animation
+  shuffleArray(locations)
+
+  background_location = locations[0]
+  deviant_location = locations[1]
+  novel_location = locations[2]
+
+  // get the position in which deviant trial appears
+  deviant_position_array = getRandomSubarray(all_deviant_position_array, 1)
+
+  // generate array of stimulus paths to index into for pref tests
+  var stims_in_order = []
+
+  stims_in_order.push(block_stimuli[locations.indexOf('left')])
+  stims_in_order.push(block_stimuli[locations.indexOf('middle')])
+  stims_in_order.push(block_stimuli[locations.indexOf('right')])
+
+  console.log(stims_in_order)
+
+
+      block_information = {
+          num_trial_per_block: num_trial_per_block,
+          background_stimuli: background,
+          deviant_stimuli: deviant,
+          novel_stimuli: novel,
+          background_location: background_location,
+          deviant_location: deviant_location,
+          novel_location: novel_location,
+          deviant_position_array: deviant_position_array,
+          stims_in_order: stims_in_order,
+          block_type: block_type
+      }
+
+
+return ([stims, block_information])
+}
+
+function generate_dissimilar_block(stims, num_blocks, num_trial_per_block, all_deviant_position_array, block_type){
+
+  // generate dissimilar blocks:
+  // -> get random creature,
+  // and choose another creature that differs in species and movement
+
+  // choose random creature as background
+  var randomIdx = Math.floor(Math.random() * stims.length)
+  var background = stims[randomIdx];
+
+  // and choose another simple creature that differs in species and movement
+  speciesInfo_1 = background.slice(background.length-10, background.length-8)
+  movementInfo_1 = background.slice(background.length-5, background.length-4)
+  modificationInfo_1 = background.slice(background.length-7, background.length-6)
+
+  // remove these creatures from the list for next iteration (not including their modification)
+  stims = stims.filter(x => !(x.includes(speciesInfo_1) && x.includes(modificationInfo_1)))
+
+  // stimuli to sample from, which don't come from the same species or movement
+  sampleFrom = stims.filter(x => !(x.includes(speciesInfo_1) && x.includes(movementInfo_1)))
+
+  // choose random index to get deviant stim
+  var randomIdx = Math.floor(Math.random() * sampleFrom.length)
+  var deviant = sampleFrom[randomIdx]
+
+  // get relevant info about deviant to exclude that species
+  speciesInfo_2 = deviant.slice(deviant.length-10, deviant.length-8)
+  modificationInfo_2 = deviant.slice(deviant.length-7, deviant.length-6)
+
+  // remove these creatures from the list for next iteration (not including their modification)
+  stims = stims.filter(x => !(x.includes(speciesInfo_2) && x.includes(modificationInfo_2)))
+
+  console.log(block_type + ' block:')
+  console.log('background: ' + background)
+  console.log('deviant: ' + deviant)
+
+
+  console.log('stims after removal of more: ')
+  console.log(stims)
+
+  // assign locations
+  locations = ["left", "middle", "right"]
+
+
+  novel = "images/stimuli/unopened_placeholder.gif"
+  block_stimuli = [background, deviant, novel]
+
+  // get location for the pokeball animation
+  shuffleArray(locations)
+
+  background_location = locations[0]
+  deviant_location = locations[1]
+  novel_location = locations[2]
+
+  // get the position in which deviant trial appears
+  deviant_position_array = getRandomSubarray(all_deviant_position_array, 1)
+
+  // generate array of stimulus paths to index into for pref tests
+  var stims_in_order = []
+
+  stims_in_order.push(block_stimuli[locations.indexOf('left')])
+  stims_in_order.push(block_stimuli[locations.indexOf('middle')])
+  stims_in_order.push(block_stimuli[locations.indexOf('right')])
+
+  console.log(stims_in_order)
+
+
+  block_information = {
+      num_trial_per_block: num_trial_per_block,
+      background_stimuli: background,
+      deviant_stimuli: deviant,
+      novel_stimuli: novel,
+      background_location: background_location,
+      deviant_location: deviant_location,
+      novel_location: novel_location,
+      deviant_position_array: deviant_position_array,
+      stims_in_order: stims_in_order,
+      block_type: block_type
+  }
+
+return ([stims, block_information])
+}
+
+
+function complete_species_paths(stims, num_species){
+
+  sampleFrom = []
+
+ // make sure to only sample species of which both modificaitons are available in similar block
+  for (i = 0; i < num_species; i++) {
+
+   var speciesNum = i + 1
+   // get all stimuli for a particular species
+   speciesStimuli = stims.filter(x => x.includes(speciesNum))
+
+   // initialize at false
+   includes_A = false; includes_B = false;
+
+   for (j = 0; j < speciesStimuli.length; j++) {
+
+     if (speciesStimuli[j].includes('A')) {
+
+        var includes_A = true
+     }
+     else if (speciesStimuli[j].includes('B')) {
+
+        var includes_B = true
+     }
+   }
+
+   // number of modifications avaialble for this species
+   var mods_available = includes_A + includes_B
+
+// check whether this species has both it's A and B modifiers
+ if (includes_A && includes_B) {
+
+     // if both a and b are there, push to sampleFrom
+     sampleFrom = sampleFrom.concat(speciesStimuli)
+   }
+
+ }
+
+ return (sampleFrom)
+
+}
 
 
 // ---------- Dealing with Stimuli ---------- //

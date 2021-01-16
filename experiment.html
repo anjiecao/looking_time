@@ -44,10 +44,19 @@ TEST_RUN = 1 //test run with smaller number of species etc.
 if (TEST_RUN == 1) {
   NUM_BLOCKS = 4
   NUM_TRIAL_PER_BLOCK = 2
+  DEVIANT_POSITIONS = [2]
+
+  // number of species per complexity level
+  SPECIES_NUM = 4
+
 }
 else {
   NUM_BLOCKS = 40
   NUM_TRIAL_PER_BLOCK = 8
+  DEVIANT_POSITIONS = [3,4,5,6,7,8]
+
+  // number of species per complexity level
+  SPECIES_NUM = 20
 }
 
 
@@ -55,7 +64,8 @@ all_stimuli = get_all_stimuli(TEST_RUN)
 all_blocks_information = generate_all_block(num_blocks = NUM_BLOCKS,
                                             num_trial_per_block = NUM_TRIAL_PER_BLOCK,
                                             stimuli_array = all_stimuli,
-                                            all_deviant_position_array = [2])
+                                            all_deviant_position_array = DEVIANT_POSITIONS,
+                                            num_species = SPECIES_NUM)
 
 
 if (verbose){
