@@ -302,57 +302,77 @@ function generate_all_block(num_blocks,
       }
     }
 
+    // get paths to all novel stimuli
+
+    novel_stims = []
+    for (var i = 0; i < stimuli_array.length; i++) {
+      if (stimuli_array[i].includes('novel')) {
+        novel_stims.push(stimuli_array[i])
+      }
+    }
+
+    console.log('novel_stims')
+
+    console.log(novel_stims)
+
     all_block_information = []
 
 
     // to do:
     // - add novel stim procedure
+    // - shuffle block array
     // - think what to do with positions
 
     // put a loop around this with the number of blocks of this type
     for (i = 0; i < num_blocks/4; i++) {
 
     // simple similar blocks
-     output = generate_similar_block(simple_stims, num_blocks, num_trial_per_block, all_deviant_position_array, num_species, block_type = 'simple_similar')
+     output = generate_similar_block(simple_stims, novel_stims, num_blocks, num_trial_per_block, all_deviant_position_array, num_species, block_type = 'simple_similar')
 
      simple_stims = output[0]
-     block_information = output[1]
+     novel_stims = output[1]
+     block_information = output[2]
 
      all_block_information.push(block_information)
 
      // simple dissimilar blocks
-     output = generate_dissimilar_block(simple_stims, num_blocks, num_trial_per_block, all_deviant_position_array, block_type = 'simple_dissimilar')
+     output = generate_dissimilar_block(simple_stims, novel_stims, num_blocks, num_trial_per_block, all_deviant_position_array, block_type = 'simple_dissimilar')
 
      simple_stims = output[0]
-     block_information = output[1]
+     novel_stims = output[1]
+     block_information = output[2]
 
      all_block_information.push(block_information)
 
      // complex similar blocks
-    output = generate_similar_block(complex_stims, num_blocks, num_trial_per_block, all_deviant_position_array, num_species, block_type = 'complex_similar')
+    output = generate_similar_block(complex_stims, novel_stims, num_blocks, num_trial_per_block, all_deviant_position_array, num_species, block_type = 'complex_similar')
 
     complex_stims = output[0]
-    block_information = output[1]
+    novel_stims = output[1]
+    block_information = output[2]
 
     all_block_information.push(block_information)
 
     // complex dissimilar blocks
-    output = generate_dissimilar_block(complex_stims, num_blocks, num_trial_per_block, all_deviant_position_array, block_type = 'complex_dissimilar')
+    output = generate_dissimilar_block(complex_stims, novel_stims, num_blocks, num_trial_per_block, all_deviant_position_array, block_type = 'complex_dissimilar')
 
     complex_stims = output[0]
-    block_information = output[1]
+    novel_stims = output[1]
+    block_information = output[2]
 
     all_block_information.push(block_information)
   }
+
+    // shuffle blocks
+    shuffleArray(all_block_information)
 
     console.log(all_block_information)
 
     return (all_block_information)
 
-
 }
 
-function generate_similar_block(stims, num_blocks, num_trial_per_block, all_deviant_position_array, num_species, block_type){
+function generate_similar_block(stims, novel_stims, num_blocks, num_trial_per_block, all_deviant_position_array, num_species, block_type){
 
   // get paths of species that are complete (i.e. have both modifications)
   sampleFrom = complete_species_paths(stims, num_species)
@@ -388,8 +408,16 @@ function generate_similar_block(stims, num_blocks, num_trial_per_block, all_devi
   // assign locations
   locations = ["left", "middle", "right"]
 
+  // add novel stimulus
+  novelIdx = Math.floor(Math.random() * novel_stims.length)
 
-  novel = "images/stimuli/unopened_placeholder.gif"
+  novel = novel_stims[novelIdx];
+
+  console.log('novel' + novel)
+
+  // remove from pool
+  novel_stims.splice(novelIdx, 1)
+
   block_stimuli = [background, deviant, novel]
 
   // get location for the pokeball animation
@@ -426,10 +454,10 @@ function generate_similar_block(stims, num_blocks, num_trial_per_block, all_devi
       }
 
 
-return ([stims, block_information])
+return ([stims, novel_stims, block_information])
 }
 
-function generate_dissimilar_block(stims, num_blocks, num_trial_per_block, all_deviant_position_array, block_type){
+function generate_dissimilar_block(stims, novel_stims, num_blocks, num_trial_per_block, all_deviant_position_array, block_type){
 
   // generate dissimilar blocks:
   // -> get random creature,
@@ -473,7 +501,18 @@ function generate_dissimilar_block(stims, num_blocks, num_trial_per_block, all_d
   locations = ["left", "middle", "right"]
 
 
-  novel = "images/stimuli/unopened_placeholder.gif"
+  // add novel stimulus
+  novelIdx = Math.floor(Math.random() * novel_stims.length)
+  novel = novel_stims[novelIdx];
+
+  console.log('novel' + novel)
+
+  // remove from pool
+  novel_stims.splice(novelIdx, 1)
+
+  console.log('novel_stims: ' + novel_stims)
+
+
   block_stimuli = [background, deviant, novel]
 
   // get location for the pokeball animation
@@ -509,7 +548,7 @@ function generate_dissimilar_block(stims, num_blocks, num_trial_per_block, all_d
       block_type: block_type
   }
 
-return ([stims, block_information])
+return ([stims, novel_stims, block_information])
 }
 
 
