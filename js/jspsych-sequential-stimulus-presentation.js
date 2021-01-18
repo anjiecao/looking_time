@@ -17,14 +17,13 @@ jsPsych.plugins["sequential-stimulus-presentation"] = (function() {
     name: 'sequential-stimulus-presentation',
     description: '',
     parameters: {
-     
+
      poke_ball_animation: {
         type: jsPsych.plugins.parameterType.HTML_STRING,
         pretty_name: 'poke_ball_animation',
         default: undefined,
         description: 'The HTML string to be displayed first'
       },
-
 
       stimuli_animation: {
         type: jsPsych.plugins.parameterType.HTML_STRING,
@@ -33,8 +32,6 @@ jsPsych.plugins["sequential-stimulus-presentation"] = (function() {
         description: 'The HTML string to be displayed first'
       },
 
-    
-        
       two_stimuli_interval: {
         type: jsPsych.plugins.parameterType.HTML_STRING,
         pretty_name: 'interval between playing first and second',
@@ -49,7 +46,6 @@ jsPsych.plugins["sequential-stimulus-presentation"] = (function() {
         default: jsPsych.ALL_KEYS,
         description: 'The keys the subject is allowed to press to respond to the stimulus.'
       },
-
 
       prompt: {
         type: jsPsych.plugins.parameterType.STRING,
@@ -128,28 +124,20 @@ jsPsych.plugins["sequential-stimulus-presentation"] = (function() {
         description: 'the number of trials in one block'
 
       }
-
-
   }
   }
   plugin.trial = function(display_element, trial) {
 
-    
-    var html_string = '<div id="stimuli-animation">' +trial.stimuli_animation + '</div>' + '<div id="pokeball">'+ trial.poke_ball_animation+'</div>';
-    console.log(html_string)  
+    var html_string = '<div id="stimuli-animation">' + trial.stimuli_animation + '</div>' + '<div id="pokeball">'+ trial.poke_ball_animation+'</div>';
 
     display_element.innerHTML = html_string;
-    display_element.querySelector('#stimuli-animation').style.visibility = 'hidden'  
-      
+
+    display_element.querySelector('#stimuli-animation').style.visibility = 'hidden'
 
     jsPsych.pluginAPI.setTimeout(function() {
-                                    
+
         display_element.querySelector('#stimuli-animation').style.visibility = 'visible';
                                     }, trial.two_stimuli_interval);
-
-  
-      
-
 
     // store response
     var response = {
@@ -167,9 +155,6 @@ jsPsych.plugins["sequential-stimulus-presentation"] = (function() {
       if (typeof keyboardListener !== 'undefined') {
         jsPsych.pluginAPI.cancelKeyboardResponse(keyboardListener);
       }
-
-
-
 
       // gather the data to store for the trial
       var trial_data = {

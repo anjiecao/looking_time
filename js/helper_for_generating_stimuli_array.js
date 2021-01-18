@@ -566,6 +566,7 @@ function complete_species_paths(stims, num_species){
    // initialize at false
    includes_A = false; includes_B = false;
 
+// loop through each instance of the species and check if A and B are present
    for (j = 0; j < speciesStimuli.length; j++) {
 
      if (speciesStimuli[j].includes('A')) {
@@ -577,9 +578,6 @@ function complete_species_paths(stims, num_species){
         var includes_B = true
      }
    }
-
-   // number of modifications avaialble for this species
-   var mods_available = includes_A + includes_B
 
 // check whether this species has both it's A and B modifiers
  if (includes_A && includes_B) {

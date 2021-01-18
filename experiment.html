@@ -75,6 +75,9 @@ console.log("All blocks information:")
 console.log(all_blocks_information)
 }
 
+console.log('all_blocks_information: ')
+
+console.log(all_blocks_information)
 
 
 
@@ -90,6 +93,7 @@ console.log(all_blocks_information)
 for (var block_index = 0; block_index < all_blocks_information.length; block_index ++){
 
     block_information = all_blocks_information[block_index]
+    console.log('info: ' + block_information['stims_in_order'])
     block_timeline_variable = generate_timeline_variables(block_information)
     if (verbose){
     console.log("Each block time variable: ")
@@ -122,6 +126,7 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
                                 key_response: [40],
                                 minimum_viewing_duration: 200, // daffner2000's info was 600, changed to 200
                                 response_ends_trial: true,
+                                data: {block_number: block_index},
                             }
                             ],
                         timeline_variables: block_timeline_variable
@@ -135,6 +140,7 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
         stimulus: '<img src=images/stimuli/pokeballs_closed.jpg width ="800" height = "200">',
         prompt: "<p> Which one would you like to open? </p>",
         choices: [49, 50, 51, 97, 98, 99],
+        data: {block_number: block_index},
         on_finish: function(data){
           if (data.key_press ==  49 || data.key_press == 97) {
             data.ball_pref = 1
@@ -147,6 +153,7 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
           else if (data.key_press ==  51 || data.key_press == 99) {
             data.ball_pref = 3
             data.location = 'right'
+
           }
         }
       }
@@ -162,7 +169,8 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
 
        stimuli_animation: function(){
 
-           var html = "<p><img src='" + block_information['stims_in_order'][jsPsych.data.get().last(1).values()[0].ball_pref - 1] + "' width ='200' height = '200' style='float:" + jsPsych.data.get().last(1).values()[0].location + "'></p>"
+           var html = "<p><img src='" + all_blocks_information[jsPsych.data.get().last(1).values()[0].block_number].stims_in_order[jsPsych.data.get().last(1).values()[0].ball_pref - 1] + "' width ='200' height = '200' style='float:" + jsPsych.data.get().last(1).values()[0].location + "'></p>"
+
            return html
        },
        two_stimuli_interval: 1800,
@@ -176,8 +184,6 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
 }
 
 // norming task here
-
-
 
 
 function saveData(name, data){
