@@ -114,7 +114,7 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
                             {
                                 type: 'sequential-stimulus-presentation',
                                 poke_ball_animation: function(){
-                                    var html = "<img src= "+jsPsych.timelineVariable('poke_ball_animation', true)+" width ='800' height = '200'></p>"
+                                    var html = "<img src= "+jsPsych.timelineVariable('poke_ball_animation', true)+ "?a="+Math.random() +" width ='800' height = '200'></p>"
                                     return html;
                                 },
 
@@ -163,8 +163,8 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
      var reveal = {
        type: 'sequential-stimulus-presentation',
        poke_ball_animation: function(){
-       var html = "<p><img src='images/stimuli/pokeball_" + jsPsych.data.get().last(1).values()[0].ball_pref + ".gif' width ='800' height = '200'></p>"
-           return html;
+     var html = "<p><img src='images/stimuli/pokeball_" + jsPsych.data.get().last(1).values()[0].ball_pref + ".gif'" + "?a=" + Math.random() + "width ='800' height = '200'></p>"
+      return html;
        },
 
        stimuli_animation: function(){
