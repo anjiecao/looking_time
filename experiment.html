@@ -113,6 +113,7 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
     console.log("Each block time variable: ")
     console.log(block_timeline_variable)
     }
+
   //  pref_timeline_variable =
 
     var test_block = {
@@ -136,6 +137,7 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
                                     var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='200' height = '200' style='float:" + jsPsych.timelineVariable('location', true) + "'></p>"
                                     return html
                                 },
+                                data: {stimulus_displayed: jsPsych.timelineVariable('stimuli', true), position_displayed: jsPsych.timelineVariable('location', true), stim_type: jsPsych.timelineVariable('stim_type', true)},
                                 two_stimuli_interval: 1800,
                                 key_response: [40],
                                 minimum_viewing_duration: 200, // daffner2000's info was 600, changed to 200
@@ -178,14 +180,15 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
        type: 'sequential-stimulus-presentation',
        poke_ball_animation: function(){
      var html = "<p><img src='images/stimuli/pokeball_" + jsPsych.data.get().last(1).values()[0].ball_pref + ".gif'" + "?a=" + Math.random() + "width ='800' height = '200'></p>"
-      return html;
-       },
-
+      return html
+    },
        stimuli_animation: function(){
-
            var html = "<p><img src='" + all_blocks_information[jsPsych.data.get().last(1).values()[0].block_number].stims_in_order[jsPsych.data.get().last(1).values()[0].ball_pref - 1] + "' width ='200' height = '200' style='float:" + jsPsych.data.get().last(1).values()[0].location + "'></p>"
-
            return html
+       },
+       on_finish: function(data){
+         // record whether they selected background,deviant or novel
+         data.stim_type_selected = all_blocks_information[jsPsych.data.get().last(2).values()[0].block_number].stim_type_locations[jsPsych.data.get().last(2).values()[0].ball_pref - 1]
        },
        two_stimuli_interval: 1800,
        key_response: [40],
@@ -198,10 +201,8 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
      // collecting norming stimuli here
      similarity_array = [all_blocks_information[block_index]['background_stimuli'], all_blocks_information[block_index]['deviant_stimuli']]
 
-
      // shuffle to randomize deviant/background left/right assignment
      shuffleArray(similarity_array)
-
 
      var similarity_questions = {
        type: 'survey-likert',
@@ -210,20 +211,22 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
        questions: [
          {prompt: '<p style = "padding-top:200px;padding-bottom:40px"> On a scale of 1 to 7 how similar are these (1 = totally different, 7 = completely the same)?</p>', labels: scale_1}
        ],
-       data: {trial_type: 'similarity_question'}
+       data: {trial_type: 'similarity_question', stimulus_left: similarity_array[0], stimulus_right: similarity_array[1]}
      }
 
      similarity_stims.push(similarity_questions)
 
+     // random index for similarity question
+     random_index = Math.floor(Math.random() * similarity_array.length)
 
      // ask about the complexity of either deviant or background (randomly chosen)
      var complexity_questions = {
        type: 'survey-likert',
-       preamble: '<p><img src= ' + similarity_array[Math.floor(Math.random() * similarity_array.length)] + 'width ="200" height = "200"</p>',
+       preamble: '<p><img src= ' + similarity_array[random_index] + ' width ="200" height = "200"</p>',
        questions: [
          {prompt: '<p style = "padding-top:200px;padding-bottom:40px"> On a scale of 1 to 7 how complex is this?</p>', labels: scale_1}
        ],
-       data: {trial_type: 'complexity_question'}
+       data: {trial_type: 'complexity_question', stimulus: similarity_array[random_index]}
      };
 
      complexity_stims.push(complexity_questions)

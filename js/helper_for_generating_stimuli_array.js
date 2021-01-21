@@ -242,13 +242,15 @@ function generate_timeline_variables(block_information){
      background_item = {
          poke_ball_animation: background_pokeball_animation,
          stimuli: background_stimuli,
-         location: background_location
+         location: background_location,
+         stim_type: 'background'
      }
 
      deviant_item = {
          poke_ball_animation: deviant_pokeball_animation,
          stimuli: deviant_stimuli,
-         location: deviant_location
+         location: deviant_location,
+         stim_type: 'deviant'
      }
 
 
@@ -258,8 +260,6 @@ function generate_timeline_variables(block_information){
     for (var i = 0; i < deviant_position_array.length; i++){
         deviant_position = deviant_position_array[i]
         block_stimuli[deviant_position] = deviant_item
-
-
     }
 
     return (block_stimuli)
@@ -437,7 +437,14 @@ function generate_similar_block(stims, novel_stims, num_blocks, num_trial_per_bl
   stims_in_order.push(block_stimuli[locations.indexOf('middle')])
   stims_in_order.push(block_stimuli[locations.indexOf('right')])
 
-  console.log(stims_in_order)
+  // generate array of stimulus types to keep track
+  var stim_types = ['background', 'deviant', 'novel']
+
+  var stim_type_locations = []
+
+  stim_type_locations.push(stim_types[locations.indexOf('left')])
+  stim_type_locations.push(stim_types[locations.indexOf('middle')])
+  stim_type_locations.push(stim_types[locations.indexOf('right')])
 
 
       block_information = {
@@ -450,6 +457,7 @@ function generate_similar_block(stims, novel_stims, num_blocks, num_trial_per_bl
           novel_location: novel_location,
           deviant_position_array: deviant_position_array,
           stims_in_order: stims_in_order,
+          stim_type_locations: stim_type_locations,
           block_type: block_type
       }
 
@@ -534,19 +542,30 @@ function generate_dissimilar_block(stims, novel_stims, num_blocks, num_trial_per
 
   console.log(stims_in_order)
 
+  // generate array of stimulus types to keep track
+  var stim_types = ['background', 'deviant', 'novel']
 
-  block_information = {
-      num_trial_per_block: num_trial_per_block,
-      background_stimuli: background,
-      deviant_stimuli: deviant,
-      novel_stimuli: novel,
-      background_location: background_location,
-      deviant_location: deviant_location,
-      novel_location: novel_location,
-      deviant_position_array: deviant_position_array,
-      stims_in_order: stims_in_order,
-      block_type: block_type
-  }
+  var stim_type_locations = []
+
+  stim_type_locations.push(stim_types[locations.indexOf('left')])
+  stim_type_locations.push(stim_types[locations.indexOf('middle')])
+  stim_type_locations.push(stim_types[locations.indexOf('right')])
+
+      block_information = {
+          num_trial_per_block: num_trial_per_block,
+          background_stimuli: background,
+          deviant_stimuli: deviant,
+          novel_stimuli: novel,
+          background_location: background_location,
+          deviant_location: deviant_location,
+          novel_location: novel_location,
+          deviant_position_array: deviant_position_array,
+          stims_in_order: stims_in_order,
+          stim_type_locations: stim_type_locations,
+          block_type: block_type
+      }
+
+
 
 return ([stims, novel_stims, block_information])
 }
