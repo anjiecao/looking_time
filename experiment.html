@@ -12,6 +12,8 @@
 <script src = "js/jspsych-multi-stim-multi-response.js"></script>
   <script src="js/jspsych-task-instructions.js"></script>
   <script src="js/jspsych-instructions.js"></script>
+  <script src= "js/jspsych-survey-text.js"></script>
+  <script src= "js/jspsych-survey-likert.js"></script>
     <script src="js/jspsych-html-keyboard-response.js"></script>
     <script src="js/jspsych-image-keyboard-response.js"></script>
     <script src= "js/jspsych-survey-text.js"></script>
@@ -59,6 +61,9 @@ else {
   SPECIES_NUM = 20
 }
 
+// initialize norming variables
+var similarity_stims = []
+var complexity_stims = []
 
 all_stimuli = get_all_stimuli(TEST_RUN)
 all_blocks_information = generate_all_block(num_blocks = NUM_BLOCKS,
@@ -80,14 +85,23 @@ console.log('all_blocks_information: ')
 console.log(all_blocks_information)
 
 
+// testing norming task here
+var scale_1 = [
+  "1",
+  "2",
+  "3",
+  "4",
+  "5",
+  '6',
+  '7',
+];
+
 
 //timeline.push(block)
 
 // need to loop through an outer loop that has all the blocks
 // each block is a timeline variable array
 // each timeline variable arrays contain the combination needed: N background + 10-N deviant, currently set to all 9 + 1
-//
-
 
 // loop through all blocks
 for (var block_index = 0; block_index < all_blocks_information.length; block_index ++){
@@ -138,7 +152,7 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
       var preference_question = {
         type: 'html-keyboard-response',
         stimulus: '<img src=images/stimuli/pokeballs_closed.jpg width ="800" height = "200">',
-        prompt: "<p> Which one would you like to open? </p>",
+        prompt: "<p> Which ball would you like to open? </p>",
         choices: [49, 50, 51, 97, 98, 99],
         data: {block_number: block_index},
         on_finish: function(data){
@@ -181,9 +195,56 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
 
      timeline.push(reveal)
 
-}
+     // collecting norming stimuli here
+     similarity_array = [all_blocks_information[block_index]['background_stimuli'], all_blocks_information[block_index]['deviant_stimuli']]
 
-// norming task here
+
+     // shuffle to randomize deviant/background left/right assignment
+     shuffleArray(similarity_array)
+
+
+     var similarity_questions = {
+       type: 'survey-likert',
+       preamble: '<p><img src=' + similarity_array[0] + ' width ="200" height = "200" style = "float:left"></p>' +
+       '<p><img src=' + similarity_array[1] + ' width ="200" height = "200" style = "float:right" ></p> ',
+       questions: [
+         {prompt: '<p style = "padding-top:200px;padding-bottom:40px"> On a scale of 1 to 7 how similar are these (1 = totally different, 7 = completely the same)?</p>', labels: scale_1}
+       ],
+       data: {trial_type: 'similarity_question'}
+     }
+
+     similarity_stims.push(similarity_questions)
+
+
+     // ask about the complexity of either deviant or background (randomly chosen)
+     var complexity_questions = {
+       type: 'survey-likert',
+       preamble: '<p><img src= ' + similarity_array[Math.floor(Math.random() * similarity_array.length)] + 'width ="200" height = "200"</p>',
+       questions: [
+         {prompt: '<p style = "padding-top:200px;padding-bottom:40px"> On a scale of 1 to 7 how complex is this?</p>', labels: scale_1}
+       ],
+       data: {trial_type: 'complexity_question'}
+     };
+
+     complexity_stims.push(complexity_questions)
+
+   }
+
+   // add similarity questions to timeline (in random order)
+   shuffleArray(similarity_stims)
+   timeline = timeline.concat(similarity_stims)
+
+   // add complexity questions to timeline (in random order)
+   shuffleArray(complexity_stims)
+   timeline = timeline.concat(complexity_stims)
+
+
+  console.log('similarity_stims')
+  console.log(similarity_stims)
+
+   console.log('timeline')
+   console.log(timeline)
+
 
 
 function saveData(name, data){
