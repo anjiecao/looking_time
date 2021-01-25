@@ -405,8 +405,7 @@ function generate_similar_block(stims, novel_stims, num_blocks, num_trial_per_bl
   console.log('stims after removal: ')
   console.log(stims)
 
-  // assign locations
-  locations = ["left", "middle", "right"]
+
 
   // add novel stimulus
   novelIdx = Math.floor(Math.random() * novel_stims.length)
@@ -417,6 +416,9 @@ function generate_similar_block(stims, novel_stims, num_blocks, num_trial_per_bl
 
   // remove from pool
   novel_stims.splice(novelIdx, 1)
+
+  // assign locations
+  locations = ["left", "middle", "right"]
 
   block_stimuli = [background, deviant, novel]
 

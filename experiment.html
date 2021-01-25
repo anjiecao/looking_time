@@ -137,7 +137,7 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
                                     var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='200' height = '200' style='float:" + jsPsych.timelineVariable('location', true) + "'></p>"
                                     return html
                                 },
-                                data: {stimulus_displayed: jsPsych.timelineVariable('stimuli', true), position_displayed: jsPsych.timelineVariable('location', true), stim_type: jsPsych.timelineVariable('stim_type', true)},
+                                data: {stimulus_displayed: jsPsych.timelineVariable('stimuli'), position_displayed: jsPsych.timelineVariable('location'), stim_type: jsPsych.timelineVariable('stim_type')},
                                 two_stimuli_interval: 1800,
                                 key_response: [40],
                                 minimum_viewing_duration: 200, // daffner2000's info was 600, changed to 200
