@@ -101,7 +101,7 @@ var scale_1 = [
     
 var timer_break = {
     type: 'html-keyboard-response',
-    stimulus: '<p>Now you can take a short break </p><p>When the timer runs out, the next part of the experiment will automatically begin. You can also press any key to go to the next part now.</p><p><img src= images/time_noloop.gif width ="200" height = "200"></p><p><img src=images/blank.png width ="800" height = "200"></p>',
+    stimulus: '<p>Now you can take a short break </p><p>When the timer runs out, the next part of the experiment will automatically begin. You can also press any key to go to the next part now.</p><p><img src= images/time_noloop.gif '+ "?a=" + Math.random() + 'width ="200" height = "200"></p><p><img src=images/blank.png width ="800" height = "200"></p>',
     //choices: ['e', 'i'],
     trial_duration: 15 * 1000, // 15s
     response_ends_trial: true, 
