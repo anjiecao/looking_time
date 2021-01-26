@@ -46,6 +46,7 @@
 TEST_RUN = 1 //test run with smaller number of species etc.
 
 if (TEST_RUN == 1) {
+  SHOW_INTRO = true
   NUM_BLOCKS = 4
   NUM_TRIAL_PER_BLOCK = 2
   DEVIANT_POSITIONS = [2]
@@ -55,12 +56,14 @@ if (TEST_RUN == 1) {
 
 }
 else {
+  SHOW_INTRO = true
   NUM_BLOCKS = 40
   NUM_TRIAL_PER_BLOCK = 8
   DEVIANT_POSITIONS = [3,4,5,6,7,8]
   BREAK_EVERY_N_BLOCKS = 10
   // number of species per complexity level
   SPECIES_NUM = 20
+
 }
 
 // initialize norming variables
@@ -82,10 +85,60 @@ console.log("All blocks information:")
 console.log(all_blocks_information)
 }
 
-console.log('all_blocks_information: ')
-console.log(all_blocks_information)
 
-//timeline.push(block)
+
+var intro = {
+    type: "instructions",
+    pages: [
+        "<p>Hello! Thank you very much for participating in our study!</p><br></br>" +
+        "<p>We are researchers who usually study babies. :) </p>" +
+        "<p>In particular, we are interested in knowing what makes things interesting or boring to babies. </p>" +
+        "<p> So we designed some cute stimuli, which we are hoping to show to babies soon! </p>" +
+        "<p> But first, to get an initial idea, we are trying our experiment with adults first (i.e. you!). </p>" +
+        "<p> So we really appreciate your help! </p>"
+        ,
+        "<p>Since this task was designed for babies, it's going to be really easy!</p>" +
+        "<p>You will repeatedly see three balls on the screen."
+        ,
+        "<p> On every trial, one of the balls will open and a creature will pop out. </p>"
+        ,
+        "<p>Your task is to simply look at the creature, </p>" +
+        "<p>and to press the down arrow whenever you are ready to proceed to the next trial </p>"
+        ,
+        "<p> That means that the task is entirely self-paced," +
+        "and you can look at each creature for as long as you like. </p>"
+        ,
+        "<p> Every couple of trials, you will have a chance to open one of the three balls yourself!" +
+        "<p> You can open one of the balls that have already opened to see the same creature again </p>" +
+        "<p> or you can select a ball that hasn't opened yet and be surprised! </p>"
+        ,
+        "<p> After you chose which ball to open, the creature in the ball will pop out." +
+        "<p> Then, the balls will be populated with new creatures, </p>" +
+        "<p> so new creatures will pop out, and you can again look at them for as long as you like, </p>" +
+        "<p> and move to the next trial by pressing the down arrow. </p>"
+        ,
+        "<p> We hope you enjoy our baby stimuli!" +
+        "<p> The task should take no longer than 10 minutes, </p>" +
+        "<p> after which we will ask you some questions about the stimuli for 2-3 minutes, </p>" +
+        "<p> and then you'll be all done! </p>",
+        "<p> Many thanks again for your participation. :) </p> ",
+        "<p> Press the arrow to begin. </p> <br></br>",
+
+
+
+      ],
+
+    data: {stimulus_type: 'instructions'},
+    show_clickable_nav: true
+}
+
+if (SHOW_INTRO) {
+  timeline.push(intro)
+}
+
+
+
+
 
 // need to loop through an outer loop that has all the blocks
 // each block is a timeline variable array
