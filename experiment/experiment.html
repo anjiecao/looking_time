@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <link rel="import" href="x-gif.html">
   <script src = "js/require.js"></script>
   <script src="js/jspsych.js"></script>
   <script src="js/instruction_and_transition.js"></script>
@@ -82,22 +83,7 @@ console.log(all_blocks_information)
 }
 
 console.log('all_blocks_information: ')
-
 console.log(all_blocks_information)
-
-
-// testing norming task here
-var scale_1 = [
-  "1",
-  "2",
-  "3",
-  "4",
-  "5",
-  '6',
-  '7',
-];
-
-
 
 //timeline.push(block)
 
@@ -140,11 +126,11 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
                                     var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='200' height = '200' style='float:" + jsPsych.timelineVariable('location', true) + "'></p>"
                                     return html
                                 },
-                                two_stimuli_interval: 1800,
+                                two_stimuli_interval: 900,
                                 key_response: [40],
-                                minimum_viewing_duration: 200, // daffner2000's info was 600, changed to 200
+                                minimum_viewing_duration: 900, // block responses until stimulus appears
                                 response_ends_trial: true,
-                                data: {block_number: block_index, stimulus_displayed: jsPsych.timelineVariable('stimuli'), position_displayed: jsPsych.timelineVariable('location'), stim_type: jsPsych.timelineVariable('stim_type')},
+                                data: {block_number: block_index,  stimulus_type: 'trial', stimulus_displayed: jsPsych.timelineVariable('stimuli'), position_displayed: jsPsych.timelineVariable('location'), trial_type: jsPsych.timelineVariable('stim_type')},
                             }
                             ],
                         timeline_variables: block_timeline_variable
@@ -156,10 +142,10 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
       // enter preferences test here
       var preference_question = {
         type: 'html-keyboard-response',
-        stimulus: '<img src=images/stimuli/pokeballs_closed.jpg width ="800" height = "200">',
+        stimulus: '<img src=images/stimuli/pokeballs_closed.jpg width ="800" height = "200" style="padding-top: 33%">',
         prompt: "<p> Which ball would you like to open? </p>",
         choices: [49, 50, 51, 97, 98, 99],
-        data: {block_number: block_index},
+        data: {block_number: block_index, stimulus_type: 'pref_question'},
         on_finish: function(data){
           if (data.key_press ==  49 || data.key_press == 97) {
             data.ball_pref = 1
@@ -194,9 +180,10 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
          // record whether they selected background,deviant or novel
          data.stim_type_selected = all_blocks_information[jsPsych.data.get().last(2).values()[0].block_number].stim_type_locations[jsPsych.data.get().last(2).values()[0].ball_pref - 1]
        },
-       two_stimuli_interval: 1800,
+       two_stimuli_interval: 900,
        key_response: [40],
-       minimum_viewing_duration: 200, // daffner2000's info was 600, changed to 200
+       minimum_viewing_duration: 900, // daffner2000's info was 600, changed to 200
+       data: {block_number: block_index, stimulus_type: 'pref_reveal'},
        response_ends_trial: true,
      }
 
@@ -212,6 +199,7 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
              stimulus: '<p>Now you can take a short break </p><p>When the timer runs out, the next part of the experiment will automatically begin. You can also press any key to go to the next part now.</p><p><img src= images/time_noloop.gif'+ "?a=" + Math.random() + ' width ="200" height = "200"></p><p><img src=images/blank.png width ="800" height = "200"></p>',
              //choices: ['e', 'i'],
              trial_duration: 15 * 1000, // 15s
+             data: {block_number: block_index, stimulus_type: 'break'},
              response_ends_trial: true,
          };
 
@@ -225,9 +213,6 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
      // shuffle to randomize deviant/background left/right assignment
      shuffleArray(similarity_array)
 
-
-
-
     var similarity_question_slider = {
         type: "html-slider-response",
         stimulus: '<p><img src=' + similarity_array[0] + ' width ="200" height = "200" style = "float:left"></p>' +
@@ -236,7 +221,7 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
         slider_width:500,
         prompt: '<p> On a scale of 1 to 100 how would you rate the similarity between thes two creatures?</p>',
         labels: ["Most Similar = 1", "Most Different = 100"],
-        data: {variable_type: 'similarity_question', stimulus_left: similarity_array[0], stimulus_right: similarity_array[1]}
+        data: {stimulus_type: 'similarity_question', stimulus_left: similarity_array[0], stimulus_right: similarity_array[1]}
 
 
     }
@@ -256,22 +241,14 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
         require_movement: true,
         prompt:  '<p"> On a scale of 1 to 100 how would you rate the complexity of this creature?</p>',
         labels: ["Simplest = 1", "Most Complex = 100"],
-        data: {variable_type: 'complexity_question', stimulus: similarity_array[random_index]}
+        data: {stimulus_type: 'complexity_question', stimulus: similarity_array[random_index]}
 
 
     }
 
-
-
      complexity_stims.push(complexity_question_slider)
 
-
-
-
-
    }
-
-
 
 
     var similarity_instructions = {
@@ -280,6 +257,7 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
             "<p>You are almost done! </p><p>In this section, you will be asked to judge the similarity between two creatures you saw. Afterwards, you will be asked to judge the complexity of the creatures. </p><p>There is no right or wrong answer, so feel free to judge the similarity based on your intuition.</p>"
 
         ],
+        data: {stimulus_type: 'instructions'},
         show_clickable_nav: true
 
 
@@ -292,12 +270,9 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
             "<p>Now it's time for the last section!</p><p> In this part, you will be asked to rate the complexity of the creatures you just saw. Again, there is no right or wrong answer, so feel free to judge their complexity based on your intuition.</p>"
 
         ],
+        data: {stimulus_type: 'instructions'},
         show_clickable_nav: true
-
-
     }
-
-
 
 
    // add similarity questions to timeline (in random order)
@@ -309,6 +284,31 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
    shuffleArray(complexity_stims)
    timeline.push(complexity_instruction)
    timeline = timeline.concat(complexity_stims)
+
+
+   //feedback
+   var feedback = {
+     type: 'survey-text',
+     questions: [
+       {prompt: "That's it! If you have any final comments, feedback or questions please mention them below!", placeholder: "Any bugs? Was it fun? Anything else!"},
+     ],
+     data: {stimulus_type: 'feedback'},
+   };
+
+   timeline.push(feedback)
+
+   // thank uu
+   var thank_you = {
+       type: "instructions",
+       pages: [
+           "<p>That's it! Thank you so much for participating in our study!</p>"
+       ],
+       data: {stimulus_type: 'instructions'},
+       show_clickable_nav: true
+   }
+
+   timeline.push(thank_you)
+
 
 
   console.log('similarity_stims')
