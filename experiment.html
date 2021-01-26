@@ -97,16 +97,6 @@ var scale_1 = [
   '7',
 ];
 
-    
-    
-var timer_break = {
-    type: 'html-keyboard-response',
-    stimulus: '<p>Now you can take a short break </p><p>When the timer runs out, the next part of the experiment will automatically begin. You can also press any key to go to the next part now.</p><p><img src= images/time_noloop.gif '+ "?a=" + Math.random() + ' width ="200" height = "200"></p><p><img src=images/blank.png width ="800" height = "200"></p>',
-    //choices: ['e', 'i'],
-    trial_duration: 15 * 1000, // 15s
-    response_ends_trial: true, 
-};
-    
 
 
 //timeline.push(block)
@@ -150,19 +140,18 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
                                     var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='200' height = '200' style='float:" + jsPsych.timelineVariable('location', true) + "'></p>"
                                     return html
                                 },
-                                data: {stimulus_displayed: jsPsych.timelineVariable('stimuli'), position_displayed: jsPsych.timelineVariable('location'), stim_type: jsPsych.timelineVariable('stim_type')},
                                 two_stimuli_interval: 1800,
                                 key_response: [40],
                                 minimum_viewing_duration: 200, // daffner2000's info was 600, changed to 200
                                 response_ends_trial: true,
-                                data: {block_number: block_index},
+                                data: {block_number: block_index, stimulus_displayed: jsPsych.timelineVariable('stimuli'), position_displayed: jsPsych.timelineVariable('location'), stim_type: jsPsych.timelineVariable('stim_type')},
                             }
                             ],
                         timeline_variables: block_timeline_variable
                       }
 
         timeline.push(test_block)
-        
+
 
       // enter preferences test here
       var preference_question = {
@@ -193,7 +182,8 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
      var reveal = {
        type: 'sequential-stimulus-presentation',
        poke_ball_animation: function(){
-     var html = "<p><img src='images/stimuli/pokeball_" + jsPsych.data.get().last(1).values()[0].ball_pref + ".gif'" + "?a=" + Math.random() + "width ='800' height = '200'></p>"
+     var html = "<p><img src='images/stimuli/pokeball_" + jsPsych.data.get().last(1).values()[0].ball_pref + ".gif" + "?a=" + Math.random() + " width ='800' height = '200'></p>"
+      console.log(html)
       return html
     },
        stimuli_animation: function(){
@@ -211,14 +201,23 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
      }
 
      timeline.push(reveal)
-    
+
      // keep track of when to insert break blocks
      block_counter = block_counter + 1
      if (block_counter == BREAK_EVERY_N_BLOCKS){
-         block_counter = 0 
+         block_counter = 0
+
+         var timer_break = {
+             type: 'html-keyboard-response',
+             stimulus: '<p>Now you can take a short break </p><p>When the timer runs out, the next part of the experiment will automatically begin. You can also press any key to go to the next part now.</p><p><img src= images/time_noloop.gif'+ "?a=" + Math.random() + ' width ="200" height = "200"></p><p><img src=images/blank.png width ="800" height = "200"></p>',
+             //choices: ['e', 'i'],
+             trial_duration: 15 * 1000, // 15s
+             response_ends_trial: true,
+         };
+
          timeline.push(timer_break)
      }
-    
+
 
      // collecting norming stimuli here
      similarity_array = [all_blocks_information[block_index]['background_stimuli'], all_blocks_information[block_index]['deviant_stimuli']]
@@ -226,25 +225,22 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
      // shuffle to randomize deviant/background left/right assignment
      shuffleArray(similarity_array)
 
-    
-    
-    
+
+
+
     var similarity_question_slider = {
         type: "html-slider-response",
         stimulus: '<p><img src=' + similarity_array[0] + ' width ="200" height = "200" style = "float:left"></p>' +
        '<p><img src=' + similarity_array[1] + ' width ="200" height = "200" style = "float:right" ></p> ',
-        require_movement: true, 
+        require_movement: true,
         slider_width:500,
-        prompt: '<p> On a scale of 1 to 100 how would you rate the similarity between thes two creatures?</p>', 
-        labels: ["Most Similar = 1", "Most Different = 100"], 
+        prompt: '<p> On a scale of 1 to 100 how would you rate the similarity between thes two creatures?</p>',
+        labels: ["Most Similar = 1", "Most Different = 100"],
         data: {variable_type: 'similarity_question', stimulus_left: similarity_array[0], stimulus_right: similarity_array[1]}
-        
-        
+
+
     }
-    
-    
-    
-    
+
 
      similarity_stims.push(similarity_question_slider)
 
@@ -252,67 +248,60 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
      random_index = Math.floor(Math.random() * similarity_array.length)
 
      // ask about the complexity of either deviant or background (randomly chosen)
-    
-    
- 
-    
 
-
-    
-    
     var complexity_question_slider = {
         type: "html-slider-response",
         stimulus: '<p><img src= ' + similarity_array[random_index] + ' width ="200" height = "200"</p>',
         slider_width:500,
-        require_movement: true, 
-        prompt:  '<p"> On a scale of 1 to 100 how would you rate the complexity of this creature?</p>', 
-        labels: ["Simplest = 1", "Most Complex = 100"], 
+        require_movement: true,
+        prompt:  '<p"> On a scale of 1 to 100 how would you rate the complexity of this creature?</p>',
+        labels: ["Simplest = 1", "Most Complex = 100"],
         data: {variable_type: 'complexity_question', stimulus: similarity_array[random_index]}
-        
-        
+
+
     }
-    
-    
-     
+
+
+
      complexity_stims.push(complexity_question_slider)
 
-    
-    
-    
-    
+
+
+
+
    }
-    
-    
-    
-    
+
+
+
+
     var similarity_instructions = {
-        type: "instructions", 
+        type: "instructions",
         pages: [
             "<p>You are almost done! </p><p>In this section, you will be asked to judge the similarity between two creatures you saw. Afterwards, you will be asked to judge the complexity of the creatures. </p><p>There is no right or wrong answer, so feel free to judge the similarity based on your intuition.</p>"
-            
-        ], 
+
+        ],
         show_clickable_nav: true
-        
-        
+
+
     }
-    
-    
+
+
     var complexity_instruction = {
-        type: "instructions", 
+        type: "instructions",
         pages: [
             "<p>Now it's time for the last section!</p><p> In this part, you will be asked to rate the complexity of the creatures you just saw. Again, there is no right or wrong answer, so feel free to judge their complexity based on your intuition.</p>"
-            
-        ], 
-        show_clickable_nav: true
-        
-        
-    }
-    
 
-    
+        ],
+        show_clickable_nav: true
+
+
+    }
+
+
+
 
    // add similarity questions to timeline (in random order)
-   shuffleArray(similarity_stims)   
+   shuffleArray(similarity_stims)
    timeline.push(similarity_instructions)
    timeline = timeline.concat(similarity_stims)
 
