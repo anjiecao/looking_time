@@ -261,13 +261,44 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
     
     
    }
+    
+    
+    
+    
+    var similarity_instructions = {
+        type: "instructions", 
+        pages: [
+            "<p>You are almost done! </p><p>In this section, you will be asked to judge the similarity between two creatures you saw. Afterwards, you will be asked to judge the complexity of the creatures. </p><p>There is no right or wrong answer, so feel free to judge the similarity based on your intuition.</p>"
+            
+        ], 
+        show_clickable_nav: true
+        
+        
+    }
+    
+    
+    var complexity_instruction = {
+        type: "instructions", 
+        pages: [
+            "<p>Now it's time for the last section!</p><p> In this part, you will be asked to rate the complexity of the creatures you just saw. Again, there is no right or wrong answer, so feel free to judge their complexity based on your intuition.</p>"
+            
+        ], 
+        show_clickable_nav: true
+        
+        
+    }
+    
+
+    
 
    // add similarity questions to timeline (in random order)
-   shuffleArray(similarity_stims)
+   shuffleArray(similarity_stims)   
+   timeline.push(similarity_instructions)
    timeline = timeline.concat(similarity_stims)
 
    // add complexity questions to timeline (in random order)
    shuffleArray(complexity_stims)
+   timeline.push(complexity_instruction)
    timeline = timeline.concat(complexity_stims)
 
 
