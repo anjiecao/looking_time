@@ -324,7 +324,7 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
 
 function saveData(name, data){
         var xhr = new XMLHttpRequest();
-        xhr.open('POST', 'https://web.stanford.edu/~anjiecao/cgi-bin/daffner2000/write_data.php');
+        xhr.open('POST', 'https://web.stanford.edu/~anjiecao/cgi-bin/looking_time/write_data.php');
         //xhr.open('POST', 'write_data.php'); // 'write_data.php' is the path to the php file described above.
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.send(JSON.stringify({filename: name, filedata: data}));
