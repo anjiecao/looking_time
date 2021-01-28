@@ -129,7 +129,7 @@ var intro0 = {
                             "<p> after which we will ask you some questions about the stimuli for 2-3 minutes, </p>" +
                             "<p> and then you'll be all done! </p>",
                             "<p> Many thanks again for your participation. :) </p> ",
-                            "<p> <b> Press the arrow to begin. </b> </p> <br></br>",
+                            "<p> <b> The experiment begins now! </b> </p> <br></br>",
             ],
                 data: {stimulus_type: 'instructions'},
                 show_clickable_nav: true}
