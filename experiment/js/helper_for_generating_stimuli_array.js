@@ -134,7 +134,7 @@ function get_all_stimuli(TEST_RUN){
     MAIN_DIR = "images/stimuli/spore_stims/"
 
     // 2 complexity levels
-    complexity_levels = ['simple', 'complex', 'novel']
+    complexity_levels = ['simple', 'complex']
 
     if (TEST_RUN == 1) {
       // 30 species
@@ -158,6 +158,16 @@ function get_all_stimuli(TEST_RUN){
     }
 
 
+  for (i = 0; i < species.length; i++) {
+      // compute index for novel stimuli
+      novel_stim_num = i+1
+
+      current_stimuli = MAIN_DIR + 'novel_' + novel_stim_num + '.gif'
+
+      all_stimuli.push(current_stimuli)
+  }
+
+
     // set number is specified in experiment.html
     for (var i = 0; i < complexity_levels.length; i++){
         for (var j = 0; j < species.length; j++){
@@ -171,18 +181,6 @@ function get_all_stimuli(TEST_RUN){
           }
 
           for (var k = 0; k < version.length; k++){
-
-            if (complexity_levels[i] == 'novel') {
-
-              // compute index for novel stimuli
-              novel_stim_num = version.length*j+k+1
-
-              current_stimuli = MAIN_DIR + complexity_levels[i] + '_'
-                                + novel_stim_num + '.gif'
-
-              all_stimuli.push(current_stimuli)
-
-            }
 
             for (var l = 0; l < action.length; l++){
 
@@ -217,7 +215,6 @@ function generate_timeline_variables(block_information){
      if (background_location == "right"){
 
          background_pokeball_animation = 'images/stimuli/pokeball_3.gif'
-
 
      }else if (background_location == "left"){
 

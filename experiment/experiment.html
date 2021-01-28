@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link rel="import" href="x-gif.html">
   <script src = "js/require.js"></script>
   <script src="js/jspsych.js"></script>
   <script src="js/instruction_and_transition.js"></script>
@@ -39,7 +38,7 @@
     jsPsych.data.addProperties({ subject: subject_id });
 
 // Stimuli setup
-TEST_RUN = 0 //test run with smaller number of species etc.
+TEST_RUN = 1 //test run with smaller number of species etc.
 
 if (TEST_RUN == 1) {
   SHOW_INTRO = true
@@ -67,6 +66,10 @@ var similarity_stims = []
 var complexity_stims = []
 
 all_stimuli = get_all_stimuli(TEST_RUN)
+
+console.log('all_stimuli')
+
+console.log(all_stimuli)
 all_blocks_information = generate_all_block(num_blocks = NUM_BLOCKS,
                                             num_trial_per_block = NUM_TRIAL_PER_BLOCK,
                                             stimuli_array = all_stimuli,
@@ -223,7 +226,7 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
         require_movement: true,
         slider_width:500,
         prompt: '<p> On a scale of 1 to 100 how would you rate the similarity between thes two creatures?</p>',
-        labels: ["Least Similar = 1", "Most Similar = 100"],
+        labels: ["Most Similar = 1", "Most Different = 100"],
         data: {stimulus_type: 'similarity_question', stimulus_left: similarity_array[0], stimulus_right: similarity_array[1]}
 
 
@@ -243,7 +246,7 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
         slider_width:500,
         require_movement: true,
         prompt:  '<p"> On a scale of 1 to 100 how would you rate the complexity of this creature?</p>',
-        labels: ["Least Complex = 1", "Most Complex = 100"],
+        labels: ["Simplest = 1", "Most Complex = 100"],
         data: {stimulus_type: 'complexity_question', stimulus: similarity_array[random_index]}
 
 
