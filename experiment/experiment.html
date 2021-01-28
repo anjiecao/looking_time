@@ -39,7 +39,7 @@
     jsPsych.data.addProperties({ subject: subject_id });
 
 // Stimuli setup
-TEST_RUN = 1 //test run with smaller number of species etc.
+TEST_RUN = 0 //test run with smaller number of species etc.
 
 if (TEST_RUN == 1) {
   SHOW_INTRO = true
@@ -53,7 +53,7 @@ if (TEST_RUN == 1) {
 }
 else {
   SHOW_INTRO = true
-  NUM_BLOCKS = 40
+  NUM_BLOCKS = 20
   NUM_TRIAL_PER_BLOCK = 8
   DEVIANT_POSITIONS = [3,4,5,6,7,8]
   BREAK_EVERY_N_BLOCKS = 10

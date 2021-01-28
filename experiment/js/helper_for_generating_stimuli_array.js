@@ -147,8 +147,8 @@ function get_all_stimuli(TEST_RUN){
       action = ['a', 'b']
     }
     else {
-      // 30 species
-      species = Array.from({length: 30}, (_, i) => i + 1)
+      // 20 species
+      species = Array.from({length: 20}, (_, i) => i + 1)
 
       // 2 versions per species
       version = ['A', 'B']
