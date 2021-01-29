@@ -38,7 +38,7 @@
     jsPsych.data.addProperties({ subject: subject_id });
 
 // Stimuli setup
-TEST_RUN = 1 //test run with smaller number of species etc.
+TEST_RUN = 0 //test run with smaller number of species etc.
 
 if (TEST_RUN == 1) {
   SHOW_INTRO = false
@@ -51,7 +51,7 @@ if (TEST_RUN == 1) {
 
 }
 else {
-  SHOW_INTRO = true
+  SHOW_INTRO = true 
   NUM_BLOCKS = 20
   NUM_TRIAL_PER_BLOCK = 8
   DEVIANT_POSITIONS = [3,4,5,6,7,8]
@@ -341,6 +341,13 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
    console.log(timeline)
 
 
+poke_ball_stimuli = ["images/stimuli/pokeball_1.gif", 
+                     "images/stimuli/pokeball_2.gif",
+                    "images/stimuli/pokeball_3.gif", 
+                     "images/stimuli/pokeballs_closed.jpg", 
+                    "images/stimuli/pokeballs_pref.jpg"]    
+    
+all_stimuli = all_stimuli.concat(poke_ball_stimuli)    
 
 function saveData(name, data){
         var xhr = new XMLHttpRequest();
@@ -352,15 +359,13 @@ function saveData(name, data){
 
 // For loading
 
-    var all_images = INSTRCUTION_IMAGES.concat(ALL_STIMULI_PATH)
-    var all_images = all_images.concat(PRACTICE_IMAGES)
-
+  
 
 jsPsych.init({
         timeline: timeline,
         show_progress_bar: true,
         //use_webaudio: true, // this won't work for local testing (CORS), but maybe on server
-        //preload_images: all_images,
+        preload_images: all_stimuli,
         //preload_video: video,
         on_trial_finish: function(){
             saveData("test" + subject_id, jsPsych.data.get().csv());
