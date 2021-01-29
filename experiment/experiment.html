@@ -350,7 +350,7 @@ all_stimuli = all_stimuli.concat(poke_ball_stimuli)
 
 function saveData(name, data){
         var xhr = new XMLHttpRequest();
-        xhr.open('POST', 'https://web.stanford.edu/~anjiecao/cgi-bin/looking_time/write_data.php');
+        xhr.open('POST', '../../../cgi-bin/pokebaby/write_data.php');
         //xhr.open('POST', 'write_data.php'); // 'write_data.php' is the path to the php file described above.
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.send(JSON.stringify({filename: name, filedata: data}));
