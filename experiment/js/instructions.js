@@ -74,9 +74,9 @@ var intro0 = {
         var intro4 = {
           type: 'html-keyboard-response',
           stimulus: '<img src=images/stimuli/pokeballs_pref.jpg width ="800" height = "200" style="padding-top: 33%">',
-          prompt: "<p> Every couple of trials, you will have a chance to open one of the three balls yourself! </p>" +
+          prompt: "<p> Every once in a while, you will have a chance to open one of the three balls yourself! </p>" +
           "<p> You can open one of the balls that have already opened to see the same creature again </p>" +
-          "<p> or you can select a ball that hasn't opened yet and be surprised! </p>" +
+          "<p> or you can select a ball that hasn't opened yet! </p>" +
           "<p> You can choose which ball you'd like to open by <b> pressing the corresponding number key </b> on your keyboard! </p>" ,
           choices: [49, 50, 51, 97, 98, 99],
           data: {stimulus_type: 'instructions'},
