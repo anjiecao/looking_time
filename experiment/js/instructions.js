@@ -65,7 +65,7 @@ var intro0 = {
         var intro3 = {
             type: "instructions",
             pages: [
-                "<p> Pretty simple, huh? That means that the task is entirely self-paced, </p>" +
+                "<p> Pretty simple, huh? That means that you can go through the task at your own speed, </p>" +
                 "<p> and you can look at each creature for as long as you like. </p>"],
                 data: {stimulus_type: 'instructions'},
                 show_clickable_nav: true}
