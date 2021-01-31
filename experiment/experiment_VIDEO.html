@@ -398,7 +398,7 @@ jsPsych.init({
         preload_video: VIDEO,
         on_trial_finish: function(){
             saveData("test" + subject_id, jsPsych.data.get().csv());
-            jsPsych.data.displayData();
+            //jsPsych.data.displayData();
             //setTimeout(function() { turk.submit(jsPsych.data.get().ignore('external-html').json()); }, 5000);
       }
     })
