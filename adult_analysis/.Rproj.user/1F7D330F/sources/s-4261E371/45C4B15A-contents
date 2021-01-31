@@ -25,6 +25,6 @@ TEST_TRIAL <- c("pref_reveal", "trial")
 df.raw %>% 
   filter(stimulus_type == "trial") %>% 
   select(subject, stimulus_type, rt, key_press, trial_looking_time,
-         block_number, stimulus_displayed)
+         block_number, block_type, stimulus_displayed)
 ```
 

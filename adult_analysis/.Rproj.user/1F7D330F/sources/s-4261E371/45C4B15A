@@ -5,15 +5,15 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "1555039205",
+    "hash" : "0",
     "id" : "45C4B15A",
-    "lastKnownWriteTime" : 1611978616,
-    "last_content_update" : 1611978616555,
+    "lastKnownWriteTime" : 1612118761,
+    "last_content_update" : 1612118761225,
     "path" : "~/Desktop/projects/looking_time/adult_analysis/01_preprocessing.Rmd",
     "project_path" : "01_preprocessing.Rmd",
     "properties" : {
-        "cursorPosition" : "23,0",
-        "scrollLine" : "19"
+        "cursorPosition" : "27,35",
+        "scrollLine" : "16"
     },
     "read_only" : false,
     "read_only_alternatives" : [
