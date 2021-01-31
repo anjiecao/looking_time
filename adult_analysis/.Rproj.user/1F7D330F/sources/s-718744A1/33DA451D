@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1611978406626.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "499695782",
+    "id" : "33DA451D",
+    "lastKnownWriteTime" : 1611977701,
+    "last_content_update" : 1611977701,
+    "path" : "~/Desktop/projects/looking_time/adult_analysis/data/merged_data/merged_data.csv",
+    "project_path" : "data/merged_data/merged_data.csv",
+    "properties" : {
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 7,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "text"
+}

@@ -484,39 +484,26 @@ df.cn_task_ex %>%
 
 
 
-# SUMMARIZE EXCLUSION REASON 
-```{r}
-merged_demogs %>% 
-  group_by(culture) %>% 
-  distinct(subject) %>% 
-  count()
 
-df.us_demog_ex %>% 
-  distinct(subject) %>% 
-  count()
 
-df.cn_demog_ex %>% 
-  distinct(subject) %>% 
-  count()
 
-df.us_task_ex %>% 
-  distinct(subject) %>% 
-  count()
 
-df.cn_demog_ex %>% 
-  distinct(subject) %>% 
-  count()
-```
+
+
+
+
 
 
 
 ```{r}
+df.all_complete_ex <- complete_exclusion_by_task(merged_data)
+
 df.us_demog_ex<- demog_exclusion(filter(merged_demogs, culture == "US"),
-                                  culture == "US", 
+                                  culture = "US", 
                                   check_exclusion = FALSE, 
                                   detail_table = TRUE) 
 df.cn_demog_ex <- demog_exclusion(filter(merged_demogs, culture == "CN"),
-                                  culture == "CN", 
+                                  culture = "CN", 
                                   check_exclusion = FALSE, 
                                   detail_table = TRUE) 
 
@@ -532,108 +519,25 @@ df.cn_task_ex <- task_exclusion(filter(merged_data, culture == "CN"),
                                 check_exclusion = TRUE, 
                                 detail_table = TRUE)
 
-
-```
-
-```{r}
 df.us_all_ex <- left_join(df.us_demog_ex, 
                           df.us_task_ex, by = "subject")
 df.cn_all_ex <- left_join(df.cn_demog_ex, 
                           df.cn_task_ex, by = "subject")
 
+df.all_ex <- bind_rows(df.us_all_ex, 
+                       df.cn_all_ex) %>% 
+  left_join(df.all_complete_ex, by = "subject") %>% 
+  rename(culture = culture.x)
 
-
-df.us_all_ex  
-```
-
-```{r}
-HAND_EXCLUSION <- c(
-                  # participant requested 
-                  "SS1609806859776"
-                  
-)
-
-tidy_d <- read_csv(here("data/4_processed/tidy_main.csv")) 
-```
-
-```{r}
-df.us_all_ex %>% 
-  filter(reason_abroad) %>% 
-  distinct(subject) %>% 
-  count()
-
-df.cn_all_ex %>% 
-  filter(reason_abroad | reason_EBB | reason_CA | reason_FD | reason_HZ | reason_RMTS | reason_SI) %>% 
-  distinct(subject) %>% 
-  count()
-
-df.all_ex <- bind_rows(df.us_all_ex, df.cn_task_ex)
-
-df.all_ex %>% 
-  distinct(subject) %>% 
-  count()
-
-tidy_d %>% 
-  distinct(subject) %>% 
-  count()
-```
-
-```{r}
-final_sbj <- tidy_d %>% 
-  distinct(subject) %>% 
+ex_id <- df.all_ex %>% 
+  filter(reason_abroad | reason_EBB | reason_CA | reason_FD | reason_HZ | reason_RMTS | reason_SI  | reason_EBB_complete | reason_CA_complete | reason_FD_complete | reason_HZ_complete | reason_RMTS_complete) %>% 
+  select(subject) %>% 
   pull()
-
-full_sbj <- df.all_ex %>% 
-  distinct(subject) %>% 
-  pull()
-
-exclude_sbj <- setdiff(full_sbj, final_sbj)
-```
-
-```{r}
-# all have at least one instance 
-df.us_all_ex %>% 
-  filter(subject %in% exclude_sbj) %>% 
-  filter(!(reason_abroad | reason_EBB | reason_CA | reason_FD | reason_HZ | reason_RMTS | reason_SI))
-
-
-# somehow SS1609035138833 got excluded 
-df.cn_all_ex %>% 
-  filter(subject %in% exclude_sbj) %>% 
-  filter(!(reason_abroad | reason_EBB | reason_CA | reason_FD | reason_HZ | reason_RMTS | reason_SI))
-
-```
-# FIGUREING OUT CN m
-```{r}
-merged_v <- read_csv(here("data/2_merged/merged_all.csv"))
-trimmed_v <- read_csv(here("data/3_trimmed/trimmed_all.csv"))
-merged_v %>% 
-  filter(subject == "SS1609035138833")
-
-"SS1609035138833" %in% complete_ex_id # it's because of complete!!!
-```
-
-
-
-
-```{r}
-task_ex_id_us <- task_exclusion(filter(task_trimmed_d, culture == "US"), 
-                                culture = "US", 
-                                include_annotation = TRUE, 
-                                check_exclusion = FALSE, 
-                                detail_table = FALSE) 
-
-
-task_ex_id_cn <- task_exclusion(filter(task_trimmed_d, culture == "CN"),
-                                culture = "CN", 
-                                include_annotation = TRUE, 
-                                check_exclusion = FALSE, 
-                                detail_table = FALSE)
-
-ex_id <- c(task_ex_id_us,task_ex_id_cn)
-ex_id <- ex_id[!duplicated(ex_id)]
-
-trimmed_d <- task_trimmed_d %>%
+  
+  
+  
+  
+trimmed_d <- merged_data %>%
      filter(
        !(subject %in% ex_id)
      ) %>%

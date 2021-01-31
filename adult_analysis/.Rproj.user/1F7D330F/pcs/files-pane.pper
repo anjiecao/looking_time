@@ -1,0 +1,9 @@
+{
+    "path" : "~/Desktop/projects/looking_time/adult_analysis/data/merged_data",
+    "sortOrder" : [
+        {
+            "ascending" : true,
+            "columnIndex" : 2
+        }
+    ]
+}
