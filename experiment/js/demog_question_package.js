@@ -22,7 +22,8 @@
         ]
     }
   
-    var demog_disorder_history = {
+/*
+var demog_disorder_history = {
         type: "demog-disorder-history", 
         button_label: "Done", 
         questions: [
@@ -33,8 +34,8 @@
         ]
     }
     
+*/
     
 var demog_questions = [demog_question_age, 
                        demog_question_ethnicity, 
-                       demog_gender_and_education, 
-                       demog_disorder_history]
+                       demog_gender_and_education]

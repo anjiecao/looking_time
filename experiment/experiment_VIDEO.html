@@ -22,6 +22,9 @@
     <script src= "js/jspsych-categorize-image.js"></script>
     <script src="js/helper_for_generating_stimuli_array.js"></script>
     <script src="js/helper_for_checking_duplicate_stimuli.js"></script>
+    <script src= "js/jspsych-demog-age.js"></script>
+    <script src= "js/jspsych-demog-ethnic-US.js"></script>
+    <script src= "js/jspsych-demog-gender-and-education.js"></script>
   <link rel="stylesheet" href="css/jspsych.css"></link>
 </head>
 <body></body>
@@ -38,7 +41,7 @@
     jsPsych.data.addProperties({ subject: subject_id });
 
 // Stimuli setup
-TEST_RUN = 0 //test run with smaller number of species etc.
+TEST_RUN = 1 //test run with smaller number of species etc.
 
 if (TEST_RUN == 1) {
   SHOW_INTRO = false
@@ -125,6 +128,7 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
 
     block_counter = 0
     block_information = all_blocks_information[block_index]
+    block_type = block_information.block_type
     console.log('info: ' + block_information['stims_in_order'])
     block_timeline_variable = generate_timeline_variables(block_information)
     if (verbose){
@@ -161,7 +165,7 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
                                 key_response: [40],
                                 minimum_viewing_duration: 900, // block responses until stimulus appears
                                 response_ends_trial: true,
-                                data: {block_number: block_index,  stimulus_type: 'trial', stimulus_displayed: jsPsych.timelineVariable('stimuli'), position_displayed: jsPsych.timelineVariable('location'), trial_type: jsPsych.timelineVariable('stim_type')},
+                                data: {block_number: block_index, block_type: block_type,  stimulus_type: 'trial', stimulus_displayed: jsPsych.timelineVariable('stimuli'), position_displayed: jsPsych.timelineVariable('location'), trial_type: jsPsych.timelineVariable('stim_type')},
                             }
                             ],
                         timeline_variables: block_timeline_variable
@@ -313,6 +317,19 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
    shuffleArray(complexity_stims)
    timeline.push(complexity_instruction)
    timeline = timeline.concat(complexity_stims)
+    
+    
+  var pre_demog_instruction = {
+        type: "instructions",
+        pages: [
+            "Congratulations! You have finished all the tasks tasks! Now, we would like to ask a few questions about you."
+        ],
+        data: {stimulus_type: 'instructions'},
+        show_clickable_nav: true
+    }    
+    
+  timeline.push(pre_demog_instruction)
+  timeline = timeline.concat(demog_questions)
 
 
    //feedback
