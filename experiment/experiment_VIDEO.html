@@ -161,9 +161,9 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
                                     var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='200' height = '200' style='float:" + jsPsych.timelineVariable('location', true) + "'></p>"
                                     return html
                                 },
-                                two_stimuli_interval: 900,
+                                two_stimuli_interval: 700,
                                 key_response: [40],
-                                minimum_viewing_duration: 900, // block responses until stimulus appears
+                                minimum_viewing_duration: 700, // block responses until stimulus appears
                                 response_ends_trial: true,
                                 data: {block_number: block_index, block_type: block_type,  stimulus_type: 'trial', stimulus_displayed: jsPsych.timelineVariable('stimuli'), position_displayed: jsPsych.timelineVariable('location'), trial_type: jsPsych.timelineVariable('stim_type')},
                             }
@@ -203,11 +203,11 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
      var reveal = {
        type: 'sequential-stimulus-presentation',
        poke_ball_animation: function(){
-     
+
            var html = "<video width ='800' height ='200' autoplay muted><source src=" + 'images/stimuli/pokeball_' + jsPsych.data.get().last(1).values()[0].ball_pref + ".mp4" + ' type="video/mp4"></video>'
-           
+
            //var html = "<p><img src='images/stimuli/pokeball_" + jsPsych.data.get().last(1).values()[0].ball_pref + ".gif" + "?a=" + Math.random() + " width ='800' height = '200'></p>"
-      
+
            console.log(html)
       return html
     },
@@ -219,9 +219,9 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
          // record whether they selected background,deviant or novel
          data.stim_type_selected = all_blocks_information[jsPsych.data.get().last(2).values()[0].block_number].stim_type_locations[jsPsych.data.get().last(2).values()[0].ball_pref - 1]
        },
-       two_stimuli_interval: 900,
+       two_stimuli_interval: 700,
        key_response: [40],
-       minimum_viewing_duration: 900, // daffner2000's info was 600, changed to 200
+       minimum_viewing_duration: 700, // daffner2000's info was 600, changed to 200
        data: {block_number: block_index, stimulus_type: 'pref_reveal'},
        response_ends_trial: true,
      }
@@ -317,8 +317,8 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
    shuffleArray(complexity_stims)
    timeline.push(complexity_instruction)
    timeline = timeline.concat(complexity_stims)
-    
-    
+
+
   var pre_demog_instruction = {
         type: "instructions",
         pages: [
@@ -326,8 +326,8 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
         ],
         data: {stimulus_type: 'instructions'},
         show_clickable_nav: true
-    }    
-    
+    }
+
   timeline.push(pre_demog_instruction)
   timeline = timeline.concat(demog_questions)
 
@@ -371,8 +371,8 @@ poke_ball_stimuli = ["images/stimuli/pokeball_1.gif",
                     "images/stimuli/pokeballs_pref.jpg"]
 
 all_stimuli = all_stimuli.concat(poke_ball_stimuli)
-    
-    
+
+
 VIDEO = ["images/stimuli/pokeball_1.mp4",
                      "images/stimuli/pokeball_2.mp4",
                     "images/stimuli/pokeball_3.mp4"]
