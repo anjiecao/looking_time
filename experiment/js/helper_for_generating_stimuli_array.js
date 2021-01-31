@@ -209,6 +209,7 @@ function generate_timeline_variables(block_information){
     deviant_stimuli = block_information.deviant_stimuli
     deviant_position_array = block_information.deviant_position_array
     block_length = block_information.num_trial_per_block
+    block_type = block_information.block_type
 
 
      // pick the appropriate pokeball animation for background item
@@ -308,10 +309,6 @@ function generate_all_block(num_blocks,
       }
     }
 
-    console.log('novel_stims')
-
-    console.log(novel_stims)
-
     all_block_information = []
 
 
@@ -389,19 +386,11 @@ function generate_similar_block(stims, novel_stims, num_blocks, num_trial_per_bl
     }
   }
 
-  console.log(block_type + ' block')
-  console.log('background: ' + background)
-  console.log('deviant: ' + deviant)
-
   // get species info
   speciesInfo = background.slice(0, background.length-7)
 
   // remove that species from pool
   stims = stims.filter(x => !(x.includes(speciesInfo)))
-
-  console.log('stims after removal: ')
-  console.log(stims)
-
 
 
   // add novel stimulus
@@ -409,7 +398,6 @@ function generate_similar_block(stims, novel_stims, num_blocks, num_trial_per_bl
 
   novel = novel_stims[novelIdx];
 
-  console.log('novel' + novel)
 
   // remove from pool
   novel_stims.splice(novelIdx, 1)
@@ -496,14 +484,6 @@ function generate_dissimilar_block(stims, novel_stims, num_blocks, num_trial_per
   // remove these creatures from the list for next iteration (not including their modification)
   stims = stims.filter(x => !(x.includes(speciesInfo_2) && x.includes(modificationInfo_2)))
 
-  console.log(block_type + ' block:')
-  console.log('background: ' + background)
-  console.log('deviant: ' + deviant)
-
-
-  console.log('stims after removal of more: ')
-  console.log(stims)
-
   // assign locations
   locations = ["left", "middle", "right"]
 
@@ -512,12 +492,8 @@ function generate_dissimilar_block(stims, novel_stims, num_blocks, num_trial_per
   novelIdx = Math.floor(Math.random() * novel_stims.length)
   novel = novel_stims[novelIdx];
 
-  console.log('novel' + novel)
-
   // remove from pool
   novel_stims.splice(novelIdx, 1)
-
-  console.log('novel_stims: ' + novel_stims)
 
 
   block_stimuli = [background, deviant, novel]
@@ -538,8 +514,6 @@ function generate_dissimilar_block(stims, novel_stims, num_blocks, num_trial_per
   stims_in_order.push(block_stimuli[locations.indexOf('left')])
   stims_in_order.push(block_stimuli[locations.indexOf('middle')])
   stims_in_order.push(block_stimuli[locations.indexOf('right')])
-
-  console.log(stims_in_order)
 
   // generate array of stimulus types to keep track
   var stim_types = ['background', 'deviant', 'novel']
