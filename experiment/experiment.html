@@ -37,7 +37,7 @@
     jsPsych.data.addProperties({ subject: subject_id });
 
 // Stimuli setup
-TEST_RUN = 0 //test run with smaller number of species etc.
+TEST_RUN = 1 //test run with smaller number of species etc.
 
 if (TEST_RUN == 1) {
   SHOW_INTRO = false
@@ -64,9 +64,7 @@ else {
 
 all_stimuli = get_all_stimuli(TEST_RUN)
 
-console.log('all_stimuli')
 
-console.log(all_stimuli)
 all_blocks_information = generate_all_block(num_blocks = NUM_BLOCKS,
                                             num_trial_per_block = NUM_TRIAL_PER_BLOCK,
                                             stimuli_array = all_stimuli,
@@ -124,7 +122,8 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
 
     block_counter = 0
     block_information = all_blocks_information[block_index]
-    console.log('info: ' + block_information['stims_in_order'])
+    console.log('block_information')
+
     block_timeline_variable = generate_timeline_variables(block_information)
     if (verbose){
     console.log("Each block time variable: ")
@@ -158,7 +157,7 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
                                 key_response: [40],
                                 minimum_viewing_duration: 900, // block responses until stimulus appears
                                 response_ends_trial: true,
-                                data: {block_number: block_index,  stimulus_type: 'trial', stimulus_displayed: jsPsych.timelineVariable('stimuli'), position_displayed: jsPsych.timelineVariable('location'), trial_type: jsPsych.timelineVariable('stim_type')},
+                                data: {block_number: block_index,  stimulus_type: 'trial', stimulus_displayed: jsPsych.timelineVariable('stimuli'), position_displayed: jsPsych.timelineVariable('location'), trial_type: jsPsych.timelineVariable('stim_type'), block_type: jsPsych.timelineVariable('block_type')},
                             }
                             ],
                         timeline_variables: block_timeline_variable
@@ -173,7 +172,7 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
         stimulus: '<img src=images/stimuli/pokeballs_pref.jpg width ="800" height = "200" style="padding-top: 33%">',
         prompt: "<p> Which ball would you like to open? </p>",
         choices: [49, 50, 51, 97, 98, 99],
-        data: {block_number: block_index, stimulus_type: 'pref_question'},
+        data: {block_number: block_index, stimulus_type: 'pref_question', block_type: block_information.block_type},
         on_finish: function(data){
           if (data.key_press ==  49 || data.key_press == 97) {
             data.ball_pref = 1
@@ -211,7 +210,7 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
        two_stimuli_interval: 900,
        key_response: [40],
        minimum_viewing_duration: 900, // daffner2000's info was 600, changed to 200
-       data: {block_number: block_index, stimulus_type: 'pref_reveal'},
+       data: {block_number: block_index, stimulus_type: 'pref_reveal', block_type: block_information.block_type},
        response_ends_trial: true,
      }
 
@@ -227,7 +226,7 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
              stimulus: '<p>Now you can take a short break </p><p>When the timer runs out, the next part of the experiment will automatically begin. You can also press any key to go to the next part now.</p><p><img src= images/time_noloop.gif'+ "?a=" + Math.random() + ' width ="200" height = "200"></p><p><img src=images/blank.png width ="800" height = "200"></p>',
              //choices: ['e', 'i'],
              trial_duration: 15 * 1000, // 15s
-             data: {block_number: block_index, stimulus_type: 'break'},
+             data: {block_number: block_index, stimulus_type: 'break', block_type: block_information.block_type},
              response_ends_trial: true,
          };
 
@@ -259,7 +258,7 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
         questions: [
           {prompt: '<p> How similar are these creatures?</p>', labels: scale_similarity, required: true}
         ],
-        scale_width: '250px',
+        scale_width: '500px',
         data: {stimulus_type: 'similarity_question', stimulus_left: similarity_array[0], stimulus_right: similarity_array[1]}
       }
 
@@ -288,7 +287,7 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
       questions: [
         {prompt: '<p> How complex is this creature?</p>', labels: scale_complexity, required: true}
       ],
-      scale_width: '250px',
+      scale_width: '500px',
       data: {trial_type: 'complexity_question', stimulus: similarity_array[random_index]}
     };
 
