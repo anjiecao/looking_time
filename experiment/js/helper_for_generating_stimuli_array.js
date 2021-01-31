@@ -215,25 +215,25 @@ function generate_timeline_variables(block_information){
      // pick the appropriate pokeball animation for background item
      if (background_location == "right"){
 
-         background_pokeball_animation = 'images/stimuli/pokeball_3.gif'
+         background_pokeball_animation = 'images/stimuli/pokeball_3.mp4'
 
      }else if (background_location == "left"){
 
-         background_pokeball_animation = 'images/stimuli/pokeball_1.gif'
+         background_pokeball_animation = 'images/stimuli/pokeball_1.mp4'
 
      }else if (background_location == "middle"){
 
-         background_pokeball_animation = 'images/stimuli/pokeball_2.gif'
+         background_pokeball_animation = 'images/stimuli/pokeball_2.mp4'
 
      }
 
      // pick the appropriate pokeball animation for deviant item
      if (deviant_location == "right"){
-         deviant_pokeball_animation = 'images/stimuli/pokeball_3.gif'
+         deviant_pokeball_animation = 'images/stimuli/pokeball_3.mp4'
      }else if (deviant_location == "left"){
-        deviant_pokeball_animation = 'images/stimuli/pokeball_1.gif'
+        deviant_pokeball_animation = 'images/stimuli/pokeball_1.mp4'
    }else if (deviant_location == "middle"){
-         deviant_pokeball_animation = 'images/stimuli/pokeball_2.gif'
+         deviant_pokeball_animation = 'images/stimuli/pokeball_2.mp4'
      }
 
 

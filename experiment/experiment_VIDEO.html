@@ -38,7 +38,7 @@
     jsPsych.data.addProperties({ subject: subject_id });
 
 // Stimuli setup
-TEST_RUN = 1 //test run with smaller number of species etc.
+TEST_RUN = 0 //test run with smaller number of species etc.
 
 if (TEST_RUN == 1) {
   SHOW_INTRO = false
@@ -148,7 +148,7 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
                                 type: 'sequential-stimulus-presentation',
                                 poke_ball_animation: function(){
                                     //var html = "<img src= "+jsPsych.timelineVariable('poke_ball_animation', true)+ "?a="+Math.random() +" width ='800' height = '200'></p>"
-                                    var html = "<video width ='800' height ='200' autoplay muted><source src=" + "images/stimuli/pokeball_1.mp4" + ' type="video/mp4"></video>'
+                                    var html = "<video width ='800' height ='200' autoplay muted><source src=" + jsPsych.timelineVariable('poke_ball_animation', true) + ' type="video/mp4"></video>'
                                     //var html = "<img src= "+ "images/stimuli/pokeball_1.gif" +" width ='800' height = '200'></p>"
                                     return html;
                                 },
@@ -199,8 +199,12 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
      var reveal = {
        type: 'sequential-stimulus-presentation',
        poke_ball_animation: function(){
-     var html = "<p><img src='images/stimuli/pokeball_" + jsPsych.data.get().last(1).values()[0].ball_pref + ".gif" + "?a=" + Math.random() + " width ='800' height = '200'></p>"
-      console.log(html)
+     
+           var html = "<video width ='800' height ='200' autoplay muted><source src=" + 'images/stimuli/pokeball_' + jsPsych.data.get().last(1).values()[0].ball_pref + ".mp4" + ' type="video/mp4"></video>'
+           
+           //var html = "<p><img src='images/stimuli/pokeball_" + jsPsych.data.get().last(1).values()[0].ball_pref + ".gif" + "?a=" + Math.random() + " width ='800' height = '200'></p>"
+      
+           console.log(html)
       return html
     },
        stimuli_animation: function(){

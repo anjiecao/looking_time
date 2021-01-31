@@ -23,7 +23,9 @@ var intro0 = {
         var intro1 = {
           type: 'sequential-stimulus-presentation',
           poke_ball_animation: function(){
-        var html = "<p><img src='images/stimuli/pokeball_3.gif" + "?a=" + Math.random() + " width ='800' height = '200'></p>" +
+              
+              
+        var html = "<p><video width ='800' height ='200' autoplay muted><source src=" + 'images/stimuli/pokeball_3.mp4' + ' type="video/mp4"></video></p>' +
                   "<p> On every trial, one of the balls will open and a creature will pop out. </p>" +
                   "<p> To continue, <b> press the down arrow-key </b> on your keyboard. </p>" +
                   "<p> You can try it now! </p>"
@@ -45,7 +47,7 @@ var intro0 = {
         var intro2 = {
           type: 'sequential-stimulus-presentation',
           poke_ball_animation: function(){
-        var html = "<p><img src='images/stimuli/pokeball_2.gif" + "?a=" + Math.random() + " width ='800' height = '200'></p>" +
+        var html = "<p><video width ='800' height ='200' autoplay muted><source src=" + 'images/stimuli/pokeball_2.mp4' + ' type="video/mp4"></video></p>' +
                   "<p> Try again! Press the down arrow key when you've had enough of this little guy. </p>"
 
          console.log(html)
@@ -100,7 +102,7 @@ var intro0 = {
         var intro5 = {
           type: 'sequential-stimulus-presentation',
           poke_ball_animation: function(){
-        var html = "<p><img src='images/stimuli/pokeball_" + jsPsych.data.get().last(1).values()[0].ball_pref + ".gif" + "?a=" + Math.random() + " width ='800' height = '200'></p>" +
+        var html = "<video width ='800' height ='200' autoplay muted><source src=" + 'images/stimuli/pokeball_' + jsPsych.data.get().last(1).values()[0].ball_pref + ".mp4" + ' type="video/mp4"></video>' +
         "<p> Again, press the down arrow to continue. </p>"
          console.log(html)
          return html
