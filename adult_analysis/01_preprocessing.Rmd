@@ -55,8 +55,19 @@ df.processed <- df.raw %>%
       grepl("simple", stimulus_displayed) ~ "simple", 
       grepl("complex", stimulus_displayed) ~ "complex"
     )
-  ) %>% 
-  select(subject, block_number, block_type, trial_number, trial_type, trial_complexity, rt) %>% transform(rt = as.numeric(rt))
+  ) %>%   
+  mutate(block_similarity = case_when(
+      grepl("_similar", block_type) ~ "similar", 
+      grepl("_dissimilar", block_type) ~ "dissimilar"
+    )
+  ) %>%   
+  mutate(plotting_var = case_when(
+    trial_type == 'background' ~ trial_type,
+    trial_type == 'deviant' ~ block_similarity
+    )
+  ) %>%   
+  select(subject, block_number, block_type, trial_number, plotting_var, trial_type, trial_complexity, rt) %>% 
+  transform(rt = as.numeric(rt))
 
 # df.main
 ```
@@ -65,10 +76,10 @@ df.processed <- df.raw %>%
 ```{r}
 
 summarized <- df.processed %>%
-group_by(trial_number, trial_type) %>% 
+group_by(trial_number, plotting_var, trial_complexity) %>% 
 summarise(meanRT=mean(rt), maxRT=max(rt), minRT=min(rt), medianRT=median(rt), Std=sd(rt), SE = std.error(rt), n = n())
 
-ggplot(summarized, aes(x=trial_number, y=medianRT, colour=trial_type)) + geom_line() + geom_errorbar(aes(ymin=medianRT-SE, ymax=medianRT+SE),
+ggplot(summarized, aes(x=trial_number, y=medianRT, colour=plotting_var)) + geom_line() + geom_errorbar(aes(ymin=medianRT-SE, ymax=medianRT+SE),
                 width=0.8, size = 0.8, position = position_dodge(width = 0.2), show.legend = FALSE, alpha = 0.8) +
   geom_point(position = position_dodge(width = 0.2), size=2.5) + geom_line(size=1.2, position = position_dodge(width = 0.2)) + ylab("RT [msec]") +
   theme_gray()  + theme(
@@ -81,9 +92,8 @@ ggplot(summarized, aes(x=trial_number, y=medianRT, colour=trial_type)) + geom_li
     legend.text = element_text(size=14, face='bold'),
     strip.text = element_text(size=17, face='bold'),
     legend.key.size = unit(2.5, 'lines')) + 
-  scale_x_continuous(name="Trial Number", breaks =c(2,4,6,8)) 
-
-
+  scale_x_continuous(name="Trial Number", breaks =c(2,4,6,8)) +
+  facet_grid(~trial_complexity)
 
 ```
 
