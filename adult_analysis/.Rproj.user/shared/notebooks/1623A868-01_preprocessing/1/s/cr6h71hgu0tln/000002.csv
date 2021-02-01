@@ -1,5 +1,7 @@
 "0","library(tidyverse)"
 "0","library(here)"
+"0","library(stringr) # for parsing r string "
+"0","library(jsonlite) # for parsing r string "
 "0",""
 "0","d_path <- here(""data/merged_data/merged_data.csv"")"
 "0","df.raw <- read_csv(d_path)"

@@ -1,0 +1,1298 @@
+---
+title: "Expoloratory analysis for Pilot-B data"
+author: "Anjie Cao (anjiecao@stanford.edu)"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: yes
+    code_folding: hide
+    toc_depth: 3
+    toc_float:
+      collapsed: true
+---
+
+# todo: 
+- new exclusion criteria 
+- ideal learner stuff 
+- look at target reaction time? 
+- import the complexity norm? 
+
+
+```{r include=FALSE}
+library(tidyverse)
+library(here)
+library(rstatix)
+library(lme4)
+library(DT)
+library(jsonlite)
+library(tidyverse)
+library(kableExtra)
+source(here("script/00_read_raw_data.R"))
+source(here("script/01_apply_exclusion_criteria.R"))
+source(here("script/02_tidy_data.R"))
+
+RAW_DATA_DIR <- here("raw_data/")
+AGGREGATED_DATA_PATH <- here("processed_data/aggregated_data.csv")
+PROCESSED_DATA_PATH <- here("processed_data/processed_data.csv")
+NO_FILTER_DATA_PATH <- here("no_filtered.csv")
+####Aggregate across participants, clean up demographic fields
+aggregate_data(RAW_DATA_DIR, AGGREGATED_DATA_PATH)
+
+
+####Import data 
+data_with_demog <- read_csv(AGGREGATED_DATA_PATH)
+
+#### Data exclusion / filtering
+# participants level exclusion
+filtered_data <- filter_demog(data_with_demog)
+filtered_data <- filter_spacebar(filtered_data)
+filtered_data <- filter_trial_variation(filtered_data)
+filtered_data <- filter_too_many_outliers(filtered_data)
+#trial level exclusion
+filtered_data <- filter_outlier_trial(filtered_data)  
+
+#### Prepare data for analysis - create columns etc.
+d <- tidy_data(filtered_data,PROCESSED_DATA_PATH) # this also writes
+
+```
+
+
+```{r}
+data_with_demog %>% select(subject) %>% unique() %>% count()
+filter_spacebar(data_with_demog) %>% select(subject) %>% unique() %>% count()
+filter_trial_variation(data_with_demog) %>% select(subject) %>% unique() %>% count()
+filter_too_many_outliers(data_with_demog) %>% select(subject) %>% unique() %>% count()
+filtered_data %>% select(subject) %>% unique() %>% count()
+```
+
+
+# Visualizing raw trial looking time
+```{r}
+d_no_target <- d %>% 
+  filter(trial_stimulus_type != "target")
+```
+
+
+## Looking time distribution {.tabset}
+### RAW 
+```{r }
+data_with_demog %>% 
+  ggplot(aes(x = trial_looking_time)) + 
+  geom_histogram(bins = 90) + 
+  xlim(0, 9000)
+```
+```{r }
+data_with_demog %>% 
+  ggplot(aes(x = trial_looking_time)) + 
+  geom_histogram() + 
+  scale_x_log10()
+```
+
+
+### AFTER EXCLUSION 
+```{r }
+d %>% 
+  ggplot(aes(x = trial_looking_time)) + 
+  geom_histogram() + 
+  scale_x_log10()
+# 
+# d %>% 
+#   ggplot(aes(x = trial_looking_time)) + 
+#   geom_histogram(bins = 90) + 
+#   xlim(0, 6000) + 
+#   facet_wrap(~subject)
+```
+
+# Digging through the second hump
+
+* Something wacky is happening in background trials.
+* Deviant trials are slower
+* target trials are likely a mixture between hits and misses
+
+```{r}
+d %>% 
+  ggplot(aes(x = trial_looking_time, 
+             fill = trial_pressed_space_bar)) + 
+  geom_histogram() + 
+  scale_x_log10() + 
+  facet_wrap(~trial_stimulus_type)
+```
+
+Zoom in on background trials. The "hump" (second mode) is there in all parts of the experiment.
+
+```{r}
+d %>% 
+  mutate(block_num = ceiling(total_trial_num / 48)) %>%
+  filter(trial_stimulus_type == "background") %>%
+  ggplot(aes(x = trial_looking_time, 
+             fill = trial_stimulus_complexity)) + 
+  geom_histogram() + 
+  scale_x_log10() + 
+  facet_wrap(~block_num)
+```
+
+```{r}
+d %>% 
+  filter(trial_stimulus_type == "background") %>%
+  group_by(subject) %>%
+  mutate(mlog = mean(log(trial_looking_time)), 
+         sdlog = sd(log(trial_looking_time)),
+         outlier = log(trial_looking_time) > mlog + 3*sdlog |
+           log(trial_looking_time) < mlog - 3*sdlog) %>%
+  ggplot(aes(x = trial_looking_time, fill = outlier)) + 
+  geom_histogram() + 
+  scale_x_log10() + 
+  facet_wrap(~subject)
+```
+
+We see this pattern within subs to some extent, irrespective of outliers. Is it after target press?
+
+No, it seems that even on background trials where there was not a target beforehand.
+
+```{r}
+d %>% 
+  group_by(subject) %>%
+  mutate(t_to_b = c(FALSE, diff(as.numeric(as.factor(trial_stimulus_type == "target"))) == -1) & trial_stimulus_type == "background",
+         d_to_b = c(FALSE, diff(as.numeric(as.factor(trial_stimulus_type == "deviant"))) == -1) & trial_stimulus_type == "background") %>%
+  filter(trial_stimulus_type == "background") %>%
+  ggplot(aes(x = trial_looking_time)) + 
+  geom_histogram() + 
+  scale_x_log10() + 
+  facet_grid(d_to_b~t_to_b)
+
+```
+
+
+just look at the best of trials of each individual
+
+```{r}
+d %>% 
+  group_by(subject) %>% 
+  mutate(mlog = mean(log(trial_looking_time)), 
+         sdlog = sd(log(trial_looking_time)),
+         best_trials = log(trial_looking_time) < mlog + 2*sdlog &&
+           log(trial_looking_time) > mlog - 2*sdlog) %>%
+  filter(best_trials == TRUE) %>% 
+  ggplot(aes(x = trial_looking_time, fill = trial_stimulus_complexity)) + 
+  geom_histogram() + 
+  scale_x_log10() 
+```
+## block type by complexity
+
+only looking at trials within 2sd of the means 
+```{r}
+d %>% 
+  group_by(subject) %>% 
+  mutate(mlog = mean(log(trial_looking_time)), 
+         sdlog = sd(log(trial_looking_time)),
+         best_trials = log(trial_looking_time) < mlog + 2*sdlog &&
+           log(trial_looking_time) > mlog - 2*sdlog) %>%
+  filter(best_trials == TRUE) %>% 
+  ggplot(aes(x = trial_looking_time)) + 
+  geom_histogram() + 
+  scale_x_log10() +
+  facet_wrap(~block)
+```
+
+doesn't seem to make a huge difference with or without the outlier 
+```{r}
+d %>% 
+  group_by(subject) %>% 
+  ggplot(aes(x = trial_looking_time)) + 
+  geom_histogram() + 
+  scale_x_log10() +
+  facet_wrap(~block)
+```
+
+break down by trial type and stimuli type 
+
+```{r}
+d %>% 
+  ggplot(aes(x = trial_looking_time)) + 
+  geom_histogram()+
+  scale_x_log10() +
+  facet_grid(block~trial_stimulus_type)
+```
+
+ok, maybe it's time to consider number of repetitions. maybe the second hump means participants getting very bored and they started zoning out???
+
+```{r}
+library(mgcv)
+
+rep_d <- d %>% 
+  mutate(
+    number = 1) %>% 
+  group_by(
+  subject, block, trial_stimulus_type
+  ) %>% 
+  mutate(num_times_stimulus_seen = cumsum(number)) %>% 
+  filter(trial_stimulus_type == "background")
+
+gam_d <- rep_d %>% 
+  mutate(trial_stimulus_complexity = as.factor(trial_stimulus_complexity), 
+         block = as.factor(block))
+
+gam_m <- gam(log(trial_looking_time) ~ s(num_times_stimulus_seen), 
+             data = gam_d, 
+             method = "REML")
+summary(gam_m)
+plot(gam_m)
+```
+
+note this is not a very good model
+```{r}
+gam.check(gam_m)
+```
+
+but still let's give it a try: maybe 10 repetitions are the "turning point" 
+
+```{r}
+rep_d %>% 
+  mutate(
+    reptition_type = if_else(num_times_stimulus_seen > 10, "more", "less")
+  ) %>% 
+  ggplot(aes(x = trial_looking_time)) + 
+  geom_histogram()+
+  scale_x_log10() +
+  facet_grid(block~reptition_type)
+```
+
+```{r}
+rep_d %>% 
+  mutate(
+    reptition_type = if_else(num_times_stimulus_seen > 10, "more", "less")
+  ) %>% 
+  ggplot(aes(x = trial_looking_time, 
+             fill = reptition_type)) + 
+  geom_density(alpha = 0.5)+
+  scale_x_log10() +
+  facet_wrap(~block)
+```
+
+the second hump seems to be most salient in all_complex and mixed_complex deviant, and in mixed_simple deviant with stimulus that repeats multiple time 
+
+umm this really doesn't make any sense to me...
+
+## ok whatever import complexity norm!!!
+
+detecting two weird ones in trial folder, might not be loading ??!?!?
+
+```{r}
+rep_d %>% 
+  mutate(
+    not_loading = case_when(
+      trial_stimulus_path == "images/complex/7.png" | trial_stimulus_path == "images/complex/9.png" ~ "not loading", 
+      TRUE ~ "loading"
+    )
+  ) %>% 
+  ggplot(aes(x = trial_looking_time, fill = not_loading)) + 
+  geom_histogram()+
+  scale_x_log10() +
+  facet_wrap(~block)
+```
+
+but doesn't seem to be the case...
+```{r}
+COMPNORM_PATH <- here("complexity_norm.csv")
+complexity_norm <- read_csv(COMPNORM_PATH)
+rep_d_comp <- left_join(rep_d, 
+                        complexity_norm, 
+                        by = "trial_stimulus_path") 
+ 
+```
+
+break down by quintile in the complexity norm, vaguely still seeing the trend. 
+also note that 12 in 1/5, 6 in 2/4
+```{r}
+rep_d_comp %>% 
+  ggplot(aes(x = trial_looking_time)) + 
+  geom_histogram()+
+  scale_x_log10() +
+  facet_wrap(~quintile)
+```
+
+more salient in the "extreme quintile" across the block
+```{r}
+rep_d_comp %>% 
+  mutate(
+    extreme = case_when(
+      quintile == 1 | quintile == 5 ~ TRUE, 
+      TRUE ~ FALSE
+    )
+  ) %>% 
+  ggplot(aes(x = trial_looking_time)) + 
+  geom_histogram()+
+  scale_x_log10() +
+  facet_grid(extreme~block)
+```
+
+
+does complexity rating predict looking time here? 
+
+```{r}
+gam_m_comp <- gam(log(trial_looking_time) ~ s(complexity_mean_rating), 
+             data = filter(rep_d_comp, quintile == 1), 
+             method = "REML")
+summary(gam_m_comp)
+plot(gam_m_comp)
+```
+
+```{r}
+gam_m_comp <- gam(log(trial_looking_time) ~ s(complexity_mean_rating), 
+             data = filter(rep_d_comp, quintile == 5), 
+             method = "REML")
+summary(gam_m_comp)
+plot(gam_m_comp)
+```
+
+something weird happens around 0.7
+Maybe worth looks at each individual stimuli
+
+```{r}
+rep_d_comp %>% 
+  #filter(quintile == 5) %>% 
+  ggplot(aes(x = trial_looking_time)) + 
+  geom_histogram()+
+  scale_x_log10() +
+  facet_wrap(~as.factor(complexity_mean_rating))
+```
+
+Some stimuli really shows the second hump, does the sampe pattern occur in all the contexts / all the blocks? 
+
+```{r}
+rep_d_comp %>% 
+  filter(complexity_mean_rating == 0.76023262) %>% 
+  ggplot(aes(x = trial_looking_time)) + 
+  geom_histogram()+
+  scale_x_log10()+
+  facet_wrap(~block)
+```
+
+
+```{r}
+rep_d_comp %>% 
+  filter(complexity_mean_rating == 0.76023262) %>% 
+  ggplot(aes(x = trial_looking_time)) + 
+  geom_histogram()+
+  scale_x_log10()+
+  facet_wrap(~subject)
+```
+only few subjects get this stimuli, and the trend is not very obvious 
+let's look at another one 
+```{r}
+rep_d_comp %>% 
+  filter(complexity_mean_rating == 0.3124098) %>% 
+  ggplot(aes(x = trial_looking_time)) + 
+  geom_histogram()+
+  scale_x_log10()+
+  facet_wrap(~block)
+
+rep_d_comp %>% 
+  filter(complexity_mean_rating == 0.76023262) %>% 
+  ggplot(aes(x = trial_looking_time, fill = block)) + 
+  geom_density(alpha = 0.5)+
+  scale_x_log10()
+```
+??? what's going on? can we see the same pattern on subject level 
+```{r}
+rep_d_comp %>% 
+  filter(complexity_mean_rating == 0.76023262) %>% 
+  ggplot(aes(x = trial_looking_time, fill = block)) + 
+  geom_density(alpha = 0.5)+
+  scale_x_log10()+
+  facet_wrap(~subject)
+```
+So the curve for this particular stimuli seems to be driven by differnet people getting the stimuli at different context, but this probably can not explain all stimuli though?
+```{r}
+rep_d_comp %>% 
+  filter(subject == "SS1604514419166") %>% 
+  ggplot(aes(x = trial_looking_time)) + 
+  geom_histogram()+
+  scale_x_log10()+
+  facet_wrap(~block)
+```
+
+
+#pick the most salient second hump-er 
+```{r}
+rep_d_comp %>% 
+  ggplot(aes(x = trial_looking_time)) + 
+  geom_histogram()+
+  scale_x_log10()+
+  facet_wrap(~subject)
+  
+#pick SS1604588908321
+```
+
+# SS1604588908321
+```{r}
+rep_d_comp %>% 
+  filter(subject == "SS1604588908321") %>% 
+  ggplot(aes(x = trial_looking_time)) + 
+  geom_histogram()+
+  scale_x_log10()
+  
+# just the background
+rep_d_comp %>% 
+  filter(subject == "SS1604588908321") %>% 
+  ggplot(aes(x = trial_looking_time)) + 
+  geom_histogram()+
+  scale_x_log10()+
+  facet_wrap(block~as.factor(complexity_mean_rating))
+
+d %>% 
+  filter(subject == "SS1604588908321") %>% 
+  ggplot(aes(x = trial_looking_time, 
+             fill = trial_stimulus_type)) + 
+  geom_histogram()+
+  scale_x_log10()+
+  facet_wrap(~as.factor(trial_stimulus_path))
+
+
+```
+
+```{r}
+d %>% 
+  filter(subject == "SS1604588908321") %>% 
+  filter(trial_stimulus_type == "background") %>% 
+  ggplot(aes(x = trial_looking_time, 
+             fill = trial_stimulus_complexity))+
+  geom_histogram()+
+  scale_x_log10()+ 
+  facet_wrap(~block)
+
+```
+
+# Individual driving the second hypothesis REDUX: 
+```{r}
+d %>% 
+  group_by(subject) %>% 
+  summarise(
+    mean_LT = mean(trial_looking_time)
+  ) %>% 
+  ggplot(aes(x = mean_LT))+
+  geom_histogram()+
+  scale_x_log10()
+```
+
+ha catch ya bimodal distribution, if we remove everyone who's mean is above 700, do we see the same bimodal in the overall LT histogram? 
+eyeballing say have the cutoff at 800
+```{r}
+lower_mean_sbj <- d %>% 
+  group_by(subject) %>% 
+  summarise(
+    mean_LT = mean(trial_looking_time)
+  ) %>% 
+  mutate(
+    group = case_when(
+      mean_LT < 800 ~ "lower_mean", 
+      TRUE ~ "higher_mean"
+    )
+  ) %>% 
+  filter(group == "lower_mean") %>% 
+  select(subject) %>% 
+  pull()
+
+higher_mean_sbj <- d %>% 
+  group_by(subject) %>% 
+  summarise(
+    mean_LT = mean(trial_looking_time)
+  ) %>% 
+  mutate(
+    group = case_when(
+      mean_LT < 800 ~ "lower_mean", 
+      TRUE ~ "higher_mean"
+    )
+  ) %>% 
+  filter(group == "higher_mean") %>% 
+  select(subject) %>% 
+  pull()
+
+d %>% 
+  filter(subject %in% lower_mean_sbj) %>% 
+  ggplot(aes(x = trial_looking_time)) + 
+  geom_histogram()+
+  scale_x_log10()
+```
+
+so it looks like it's been gone 
+maybe take a more careful look, what about the background?
+```{r}
+d %>% 
+  filter(subject %in% lower_mean_sbj) %>% 
+  filter(trial_stimulus_type == "background") %>% 
+  ggplot(aes(x = trial_looking_time)) + 
+  geom_histogram()+
+  scale_x_log10()
+```
+
+oh super smooth!
+ok, now serious stuff: assign membership and see what it looks like 
+
+```{r}
+d %>% 
+  mutate(
+    group = case_when(
+      subject %in% lower_mean_sbj ~ "lower_mean_sbj", 
+      TRUE ~ "higher_mean_sbj"
+    )
+  ) %>% 
+  ggplot(aes(x = trial_looking_time)) + 
+  geom_histogram()+
+  scale_x_log10()+ 
+  facet_grid(trial_stimulus_type~group)
+```
+woohoo!!! 
+
+interim conclusion 
+- the second hump really seems to be driven by individuals who are just very slow at responding 
+- while taken as a whole, the RT distribution by the lower mean individuals may show some signs of bi-modal distribution, but it is reasonable to believe that the second mode is primarily driven by the bi-modal distribution from target trial. Looking at the target trials alone the second hump disappears
+
+but now, the second mystery emerges: what's in common with those "long lookers" 
+(really reminds me of how early infant researchers characterize them as long looker and short looker, do we expect their curves to look differently though? )
+
+first we want to look at the raw distribution of the long lookers and also take 
+them apart 
+
+```{r}
+d_group <- d %>% 
+  mutate(
+    group = case_when(
+      subject %in% lower_mean_sbj ~ "lower_mean_sbj", 
+      TRUE ~ "higher_mean_sbj"
+    )
+  ) 
+```
+
+descriptive, how many are there of each type? 
+```{r}
+length(lower_mean_sbj)
+length(higher_mean_sbj)
+```
+
+
+```{r}
+d_group %>% 
+  filter(group == "higher_mean_sbj") %>% 
+  ggplot(aes(x = trial_looking_time)) + 
+  geom_histogram()+
+  scale_x_log10()+ 
+  facet_grid(trial_stimulus_type~block)
+```
+
+looks pretty much the same to me. do all 14 people show these pattern? 
+```{r}
+d_group %>% 
+  filter(group == "higher_mean_sbj") %>% 
+  ggplot(aes(x = trial_looking_time)) + 
+  geom_histogram()+
+  scale_x_log10()+ 
+  facet_wrap(~subject)
+```
+```{r}
+d_group %>% 
+  filter(subject == "SS1604589276116") %>% 
+  ggplot(aes(x = trial_looking_time)) + 
+  geom_histogram()+
+  scale_x_log10()+ 
+ facet_grid(trial_stimulus_type~block)
+```
+
+
+
+
+```{r}
+d_group %>% 
+  filter(group == "lower_mean_sbj") %>% 
+  ggplot(aes(x = trial_looking_time)) + 
+  geom_histogram()+
+  scale_x_log10()+ 
+  facet_wrap(~subject)
+```
+
+
+```{r}
+d_group %>% 
+  filter(trial_stimulus_type == "deviant") %>% 
+  ggplot(aes(x = trial_looking_time)) + 
+  geom_histogram()+
+  scale_x_log10()+ 
+  facet_wrap(~block)
+```
+
+
+
+ok it is clear that some of them should have been excluded, and they probably contributed a lot to the single mode distribution. but it still doesn't explain why are their means around 1s 
+
+what do these 13 people have in common? we want to take a careful look at their demographic information
+
+is it related to age?
+```{r}
+d_group %>% 
+  ggplot(aes(x = demog_age)) + 
+  geom_histogram(binwidth = 4)+
+  facet_wrap(~group)
+```
+no, is it related to gender? 
+```{r}
+d_group %>% 
+  ggplot(aes(x = demog_gender)) + 
+  geom_histogram(stat = "count")+
+  facet_wrap(~group)
+```
+no, is it related to education? 
+```{r}
+d_group %>% 
+  ggplot(aes(x = demog_education)) + 
+  geom_histogram()+
+  facet_wrap(~group)
+```
+also no. 
+i don't think it's going to be related to race, but still worth checking just in case 
+```{r}
+d_group %>% 
+  ggplot(aes(x = demog_ethnicity)) + 
+  geom_histogram(stat = "count")+
+  facet_wrap(~group)
+```
+nope nope nope 
+
+second hypothesis: the particular combination of stimuli they are getting at 
+a easy starting point is to look at the background stimuli
+
+can we see any pattern in regards to the background stimuli? 
+
+below is not what i want
+```{r}
+d_group %>%
+  filter(group == "higher_mean_sbj") %>% 
+  filter(trial_stimulus_type == "background") %>% 
+  ggplot(aes(x = trial_looking_time,
+             fill = trial_stimulus_path)) + 
+  geom_histogram()+
+  scale_x_log10()+ 
+  facet_wrap(~subject)
+
+d_group %>%
+  filter(group == "lower_mean_sbj") %>% 
+  filter(trial_stimulus_type == "background") %>% 
+  ggplot(aes(x = trial_looking_time,
+             fill = trial_stimulus_path)) + 
+  geom_histogram()+
+  scale_x_log10()+ 
+  facet_wrap(~subject)
+
+```
+
+
+
+
+
+or the particular combo of the stimuli they get? 
+
+
+
+
+we want to compare the curve between long looker and short looker as a function of looking time decline 
+
+```{r}
+
+```
+
+
+
+
+?????what? ok fine let me plot looking time 
+```{r}
+rep_d_comp %>% 
+  ggplot(aes(x = complexity_mean_rating, y= trial_looking_time)) + 
+  geom_point(position = "jitter")+
+  scale_y_log10() + 
+  facet_wrap(~quintile)
+```
+
+can't see very clearly, but something doesn't look right in the most complex cases 
+```{r}
+rep_d_comp %>% 
+  filter(quintile == 5) %>% 
+  ggplot(aes(x = complexity_mean_rating, y= trial_looking_time)) + 
+  geom_point(position = "jitter")+
+  scale_y_log10() 
+```
+
+interaction between rating and repetition? 
+```{r}
+rep_d_comp <- rep_d_comp %>% mutate(block = as.factor(block))
+
+gam_m_comp <- gam(log(trial_looking_time) ~ s(num_times_stimulus_seen, by = block), 
+             data = filter(rep_d_comp, subject %in% lower_mean_sbj), 
+             method = "REML")
+summary(gam_m_comp)
+plot(gam_m_comp)
+
+# gam_m_comp <- gam(log(trial_looking_time) ~ s(num_times_stimulus_seen, by = quintile),
+#              data = rep_d_comp, 
+#              method = "REML")
+# summary(gam_m_comp)
+# plot(gam_m_comp)
+```
+
+
+# check out rep on shorter
+```{r}
+rep_d_comp %>% 
+  filter(subject %in% lower_mean_sbj) %>% 
+  filter(trial_stimulus_type == "background") %>% 
+  ggplot(aes(x = num_times_stimulus_seen, 
+             y = log(trial_looking_time)))+
+  geom_point() + 
+  facet_wrap(~block)
+```
+
+
+
+
+
+
+## age really has nothing to do with it 
+```{r}
+d %>% 
+  mutate(
+    m_age = mean(demog_age, na.rm = TRUE), 
+    age_group = if_else(demog_age < m_age | demog_age == m_age, "young", "old")
+  ) %>% 
+  filter(!is.na(age_group)) %>% 
+  ggplot(aes(x = trial_looking_time, fill = age_group)) + 
+  geom_histogram() + 
+  scale_x_log10() 
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### complexity difference
+```{r}
+d %>% 
+  ggplot(aes(x = trial_looking_time, 
+            fill = trial_stimulus_complexity), 
+         ) + 
+  geom_density(alpha = 0.5)+ 
+  xlim(0, 6000)
+
+d %>% 
+  ggplot(aes(x = trial_looking_time, 
+            fill = trial_stimulus_complexity), 
+         ) + 
+  geom_density(alpha = 0.5)+ 
+  xlim(0, 6000) + 
+  facet_wrap(~subject)
+```
+
+### block difference
+```{r}
+d %>% 
+  ggplot(aes(x = trial_looking_time, 
+            fill = block), 
+         ) + 
+  geom_density(alpha = 0.5)+ 
+  xlim(0, 6000)
+
+d %>% 
+  ggplot(aes(x = trial_looking_time, 
+            fill = block), 
+         ) + 
+  geom_density(alpha = 0.5)+ 
+  xlim(0, 6000) + 
+  facet_wrap(~subject)
+```
+
+### Complexity differences no target 
+```{r}
+d_no_target %>% 
+  ggplot(aes(x = trial_looking_time, 
+            fill = trial_stimulus_complexity), 
+         ) + 
+  geom_density(alpha = 0.5)+ 
+  xlim(0, 6000)
+
+d_no_target %>% 
+  ggplot(aes(x = trial_looking_time, 
+            fill = trial_stimulus_complexity), 
+         ) + 
+  geom_density(alpha = 0.5)+ 
+  xlim(0, 6000) + 
+  facet_wrap(~subject)
+```
+
+### Block differences no target
+```{r}
+d_no_target %>% 
+  ggplot(aes(x = trial_looking_time, 
+            fill = block), 
+         ) + 
+  geom_density(alpha = 0.5)+ 
+  xlim(0, 6000)
+
+d_no_target %>% 
+  ggplot(aes(x = trial_looking_time, 
+            fill = block), 
+         ) + 
+  geom_density(alpha = 0.5)+ 
+  xlim(0, 6000) + 
+  facet_wrap(~subject)
+
+```
+
+# Visualizing aggregarded looking time {.tabset}
+```{r}
+d_sum_individual <- d %>% 
+  group_by(subject, block) %>% 
+  summarise(
+    mean_lt = mean(trial_looking_time, na.rm = TRUE), 
+    sd = sd(trial_looking_time, na.rm = TRUE), 
+    n = n(), 
+    ci_range_95 = qt(1 - (0.05 / 2), n - 1) * (sd/sqrt(n)), 
+    ci_ub = mean_lt + ci_range_95, 
+    ci_lb = mean_lt - ci_range_95
+  )
+
+d_sum <- d %>% 
+  group_by(block) %>% 
+  summarise(
+    mean_lt = mean(trial_looking_time, na.rm = TRUE), 
+    sd = sd(trial_looking_time, na.rm = TRUE), 
+    n = n(), 
+    ci_range_95 = qt(1 - (0.05 / 2), n - 1) * (sd/sqrt(n)), 
+    ci_ub = mean_lt + ci_range_95, 
+    ci_lb = mean_lt - ci_range_95
+  )
+```
+
+## aggregated 
+```{r}
+d_sum %>% ggplot(aes(x = block, y = mean_lt)) + 
+  geom_pointrange(aes(ymin = ci_lb, ymax = ci_ub)) + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+```
+
+## individual 
+something weird happened
+```{r}
+d_sum_individual %>% 
+  ggplot(aes(x = block, y = mean_lt)) + 
+  geom_pointrange(aes(ymin = ci_lb, ymax = ci_ub)) +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+  
+
+```
+
+
+```{r fig.width=15, fig.height=15}
+d_sum_individual %>% 
+  ggplot(aes(x = block, y = mean_lt)) + 
+  geom_pointrange(aes(ymin = ci_lb, ymax = ci_ub))  + 
+  facet_wrap(~subject) + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+  
+```
+
+## weird ones
+We can see three very weird ones: 
+SS1604513317537
+SS1604515995769
+SS1604516882157
+ 
+```{r}
+weird <- c("SS1604513317537", 
+           "SS1604515995769", 
+           "SS1604516660396")
+
+d_sum_individual %>% 
+  filter(subject %in% weird) %>% 
+  ggplot(aes(x = block, y = mean_lt)) + 
+  geom_pointrange(aes(ymin = ci_lb, ymax = ci_ub))  + 
+  facet_wrap(~subject) + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+
+d %>% 
+  filter(subject %in% weird) %>% 
+  ggplot(aes(x = trial_looking_time)) + 
+  geom_histogram(bins = 90) +
+  facet_wrap(~subject) + 
+  xlim(0, 6000)+
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+```
+
+## Excluding weird ones 
+```{r}
+d_no_weird <- d %>% 
+  filter(!(subject %in% weird)) 
+
+  
+d_no_weird_sum <- d_no_weird %>% 
+  group_by(block) %>% 
+  summarise(
+    mean_lt = mean(trial_looking_time, na.rm = TRUE), 
+    sd = sd(trial_looking_time, na.rm = TRUE), 
+    n = n(), 
+    ci_range_95 = qt(1 - (0.05 / 2), n - 1) * (sd/sqrt(n)), 
+    ci_ub = mean_lt + ci_range_95, 
+    ci_lb = mean_lt - ci_range_95
+  )
+
+d_no_weird_sum %>% ggplot(aes(x = block, y = mean_lt)) + 
+  geom_pointrange(aes(ymin = ci_lb, ymax = ci_ub)) + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+```
+
+# Demographic 
+## SES 
+education == "Some high school" ~ 1,
+        education == "High school diploma" ~ 2, 
+        education == "Associate Degree/Technical certification" ~ 3, 
+        education == "Bachelor's Degree" ~ 4, 
+        education == "Master's Degree" ~ 5, 
+        education == "Doctorate/Professional degree" ~ 6, 
+        education == "Other" ~ NA_real_
+```{r}
+d %>% 
+  distinct(subject, .keep_all = TRUE) %>% 
+  ggplot(aes(x = demog_education)) + 
+  geom_histogram()
+```
+```{r}
+null_m <- lmer(trial_looking_time ~ 1 + (1|subject), 
+               data = filter(d, !is.na(demog_education)))
+
+edu_m <- lmer(trial_looking_time ~ demog_education + (1|subject), 
+     data = filter(d, !is.na(demog_education)))
+
+summary(edu_m)
+anova(null_m, edu_m)
+```
+
+
+## Age 
+
+```{r}
+d %>% 
+  distinct(subject, .keep_all = TRUE) %>% 
+  ggplot(aes(x = demog_age)) + 
+  geom_histogram()
+```
+```{r}
+null_m <- lmer(trial_looking_time ~ 1 + (1|subject), 
+               data = filter(d, !is.na(demog_age)))
+
+age_m <- lmer(trial_looking_time ~ demog_age + (1|subject), 
+     data = filter(d, !is.na(demog_age)))
+
+summary(age_m)
+anova(null_m, age_m)
+```
+
+
+
+
+# number of background repetition on looking time {.tabset}
+## full, aggregated, by complexity
+```{r}
+full_aggregated <- d %>% 
+  mutate(
+    number = 1) %>% 
+  group_by(
+  subject, block, trial_stimulus_type
+  ) %>% 
+  mutate(num_times_stimulus_seen = cumsum(number))
+
+full_aggregated %>% 
+  filter(trial_stimulus_type == "background") %>% 
+  ggplot(
+    aes(y = log(trial_looking_time), 
+        x = num_times_stimulus_seen,
+        color = trial_stimulus_complexity)
+  ) + 
+  geom_point(aes(alpha = 0.2), size = 3, shape = ".") + 
+  guides(alpha = FALSE) + 
+  labs(color = "Stimulus Complexity") + 
+  ylab("Mean Looking Time (log)") + 
+  xlab("Number of Stimulus Reptitions") + 
+  geom_smooth(method = "lm") + 
+  theme(axis.text = element_text(size = 10))
+```
+
+
+
+```{r}
+
+```
+
+
+
+## full, aggregated, by blocks 
+```{r}
+full_aggregated %>% 
+  filter(trial_stimulus_type == "background") %>% 
+  ggplot(
+    aes(y = log(trial_looking_time), 
+        x = num_times_stimulus_seen,
+        color = block)
+  ) + 
+  geom_point(aes(alpha = 0.2), size = 3, shape = ".") + 
+  guides(alpha = FALSE) + 
+  labs(color = "Stimulus Complexity") + 
+  ylab("Mean Looking Time (log)") + 
+  xlab("Number of Stimulus Reptitions") + 
+  geom_smooth(method = "lm") + 
+  theme(axis.text = element_text(size = 10))
+```
+
+
+## no weird, aggregated, by complexity
+```{r}
+excluded_sum <- full_aggregated %>% 
+  filter(trial_stimulus_type == "background") %>% 
+  filter(!(subject %in% weird))
+
+excluded_sum %>% 
+  ggplot(
+    aes(y = log(trial_looking_time), 
+        x = num_times_stimulus_seen,
+        color = trial_stimulus_complexity)
+  ) + 
+  geom_point(aes(alpha = 0.2), size = 3, shape = ".") + 
+  guides(alpha = FALSE) + 
+  labs(color = "Stimulus Complexity") + 
+  ylab("Mean Looking Time (log)") + 
+  xlab("Number of Stimulus Reptitions") + 
+  geom_smooth(method = "lm") + 
+  theme(axis.text = element_text(size = 10))
+```
+
+## no weird, aggregated, by blocks
+```{r}
+excluded_sum %>% 
+  ggplot(
+    aes(y = log(trial_looking_time), 
+        x = num_times_stimulus_seen,
+        color = block)
+  ) + 
+  geom_point(aes(alpha = 0.2), size = 3, shape = ".") + 
+  guides(alpha = FALSE) + 
+  labs(color = "Stimulus Complexity") + 
+  ylab("Mean Looking Time (log)") + 
+  xlab("Number of Stimulus Reptitions") + 
+  geom_smooth(method = "lm") + 
+  theme(axis.text = element_text(size = 10))
+```
+
+## individual, by complexity 
+```{r}
+full_aggregated %>% 
+  filter(trial_stimulus_type == "background") %>% 
+  ggplot(
+    aes(y = log(trial_looking_time), 
+        x = num_times_stimulus_seen,
+        color = trial_stimulus_complexity)
+  ) + 
+  geom_point(aes(alpha = 0.2), size = 3, shape = ".") + 
+  guides(alpha = FALSE) + 
+  labs(color = "Stimulus Complexity") + 
+  ylab("Mean Looking Time (log)") + 
+  xlab("Number of Stimulus Reptitions") + 
+  geom_smooth(method = "lm") + 
+  theme(axis.text = element_text(size = 10)) + 
+  facet_wrap(~subject)
+```
+
+## individual, by block 
+```{r}
+full_aggregated %>% 
+  filter(trial_stimulus_type == "background") %>% 
+  ggplot(
+    aes(y = log(trial_looking_time), 
+        x = num_times_stimulus_seen,
+        color = block)
+  ) + 
+  geom_point(aes(alpha = 0.2), size = 3, shape = ".") + 
+  guides(alpha = FALSE) + 
+  labs(color = "Stimulus Complexity") + 
+  ylab("Mean Looking Time (log)") + 
+  xlab("Number of Stimulus Reptitions") + 
+  geom_smooth(method = "lm") + 
+  theme(axis.text = element_text(size = 10)) + 
+  facet_wrap(~subject)
+```
+
+# Model
+## linear {.tabset} 
+
+### block  
+```{r}
+null_m <- lmer(trial_looking_time ~ 1 + (1|subject), 
+               data = d)
+
+basic_m <- lmer(trial_looking_time ~ block + (1|subject), 
+     data = d)
+
+summary(basic_m)
+anova(null_m, basic_m)
+```
+
+### stimuli repetition
+```{r}
+null_m <- lmer(log(trial_looking_time) ~ 1 + (1|subject), 
+               data = excluded_sum)
+
+rep_m <- lmer(log(trial_looking_time) ~ num_times_stimulus_seen + (1|subject), 
+     data = excluded_sum)
+
+summary(rep_m)
+anova(null_m, rep_m)
+```
+
+### stimuli repetition and block interaction
+```{r}
+interaction_m <- lmer(log(trial_looking_time) ~ num_times_stimulus_seen * block + (1|subject), 
+     data = excluded_sum)
+
+summary(interaction_m)
+anova(null_m, interaction_m)
+```
+
+
+
+## GAM {.tabset}
+
+only focusing on looking time at the background 
+```{r}
+library(mgcv)
+gam_d <- full_aggregated %>% 
+  filter(trial_stimulus_type == "background") %>% 
+  mutate(trial_stimulus_complexity = as.factor(trial_stimulus_complexity), 
+         block = as.factor(block))
+```
+### number of repetition
+```{r}
+gam_m <- gam(trial_looking_time ~ s(num_times_stimulus_seen), 
+             data = gam_d, 
+             method = "REML")
+summary(gam_m)
+plot(gam_m, 
+     pages = 1, 
+     se = TRUE, 
+     shade = TRUE)
+gam.check(gam_m)
+concurvity(gam_m, full = TRUE)
+```
+### number of repetition (with log?)
+
+```{r}
+gam_m <- gam(log(trial_looking_time) ~ s(num_times_stimulus_seen), 
+             data = gam_d, 
+             method = "REML")
+summary(gam_m)
+plot(gam_m, 
+     pages = 1, 
+     se = TRUE, 
+     shade = TRUE)
+gam.check(gam_m)
+concurvity(gam_m, full = TRUE)
+```
+
+### number of repetition by stimulus complexity 
+```{r fig.width = 15, fig.height = 15}
+gam_m <- gam(trial_looking_time ~ s(num_times_stimulus_seen, 
+                                    by = trial_stimulus_complexity), 
+             data = gam_d, 
+             method = "REML")
+
+summary(gam_m)
+
+plot(gam_m, 
+     pages = 1, 
+     se = TRUE, 
+     shade = TRUE)
+gam.check(gam_m)
+concurvity(gam_m, full = TRUE)
+```
+### number of repetition by stimulus complexity (log?)
+```{r fig.width = 15, fig.height = 15}
+gam_m <- gam(log(trial_looking_time) ~ s(num_times_stimulus_seen, 
+                                    by = trial_stimulus_complexity), 
+             data = gam_d, 
+             method = "REML")
+
+summary(gam_m)
+
+plot(gam_m, 
+     pages = 1, 
+     se = TRUE, 
+     shade = TRUE)
+gam.check(gam_m)
+concurvity(gam_m, full = TRUE)
+```
+### number of repetition by block 
+```{r}
+gam_m <- gam(trial_looking_time ~ s(num_times_stimulus_seen, by = block), 
+             data = gam_d, 
+             method = "REML")
+
+plot(gam_m, all.terms = TRUE, pages = 1,
+     shade = TRUE,
+     rug = TRUE, 
+     se = TRUE)
+summary(gam_m)
+gam.check(gam_m)
+concurvity(gam_m, full = TRUE)
+```
+
+
+
+### number of repetition by block (log?)
+```{r}
+gam_m <- gam(log(trial_looking_time) ~ s(num_times_stimulus_seen, by = block), 
+             data = gam_d, 
+             method = "REML")
+
+plot(gam_m, all.terms = TRUE, pages = 1,
+     shade = TRUE,
+     rug = TRUE, 
+     se = TRUE)
+summary(gam_m)
+
+gam.check(gam_m)
+concurvity(gam_m, full = TRUE)
+```
+
+within subject difference 
+
+
+
+
+
+
+
