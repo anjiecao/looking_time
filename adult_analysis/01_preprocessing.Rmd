@@ -9,9 +9,7 @@ output:
 ---
 
 ```{r message=FALSE, warning=FALSE}
-library(ggiraphExtra)
 library(tidyverse)
-library(here)
 library(stringr) # for parsing r string 
 library(jsonlite) # for parsing r string 
 
@@ -21,7 +19,6 @@ df.raw <- read_csv(d_path)
 
 # RT data 
 ```{r}
- 
 TEST_TRIAL <- c("pref_reveal", "trial")
 # do we want to go w/ the data wrangling route or the jspsych route? 
 df.deviant <- df.raw %>% 
@@ -56,45 +53,30 @@ df.processed <- df.raw %>%
       grepl("complex", stimulus_displayed) ~ "complex"
     )
   ) %>%   
+  mutate(trial_complexity = factor(trial_complexity, levels = c("simple", "complex"))) %>% 
   mutate(block_similarity = case_when(
       grepl("_similar", block_type) ~ "similar", 
       grepl("_dissimilar", block_type) ~ "dissimilar"
     )
-  ) %>%   
+  ) %>% 
   mutate(plotting_var = case_when(
     trial_type == 'background' ~ trial_type,
-    trial_type == 'deviant' ~ block_similarity
+    trial_type == 'deviant' ~ paste(block_similarity, 'deviant')
     )
   ) %>%   
+  mutate(plotting_var = factor(
+    plotting_var, 
+    levels = c("background",
+               "similar deviant", 
+               "dissimilar deviant")
+      )
+    )  %>% 
   select(subject, block_number, block_type, trial_number, plotting_var, trial_type, trial_complexity, rt) %>% 
   transform(rt = as.numeric(rt))
 
+write_csv(df.processed, here('data/processed_data/processed_RTdata.csv'))
+
 # df.main
-```
-
-# Basic plotting of RT data
-```{r}
-
-summarized <- df.processed %>%
-group_by(trial_number, plotting_var, trial_complexity) %>% 
-summarise(meanRT=mean(rt), maxRT=max(rt), minRT=min(rt), medianRT=median(rt), Std=sd(rt), SE = std.error(rt), n = n())
-
-ggplot(summarized, aes(x=trial_number, y=medianRT, colour=plotting_var)) + geom_line() + geom_errorbar(aes(ymin=medianRT-SE, ymax=medianRT+SE),
-                width=0.8, size = 0.8, position = position_dodge(width = 0.2), show.legend = FALSE, alpha = 0.8) +
-  geom_point(position = position_dodge(width = 0.2), size=2.5) + geom_line(size=1.2, position = position_dodge(width = 0.2)) + ylab("RT [msec]") +
-  theme_gray()  + theme(
-    panel.grid.minor = element_blank(), 
-    plot.title = element_text(hjust=0.5, size=22, face="bold"),
-    axis.title.x = element_text(size=18, face='bold'),
-    axis.title.y = element_text(size=18, face='bold'),
-    axis.text = element_text(size=15),
-    legend.title = element_blank(),
-    legend.text = element_text(size=14, face='bold'),
-    strip.text = element_text(size=17, face='bold'),
-    legend.key.size = unit(2.5, 'lines')) + 
-  scale_x_continuous(name="Trial Number", breaks =c(2,4,6,8)) +
-  facet_grid(~trial_complexity)
-
 ```
 
 # Norming Data 
@@ -117,7 +99,7 @@ df.similarity <- df.raw %>%
     rating = as.numeric(str_extract(raw_answer, "[[:digit:]]+"))) %>% 
   select(subject, question_type, stimulus_left, stimulus_right, rating)
 
-df.similarity
+write_csv(df.processed, here('data/processed_data/processed_similaritydata.csv'))
 ```
 ## complexity 
 ```{r}
@@ -138,7 +120,7 @@ df.complexity <- df.raw %>%
   select(subject, question_type, stimulus, rating)
 
 
-df.complexity
+write_csv(df.processed, here('data/processed_data/processed_complexitydata.csv'))
 ```
 
 # Demographic information 
@@ -157,7 +139,7 @@ df.demog <- df.raw  %>%
   distinct() %>% 
   select(-responses, -trial_type)
 
-df.demog
+write_csv(df.processed, here('data/processed_data/processed_demogdata.csv'))
 ```
 
 # TODO 
