@@ -9,6 +9,7 @@ output:
 ---
 
 ```{r message=FALSE, warning=FALSE}
+library(ggiraphExtra)
 library(tidyverse)
 library(here)
 library(stringr) # for parsing r string 
@@ -23,9 +24,6 @@ df.raw <- read_csv(d_path)
  
 TEST_TRIAL <- c("pref_reveal", "trial")
 # do we want to go w/ the data wrangling route or the jspsych route? 
-
-
-
 df.deviant <- df.raw %>% 
   filter(stimulus_type == "trial") %>% 
   select(subject, rt,
@@ -58,9 +56,35 @@ df.processed <- df.raw %>%
       grepl("complex", stimulus_displayed) ~ "complex"
     )
   ) %>% 
-  select(subject, block_number, block_type, trial_number, trial_type, trial_complexity, rt)
+  select(subject, block_number, block_type, trial_number, trial_type, trial_complexity, rt) %>% transform(rt = as.numeric(rt))
 
-df.main
+# df.main
+```
+
+# Basic plotting of RT data
+```{r}
+
+summarized <- df.processed %>%
+group_by(trial_number, trial_type) %>% 
+summarise(meanRT=mean(rt), maxRT=max(rt), minRT=min(rt), medianRT=median(rt), Std=sd(rt), SE = std.error(rt), n = n())
+
+ggplot(summarized, aes(x=trial_number, y=medianRT, colour=trial_type)) + geom_line() + geom_errorbar(aes(ymin=medianRT-SE, ymax=medianRT+SE),
+                width=0.8, size = 0.8, position = position_dodge(width = 0.2), show.legend = FALSE, alpha = 0.8) +
+  geom_point(position = position_dodge(width = 0.2), size=2.5) + geom_line(size=1.2, position = position_dodge(width = 0.2)) + ylab("RT [msec]") +
+  theme_gray()  + theme(
+    panel.grid.minor = element_blank(), 
+    plot.title = element_text(hjust=0.5, size=22, face="bold"),
+    axis.title.x = element_text(size=18, face='bold'),
+    axis.title.y = element_text(size=18, face='bold'),
+    axis.text = element_text(size=15),
+    legend.title = element_blank(),
+    legend.text = element_text(size=14, face='bold'),
+    strip.text = element_text(size=17, face='bold'),
+    legend.key.size = unit(2.5, 'lines')) + 
+  scale_x_continuous(name="Trial Number", breaks =c(2,4,6,8)) 
+
+
+
 ```
 
 # Norming Data 
