@@ -59,19 +59,22 @@ df.processed <- df.raw %>%
       grepl("_dissimilar", block_type) ~ "dissimilar"
     )
   ) %>% 
-  mutate(plotting_var = case_when(
+  mutate(item_type = case_when(
     trial_type == 'background' ~ trial_type,
     trial_type == 'deviant' ~ paste(block_similarity, 'deviant')
     )
   ) %>%   
-  mutate(plotting_var = factor(
-    plotting_var, 
+  mutate(item_type = factor(
+    item_type, 
     levels = c("background",
                "similar deviant", 
                "dissimilar deviant")
       )
     )  %>% 
-  select(subject, block_number, block_type, trial_number, plotting_var, trial_type, trial_complexity, rt) %>% 
+    mutate(item_id = 
+             str_match(stimulus_displayed, "spore_stims/\\s*(.*?)..\\s*.gif")[,2]
+    )  %>% 
+  select(subject, block_number, block_type, trial_number, item_type, trial_type, trial_complexity, item_id, rt) %>% 
   transform(rt = as.numeric(rt))
 
 write_csv(df.processed, here('data/processed_data/processed_RTdata.csv'))

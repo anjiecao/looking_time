@@ -1,0 +1,28 @@
+---
+title: "RTmodels.Rmd"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(lme4)
+library(xtable)
+library(lmerTest)
+```
+
+# Load data
+```{r}
+RT_data <- read_csv(here('data/processed_data/processed_RTdata.csv'))
+```
+
+# Model 
+```{r}
+model <- lmer('log(rt) ~ trial_number*item_type*trial_complexity  + (trial_complexity*item_type*trial_number|subject)', data=RT_data, REML=FALSE)
+
+xtable(summary(model)$coefficients)
+
+plot(model)
+qqnorm(residuals(model))
+qqline(residuals(model))
+
+```
