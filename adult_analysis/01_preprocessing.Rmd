@@ -1,6 +1,6 @@
 ---
 title: "01_preprocessing.rmd"
-author: "anjie"
+author: "anjie & gal"
 output: 
   html_document:
     toc: true
@@ -9,6 +9,7 @@ output:
 ---
 
 ```{r message=FALSE, warning=FALSE}
+library(here)
 library(tidyverse)
 library(stringr) # for parsing r string 
 library(jsonlite) # for parsing r string 

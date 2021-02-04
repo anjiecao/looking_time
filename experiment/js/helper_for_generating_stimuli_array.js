@@ -216,24 +216,33 @@ function generate_timeline_variables(block_information){
      if (background_location == "right"){
 
          background_pokeball_animation = 'images/stimuli/pokeball_3.mp4'
+         background_location_percent = '66%'
 
      }else if (background_location == "left"){
 
          background_pokeball_animation = 'images/stimuli/pokeball_1.mp4'
+         background_location_percent = '25%'
 
      }else if (background_location == "middle"){
 
          background_pokeball_animation = 'images/stimuli/pokeball_2.mp4'
+         background_location_percent = '45%'
 
      }
 
      // pick the appropriate pokeball animation for deviant item
      if (deviant_location == "right"){
          deviant_pokeball_animation = 'images/stimuli/pokeball_3.mp4'
+         deviant_location_percent = '66%'
+
      }else if (deviant_location == "left"){
         deviant_pokeball_animation = 'images/stimuli/pokeball_1.mp4'
+        deviant_location_percent = '25%'
+
    }else if (deviant_location == "middle"){
          deviant_pokeball_animation = 'images/stimuli/pokeball_2.mp4'
+         deviant_location_percent = '45%'
+
      }
 
 
@@ -241,6 +250,7 @@ function generate_timeline_variables(block_information){
          poke_ball_animation: background_pokeball_animation,
          stimuli: background_stimuli,
          location: background_location,
+         location_percent: background_location_percent,
          stim_type: 'background'
      }
 
@@ -248,6 +258,7 @@ function generate_timeline_variables(block_information){
          poke_ball_animation: deviant_pokeball_animation,
          stimuli: deviant_stimuli,
          location: deviant_location,
+         location_percent: deviant_location_percent,
          stim_type: 'deviant'
      }
 

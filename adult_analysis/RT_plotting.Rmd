@@ -1,13 +1,19 @@
 ---
 title: "RT_plotting"
-output: html_document
+author: "anjie & gal"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: no
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
 library(here)
 library(ggiraphExtra)
-
+library(plotrix)
 ```
 # Load data
 ```{r}
@@ -18,7 +24,7 @@ RT_data <- read_csv(here('data/processed_data/processed_RTdata.csv'))
 # Basic plotting of RT data
 ```{r}
 
-summarized <- df.processed %>%
+summarized <- RT_data %>%
 group_by(trial_number, item_type, trial_complexity) %>% 
 summarise(meanRT=mean(rt), maxRT=max(rt), minRT=min(rt), medianRT=median(rt), Std=sd(rt), SE = std.error(rt), n = n())
 
