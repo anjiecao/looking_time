@@ -1,330 +1,41 @@
-subject,block_number,block_type,trial_number,item_type,trial_type,trial_complexity,item_id,rt
-SS1612117450475,0,complex_dissimilar,1,background,background,complex,complex_14_A,323.22500000009313
-SS1612117450475,0,complex_dissimilar,2,background,background,complex,complex_14_A,363.45999999321066
-SS1612117450475,0,complex_dissimilar,3,background,background,complex,complex_14_A,819.6900000039022
-SS1612117450475,0,complex_dissimilar,4,background,background,complex,complex_14_A,822.0050000018091
-SS1612117450475,0,complex_dissimilar,5,background,background,complex,complex_14_A,348.9499999996042
-SS1612117450475,0,complex_dissimilar,6,background,background,complex,complex_14_A,347.6250000021537
-SS1612117450475,0,complex_dissimilar,7,background,background,complex,complex_14_A,320.8100000047125
-SS1612117450475,0,complex_dissimilar,8,dissimilar deviant,deviant,complex,complex_02_A,411.0149999978603
-SS1612117450475,1,simple_similar,1,background,background,simple,simple_14_B,452.7799999996205
-SS1612117450475,1,simple_similar,2,background,background,simple,simple_14_B,372.90500000381144
-SS1612117450475,1,simple_similar,3,background,background,simple,simple_14_B,331.5100000036182
-SS1612117450475,1,simple_similar,4,background,background,simple,simple_14_B,908.1799999985378
-SS1612117450475,1,simple_similar,5,background,background,simple,simple_14_B,393.95499999955064
-SS1612117450475,1,simple_similar,6,background,background,simple,simple_14_B,344.2750000031083
-SS1612117450475,1,simple_similar,7,similar deviant,deviant,simple,simple_14_A,428.3599999980652
-SS1612117450475,1,simple_similar,8,background,background,simple,simple_14_B,498.3650000067428
-SS1612117450475,2,complex_similar,1,background,background,complex,complex_16_A,322.56999999663094
-SS1612117450475,2,complex_similar,2,background,background,complex,complex_16_A,200.7850000009057
-SS1612117450475,2,complex_similar,3,background,background,complex,complex_16_A,170.19500000606058
-SS1612117450475,2,complex_similar,4,similar deviant,deviant,complex,complex_16_B,678.9900000003399
-SS1612117450475,2,complex_similar,5,background,background,complex,complex_16_A,257.4650000024121
-SS1612117450475,2,complex_similar,6,background,background,complex,complex_16_A,501.51500000356464
-SS1612117450475,2,complex_similar,7,background,background,complex,complex_16_A,468.2600000014645
-SS1612117450475,2,complex_similar,8,background,background,complex,complex_16_A,229.50999999738997
-SS1612117450475,3,complex_dissimilar,1,background,background,complex,complex_07_A,301.2700000035693
-SS1612117450475,3,complex_dissimilar,2,background,background,complex,complex_07_A,330.6550000052084
-SS1612117450475,3,complex_dissimilar,3,background,background,complex,complex_07_A,857.5049999999464
-SS1612117450475,3,complex_dissimilar,4,background,background,complex,complex_07_A,429.50000000564614
-SS1612117450475,3,complex_dissimilar,5,dissimilar deviant,deviant,complex,complex_14_B,372.0099999991362
-SS1612117450475,3,complex_dissimilar,6,background,background,complex,complex_07_A,421.3249999957043
-SS1612117450475,3,complex_dissimilar,7,background,background,complex,complex_07_A,6802.52499999915
-SS1612117450475,3,complex_dissimilar,8,background,background,complex,complex_07_A,313.0200000014156
-SS1612117450475,4,simple_similar,1,background,background,simple,simple_04_B,1033.9499999972759
-SS1612117450475,4,simple_similar,2,background,background,simple,simple_04_B,508.8900000046124
-SS1612117450475,4,simple_similar,3,background,background,simple,simple_04_B,205.44499999959953
-SS1612117450475,4,simple_similar,4,background,background,simple,simple_04_B,647.9499999986729
-SS1612117450475,4,simple_similar,5,background,background,simple,simple_04_B,211.30499999708263
-SS1612117450475,4,simple_similar,6,background,background,simple,simple_04_B,482.6050000046962
-SS1612117450475,4,simple_similar,7,background,background,simple,simple_04_B,374.4399999995949
-SS1612117450475,4,simple_similar,8,background,background,simple,simple_04_B,372.83000000024913
-SS1612117450475,4,simple_similar,9,similar deviant,deviant,simple,simple_04_A,325.9849999958533
-SS1612117450475,5,complex_similar,1,background,background,complex,complex_19_A,1378.5600000046543
-SS1612117450475,5,complex_similar,2,background,background,complex,complex_19_A,623.0999999970663
-SS1612117450475,5,complex_similar,3,background,background,complex,complex_19_A,263.729999998759
-SS1612117450475,5,complex_similar,4,background,background,complex,complex_19_A,1126.8500000005588
-SS1612117450475,5,complex_similar,5,similar deviant,deviant,complex,complex_19_B,272.55999999761116
-SS1612117450475,5,complex_similar,6,background,background,complex,complex_19_A,403.2450000013341
-SS1612117450475,5,complex_similar,7,background,background,complex,complex_19_A,681.4200000007986
-SS1612117450475,5,complex_similar,8,background,background,complex,complex_19_A,74.05999999900814
-SS1612117450475,6,simple_dissimilar,1,background,background,simple,simple_08_A,344.83999999793014
-SS1612117450475,6,simple_dissimilar,2,background,background,simple,simple_08_A,182.184999997844
-SS1612117450475,6,simple_dissimilar,3,background,background,simple,simple_08_A,759.409999998752
-SS1612117450475,6,simple_dissimilar,4,background,background,simple,simple_08_A,358.1099999937578
-SS1612117450475,6,simple_dissimilar,5,background,background,simple,simple_08_A,587.3149999970337
-SS1612117450475,6,simple_dissimilar,6,background,background,simple,simple_08_A,235.67000000184635
-SS1612117450475,6,simple_dissimilar,7,background,background,simple,simple_08_A,1031.8400000032852
-SS1612117450475,6,simple_dissimilar,8,background,background,simple,simple_08_A,161.39499999553664
-SS1612117450475,6,simple_dissimilar,9,dissimilar deviant,deviant,simple,simple_05_B,271.9950000027893
-SS1612117450475,7,simple_dissimilar,1,background,background,simple,simple_17_A,492.5749999965774
-SS1612117450475,7,simple_dissimilar,2,background,background,simple,simple_17_A,857.9150000005029
-SS1612117450475,7,simple_dissimilar,3,background,background,simple,simple_17_A,759.0150000032736
-SS1612117450475,7,simple_dissimilar,4,background,background,simple,simple_17_A,551.7849999960163
-SS1612117450475,7,simple_dissimilar,5,background,background,simple,simple_17_A,524.3800000025658
-SS1612117450475,7,simple_dissimilar,6,background,background,simple,simple_17_A,239.67000000266125
-SS1612117450475,7,simple_dissimilar,7,background,background,simple,simple_17_A,398.87499999895226
-SS1612117450475,7,simple_dissimilar,8,dissimilar deviant,deviant,simple,simple_02_B,526.5149999977439
-SS1612117450475,8,complex_similar,1,background,background,complex,complex_07_B,448.30000000365544
-SS1612117450475,8,complex_similar,2,background,background,complex,complex_07_B,402.46500000648666
-SS1612117450475,8,complex_similar,3,background,background,complex,complex_07_B,423.5100000005332
-SS1612117450475,8,complex_similar,4,background,background,complex,complex_07_B,360.5549999992945
-SS1612117450475,8,complex_similar,5,similar deviant,deviant,complex,complex_07_A,337.0999999970081
-SS1612117450475,8,complex_similar,6,background,background,complex,complex_07_B,327.48500000161584
-SS1612117450475,8,complex_similar,7,background,background,complex,complex_07_B,719.4749999980559
-SS1612117450475,8,complex_similar,8,background,background,complex,complex_07_B,474.1600000052131
-SS1612117450475,9,complex_dissimilar,1,background,background,complex,complex_03_B,1299.670000000333
-SS1612117450475,9,complex_dissimilar,2,background,background,complex,complex_03_B,836.539999996603
-SS1612117450475,9,complex_dissimilar,3,background,background,complex,complex_03_B,587.9649999988033
-SS1612117450475,9,complex_dissimilar,4,background,background,complex,complex_03_B,1093.3949999962351
-SS1612117450475,9,complex_dissimilar,5,background,background,complex,complex_03_B,990.4850000020815
-SS1612117450475,9,complex_dissimilar,6,background,background,complex,complex_03_B,758.3799999993062
-SS1612117450475,9,complex_dissimilar,7,background,background,complex,complex_03_B,433.9250000048196
-SS1612117450475,9,complex_dissimilar,8,dissimilar deviant,deviant,complex,complex_04_B,1052.5399999969522
-SS1612117450475,10,simple_similar,1,background,background,simple,simple_11_A,67.9149999996298
-SS1612117450475,10,simple_similar,2,background,background,simple,simple_11_A,853.9699999964796
-SS1612117450475,10,simple_similar,3,background,background,simple,simple_11_A,614.6300000036717
-SS1612117450475,10,simple_similar,4,background,background,simple,simple_11_A,2583.2900000023074
-SS1612117450475,10,simple_similar,5,similar deviant,deviant,simple,simple_11_B,1677.544999998645
-SS1612117450475,10,simple_similar,6,background,background,simple,simple_11_A,1912.1249999952852
-SS1612117450475,10,simple_similar,7,background,background,simple,simple_11_A,2060.185000002093
-SS1612117450475,10,simple_similar,8,background,background,simple,simple_11_A,1951.1150000034831
-SS1612117450475,11,simple_similar,1,background,background,simple,simple_10_B,686.905000002298
-SS1612117450475,11,simple_similar,2,background,background,simple,simple_10_B,1025.5949999991572
-SS1612117450475,11,simple_similar,3,background,background,simple,simple_10_B,1611.0750000007101
-SS1612117450475,11,simple_similar,4,background,background,simple,simple_10_B,3374.35999999434
-SS1612117450475,11,simple_similar,5,background,background,simple,simple_10_B,2087.4450000046636
-SS1612117450475,11,simple_similar,6,background,background,simple,simple_10_B,4051.999999996042
-SS1612117450475,11,simple_similar,7,background,background,simple,simple_10_B,382.76000000041677
-SS1612117450475,11,simple_similar,8,background,background,simple,simple_10_B,79.1899999967427
-SS1612117450475,11,simple_similar,9,similar deviant,deviant,simple,simple_10_A,1931.5150000037975
-SS1612117450475,12,complex_similar,1,background,background,complex,complex_01_A,298.60500000359025
-SS1612117450475,12,complex_similar,2,background,background,complex,complex_01_A,34.63499999628402
-SS1612117450475,12,complex_similar,3,background,background,complex,complex_01_A,201.33000000345055
-SS1612117450475,12,complex_similar,4,background,background,complex,complex_01_A,929.3650000034831
-SS1612117450475,12,complex_similar,5,background,background,complex,complex_01_A,320.57499999785796
-SS1612117450475,12,complex_similar,6,similar deviant,deviant,complex,complex_01_B,400.54499999666587
-SS1612117450475,12,complex_similar,7,background,background,complex,complex_01_A,269.09499999601394
-SS1612117450475,12,complex_similar,8,background,background,complex,complex_01_A,600.2950000037672
-SS1612117450475,13,simple_dissimilar,1,background,background,simple,simple_18_A,472.72000000521075
-SS1612117450475,13,simple_dissimilar,2,background,background,simple,simple_18_A,422.7949999986449
-SS1612117450475,13,simple_dissimilar,3,background,background,simple,simple_18_A,324.58500000217464
-SS1612117450475,13,simple_dissimilar,4,background,background,simple,simple_18_A,279.51000000035856
-SS1612117450475,13,simple_dissimilar,5,background,background,simple,simple_18_A,504.47499999427237
-SS1612117450475,13,simple_dissimilar,6,background,background,simple,simple_18_A,1078.524999997113
-SS1612117450475,13,simple_dissimilar,7,background,background,simple,simple_18_A,281.83500000159256
-SS1612117450475,13,simple_dissimilar,8,dissimilar deviant,deviant,simple,simple_16_A,171.90000000130385
-SS1612117450475,14,complex_dissimilar,1,background,background,complex,complex_05_A,484.1649999943329
-SS1612117450475,14,complex_dissimilar,2,background,background,complex,complex_05_A,203.67000000260305
-SS1612117450475,14,complex_dissimilar,3,background,background,complex,complex_05_A,95.78000000328757
-SS1612117450475,14,complex_dissimilar,4,background,background,complex,complex_05_A,417.1199999982491
-SS1612117450475,14,complex_dissimilar,5,background,background,complex,complex_05_A,146.74999999988358
-SS1612117450475,14,complex_dissimilar,6,background,background,complex,complex_05_A,144.77500000072177
-SS1612117450475,14,complex_dissimilar,7,background,background,complex,complex_05_A,62.285000000032596
-SS1612117450475,14,complex_dissimilar,8,background,background,complex,complex_05_A,2393.9600000012433
-SS1612117450475,14,complex_dissimilar,9,dissimilar deviant,deviant,complex,complex_05_B,1022.3100000002887
-SS1612117450475,15,complex_dissimilar,1,background,background,complex,complex_09_A,90.73999999964144
-SS1612117450475,15,complex_dissimilar,2,background,background,complex,complex_09_A,287.1099999975413
-SS1612117450475,15,complex_dissimilar,3,background,background,complex,complex_09_A,909.9950000017416
-SS1612117450475,15,complex_dissimilar,4,dissimilar deviant,deviant,complex,complex_03_A,774.4700000039302
-SS1612117450475,15,complex_dissimilar,5,background,background,complex,complex_09_A,803.4250000054017
-SS1612117450475,15,complex_dissimilar,6,background,background,complex,complex_09_A,425.5849999971688
-SS1612117450475,15,complex_dissimilar,7,background,background,complex,complex_09_A,640.5149999991991
-SS1612117450475,15,complex_dissimilar,8,background,background,complex,complex_09_A,226.48499999928754
-SS1612117450475,16,complex_similar,1,background,background,complex,complex_18_B,375.8349999990314
-SS1612117450475,16,complex_similar,2,background,background,complex,complex_18_B,282.01999999873806
-SS1612117450475,16,complex_similar,3,background,background,complex,complex_18_B,320.3700000012759
-SS1612117450475,16,complex_similar,4,background,background,complex,complex_18_B,457.3200000014622
-SS1612117450475,16,complex_similar,5,background,background,complex,complex_18_B,382.8250000005355
-SS1612117450475,16,complex_similar,6,background,background,complex,complex_18_B,424.88500000035856
-SS1612117450475,16,complex_similar,7,similar deviant,deviant,complex,complex_18_A,292.9299999959767
-SS1612117450475,16,complex_similar,8,background,background,complex,complex_18_B,227.5050000026822
-SS1612117450475,17,simple_dissimilar,1,background,background,simple,simple_06_A,722.3799999991897
-SS1612117450475,17,simple_dissimilar,2,background,background,simple,simple_06_A,315.9400000004098
-SS1612117450475,17,simple_dissimilar,3,background,background,simple,simple_06_A,380.69000000541564
-SS1612117450475,17,simple_dissimilar,4,background,background,simple,simple_06_A,519.8050000036601
-SS1612117450475,17,simple_dissimilar,5,background,background,simple,simple_06_A,291.79499999736436
-SS1612117450475,17,simple_dissimilar,6,background,background,simple,simple_06_A,242.26500000082888
-SS1612117450475,17,simple_dissimilar,7,background,background,simple,simple_06_A,361.6099999998696
-SS1612117450475,17,simple_dissimilar,8,background,background,simple,simple_06_A,207.8400000028778
-SS1612117450475,17,simple_dissimilar,9,dissimilar deviant,deviant,simple,simple_16_B,420.7249999962514
-SS1612117450475,18,simple_similar,1,background,background,simple,simple_12_B,457.3699999965029
-SS1612117450475,18,simple_similar,2,background,background,simple,simple_12_B,242.53999999922235
-SS1612117450475,18,simple_similar,3,background,background,simple,simple_12_B,1872.0800000010058
-SS1612117450475,18,simple_similar,4,background,background,simple,simple_12_B,1204.2000000001863
-SS1612117450475,18,simple_similar,5,background,background,simple,simple_12_B,239.33499999833293
-SS1612117450475,18,simple_similar,6,background,background,simple,simple_12_B,308.7149999992689
-SS1612117450475,18,simple_similar,7,background,background,simple,simple_12_B,309.5850000026403
-SS1612117450475,18,simple_similar,8,similar deviant,deviant,simple,simple_12_A,658.1149999983609
-SS1612117450475,19,simple_dissimilar,1,background,background,simple,simple_20_A,456.9499999997206
-SS1612117450475,19,simple_dissimilar,2,background,background,simple,simple_20_A,359.5750000021653
-SS1612117450475,19,simple_dissimilar,3,background,background,simple,simple_20_A,852.7350000003353
-SS1612117450475,19,simple_dissimilar,4,background,background,simple,simple_20_A,414.37999999464955
-SS1612117450475,19,simple_dissimilar,5,background,background,simple,simple_20_A,1617.259999999078
-SS1612117450475,19,simple_dissimilar,6,dissimilar deviant,deviant,simple,simple_15_A,716.8400000010151
-SS1612117450475,19,simple_dissimilar,7,background,background,simple,simple_20_A,537.0600000023842
-SS1612117450475,19,simple_dissimilar,8,background,background,simple,simple_20_A,446.4349999979604
-SS1612117478452,0,complex_similar,1,background,background,complex,complex_15_A,2058.5449999998673
-SS1612117478452,0,complex_similar,2,background,background,complex,complex_15_A,2017.4649999971734
-SS1612117478452,0,complex_similar,3,background,background,complex,complex_15_A,1297.0099999984086
-SS1612117478452,0,complex_similar,4,similar deviant,deviant,complex,complex_15_B,778.1950000025972
-SS1612117478452,0,complex_similar,5,background,background,complex,complex_15_A,808.5150000006252
-SS1612117478452,0,complex_similar,6,background,background,complex,complex_15_A,1528.4600000013597
-SS1612117478452,0,complex_similar,7,background,background,complex,complex_15_A,240.77000000033877
-SS1612117478452,0,complex_similar,8,background,background,complex,complex_15_A,292.06499999781954
-SS1612117478452,1,complex_similar,1,background,background,complex,complex_14_B,1524.0499999999884
-SS1612117478452,1,complex_similar,2,background,background,complex,complex_14_B,901.1449999998149
-SS1612117478452,1,complex_similar,3,background,background,complex,complex_14_B,1285.955000003014
-SS1612117478452,1,complex_similar,4,background,background,complex,complex_14_B,1010.9049999991839
-SS1612117478452,1,complex_similar,5,background,background,complex,complex_14_B,861.574999998993
-SS1612117478452,1,complex_similar,6,background,background,complex,complex_14_B,255.12499999967986
-SS1612117478452,1,complex_similar,7,background,background,complex,complex_14_B,827.7999999991152
-SS1612117478452,1,complex_similar,8,similar deviant,deviant,complex,complex_14_A,1963.885000001028
-SS1612117478452,2,simple_similar,1,background,background,simple,simple_12_A,604.1450000011537
-SS1612117478452,2,simple_similar,2,background,background,simple,simple_12_A,711.765000000014
-SS1612117478452,2,simple_similar,3,background,background,simple,simple_12_A,625.0450000006822
-SS1612117478452,2,simple_similar,4,similar deviant,deviant,simple,simple_12_B,785.570000000007
-SS1612117478452,2,simple_similar,5,background,background,simple,simple_12_A,268.41000000058557
-SS1612117478452,2,simple_similar,6,background,background,simple,simple_12_A,330.00499999980093
-SS1612117478452,2,simple_similar,7,background,background,simple,simple_12_A,317.45000000228174
-SS1612117478452,2,simple_similar,8,background,background,simple,simple_12_A,427.9549999992014
-SS1612117478452,3,simple_dissimilar,1,background,background,simple,simple_02_B,1197.8049999997893
-SS1612117478452,3,simple_dissimilar,2,background,background,simple,simple_02_B,956.7600000009406
-SS1612117478452,3,simple_dissimilar,3,background,background,simple,simple_02_B,929.3299999990268
-SS1612117478452,3,simple_dissimilar,4,background,background,simple,simple_02_B,474.09499999776017
-SS1612117478452,3,simple_dissimilar,5,dissimilar deviant,deviant,simple,simple_18_B,1830.4400000015448
-SS1612117478452,3,simple_dissimilar,6,background,background,simple,simple_02_B,806.655000000319
-SS1612117478452,3,simple_dissimilar,7,background,background,simple,simple_02_B,1106.0649999999441
-SS1612117478452,3,simple_dissimilar,8,background,background,simple,simple_02_B,969.6050000020477
-SS1612117478452,4,complex_similar,1,background,background,complex,complex_17_A,1675.8349999981874
-SS1612117478452,4,complex_similar,2,background,background,complex,complex_17_A,673.9349999988917
-SS1612117478452,4,complex_similar,3,background,background,complex,complex_17_A,1358.1500000000233
-SS1612117478452,4,complex_similar,4,background,background,complex,complex_17_A,864.8499999981141
-SS1612117478452,4,complex_similar,5,background,background,complex,complex_17_A,460.8299999999872
-SS1612117478452,4,complex_similar,6,background,background,complex,complex_17_A,1333.5000000006403
-SS1612117478452,4,complex_similar,7,background,background,complex,complex_17_A,2401.429999998072
-SS1612117478452,4,complex_similar,8,similar deviant,deviant,complex,complex_17_B,1391.3700000011886
-SS1612117478452,5,complex_dissimilar,1,background,background,complex,complex_07_A,886.06499999878
-SS1612117478452,5,complex_dissimilar,2,background,background,complex,complex_07_A,1420.3049999996438
-SS1612117478452,5,complex_dissimilar,3,background,background,complex,complex_07_A,1978.4249999975145
-SS1612117478452,5,complex_dissimilar,4,background,background,complex,complex_07_A,1437.6150000025518
-SS1612117478452,5,complex_dissimilar,5,background,background,complex,complex_07_A,842.6049999980023
-SS1612117478452,5,complex_dissimilar,6,background,background,complex,complex_07_A,922.1250000009604
-SS1612117478452,5,complex_dissimilar,7,dissimilar deviant,deviant,complex,complex_01_A,2080.4749999988417
-SS1612117478452,5,complex_dissimilar,8,background,background,complex,complex_07_A,840.1400000002468
-SS1612117478452,6,simple_dissimilar,1,background,background,simple,simple_17_A,1513.025000000198
-SS1612117478452,6,simple_dissimilar,2,background,background,simple,simple_17_A,1127.55499999912
-SS1612117478452,6,simple_dissimilar,3,background,background,simple,simple_17_A,1340.1499999999942
-SS1612117478452,6,simple_dissimilar,4,dissimilar deviant,deviant,simple,simple_04_A,749.1900000022724
-SS1612117478452,6,simple_dissimilar,5,background,background,simple,simple_17_A,829.7249999995984
-SS1612117478452,6,simple_dissimilar,6,background,background,simple,simple_17_A,1270.619999999326
-SS1612117478452,6,simple_dissimilar,7,background,background,simple,simple_17_A,897.5400000017544
-SS1612117478452,6,simple_dissimilar,8,background,background,simple,simple_17_A,739.0549999981886
-SS1612117478452,7,complex_dissimilar,1,background,background,complex,complex_10_A,1721.785000001546
-SS1612117478452,7,complex_dissimilar,2,background,background,complex,complex_10_A,427.1599999992759
-SS1612117478452,7,complex_dissimilar,3,background,background,complex,complex_10_A,3065.7350000001315
-SS1612117478452,7,complex_dissimilar,4,background,background,complex,complex_10_A,677.8149999991001
-SS1612117478452,7,complex_dissimilar,5,background,background,complex,complex_10_A,812.4049999969429
-SS1612117478452,7,complex_dissimilar,6,background,background,complex,complex_10_A,623.9499999973923
-SS1612117478452,7,complex_dissimilar,7,background,background,complex,complex_10_A,555.915000000794
-SS1612117478452,7,complex_dissimilar,8,background,background,complex,complex_10_A,973.6349999984377
-SS1612117478452,7,complex_dissimilar,9,dissimilar deviant,deviant,complex,complex_03_A,1083.6099999978906
-SS1612117478452,8,complex_dissimilar,1,background,background,complex,complex_05_B,2372.849999999744
-SS1612117478452,8,complex_dissimilar,2,background,background,complex,complex_05_B,2205.3649999980116
-SS1612117478452,8,complex_dissimilar,3,background,background,complex,complex_05_B,2000.5749999982072
-SS1612117478452,8,complex_dissimilar,4,background,background,complex,complex_05_B,1123.765000000305
-SS1612117478452,8,complex_dissimilar,5,background,background,complex,complex_05_B,268.1350000020466
-SS1612117478452,8,complex_dissimilar,6,background,background,complex,complex_05_B,306.05500000092434
-SS1612117478452,8,complex_dissimilar,7,background,background,complex,complex_05_B,256.05999999970663
-SS1612117478452,8,complex_dissimilar,8,background,background,complex,complex_05_B,412.8949999976903
-SS1612117478452,8,complex_dissimilar,9,dissimilar deviant,deviant,complex,complex_04_B,2268.9250000002794
-SS1612117478452,9,complex_similar,1,background,background,complex,complex_16_B,2098.324999999022
-SS1612117478452,9,complex_similar,2,background,background,complex,complex_16_B,693.6900000000605
-SS1612117478452,9,complex_similar,3,background,background,complex,complex_16_B,1169.6650000012596
-SS1612117478452,9,complex_similar,4,similar deviant,deviant,complex,complex_16_A,897.6050000019022
-SS1612117478452,9,complex_similar,5,background,background,complex,complex_16_B,386.0050000002957
-SS1612117478452,9,complex_similar,6,background,background,complex,complex_16_B,4158.780000001541
-SS1612117478452,9,complex_similar,7,background,background,complex,complex_16_B,980.9350000032573
-SS1612117478452,9,complex_similar,8,background,background,complex,complex_16_B,2945.6300000019837
-SS1612117478452,10,complex_dissimilar,1,background,background,complex,complex_09_A,6541.4549999986775
-SS1612117478452,10,complex_dissimilar,2,background,background,complex,complex_09_A,3071.944999999716
-SS1612117478452,10,complex_dissimilar,3,background,background,complex,complex_09_A,1302.1399999997811
-SS1612117478452,10,complex_dissimilar,4,background,background,complex,complex_09_A,1276.8099999993574
-SS1612117478452,10,complex_dissimilar,5,background,background,complex,complex_09_A,1147.0200000003097
-SS1612117478452,10,complex_dissimilar,6,dissimilar deviant,deviant,complex,complex_01_B,1295.705000000482
-SS1612117478452,10,complex_dissimilar,7,background,background,complex,complex_09_A,5147.745000002033
-SS1612117478452,10,complex_dissimilar,8,background,background,complex,complex_09_A,560.9050000020652
-SS1612117478452,11,simple_dissimilar,1,background,background,simple,simple_02_A,839.2349999995204
-SS1612117478452,11,simple_dissimilar,2,background,background,simple,simple_02_A,898.1249999996508
-SS1612117478452,11,simple_dissimilar,3,background,background,simple,simple_02_A,966.309999999823
-SS1612117478452,11,simple_dissimilar,4,background,background,simple,simple_02_A,3259.1399999982677
-SS1612117478452,11,simple_dissimilar,5,background,background,simple,simple_02_A,1624.6500000015367
-SS1612117478452,11,simple_dissimilar,6,background,background,simple,simple_02_A,13316.085000002233
-SS1612117478452,11,simple_dissimilar,7,background,background,simple,simple_02_A,544.289999998
-SS1612117478452,11,simple_dissimilar,8,background,background,simple,simple_02_A,635.3799999997136
-SS1612117478452,11,simple_dissimilar,9,dissimilar deviant,deviant,simple,simple_07_B,1469.3049999987707
-SS1612117478452,12,simple_dissimilar,1,background,background,simple,simple_19_B,6031.384999998438
-SS1612117478452,12,simple_dissimilar,2,background,background,simple,simple_19_B,4639.070000001055
-SS1612117478452,12,simple_dissimilar,3,background,background,simple,simple_19_B,6977.89499999996
-SS1612117478452,12,simple_dissimilar,4,dissimilar deviant,deviant,simple,simple_18_A,2655.1650000001537
-SS1612117478452,12,simple_dissimilar,5,background,background,simple,simple_19_B,509.43500000354834
-SS1612117478452,12,simple_dissimilar,6,background,background,simple,simple_19_B,2210.465000000142
-SS1612117478452,12,simple_dissimilar,7,background,background,simple,simple_19_B,1297.3749999982538
-SS1612117478452,12,simple_dissimilar,8,background,background,simple,simple_19_B,1581.6599999997998
-SS1612117478452,13,simple_similar,1,background,background,simple,simple_13_A,2873.4850000000442
-SS1612117478452,13,simple_similar,2,background,background,simple,simple_13_A,530.7449999999953
-SS1612117478452,13,simple_similar,3,background,background,simple,simple_13_A,369.184999999532
-SS1612117478452,13,simple_similar,4,similar deviant,deviant,simple,simple_13_B,812.9399999998277
-SS1612117478452,13,simple_similar,5,background,background,simple,simple_13_A,591.4999999987194
-SS1612117478452,13,simple_similar,6,background,background,simple,simple_13_A,504.9400000026217
-SS1612117478452,13,simple_similar,7,background,background,simple,simple_13_A,290.21999999904074
-SS1612117478452,13,simple_similar,8,background,background,simple,simple_13_A,280.7649999995483
-SS1612117478452,14,simple_similar,1,background,background,simple,simple_15_A,1528.8149999978486
-SS1612117478452,14,simple_similar,2,background,background,simple,simple_15_A,418.24000000266824
-SS1612117478452,14,simple_similar,3,background,background,simple,simple_15_A,371.1399999993155
-SS1612117478452,14,simple_similar,4,background,background,simple,simple_15_A,277.66499999770895
-SS1612117478452,14,simple_similar,5,background,background,simple,simple_15_A,259.2449999975506
-SS1612117478452,14,simple_similar,6,similar deviant,deviant,simple,simple_15_B,1067.0700000009965
-SS1612117478452,14,simple_similar,7,background,background,simple,simple_15_A,2342.585000002058
-SS1612117478452,14,simple_similar,8,background,background,simple,simple_15_A,1657.7399999987101
-SS1612117478452,15,complex_similar,1,background,background,complex,complex_06_A,2787.0550000006333
-SS1612117478452,15,complex_similar,2,background,background,complex,complex_06_A,2104.865000001155
-SS1612117478452,15,complex_similar,3,background,background,complex,complex_06_A,1096.2200000029989
-SS1612117478452,15,complex_similar,4,background,background,complex,complex_06_A,323.60500000137836
-SS1612117478452,15,complex_similar,5,background,background,complex,complex_06_A,399.97500000020955
-SS1612117478452,15,complex_similar,6,background,background,complex,complex_06_A,2746.3300000017043
-SS1612117478452,15,complex_similar,7,background,background,complex,complex_06_A,1407.780000001425
-SS1612117478452,15,complex_similar,8,similar deviant,deviant,complex,complex_06_B,2700.110000001616
-SS1612117478452,16,simple_similar,1,background,background,simple,simple_20_B,101.04000000131782
-SS1612117478452,16,simple_similar,2,background,background,simple,simple_20_B,235.27499999909196
-SS1612117478452,16,simple_similar,3,background,background,simple,simple_20_B,244.6700000000419
-SS1612117478452,16,simple_similar,4,similar deviant,deviant,simple,simple_20_A,29.605000003357418
-SS1612117478452,16,simple_similar,5,background,background,simple,simple_20_B,822.8999999992084
-SS1612117478452,16,simple_similar,6,background,background,simple,simple_20_B,574.850000000908
-SS1612117478452,16,simple_similar,7,background,background,simple,simple_20_B,359.27000000083353
-SS1612117478452,16,simple_similar,8,background,background,simple,simple_20_B,341.4649999977555
-SS1612117478452,17,complex_dissimilar,1,background,background,complex,complex_18_B,529.3149999998277
-SS1612117478452,17,complex_dissimilar,2,background,background,complex,complex_18_B,1136.0450000029523
-SS1612117478452,17,complex_dissimilar,3,background,background,complex,complex_18_B,821.1599999995669
-SS1612117478452,17,complex_dissimilar,4,background,background,complex,complex_18_B,1246.790000001085
-SS1612117478452,17,complex_dissimilar,5,background,background,complex,complex_18_B,2473.995000000228
-SS1612117478452,17,complex_dissimilar,6,dissimilar deviant,deviant,complex,complex_08_B,3514.4900000013877
-SS1612117478452,17,complex_dissimilar,7,background,background,complex,complex_18_B,2068.825000002049
-SS1612117478452,17,complex_dissimilar,8,background,background,complex,complex_18_B,4641.48000000196
-SS1612117478452,18,simple_similar,1,background,background,simple,simple_16_B,2565.399999999441
-SS1612117478452,18,simple_similar,2,background,background,simple,simple_16_B,696.2400000011548
-SS1612117478452,18,simple_similar,3,background,background,simple,simple_16_B,683.6150000017369
-SS1612117478452,18,simple_similar,4,background,background,simple,simple_16_B,462.4199999998091
-SS1612117478452,18,simple_similar,5,background,background,simple,simple_16_B,815.565000000759
-SS1612117478452,18,simple_similar,6,background,background,simple,simple_16_B,1965.2399999977788
-SS1612117478452,18,simple_similar,7,similar deviant,deviant,simple,simple_16_A,729.6950000019278
-SS1612117478452,18,simple_similar,8,background,background,simple,simple_16_B,700.3599999988219
-SS1612117478452,19,simple_dissimilar,1,background,background,simple,simple_09_A,500.28000000014435
-SS1612117478452,19,simple_dissimilar,2,background,background,simple,simple_09_A,1107.014999997802
-SS1612117478452,19,simple_dissimilar,3,background,background,simple,simple_09_A,720.310000000638
-SS1612117478452,19,simple_dissimilar,4,background,background,simple,simple_09_A,635.8950000030454
-SS1612117478452,19,simple_dissimilar,5,background,background,simple,simple_09_A,716.340000002645
-SS1612117478452,19,simple_dissimilar,6,background,background,simple,simple_09_A,731.6700000010896
-SS1612117478452,19,simple_dissimilar,7,background,background,simple,simple_09_A,622.9700000003213
-SS1612117478452,19,simple_dissimilar,8,background,background,simple,simple_09_A,1391.9249999999302
-SS1612117478452,19,simple_dissimilar,9,dissimilar deviant,deviant,simple,simple_08_B,1471.3900000024587
+subject,question_type,stimulus,rating
+SS1612117450475,complexity,images/stimuli/spore_stims/complex_18_A_a.gif,4
+SS1612117450475,complexity,images/stimuli/spore_stims/complex_05_A_b.gif,4
+SS1612117450475,complexity,images/stimuli/spore_stims/simple_11_B_d.gif,2
+SS1612117450475,complexity,images/stimuli/spore_stims/simple_06_A_c.gif,4
+SS1612117450475,complexity,images/stimuli/spore_stims/complex_19_B_b.gif,5
+SS1612117450475,complexity,images/stimuli/spore_stims/simple_02_B_d.gif,1
+SS1612117450475,complexity,images/stimuli/spore_stims/simple_16_A_c.gif,2
+SS1612117450475,complexity,images/stimuli/spore_stims/complex_09_A_a.gif,5
+SS1612117450475,complexity,images/stimuli/spore_stims/simple_04_B_c.gif,2
+SS1612117450475,complexity,images/stimuli/spore_stims/complex_16_B_c.gif,5
+SS1612117450475,complexity,images/stimuli/spore_stims/simple_14_B_b.gif,2
+SS1612117450475,complexity,images/stimuli/spore_stims/complex_07_B_a.gif,5
+SS1612117450475,complexity,images/stimuli/spore_stims/simple_20_A_c.gif,2
+SS1612117450475,complexity,images/stimuli/spore_stims/complex_02_A_a.gif,5
+SS1612117450475,complexity,images/stimuli/spore_stims/simple_10_B_c.gif,1
+SS1612117450475,complexity,images/stimuli/spore_stims/complex_07_A_b.gif,5
+SS1612117450475,complexity,images/stimuli/spore_stims/simple_12_B_c.gif,2
+SS1612117450475,complexity,images/stimuli/spore_stims/simple_08_A_c.gif,2
+SS1612117450475,complexity,images/stimuli/spore_stims/complex_03_B_b.gif,5
+SS1612117450475,complexity,images/stimuli/spore_stims/complex_01_B_a.gif,4
+SS1612117478452,complexity,images/stimuli/spore_stims/complex_10_A_b.gif,4
+SS1612117478452,complexity,images/stimuli/spore_stims/complex_09_A_a.gif,5
+SS1612117478452,complexity,images/stimuli/spore_stims/complex_14_A_d.gif,4
+SS1612117478452,complexity,images/stimuli/spore_stims/complex_15_B_d.gif,5
+SS1612117478452,complexity,images/stimuli/spore_stims/simple_15_A_c.gif,2
+SS1612117478452,complexity,images/stimuli/spore_stims/simple_16_B_a.gif,1
+SS1612117478452,complexity,images/stimuli/spore_stims/complex_16_A_a.gif,5
+SS1612117478452,complexity,images/stimuli/spore_stims/simple_17_A_b.gif,1
+SS1612117478452,complexity,images/stimuli/spore_stims/simple_13_A_a.gif,2
+SS1612117478452,complexity,images/stimuli/spore_stims/simple_20_A_a.gif,1
+SS1612117478452,complexity,images/stimuli/spore_stims/complex_01_A_c.gif,4
+SS1612117478452,complexity,images/stimuli/spore_stims/simple_19_B_a.gif,3
+SS1612117478452,complexity,images/stimuli/spore_stims/simple_18_B_a.gif,1
+SS1612117478452,complexity,images/stimuli/spore_stims/simple_09_A_c.gif,1
+SS1612117478452,complexity,images/stimuli/spore_stims/complex_18_B_c.gif,4
+SS1612117478452,complexity,images/stimuli/spore_stims/complex_17_A_b.gif,5
+SS1612117478452,complexity,images/stimuli/spore_stims/simple_12_B_c.gif,1
+SS1612117478452,complexity,images/stimuli/spore_stims/complex_06_B_b.gif,4
+SS1612117478452,complexity,images/stimuli/spore_stims/complex_05_B_a.gif,4
+SS1612117478452,complexity,images/stimuli/spore_stims/simple_02_A_b.gif,1

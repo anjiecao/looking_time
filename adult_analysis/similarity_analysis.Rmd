@@ -1,0 +1,32 @@
+---
+title: "Similarity analysis"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+```{r}
+library(tidyverse)
+library(here)
+SIMILARITY_DATA_PATH <- here("data/processed_data/processed_similaritydata.csv")
+d <- read_csv(SIMILARITY_DATA_PATH)
+```
+
+```{r}
+try  <- d %>% 
+  mutate(combo = paste(stimulus_left, stimulus_right, sep = "&")) %>% 
+  group_by(combo) %>% 
+  summarise(
+    mean_rating = mean(rating)
+  ) %>% 
+  separate(combo, into = c("left", "right"), sep = "&") %>% 
+  pivot_wider(names_from = right, values_from = mean_rating) -> 
+```
+
+```{r}
+try 
+cmdscale(try, eig = TRUE, k = 2)
+```
+

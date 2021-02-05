@@ -3,6 +3,7 @@
 <head>
   <script src="js/jspsych.js"></script>
   <script src="js/instruction_and_transition.js"></script>
+    <script src="js/jspsych-fullscreen.js"></script>
 <script src="js/jspsych-video-sequential-stimulus-presentation.js"></script>
   <script src = "js/practice_trial_package.js"></script>
   <script src = "js/demog_question_package.js"></script>
@@ -114,6 +115,12 @@ var timeline = []
 // initialize norming variables
 var similarity_stims = []
 var complexity_stims = []
+
+timeline.push({
+  type: 'fullscreen',
+  fullscreen_mode: true
+});
+
 
 if (SHOW_INTRO) {
   timeline = instructions(timeline)
