@@ -3,6 +3,7 @@
 <head>
   <script src="js/jspsych.js"></script>
   <script src="js/instruction_and_transition.js"></script>
+<script src="js/jspsych-video-sequential-stimulus-presentation.js"></script>
   <script src = "js/practice_trial_package.js"></script>
   <script src = "js/demog_question_package.js"></script>
   <script src="js/jspsych-pratctice-block.js"></script>
@@ -21,6 +22,9 @@
     <script src= "js/jspsych-categorize-image.js"></script>
     <script src="js/helper_for_generating_stimuli_array.js"></script>
     <script src="js/helper_for_checking_duplicate_stimuli.js"></script>
+    <script src= "js/jspsych-demog-age.js"></script>
+    <script src= "js/jspsych-demog-ethnic-US.js"></script>
+    <script src= "js/jspsych-demog-gender-and-education.js"></script>
   <link rel="stylesheet" href="css/jspsych.css"></link>
 </head>
 <body></body>
@@ -53,7 +57,7 @@ else {
   SHOW_INTRO = true
   NUM_BLOCKS = 20
   NUM_TRIAL_PER_BLOCK = 8
-  DEVIANT_POSITIONS = [3,4,5,6,7,8]
+  DEVIANT_POSITIONS = [2,3,4,5,6,7]
   BREAK_EVERY_N_BLOCKS = 10
   // number of species per complexity level
   SPECIES_NUM = 20
@@ -64,7 +68,9 @@ else {
 
 all_stimuli = get_all_stimuli(TEST_RUN)
 
+console.log('all_stimuli')
 
+console.log(all_stimuli)
 all_blocks_information = generate_all_block(num_blocks = NUM_BLOCKS,
                                             num_trial_per_block = NUM_TRIAL_PER_BLOCK,
                                             stimuli_array = all_stimuli,
@@ -122,8 +128,8 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
 
     block_counter = 0
     block_information = all_blocks_information[block_index]
-    console.log('block_information')
-
+    block_type = block_information.block_type
+    console.log('info: ' + block_information['stims_in_order'])
     block_timeline_variable = generate_timeline_variables(block_information)
     if (verbose){
     console.log("Each block time variable: ")
@@ -145,19 +151,21 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
                             {
                                 type: 'sequential-stimulus-presentation',
                                 poke_ball_animation: function(){
-                                    var html = "<img src= "+jsPsych.timelineVariable('poke_ball_animation', true)+ "?a="+Math.random() +" width ='800' height = '200'></p>"
+                                    //var html = "<img src= "+jsPsych.timelineVariable('poke_ball_animation', true)+ "?a="+Math.random() +" width ='800' height = '200'></p>"
+                                    var html = "<video width ='800' height ='200' autoplay muted><source src=" + jsPsych.timelineVariable('poke_ball_animation', true) + ' type="video/mp4"></video>'
+                                    //var html = "<img src= "+ "images/stimuli/pokeball_1.gif" +" width ='800' height = '200'></p>"
                                     return html;
                                 },
 
                                 stimuli_animation: function(){
-                                    var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='200' height = '200' style='float:" + jsPsych.timelineVariable('location', true) + "'></p>"
+                                    var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='200' height = '200' style='position:absolute;left:"+jsPsych.timelineVariable('location_percent', true)+"'></p>"
                                     return html
                                 },
-                                two_stimuli_interval: 900,
+                                two_stimuli_interval: 700,
                                 key_response: [40],
-                                minimum_viewing_duration: 900, // block responses until stimulus appears
+                                minimum_viewing_duration: 700, // block responses until stimulus appears
                                 response_ends_trial: true,
-                                data: {block_number: block_index,  stimulus_type: 'trial', stimulus_displayed: jsPsych.timelineVariable('stimuli'), position_displayed: jsPsych.timelineVariable('location'), trial_type: jsPsych.timelineVariable('stim_type'), block_type: jsPsych.timelineVariable('block_type')},
+                                data: {block_number: block_index, block_type: block_type,  stimulus_type: 'trial', stimulus_displayed: jsPsych.timelineVariable('stimuli'), position_displayed: jsPsych.timelineVariable('location'), trial_type: jsPsych.timelineVariable('stim_type')},
                             }
                             ],
                         timeline_variables: block_timeline_variable
@@ -172,19 +180,24 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
         stimulus: '<img src=images/stimuli/pokeballs_pref.jpg width ="800" height = "200" style="padding-top: 33%">',
         prompt: "<p> Which ball would you like to open? </p>",
         choices: [49, 50, 51, 97, 98, 99],
-        data: {block_number: block_index, stimulus_type: 'pref_question', block_type: block_information.block_type},
+        data: {block_number: block_index, stimulus_type: 'pref_question'},
         on_finish: function(data){
           if (data.key_press ==  49 || data.key_press == 97) {
             data.ball_pref = 1
             data.location = 'left'
+            data.location_percent = '25%'
+
           }
           else if (data.key_press ==  50 || data.key_press == 98){
             data.ball_pref = 2
             data.location = 'middle'
+            data.location_percent = '45%'
+
           }
           else if (data.key_press ==  51 || data.key_press == 99) {
             data.ball_pref = 3
             data.location = 'right'
+            data.location_percent = '66%'
 
           }
         }
@@ -195,22 +208,26 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
      var reveal = {
        type: 'sequential-stimulus-presentation',
        poke_ball_animation: function(){
-     var html = "<p><img src='images/stimuli/pokeball_" + jsPsych.data.get().last(1).values()[0].ball_pref + ".gif" + "?a=" + Math.random() + " width ='800' height = '200'></p>"
-      console.log(html)
+
+           var html = "<video width ='800' height ='200' autoplay muted><source src=" + 'images/stimuli/pokeball_' + jsPsych.data.get().last(1).values()[0].ball_pref + ".mp4" + ' type="video/mp4"></video>'
+
+           //var html = "<p><img src='images/stimuli/pokeball_" + jsPsych.data.get().last(1).values()[0].ball_pref + ".gif" + "?a=" + Math.random() + " width ='800' height = '200'></p>"
+
+           console.log(html)
       return html
     },
        stimuli_animation: function(){
-           var html = "<p><img src='" + all_blocks_information[jsPsych.data.get().last(1).values()[0].block_number].stims_in_order[jsPsych.data.get().last(1).values()[0].ball_pref - 1] + "' width ='200' height = '200' style='float:" + jsPsych.data.get().last(1).values()[0].location + "'></p>"
+           var html = "<p><img src='" + all_blocks_information[jsPsych.data.get().last(1).values()[0].block_number].stims_in_order[jsPsych.data.get().last(1).values()[0].ball_pref - 1] + "' width ='200' height = '200' style='position:absolute;left:" + jsPsych.data.get().last(1).values()[0].location_percent + "'></p>"
            return html
        },
        on_finish: function(data){
          // record whether they selected background,deviant or novel
          data.stim_type_selected = all_blocks_information[jsPsych.data.get().last(2).values()[0].block_number].stim_type_locations[jsPsych.data.get().last(2).values()[0].ball_pref - 1]
        },
-       two_stimuli_interval: 900,
+       two_stimuli_interval: 700,
        key_response: [40],
-       minimum_viewing_duration: 900, // daffner2000's info was 600, changed to 200
-       data: {block_number: block_index, stimulus_type: 'pref_reveal', block_type: block_information.block_type},
+       minimum_viewing_duration: 700, // daffner2000's info was 600, changed to 200
+       data: {block_number: block_index, stimulus_type: 'pref_reveal'},
        response_ends_trial: true,
      }
 
@@ -226,7 +243,7 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
              stimulus: '<p>Now you can take a short break </p><p>When the timer runs out, the next part of the experiment will automatically begin. You can also press any key to go to the next part now.</p><p><img src= images/time_noloop.gif'+ "?a=" + Math.random() + ' width ="200" height = "200"></p><p><img src=images/blank.png width ="800" height = "200"></p>',
              //choices: ['e', 'i'],
              trial_duration: 15 * 1000, // 15s
-             data: {block_number: block_index, stimulus_type: 'break', block_type: block_information.block_type},
+             data: {block_number: block_index, stimulus_type: 'break'},
              response_ends_trial: true,
          };
 
@@ -258,7 +275,7 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
         questions: [
           {prompt: '<p> How similar are these creatures?</p>', labels: scale_similarity, required: true}
         ],
-        scale_width: '500px',
+        scale_width: '250px',
         data: {stimulus_type: 'similarity_question', stimulus_left: similarity_array[0], stimulus_right: similarity_array[1]}
       }
 
@@ -287,7 +304,7 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
       questions: [
         {prompt: '<p> How complex is this creature?</p>', labels: scale_complexity, required: true}
       ],
-      scale_width: '500px',
+      scale_width: '250px',
       data: {trial_type: 'complexity_question', stimulus: similarity_array[random_index]}
     };
 
@@ -305,6 +322,19 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
    shuffleArray(complexity_stims)
    timeline.push(complexity_instruction)
    timeline = timeline.concat(complexity_stims)
+
+
+  var pre_demog_instruction = {
+        type: "instructions",
+        pages: [
+            "Congratulations! You have finished all the tasks tasks! Now, we would like to ask a few questions about you."
+        ],
+        data: {stimulus_type: 'instructions'},
+        show_clickable_nav: true
+    }
+
+  timeline.push(pre_demog_instruction)
+  timeline = timeline.concat(demog_questions)
 
 
    //feedback
@@ -347,6 +377,12 @@ poke_ball_stimuli = ["images/stimuli/pokeball_1.gif",
 
 all_stimuli = all_stimuli.concat(poke_ball_stimuli)
 
+
+VIDEO = ["images/stimuli/pokeball_1.mp4",
+                     "images/stimuli/pokeball_2.mp4",
+                    "images/stimuli/pokeball_3.mp4"]
+
+
 function saveData(name, data){
         var xhr = new XMLHttpRequest();
         xhr.open('POST', '../../../cgi-bin/pokebaby/write_data.php');
@@ -364,10 +400,10 @@ jsPsych.init({
         show_progress_bar: true,
         //use_webaudio: true, // this won't work for local testing (CORS), but maybe on server
         preload_images: all_stimuli,
-        //preload_video: video,
+        preload_video: VIDEO,
         on_trial_finish: function(){
             saveData("test" + subject_id, jsPsych.data.get().csv());
-            jsPsych.data.displayData();
+            //jsPsych.data.displayData();
             //setTimeout(function() { turk.submit(jsPsych.data.get().ignore('external-html').json()); }, 5000);
       }
     })
