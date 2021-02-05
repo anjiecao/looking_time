@@ -103,7 +103,7 @@ df.similarity <- df.raw %>%
     rating = as.numeric(str_extract(raw_answer, "[[:digit:]]+"))) %>% 
   select(subject, question_type, stimulus_left, stimulus_right, rating)
 
-write_csv(df.processed, here('data/processed_data/processed_similaritydata.csv'))
+write_csv(df.similarity, here('data/processed_data/processed_similaritydata.csv'))
 ```
 ## complexity 
 ```{r}
@@ -124,7 +124,7 @@ df.complexity <- df.raw %>%
   select(subject, question_type, stimulus, rating)
 
 
-write_csv(df.processed, here('data/processed_data/processed_complexitydata.csv'))
+write_csv(df.complexity, here('data/processed_data/processed_complexitydata.csv'))
 ```
 
 # Demographic information 
@@ -143,7 +143,7 @@ df.demog <- df.raw  %>%
   distinct() %>% 
   select(-responses, -trial_type)
 
-write_csv(df.processed, here('data/processed_data/processed_demogdata.csv'))
+write_csv(df.demog, here('data/processed_data/processed_demogdata.csv'))
 ```
 
 # TODO 
