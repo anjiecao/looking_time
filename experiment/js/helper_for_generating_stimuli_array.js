@@ -212,42 +212,42 @@ function generate_timeline_variables(block_information){
     block_type = block_information.block_type
 
 
-     // pick the appropriate pokeball animation for background item
+     // pick the appropriate wall animation for background item
      if (background_location == "right"){
 
-         background_pokeball_animation = 'images/stimuli/pokeball_3.mp4'
-         background_location_percent = '66%'
+         background_wall_animation = 'images/stimuli/wall_3.mp4'
+         background_location_percent = '65%'
 
      }else if (background_location == "left"){
 
-         background_pokeball_animation = 'images/stimuli/pokeball_1.mp4'
-         background_location_percent = '25%'
+         background_wall_animation = 'images/stimuli/wall_1.mp4'
+         background_location_percent = '20%'
 
      }else if (background_location == "middle"){
 
-         background_pokeball_animation = 'images/stimuli/pokeball_2.mp4'
-         background_location_percent = '45%'
+         background_wall_animation = 'images/stimuli/wall_2.mp4'
+         background_location_percent = '43%'
 
      }
 
-     // pick the appropriate pokeball animation for deviant item
+     // pick the appropriate wall animation for deviant item
      if (deviant_location == "right"){
-         deviant_pokeball_animation = 'images/stimuli/pokeball_3.mp4'
-         deviant_location_percent = '66%'
+         deviant_wall_animation = 'images/stimuli/wall_3.mp4'
+         deviant_location_percent = '65%'
 
      }else if (deviant_location == "left"){
-        deviant_pokeball_animation = 'images/stimuli/pokeball_1.mp4'
-        deviant_location_percent = '25%'
+        deviant_wall_animation = 'images/stimuli/wall_1.mp4'
+        deviant_location_percent = '20%'
 
    }else if (deviant_location == "middle"){
-         deviant_pokeball_animation = 'images/stimuli/pokeball_2.mp4'
-         deviant_location_percent = '45%'
+         deviant_wall_animation = 'images/stimuli/wall_2.mp4'
+         deviant_location_percent = '43%'
 
      }
 
 
      background_item = {
-         poke_ball_animation: background_pokeball_animation,
+         wall_animation: background_wall_animation,
          stimuli: background_stimuli,
          location: background_location,
          location_percent: background_location_percent,
@@ -255,7 +255,7 @@ function generate_timeline_variables(block_information){
      }
 
      deviant_item = {
-         poke_ball_animation: deviant_pokeball_animation,
+         wall_animation: deviant_wall_animation,
          stimuli: deviant_stimuli,
          location: deviant_location,
          location_percent: deviant_location_percent,
@@ -418,7 +418,7 @@ function generate_similar_block(stims, novel_stims, num_blocks, num_trial_per_bl
 
   block_stimuli = [background, deviant, novel]
 
-  // get location for the pokeball animation
+  // get location for the wall animation
   shuffleArray(locations)
 
   background_location = locations[0]
@@ -509,7 +509,7 @@ function generate_dissimilar_block(stims, novel_stims, num_blocks, num_trial_per
 
   block_stimuli = [background, deviant, novel]
 
-  // get location for the pokeball animation
+  // get location for the wall animation
   shuffleArray(locations)
 
   background_location = locations[0]

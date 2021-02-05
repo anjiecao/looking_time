@@ -18,9 +18,9 @@ jsPsych.plugins["sequential-stimulus-presentation"] = (function() {
     description: '',
     parameters: {
 
-     poke_ball_animation: {
+     wall_animation: {
         type: jsPsych.plugins.parameterType.HTML_STRING,
-        pretty_name: 'poke_ball_animation',
+        pretty_name: 'wall_animation',
         default: undefined,
         description: 'The HTML string to be displayed first'
       },
@@ -128,7 +128,7 @@ jsPsych.plugins["sequential-stimulus-presentation"] = (function() {
   }
   plugin.trial = function(display_element, trial) {
 
-    var html_string = '<div id="stimuli-animation">' + trial.stimuli_animation + '</div>' + '<div id="pokeball">'+ trial.poke_ball_animation+'</div>';
+    var html_string = '<div id="stimuli-animation">' + trial.stimuli_animation + '</div>' + '<div id="wall">'+ trial.wall_animation+'</div>';
 
     display_element.innerHTML = html_string;
 

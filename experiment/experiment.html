@@ -3,7 +3,6 @@
 <head>
   <script src="js/jspsych.js"></script>
   <script src="js/instruction_and_transition.js"></script>
-    <script src="js/jspsych-fullscreen.js"></script>
 <script src="js/jspsych-video-sequential-stimulus-presentation.js"></script>
   <script src = "js/practice_trial_package.js"></script>
   <script src = "js/demog_question_package.js"></script>
@@ -42,7 +41,7 @@
     jsPsych.data.addProperties({ subject: subject_id });
 
 // Stimuli setup
-TEST_RUN = 1 //test run with smaller number of species etc.
+TEST_RUN = 0 //test run with smaller number of species etc.
 
 if (TEST_RUN == 1) {
   SHOW_INTRO = false
@@ -116,12 +115,6 @@ var timeline = []
 var similarity_stims = []
 var complexity_stims = []
 
-timeline.push({
-  type: 'fullscreen',
-  fullscreen_mode: true
-});
-
-
 if (SHOW_INTRO) {
   timeline = instructions(timeline)
 }
@@ -157,20 +150,20 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
                             },
                             {
                                 type: 'sequential-stimulus-presentation',
-                                poke_ball_animation: function(){
+                                wall_animation: function(){
                                     //var html = "<img src= "+jsPsych.timelineVariable('poke_ball_animation', true)+ "?a="+Math.random() +" width ='800' height = '200'></p>"
-                                    var html = "<video width ='800' height ='200' autoplay muted><source src=" + jsPsych.timelineVariable('poke_ball_animation', true) + ' type="video/mp4"></video>'
+                                    var html = "<video width ='960' height = '540' autoplay muted><source src=" + jsPsych.timelineVariable('wall_animation', true) + ' type="video/mp4"></video>'
                                     //var html = "<img src= "+ "images/stimuli/pokeball_1.gif" +" width ='800' height = '200'></p>"
                                     return html;
                                 },
 
                                 stimuli_animation: function(){
-                                    var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='200' height = '200' style='position:absolute;left:"+jsPsych.timelineVariable('location_percent', true)+"'></p>"
+                                    var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='200' height = '200' style='position:absolute;top:43%;left:"+jsPsych.timelineVariable('location_percent', true)+"'></p>"
                                     return html
                                 },
-                                two_stimuli_interval: 700,
+                                two_stimuli_interval: 800,
                                 key_response: [40],
-                                minimum_viewing_duration: 700, // block responses until stimulus appears
+                                minimum_viewing_duration: 800, // block responses until stimulus appears
                                 response_ends_trial: true,
                                 data: {block_number: block_index, block_type: block_type,  stimulus_type: 'trial', stimulus_displayed: jsPsych.timelineVariable('stimuli'), position_displayed: jsPsych.timelineVariable('location'), trial_type: jsPsych.timelineVariable('stim_type')},
                             }
@@ -184,25 +177,25 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
       // enter preferences test here
       var preference_question = {
         type: 'html-keyboard-response',
-        stimulus: '<img src=images/stimuli/pokeballs_pref.jpg width ="800" height = "200" style="padding-top: 33%">',
-        prompt: "<p> Which ball would you like to open? </p>",
+        stimulus: "<video width ='960' height = '540' autoplay muted><source src='images/stimuli/wall_pref.mp4' type='video/mp4'></video>",
+        prompt: "<p> Which wall would you like to look behind? </p>",
         choices: [49, 50, 51, 97, 98, 99],
         data: {block_number: block_index, stimulus_type: 'pref_question'},
         on_finish: function(data){
           if (data.key_press ==  49 || data.key_press == 97) {
-            data.ball_pref = 1
+            data.wall_pref = 1
             data.location = 'left'
             data.location_percent = '25%'
 
           }
           else if (data.key_press ==  50 || data.key_press == 98){
-            data.ball_pref = 2
+            data.wall_pref = 2
             data.location = 'middle'
             data.location_percent = '45%'
 
           }
           else if (data.key_press ==  51 || data.key_press == 99) {
-            data.ball_pref = 3
+            data.wall_pref = 3
             data.location = 'right'
             data.location_percent = '66%'
 
@@ -214,9 +207,9 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
 
      var reveal = {
        type: 'sequential-stimulus-presentation',
-       poke_ball_animation: function(){
+       wall_animation: function(){
 
-           var html = "<video width ='800' height ='200' autoplay muted><source src=" + 'images/stimuli/pokeball_' + jsPsych.data.get().last(1).values()[0].ball_pref + ".mp4" + ' type="video/mp4"></video>'
+           var html = "<video width ='960' height = '540' autoplay muted><source src=" + 'images/stimuli/wall_' + jsPsych.data.get().last(1).values()[0].wall_pref + ".mp4" + ' type="video/mp4"></video>'
 
            //var html = "<p><img src='images/stimuli/pokeball_" + jsPsych.data.get().last(1).values()[0].ball_pref + ".gif" + "?a=" + Math.random() + " width ='800' height = '200'></p>"
 
@@ -224,16 +217,16 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
       return html
     },
        stimuli_animation: function(){
-           var html = "<p><img src='" + all_blocks_information[jsPsych.data.get().last(1).values()[0].block_number].stims_in_order[jsPsych.data.get().last(1).values()[0].ball_pref - 1] + "' width ='200' height = '200' style='position:absolute;left:" + jsPsych.data.get().last(1).values()[0].location_percent + "'></p>"
+           var html = "<p><img src='" + all_blocks_information[jsPsych.data.get().last(1).values()[0].block_number].stims_in_order[jsPsych.data.get().last(1).values()[0].wall_pref - 1] + "' width ='200' height = '200' style='position:absolute;top:43%;left:" + jsPsych.data.get().last(1).values()[0].location_percent + "'></p>"
            return html
        },
        on_finish: function(data){
          // record whether they selected background,deviant or novel
-         data.stim_type_selected = all_blocks_information[jsPsych.data.get().last(2).values()[0].block_number].stim_type_locations[jsPsych.data.get().last(2).values()[0].ball_pref - 1]
+         data.stim_type_selected = all_blocks_information[jsPsych.data.get().last(2).values()[0].block_number].stim_type_locations[jsPsych.data.get().last(2).values()[0].wall_pref - 1]
        },
-       two_stimuli_interval: 700,
+       two_stimuli_interval: 800,
        key_response: [40],
-       minimum_viewing_duration: 700, // daffner2000's info was 600, changed to 200
+       minimum_viewing_duration: 800, // daffner2000's info was 600, changed to 200
        data: {block_number: block_index, stimulus_type: 'pref_reveal'},
        response_ends_trial: true,
      }
@@ -376,18 +369,9 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
    console.log(timeline)
 
 
-poke_ball_stimuli = ["images/stimuli/pokeball_1.gif",
-                     "images/stimuli/pokeball_2.gif",
-                    "images/stimuli/pokeball_3.gif",
-                     "images/stimuli/pokeballs_closed.jpg",
-                    "images/stimuli/pokeballs_pref.jpg"]
-
-all_stimuli = all_stimuli.concat(poke_ball_stimuli)
-
-
-VIDEO = ["images/stimuli/pokeball_1.mp4",
-                     "images/stimuli/pokeball_2.mp4",
-                    "images/stimuli/pokeball_3.mp4"]
+VIDEO = ["images/stimuli/wall_1.mp4",
+                     "images/stimuli/wall_2.mp4",
+                    "images/stimuli/wall_3.mp4"]
 
 
 function saveData(name, data){

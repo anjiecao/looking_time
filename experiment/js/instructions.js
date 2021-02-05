@@ -11,8 +11,8 @@ var intro0 = {
         "<p> So we really appreciate your help! </p>"
         ,
         "<p>Since this task was designed for babies, it's going to be really easy!</p>" +
-        "<p>You will repeatedly see three balls on the screen, like these ones:</p>" +
-        "<p><img src=images/stimuli/pokeballs_closed.jpg width ='800' height = '200' ></p>"
+        "<p>You will repeatedly see three walls on the screen, like these ones:</p>" +
+        "<p><img src=images/stimuli/walls_all.jpg width ='960' height = '540' ></p>"
       ],
         data: {stimulus_type: 'instructions'},
         show_clickable_nav: true
@@ -22,11 +22,11 @@ var intro0 = {
 
         var intro1 = {
           type: 'sequential-stimulus-presentation',
-          poke_ball_animation: function(){
-              
-              
-        var html = "<p><video width ='800' height ='200' autoplay muted><source src=" + 'images/stimuli/pokeball_3.mp4' + ' type="video/mp4"></video></p>' +
-                  "<p> On every trial, one of the balls will open and a creature will pop out. </p>" +
+          wall_animation: function(){
+
+
+        var html = "<video width ='960' height = '540' autoplay muted><source src=" + "images/stimuli/wall_3.mp4" + " type='video/mp4'></video>" +
+                  "<p> On every trial, one of the walls will change color and a creature will appear behind it. </p>" +
                   "<p> To continue, <b> press the down arrow-key </b> on your keyboard. </p>" +
                   "<p> You can try it now! </p>"
 
@@ -34,32 +34,32 @@ var intro0 = {
          return html
        },
           stimuli_animation: function(){
-              var html = "<p><img src='images/stimuli/instructions_example_spore1.gif' width ='200' height = '200' style='float:right'></p>"
+              var html = "<p><img src='images/stimuli/instructions_example_spore1.gif' width ='200' height = '200' style='position:absolute;top:35%;left:65%'></p>"
               return html
           },
-          two_stimuli_interval: 900,
+          two_stimuli_interval: 800,
           key_response: [40],
-          minimum_viewing_duration: 900, // daffner2000's info was 600, changed to 200
+          minimum_viewing_duration: 800, // daffner2000's info was 600, changed to 200
           response_ends_trial: true,
         }
 
 
         var intro2 = {
           type: 'sequential-stimulus-presentation',
-          poke_ball_animation: function(){
-        var html = "<p><video width ='800' height ='200' autoplay muted><source src=" + 'images/stimuli/pokeball_2.mp4' + ' type="video/mp4"></video></p>' +
+          wall_animation: function(){
+        var html = "<p><video width ='960' height = '540' autoplay muted><source src=" + 'images/stimuli/wall_2.mp4' + ' type="video/mp4"></video></p>' +
                   "<p> Try again! Press the down arrow key when you've had enough of this little guy. </p>"
 
          console.log(html)
          return html
        },
           stimuli_animation: function(){
-              var html = "<p><img src='images/stimuli/instructions_example_spore2.gif' width ='200' height = '200' style='float:none'></p>"
+              var html = "<p><img src='images/stimuli/instructions_example_spore2.gif' width ='200' height = '200' style='position:absolute;top:35%;left:45%'></p>"
               return html
           },
-          two_stimuli_interval: 900,
+          two_stimuli_interval: 800,
           key_response: [40],
-          minimum_viewing_duration: 900, // daffner2000's info was 600, changed to 200
+          minimum_viewing_duration: 800, // daffner2000's info was 600, changed to 200
           response_ends_trial: true,
         }
 
@@ -75,25 +75,31 @@ var intro0 = {
         // enter preferences test here
         var intro4 = {
           type: 'html-keyboard-response',
-          stimulus: '<img src=images/stimuli/pokeballs_pref.jpg width ="800" height = "200" style="padding-top: 33%">',
-          prompt: "<p> Every once in a while, you will have a chance to open one of the three balls yourself! </p>" +
-          "<p> You can open one of the balls that have already opened to see the same creature again </p>" +
-          "<p> or you can select a ball that hasn't opened yet! </p>" +
-          "<p> You can choose which ball you'd like to open by <b> pressing the corresponding number key </b> on your keyboard! </p>" ,
+          stimulus:  "<video width ='960' height = '540' autoplay muted><source src='images/stimuli/wall_pref.mp4' type='video/mp4'></video>",
+          prompt: "<p> Every once in a while, you will have a chance to look behind one of the walls yourself! </p>" +
+          "<p> You can look behind a wall that has already appeared to see the same creature again </p>" +
+          "<p> or you can select a wall that hasn't opened yet! </p>" +
+          "<p> You can choose which wall you'd like to open by <b> pressing the corresponding number key </b> on your keyboard! </p>" ,
           choices: [49, 50, 51, 97, 98, 99],
           data: {stimulus_type: 'instructions'},
           on_finish: function(data){
             if (data.key_press ==  49 || data.key_press == 97) {
-              data.ball_pref = 1
+              data.wall_pref = 1
               data.location = 'left'
+              data.location_percent = '25%'
+
             }
             else if (data.key_press ==  50 || data.key_press == 98){
-              data.ball_pref = 2
+              data.wall_pref = 2
               data.location = 'middle'
+              data.location_percent = '45%'
+
             }
             else if (data.key_press ==  51 || data.key_press == 99) {
-              data.ball_pref = 3
+              data.wall_pref = 3
               data.location = 'right'
+              data.location_percent = '66%'
+
 
             }
           }
@@ -101,21 +107,21 @@ var intro0 = {
 
         var intro5 = {
           type: 'sequential-stimulus-presentation',
-          poke_ball_animation: function(){
-        var html = "<video width ='800' height ='200' autoplay muted><source src=" + 'images/stimuli/pokeball_' + jsPsych.data.get().last(1).values()[0].ball_pref + ".mp4" + ' type="video/mp4"></video>' +
+          wall_animation: function(){
+        var html = "<video width ='960' height = '540' autoplay muted><source src=" + 'images/stimuli/wall_' + jsPsych.data.get().last(1).values()[0].wall_pref + ".mp4" + ' type="video/mp4"></video>' +
         "<p> Again, press the down arrow to continue. </p>"
          console.log(html)
          return html
        },
           stimuli_animation: function(){
             example_stim_array = ['images/stimuli/instructions_example_spore0.gif', 'images/stimuli/instructions_example_spore2.gif', 'images/stimuli/instructions_example_spore1.gif']
-              var html = "<p><img src='" + example_stim_array[jsPsych.data.get().last(1).values()[0].ball_pref - 1] +
-              "' width ='200' height = '200' style='float:" + jsPsych.data.get().last(1).values()[0].location + "'></p>"
+              var html = "<p><img src='" + example_stim_array[jsPsych.data.get().last(1).values()[0].wall_pref - 1] +
+              "' width ='200' height = '200' style='position:absolute;top:40%;left:"+ jsPsych.data.get().last(1).values()[0].location_percent + "'></p>"
               return html
           },
-          two_stimuli_interval: 900,
+          two_stimuli_interval: 800,
           key_response: [40],
-          minimum_viewing_duration: 900, // daffner2000's info was 600, changed to 200
+          minimum_viewing_duration: 800, // daffner2000's info was 600, changed to 200
           data: {block_number: block_index, stimulus_type: 'pref_reveal'},
           response_ends_trial: true,
         }
