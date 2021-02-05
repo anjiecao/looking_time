@@ -15,13 +15,74 @@ library(here)
 library(ggiraphExtra)
 library(plotrix)
 ```
+
 # Load data
 ```{r}
 RT_data <- read_csv(here('data/processed_data/processed_RTdata.csv'))
 ```
 
+# Raw data {.tabset}
+ 
+## overall 
+```{r}
+RT_data %>% 
+   ggplot(aes(x = rt)) + 
+  geom_histogram() + 
+  scale_x_log10() 
+```
+
+## by trial type 
+```{r}
+RT_data %>% 
+   ggplot(aes(x = rt)) + 
+  geom_histogram() + 
+  scale_x_log10() + 
+  facet_wrap(~trial_type)
+```
+
+## by trial complexity 
+```{r}
+RT_data %>% 
+   ggplot(aes(x = rt)) + 
+  geom_histogram() + 
+  scale_x_log10() + 
+  facet_wrap(~trial_complexity)
+```
+
+## by block type 
+```{r}
+RT_data %>% 
+   ggplot(aes(x = rt)) + 
+  geom_histogram() + 
+  scale_x_log10() + 
+  facet_wrap(~block_type)
+```
+
+## by item id 
+### simple 
+```{r}
+RT_data %>% 
+  filter(trial_complexity == "simple") %>% 
+   ggplot(aes(x = rt)) + 
+  geom_histogram() + 
+  scale_x_log10() + 
+  facet_wrap(~item_id)
+```
+
+### complex 
+```{r}
+RT_data %>% 
+  filter(trial_complexity == "complex") %>% 
+   ggplot(aes(x = rt)) + 
+  geom_histogram() + 
+  scale_x_log10() + 
+  facet_wrap(~item_id)
+```
+
+
 
 # Basic plotting of RT data
+
 ```{r}
 
 summarized <- RT_data %>%

@@ -15,6 +15,8 @@ library(tidyverse)
 library(lme4)
 library(xtable)
 library(lmerTest)
+library(broom)
+
 ```
 
 # Load data
@@ -23,9 +25,26 @@ RT_data <- read_csv(here('data/processed_data/processed_RTdata.csv'))
 ```
 
 # Model 
+
+- model <- log(rt) ~ trial_number * item_type * trial_complexity + (1|subject) + (1|item)
+- model <- log(rt) ~ trial_number * item_type * trial_complexity + (1|subject)
+- model <- log(rt) ~ trial_number * item_type * trial_complexity + (trial_number * item_type * trial_complexity|subject)
+- model <- log(rt) ~ trial_number * item_type * trial_complexity + (trial_number * item_type * trial_complexity|subject) +  (trial_number * item_type * trial_complexity|item)
+
+
+starts with the third one and prune; we don't need item level: https://osf.io/zqzsu/wiki/Standard%20Analytic%20Procedures/
+
 ```{r}
 model <- lmer('log(rt) ~ trial_number*item_type*trial_complexity  + (trial_complexity*item_type*trial_number|subject)', data=RT_data, REML=FALSE)
+```
 
+
+```{r}
+broom.mixed::tidy(model) %>% 
+  knitr::kable()
+```
+
+```{r}
 xtable(summary(model)$coefficients)
 
 plot(model)
