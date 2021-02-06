@@ -3,7 +3,9 @@
 <head>
   <script src="js/jspsych.js"></script>
   <script src="js/instruction_and_transition.js"></script>
+<script src="js/jspsych-html-button-response.js"></script>
 <script src="js/jspsych-video-sequential-stimulus-presentation.js"></script>
+    <script src="js/jspsych-prolific-ID.js"></script>
   <script src = "js/practice_trial_package.js"></script>
   <script src = "js/demog_question_package.js"></script>
   <script src="js/jspsych-pratctice-block.js"></script>
@@ -111,9 +113,40 @@ var scale_complexity = [
 // initialize timeline
 var timeline = []
 
+
 // initialize norming variables
 var similarity_stims = []
 var complexity_stims = []
+
+
+
+// consent / proflici infrastructure
+var consent = {
+        type: 'instructions',
+        pages: ["<div class='w3-container' style='width: 600px; bottom-padding: 20px; text-align: left;'>" + 
+                "<div style='width: 600px; margin: 0 auto; text-align: center; background-color: #8C1516; padding: 20px 15px 10px 10px'>" +
+                "<img src='images/stanford.png' height='46' width='360' alt='Stanford University'></div>"+
+                "<center><p><strong>Stanford Language and Cognition Lab</strong></p></center>"+
+                "<p>In this experiment, you'll be watching a series of animations at your own pace. You will be asked to judge the similarity and complexity of these animations afterwards." +
+                "<p class='block-text' id='legal'>Legal information: By answering the following questions, you are participating in a study being performed by cognitive scientists in the Stanford Department of Psychology. If you have questions about this research, please contact Anjie Cao at <a href='mailto://anjiecao@stanford.edu'>anjiecao@stanford.edu</a>. You must be at least 18 years old to participate. Your participation in this research is voluntary. You may decline to answer any or all of the following questions. You may decline further participation, at any time, without adverse consequences. Your anonymity is assured; the researchers who have requested your participation will not receive any personal information about you.</p></div><p />" //,
+        ],
+        show_clickable_nav: true,
+        show_page_number: true,
+        post_trial_gap: 2000
+    }
+
+
+ var prolific_ID = {
+            type: 'prolific-id',
+            questions: [
+                {prompt: "Please enter your Prolific ID below. If you did not come here from Prolific, please enter 000.", required:true}
+            ],
+            button_label: "Done"
+        }
+        
+
+timeline.push(consent)
+timeline.push(prolific_ID)
 
 if (SHOW_INTRO) {
   timeline = instructions(timeline)
@@ -352,7 +385,7 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
    var thank_you = {
        type: "instructions",
        pages: [
-           "<p>That's it! Thank you so much for participating in our study!</p>"
+           "<p>That's it! Thank you so much for participating in our study! Please go to the next page for your payment information. </p>"
        ],
        data: {stimulus_type: 'instructions'},
        show_clickable_nav: true
@@ -360,7 +393,15 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
 
    timeline.push(thank_you)
 
+    
+var prolific_CompletionCode = {
+           type: 'html-button-response',
+           stimulus: "<p>For Prolific users only: Your Completion Code is</p><p><b>15BF41AB</b></p><p>Please make sure you save it somewhere secure so that you will be able to receive your payment promptly.</p>",
+           choices : ["Done!"]
+}
 
+
+  timeline.push(prolific_CompletionCode)
 
   console.log('similarity_stims')
   console.log(similarity_stims)
