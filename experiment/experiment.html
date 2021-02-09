@@ -41,7 +41,7 @@
     jsPsych.data.addProperties({ subject: subject_id });
 
 // Stimuli setup
-TEST_RUN = 1 //test run with smaller number of species etc.
+TEST_RUN = 0 //test run with smaller number of species etc.
 
 if (TEST_RUN == 1) {
   SHOW_INTRO = false
@@ -350,7 +350,7 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
    var thank_you = {
        type: "instructions",
        pages: [
-           "<p>That's it! Thank you so much for participating in our study!</p>"
+           "<p>That's it! Thank you so much for participating in our study! Pleas go to next page for your payment information. </p>"
        ],
        data: {stimulus_type: 'instructions'},
        show_clickable_nav: true
@@ -359,6 +359,17 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
    timeline.push(thank_you)
 
 
+  // mTurk 
+    var survey_code_page = {
+     type: "instructions",
+     pages:[
+         "Your survey code is<p><b>"+ survey_code + "</b></p><p>Please make sure you save this somewhere safe. You will need to enter this code into mturk to be paid.</p>"
+     ],
+     show_clickable_nav: false
+     
+ }
+    
+ timeline.push(survey_code_page)
 
   console.log('similarity_stims')
   console.log(similarity_stims)
@@ -386,7 +397,7 @@ function saveData(name, data){
 
 jsPsych.init({
         timeline: timeline,
-        show_progress_bar: true,
+        show_progress_bar: false,
         //use_webaudio: true, // this won't work for local testing (CORS), but maybe on server
         preload_images: all_stimuli,
         preload_video: VIDEO,
