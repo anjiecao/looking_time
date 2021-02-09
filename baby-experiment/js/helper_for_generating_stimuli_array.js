@@ -139,7 +139,7 @@ function get_all_stimuli(TEST_RUN){
 
     if (TEST_RUN == 1) {
       // 30 species
-      species = Array.from({length: 2}, (_, i) => i + 1)
+      species = Array.from({length: 4}, (_, i) => i + 1)
     }
     else {
       // 20 species
@@ -187,12 +187,6 @@ function generate_timeline_variables(block_information){
 
          background_wall_animation = 'images/stimuli/wall_1.mp4'
          background_location_percent = '20%'
-
-     }else if (background_location == "middle"){
-
-         background_wall_animation = 'images/stimuli/wall_2.mp4'
-         background_location_percent = '43%'
-
      }
 
      // pick the appropriate wall animation for deviant item
@@ -203,10 +197,6 @@ function generate_timeline_variables(block_information){
      }else if (deviant_location == "left"){
         deviant_wall_animation = 'images/stimuli/wall_1.mp4'
         deviant_location_percent = '20%'
-
-   }else if (deviant_location == "middle"){
-         deviant_wall_animation = 'images/stimuli/wall_2.mp4'
-         deviant_location_percent = '43%'
 
      }
 
@@ -240,11 +230,10 @@ function generate_timeline_variables(block_information){
 
 }
 
-
-
 // -------- V2 generate all blocks combination --------- //
 
-function generate_all_block(num_blocks,
+function generate_all_block(condition_num,
+                            num_blocks,
                             num_trial_per_block,
                             stimuli_array,
                             all_deviant_position_array,
@@ -253,7 +242,7 @@ function generate_all_block(num_blocks,
 
     // check that number of blocks is divisible by 2
     if (num_blocks % 2 != 0){
-      throw 'Number of blocks should be divisible by 4, to have equal number of each block type';
+      throw 'Number of blocks should be divisible by 2, to have equal number of each block type';
     }
 
     // check that there's no deviant position larger than the total number of trials per block
@@ -263,11 +252,17 @@ function generate_all_block(num_blocks,
 
 
     // rotate fam order and block type arrays by rotation num
-    rotation_num = condition_num % 6
+    rotation_num = condition_num % num_blocks
+
 
     // determine familiarization order
     fam_num = [3,7,5,5,7,3]
-    fam_orders = arrayRotate(fam_nums, rotation_num)
+    fam_num.length = num_blocks
+    fam_orders = arrayRotate(fam_num, rotation_num)
+
+    console.log('fam_orders')
+
+    console.log(fam_orders)
 
     // determine block types
     block_types = ["Std", "Dev", "Dev", "Std", "Std", "Dev"]
@@ -291,41 +286,46 @@ function generate_all_block(num_blocks,
     pairs = [1,2,3,4,5,6]
     pairs_order = arrayRotate(pairs, pair_rotation_num)
 
-    // randomize whether A or B are background or deivant stims
+    // backgrounds are even indices and deviants are uneven indices
     randomNum = Math.random()
     if (randomNum < 0.5){
       background_shift = 0
       deviant_shift = 1
 
     }
-    // if condition is odd, then A's are deviant_stim
+    // backgrounds are uneven indices and deviants are even indices
     else {
       background_shift = 1
       deviant_shift = 0
 
     }
 
-    // get paths to all simple stimuli
+    // get paths to all background stimuli
     backgrounds = []
-    for (var i = 0; i < stimuli_array.length; i++) {
+    for (var i = 0; i < stimuli_array.length/2; i++) {
         backgrounds.push(stimuli_array[i*2 + background_shift])
       }
 
-    // get paths to all complex stimuli
+    // get paths to all deviant stimuli
     deviants = []
-    for (var i = 0; i < stimuli_array.length; i++) {
+    for (var i = 0; i < stimuli_array.length/2; i++) {
         deviants.push(stimuli_array[i*2 + deviant_shift])
       }
 
+
+      console.log('backgrounds')
+      console.log(backgrounds)
+      console.log('deviants')
+      console.log(deviants)
 
     all_block_information = []
 
 
     // put a loop around this with the number of blocks of this type
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < num_blocks; i++) {
 
     // simple similar blocks
-     block_information = generate_block(simple_stims, novel_stims, fam_orders[i], all_deviant_position_array, num_species, block_types[i])
+     block_information = generate_block(backgrounds[i], deviants[i], fam_orders[i], all_deviant_position_array, num_species, block_types[i])
 
      all_block_information.push(block_information)
   }
@@ -336,22 +336,7 @@ function generate_all_block(num_blocks,
 
 }
 
-function generate_block(stims, novel_stims, num_trial, deviant_position, num_species, block_type){
-
-  // get species info
-  speciesInfo = background.slice(0, background.length-7)
-
-  // remove that species from pool
-  stims = stims.filter(x => !(x.includes(speciesInfo)))
-
-
-  // add novel stimulus
-  novelIdx = Math.floor(Math.random() * novel_stims.length)
-
-  novel = novel_stims[novelIdx];
-
-  // remove from pool
-  novel_stims.splice(novelIdx, 1)
+function generate_block(background, deviant, num_trial, deviant_position, num_species, block_type){
 
   // assign locations
   locations = ["left", "right"]
@@ -363,10 +348,6 @@ function generate_block(stims, novel_stims, num_trial, deviant_position, num_spe
 
   background_location = locations[0]
   deviant_location = locations[1]
-  novel_location = locations[2]
-
-  // get the position in which deviant trial appears
-  deviant_position_array = getRandomSubarray(all_deviant_position_array, 1)
 
   // generate array of stimulus paths to index into for pref tests
   var stims_in_order = []
@@ -384,12 +365,12 @@ function generate_block(stims, novel_stims, num_trial, deviant_position, num_spe
 
 
       block_information = {
-          num_trial_per_block: num_trial_per_block,
+          num_trial: num_trial,
           background_stimuli: background,
           deviant_stimuli: deviant,
           background_location: background_location,
           deviant_location: deviant_location,
-          deviant_position_array: deviant_position_array,
+          deviant_position_array: deviant_position,
           stims_in_order: stims_in_order,
           stim_type_locations: stim_type_locations,
           block_type: block_type
