@@ -173,14 +173,16 @@ function generate_timeline_variables(block_information){
     background_stimuli = block_information.background_stimuli
     deviant_stimuli = block_information.deviant_stimuli
     deviant_position_array = block_information.deviant_position_array
-    block_length = block_information.num_trial_per_block
+    block_length = block_information.num_trial
     block_type = block_information.block_type
 
+    console.log('block_type')
+    console.log(block_type)
 
      // pick the appropriate wall animation for background item
      if (background_location == "right"){
 
-         background_wall_animation = 'images/stimuli/wall_3.mp4'
+         background_wall_animation = 'images/stimuli/wall_2.mp4'
          background_location_percent = '65%'
 
      }else if (background_location == "left"){
@@ -191,7 +193,7 @@ function generate_timeline_variables(block_information){
 
      // pick the appropriate wall animation for deviant item
      if (deviant_location == "right"){
-         deviant_wall_animation = 'images/stimuli/wall_3.mp4'
+         deviant_wall_animation = 'images/stimuli/wall_2.mp4'
          deviant_location_percent = '65%'
 
      }else if (deviant_location == "left"){
@@ -206,7 +208,8 @@ function generate_timeline_variables(block_information){
          stimuli: background_stimuli,
          location: background_location,
          location_percent: background_location_percent,
-         stim_type: 'background'
+         stim_type: 'background',
+         trial_duration: 2000
      }
 
      deviant_item = {
@@ -214,16 +217,25 @@ function generate_timeline_variables(block_information){
          stimuli: deviant_stimuli,
          location: deviant_location,
          location_percent: deviant_location_percent,
-         stim_type: 'deviant'
+         stim_type: 'deviant',
+         trial_duration: null
      }
 
 
     block_stimuli = fillArray(background_item, block_length)
 
-    // replace background with deviant
-    for (var i = 0; i < deviant_position_array.length; i++){
-        deviant_position = deviant_position_array[i]
-        block_stimuli[deviant_position] = deviant_item
+    console.log('block_stimuli')
+    console.log(block_stimuli)
+
+    if (block_type == 'Dev'){
+      block_stimuli[block_length] = deviant_item // replace last with deviant
+    }
+    else if (block_type = 'Std') {
+      console.log('block_stimuli')
+      console.log(block_stimuli)
+      block_stimuli[block_length] = background_item // don't replace but set trial duration to null for indefinite looking
+      block_stimuli[block_length].trial_duration = null // don't replace but set trial duration to null for indefinite looking
+
     }
 
     return (block_stimuli)
