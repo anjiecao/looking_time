@@ -212,6 +212,17 @@ function generate_timeline_variables(block_information){
          trial_duration: 3000
      }
 
+
+      background_item_last = {
+          wall_animation: background_wall_animation,
+          stimuli: background_stimuli,
+          location: background_location,
+          location_percent: background_location_percent,
+          stim_type: 'background',
+          trial_duration: null
+      }
+
+
      deviant_item = {
          wall_animation: deviant_wall_animation,
          stimuli: deviant_stimuli,
@@ -222,7 +233,7 @@ function generate_timeline_variables(block_information){
      }
 
 
-    block_stimuli = fillArray(background_item, block_length)
+    block_stimuli = fillArray(background_item, block_length+1)
 
     console.log('block_stimuli')
     console.log(block_stimuli)
@@ -233,10 +244,17 @@ function generate_timeline_variables(block_information){
     else if (block_type = 'Std') {
       console.log('block_stimuli')
       console.log(block_stimuli)
-      block_stimuli[block_length] = background_item // don't replace but set trial duration to null for indefinite looking
-      block_stimuli[block_length].trial_duration = null // don't replace but set trial duration to null for indefinite looking
+      block_stimuli[block_stimuli.length] = background_item // don't replace but set trial duration to null for indefinite looking
 
+      console.log('blockstim index')
+      console.log(block_stimuli[block_stimuli.length-1].trial_duration)
+
+      block_stimuli[block_stimuli.length-1].trial_duration = null
+
+      console.log('blockstim index')
+      console.log(block_stimuli[block_stimuli.length-1].trial_duration)
     }
+
 
     return (block_stimuli)
 
