@@ -20,6 +20,12 @@ library(plotrix)
 ```{r}
 RT_data <- read_csv(here('data/processed_data/processed_RTdata.csv'))
 ```
+# Descriptive 
+```{r}
+RT_data %>% 
+  distinct(subject) %>% 
+  count()
+```
 
 # Raw data {.tabset}
  
