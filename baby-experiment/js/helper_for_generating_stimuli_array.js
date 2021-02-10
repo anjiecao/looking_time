@@ -209,7 +209,7 @@ function generate_timeline_variables(block_information){
          location: background_location,
          location_percent: background_location_percent,
          stim_type: 'background',
-         trial_duration: 2000
+         trial_duration: 3000
      }
 
      deviant_item = {
