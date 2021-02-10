@@ -233,7 +233,7 @@ function generate_timeline_variables(block_information){
      }
 
 
-    block_stimuli = fillArray(background_item, block_length+1)
+    block_stimuli = fillArray(background_item, block_length)
 
     console.log('block_stimuli')
     console.log(block_stimuli)
@@ -242,17 +242,9 @@ function generate_timeline_variables(block_information){
       block_stimuli[block_length] = deviant_item // replace last with deviant
     }
     else if (block_type = 'Std') {
-      console.log('block_stimuli')
-      console.log(block_stimuli)
-      block_stimuli[block_stimuli.length] = background_item // don't replace but set trial duration to null for indefinite looking
 
-      console.log('blockstim index')
-      console.log(block_stimuli[block_stimuli.length-1].trial_duration)
+      block_stimuli[block_length] = background_item_last // don't replace but set trial duration to null for indefinite looking
 
-      block_stimuli[block_stimuli.length-1].trial_duration = null
-
-      console.log('blockstim index')
-      console.log(block_stimuli[block_stimuli.length-1].trial_duration)
     }
 
 

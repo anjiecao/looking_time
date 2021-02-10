@@ -15,6 +15,7 @@ library(stringr) # for parsing r string
 library(jsonlite) # for parsing r string 
 
 d_path <- here("data/merged_data/merged_data.csv")
+# d_path <- here("data/raw_data/testSS1612925903745.csv")
 df.raw <- read_csv(d_path)
 ```
 
