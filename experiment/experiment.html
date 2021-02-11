@@ -180,6 +180,8 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
                                     var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='200' height = '200' style='position:absolute;top:43%;left:"+jsPsych.timelineVariable('location_percent', true)+"'></p>"
                                     return html
                                 },
+                                block_deviant: block_information.deviant_stimuli, 
+                                block_background: block_information.background_stimuli,
                                 two_stimuli_interval: 800,
                                 key_response: [40],
                                 minimum_viewing_duration: 800, // block responses until stimulus appears

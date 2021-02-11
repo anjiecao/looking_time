@@ -165,6 +165,8 @@ jsPsych.plugins["sequential-stimulus-presentation"] = (function() {
         "key_press": response.key,
         "minimum_viewing_duration":trial.minimum_viewing_duration,
         "trial_looking_time": trial.minimum_viewing_duration + response.rt,
+        "block_deviant": trial.block_deviant, 
+        "block_background": trial.block_background
 
       };
 
