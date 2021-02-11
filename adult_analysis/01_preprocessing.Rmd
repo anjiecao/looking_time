@@ -23,33 +23,21 @@ df.raw <- read_csv(d_path)
 ```{r}
 TEST_TRIAL <- c("pref_reveal", "trial")
 # do we want to go w/ the data wrangling route or the jspsych route? 
-df.deviant <- df.raw %>% 
-  filter(stimulus_type == "trial") %>% 
-  select(subject, rt,
-         block_number, block_type, stimulus_displayed) %>% 
-  group_by(subject, block_number, stimulus_displayed) %>%
-  count() %>% 
-  group_by(subject, block_number) %>% 
-  mutate(
-   deviant = !(n == max(n)) # deviant has less occurence
-  ) %>% 
-  mutate(
-    identifier = paste0(subject, stimulus_displayed)
-  ) %>% 
-  ungroup() %>% 
-  select(identifier, deviant) 
+
 
 df.processed <- df.raw %>% 
   filter(stimulus_type == "trial") %>% 
   select(subject, rt,
-         block_number, block_type, stimulus_displayed) %>% 
+         block_number, block_type, stimulus_displayed, 
+         block_deviant, block_background) %>% 
   group_by(subject, block_number) %>% 
   mutate(
-    trial_number = row_number(), 
-    identifier = paste0(subject, stimulus_displayed)) %>% 
-  left_join(df.deviant, by = "identifier") %>% 
+    trial_number = row_number()) %>% 
   mutate(
-    trial_type = if_else(deviant, "deviant", "background"),
+    trial_type = case_when(
+     stimulus_displayed == block_deviant ~ "deviant", 
+     TRUE ~ "background"
+    ),
     trial_complexity = case_when(
       grepl("simple", stimulus_displayed) ~ "simple", 
       grepl("complex", stimulus_displayed) ~ "complex"
