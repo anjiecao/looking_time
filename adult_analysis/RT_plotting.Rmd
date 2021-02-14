@@ -20,7 +20,6 @@ library(plotrix)
 ```{r}
 RT_data <- read_csv(here('data/processed_data/processed_RTdata.csv'))
 
-RT_data<- RT_data %>% filter(!(subject %in% c("SS1612925903745", "SS1612929941256", "SS1612927819925")))
 ```
 # Descriptive 
 ```{r}
