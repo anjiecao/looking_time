@@ -19,7 +19,7 @@ d_path <- here("data/merged_data/merged_data.csv")
 df.raw <- read_csv(d_path)
 ```
 
-# RT data 
+# RT data #comment
 ```{r}
 TEST_TRIAL <- c("pref_reveal", "trial")
 # do we want to go w/ the data wrangling route or the jspsych route? 
