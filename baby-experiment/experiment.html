@@ -21,6 +21,7 @@
     <script src="js/jspsych-image-keyboard-response.js"></script>
     <script src= "js/jspsych-survey-text.js"></script>
     <script src= "js/jspsych-categorize-image.js"></script>
+    <script src= "js/jspsych-fullscreen.js"></script>
     <script src="js/helper_for_generating_stimuli_array.js"></script>
     <script src="js/helper_for_checking_duplicate_stimuli.js"></script>
     <script src= "js/jspsych-demog-age.js"></script>
@@ -30,6 +31,9 @@
 </head>
 <body></body>
 <script>
+
+
+CONDITION_NUM = 2
 
 // Experiment setup
     var verbose = false
@@ -42,9 +46,10 @@
     jsPsych.data.addProperties({ subject: subject_id });
 
 // Stimuli setup
-TEST_RUN = 0 //test run with smaller number of species etc.
+TEST_RUN = false //test run with smaller number of species etc.
 
-if (TEST_RUN == 1) {
+
+if (TEST_RUN) {
   SHOW_INTRO = false
   NUM_BLOCKS = 2
   NUM_TRIAL_PER_BLOCK = 1
@@ -63,7 +68,17 @@ else {
 
 }
 
-CONDITION_NUM = 2
+ONSET_SOUNDS = true // toggle for sounds during trial onset
+
+if (ONSET_SOUNDS) {
+  sound_setting = ''
+}
+else if (ONSET_SOUNDS)  {
+  sound_setting = 'muted'
+}
+
+// autoplay beginning of block
+autoplay_block = false
 
 ALL_STIMULI = get_all_stimuli(TEST_RUN)
 
@@ -79,9 +94,11 @@ all_blocks_information = generate_all_block(condition_num = CONDITION_NUM,
 
 timeline = []
 
+
 if (SHOW_INTRO) {
   timeline = instructions(timeline)
 }
+
 
 // loop through all blocks
 for (var block_index = 0; block_index < all_blocks_information.length; block_index++){
@@ -94,12 +111,28 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
     console.log('Block Timeline Variable')
     console.log(block_timeline_variable)
 
-  var attention_getter = {
-    type: 'html-keyboard-response',
-    stimulus:  "<video width ='960' height = '540' autoplay><source src='images/stimuli/attngetter.mp4' type='video/mp4'></video>",
-    trial_duration: 6000,
-    data: {stimulus_type: 'attention_getter'}
+// give option to pause before every block except first
+  if (block_index > 0) {
+    var between_block = {
+      type: 'html-keyboard-response',
+      stimulus: '<p><img src= images/blank.png width ="200" height = "200" style = "float:right"></p><p><img src=images/blank.png width ="800" height = "200"></p>',
+      choices: jsPsych.ALL_KEYS,
+      data: {stimulus_type: 'between_block'}
+    }
+    timeline.push(between_block)
   }
+
+
+    var attention_getter = {
+      type: 'video-keyboard-response',
+      stimulus: [
+          'images/stimuli/attngetter.mp4'],
+      autoplay: true,
+      trial_ends_after_video: true,
+      width: 640,
+      data: {stimulus_type: 'attention_getter'}
+  }
+
 
   timeline.push(attention_getter)
 
@@ -110,25 +143,33 @@ var test_block = {
                             type: 'html-keyboard-response',
                             stimulus: '<p><img src= images/blank.png width ="200" height = "200" style = "float:right"></p><p><img src=images/blank.png width ="800" height = "200"></p>',
                             trial_duration: function(){
-                                var random_duration = 800 + 500 * Math.random()
-                                return random_duration  } , //The interval between the offset of one stimulus and the onset of the next stimulus ranged between 800 and 1300 msec
-                            choices: jsPsych.NO_KEYS
+                                var random_duration = 500 + 2000 * Math.random() // random jitter from 0.5 - 2.5 sec
+                                return random_duration  } ,
+                            choices: jsPsych.ALL_KEYS,
+                            on_finish: function(symbol){
+                              console.log(jsPsych.data.get().last(1).values()[0].key_press)
+                                  var spacePressed_1n = jsPsych.data.get().last(1).values()[0].key_press
+                                  var spacePressed_2n = jsPsych.data.get().last(2).values()[0].key_press
+                                if(spacePressed_1n == 32 || spacePressed_2n == 32) {
+                                  jsPsych.endCurrentTimeline();
+                                }
+                            }
                         },
                         {
                             type: 'sequential-stimulus-presentation',
                             wall_animation: function(){
                                 //var html = "<img src= "+jsPsych.timelineVariable('poke_ball_animation', true)+ "?a="+Math.random() +" width ='800' height = '200'></p>"
-                                var html = "<video width ='960' height = '540' autoplay><source src=" + jsPsych.timelineVariable('wall_animation', true) + ' type="video/mp4"></video>'
+                                var html = "<video width ='960' height = '540' autoplay " + sound_setting + "><source src=" + jsPsych.timelineVariable('wall_animation', true) + ' type="video/mp4"></video>'
                                 //var html = "<img src= "+ "images/stimuli/pokeball_1.gif" +" width ='800' height = '200'></p>"
                                 return html;
                             },
 
                             stimuli_animation: function(){
-                                var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='200' height = '200' style='position:absolute;top:43%;left:"+jsPsych.timelineVariable('location_percent', true)+"'></p>"
+                                var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='500' height = '500' style='position:absolute;top:25%;left:"+jsPsych.timelineVariable('location_percent', true)+"'></p>"
                                 return html
                             },
                             two_stimuli_interval: 1000,
-                            key_response: [40],
+                            key_response: [40, 32],
                             minimum_viewing_duration: 1000, // block responses until stimulus appears
                             response_ends_trial: true,
                             trial_duration: jsPsych.timelineVariable('trial_duration'),

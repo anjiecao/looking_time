@@ -27,7 +27,15 @@ function instructions(timeline){
                 show_clickable_nav: true}
 
                 timeline.push(consent)
+
+
+                timeline.push({
+                  type: 'fullscreen',
+                  fullscreen_mode: true
+                })
+
                 timeline.push(video_setup)
+
                 timeline.push(intro1)
 
 

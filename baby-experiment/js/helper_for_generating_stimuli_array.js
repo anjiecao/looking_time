@@ -183,22 +183,22 @@ function generate_timeline_variables(block_information){
      if (background_location == "right"){
 
          background_wall_animation = 'images/stimuli/wall_2.mp4'
-         background_location_percent = '65%'
+         background_location_percent = '55%'
 
      }else if (background_location == "left"){
 
          background_wall_animation = 'images/stimuli/wall_1.mp4'
-         background_location_percent = '20%'
+         background_location_percent = '16%'
      }
 
      // pick the appropriate wall animation for deviant item
      if (deviant_location == "right"){
          deviant_wall_animation = 'images/stimuli/wall_2.mp4'
-         deviant_location_percent = '65%'
+         deviant_location_percent = '55%'
 
      }else if (deviant_location == "left"){
         deviant_wall_animation = 'images/stimuli/wall_1.mp4'
-        deviant_location_percent = '20%'
+        deviant_location_percent = '16%'
 
      }
 
@@ -209,7 +209,7 @@ function generate_timeline_variables(block_information){
          location: background_location,
          location_percent: background_location_percent,
          stim_type: 'background',
-         trial_duration: 3000
+         trial_duration: 6000
      }
 
 
