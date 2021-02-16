@@ -1,7 +1,0 @@
-"view_history","rt","trial_type","trial_index","time_elapsed","internal_node_id","subject","stimulus_type","trial_stimulus","key_press","minimum_viewing_duration","trial_looking_time","block_deviant","block_background","stimulus","wall_pref","location","location_percent"
-"[{""page_index"":0,""viewing_time"":10236.435000086203}]","10237.155000097118","instructions","0","10238","0.0-0.0","SS1613098647451","","","","","","","","","","",""
-"[{""page_index"":0,""viewing_time"":12896.704999962822},{""page_index"":1,""viewing_time"":7580.959999933839}]","20477.909999899566","instructions","1","32719","0.0-1.0","SS1613098647451","instructions","","","","","","","","","",""
-"","10237.090000067838","sequential-stimulus-presentation","2","43761","0.0-2.0","SS1613098647451","","","40","800","11037.090000067838","null","null","","","",""
-"","2387.705000001006","sequential-stimulus-presentation","3","46952","0.0-3.0","SS1613098647451","","","40","800","3187.705000001006","null","null","","","",""
-"[{""page_index"":0,""viewing_time"":8431.630000006407}]","8431.864999933168","instructions","4","55385","0.0-4.0","SS1613098647451","instructions","","","","","","","","","",""
-"","6388.730000006035","html-keyboard-response","5","61776","0.0-5.0","SS1613098647451","instructions","","49","","","","","<video width ='960' height = '540' autoplay muted><source src='images/stimuli/wall_pref.mp4' type='video/mp4'></video>","1","left","25%"
