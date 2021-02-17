@@ -72,6 +72,30 @@ write_csv(df.processed, here('data/processed_data/processed_RTdata.csv'))
 # df.main
 ```
 
+# Pref test
+```{r}
+df.temp_rt <- df.processed %>% 
+  mutate(subject_block = paste0(subject, block_number)) %>% 
+  distinct(subject_block, block_type)
+
+df.temp_pref <- df.raw %>% 
+  filter(stimulus_type == "pref_reveal") %>% 
+  filter(!is.na(block_number)) %>% 
+  mutate(
+    subject_block = paste0(subject, block_number)
+  ) %>% 
+  select(trial_looking_time, subject, subject_block, block_number, stim_type_selected)
+
+df.pref <- df.temp_pref %>% 
+  left_join(df.temp_rt, by = "subject_block") %>% 
+  select(subject, trial_looking_time, block_number, block_type, stim_type_selected) 
+
+write_csv(df.pref, here('data/processed_data/processed_prefdata.csv'))
+
+```
+
+
+
 # Norming Data 
 ## similarity 
 ```{r}
@@ -153,7 +177,9 @@ complexity_sbj <- df.complexity %>%
 
 exlude_participant <- unique(c(similarity_sbj, complexity_sbj))
 
+
 df.rt_trimmed <- df.processed %>% filter(!(subject %in% exlude_participant))
+df.pref_trimmed <- df.pref %>% filter(!(subject %in% exlude_participant))
 df.complexity_trimmed <- df.complexity %>% filter(!(subject %in% exlude_participant))
 df.similarity_trimmed <- df.similarity %>% filter(!(subject %in% exlude_participant))
 df.demog_trimmmed <- df.demog %>% filter(!(subject %in% exlude_participant))
@@ -175,6 +201,7 @@ df.rt_trimmed <- df.rt_trimmed %>%
 ## writeout trimmed data 
 ```{r}
 write_csv(df.rt_trimmed, here('data/processed_data/trimmed_RTdata.csv'))
+write_csv(df.pref_trimmed, here('data/processed_data/trimmed_prefdata.csv'))
 write_csv(df.demog_trimmmed, here('data/processed_data/trimmed_demogdata.csv'))
 write_csv(df.similarity_trimmed, here('data/processed_data/trimmed_similaritydata.csv'))
 write_csv(df.complexity_trimmed, here('data/processed_data/trimmed_complexitydata.csv'))
