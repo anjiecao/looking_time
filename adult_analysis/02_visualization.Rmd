@@ -211,6 +211,7 @@ pref_data %>%
 ```
 
 ### by block type 
+
 ```{r}
 pref_data %>% 
   ggplot(aes(x = stim_type_selected)) + 
@@ -227,6 +228,19 @@ pref_data %>%
   facet_wrap(~block_number) + 
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 ```
+
+## check participant pattern 
+```{r}
+pref_data %>% 
+  group_by(subject) %>% 
+  count(stim_type_selected) %>% 
+  filter(stim_type_selected == "novel") %>% 
+  mutate(percent_novel = n/20) %>% 
+  ggplot(aes(x = percent_novel)) +
+  geom_histogram(bins = 20)
+```
+
+
 
 ## relationship with RT {.tabset}
 
