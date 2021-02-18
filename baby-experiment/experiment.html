@@ -62,7 +62,6 @@ else {
   SHOW_INTRO = true
   NUM_BLOCKS = 6
   NUM_TRIAL_PER_BLOCK = 4
-  DEVIANT_POSITIONS = [4]
   BREAK_EVERY_N_BLOCKS = 3
   SPECIES_NUM = 12
 
@@ -89,7 +88,6 @@ all_blocks_information = generate_all_block(condition_num = CONDITION_NUM,
                                             num_blocks = NUM_BLOCKS,
                                             num_trial_per_block = NUM_TRIAL_PER_BLOCK,
                                             stimuli_array = ALL_STIMULI,
-                                            all_deviant_position_array = DEVIANT_POSITIONS,
                                             num_species = SPECIES_NUM)
 
 timeline = []
@@ -115,7 +113,7 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
   if (block_index > 0) {
     var between_block = {
       type: 'html-keyboard-response',
-      stimulus: '<p><img src= images/blank.png width ="200" height = "200" style = "float:right"></p><p><img src=images/blank.png width ="800" height = "200"></p>',
+      stimulus: '<p><img src= images/stimuli/attngetter_blank.jpg width ="640" height = "490" ></p>',
       choices: jsPsych.ALL_KEYS,
       data: {stimulus_type: 'between_block'}
     }
@@ -141,7 +139,7 @@ var test_block = {
                     timeline: [
                         {
                             type: 'html-keyboard-response',
-                            stimulus: '<p><img src= images/blank.png width ="200" height = "200" style = "float:right"></p><p><img src=images/blank.png width ="800" height = "200"></p>',
+                            stimulus: '<p><img src= images/blank.png width ="540" height = "540" style = "float:right"></p><p><img src=images/blank.png width ="800" height = "200"></p>',
                             trial_duration: function(){
                                 var random_duration = 500 + 2000 * Math.random() // random jitter from 0.5 - 2.5 sec
                                 return random_duration  } ,
@@ -159,7 +157,8 @@ var test_block = {
                             type: 'sequential-stimulus-presentation',
                             wall_animation: function(){
                                 //var html = "<img src= "+jsPsych.timelineVariable('poke_ball_animation', true)+ "?a="+Math.random() +" width ='800' height = '200'></p>"
-                                var html = "<video width ='960' height = '540' autoplay " + sound_setting + "><source src=" + jsPsych.timelineVariable('wall_animation', true) + ' type="video/mp4"></video>'
+                                var html =
+                                "<video width ='960' height = '540' autoplay " + sound_setting + "><source src=" + jsPsych.timelineVariable('wall_animation', true) + ' type="video/mp4"> <audio autoplay><source src="' + jsPsych.timelineVariable('music', true) + '" type="audio/mpeg"> </video>'
                                 //var html = "<img src= "+ "images/stimuli/pokeball_1.gif" +" width ='800' height = '200'></p>"
                                 return html;
                             },
