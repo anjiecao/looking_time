@@ -18,7 +18,7 @@ library(plotrix)
 
 # Load data
 ```{r}
-RT_data <- read_csv(here('data/processed_data/processed_RTdata.csv'))
+RT_data <- read_csv(here('data/processed_data/trimmed_RTdata.csv'))
 
 ```
 # Descriptive 
@@ -50,7 +50,7 @@ RT_data %>%
 ## by trial complexity 
 ```{r}
 RT_data %>% 
-   ggplot(aes(x = rt)) + 
+  ggplot(aes(x = rt)) + 
   geom_histogram() + 
   scale_x_log10() + 
   facet_wrap(~trial_complexity)
@@ -90,6 +90,18 @@ RT_data %>%
 
 # Basic plotting of RT data
 
+pruning: 
+
+rt_summary <- df.rt_trimmed %>% 
+  summarise(
+    median = median(log(rt)),
+    mad = mad(log(rt)), 
+    upper = median + 3 * mad, 
+    lower = median - 3 * mad)
+  
+df.rt_trimmed <- df.rt_trimmed %>% 
+  filter(!(log(rt) > rt_summary$upper | log(rt) < rt_summary$lower))
+
 ```{r}
 
 
@@ -99,51 +111,6 @@ group_by(trial_number, item_type, trial_complexity) %>%
 summarise(meanRT=mean(rt), maxRT=max(rt), minRT=min(rt), medianRT=median(rt), Std=sd(rt), SE = std.error(rt), n = n())
 
 
-
-ggplot(summarized, aes(x=trial_number, y=medianRT, colour=item_type)) + geom_line() + geom_errorbar(aes(ymin=medianRT-SE, ymax=medianRT+SE),
-                width=0.8, size = 0.8, position = position_dodge(width = 0.2), show.legend = FALSE, alpha = 0.8) +
-  geom_point(position = position_dodge(width = 0.2), size=2.5) + geom_line(size=1.2, position = position_dodge(width = 0.2)) + ylab("RT [msec]") +
-  theme_gray()  + theme(
-    panel.grid.minor = element_blank(), 
-    plot.title = element_text(hjust=0.5, size=22, face="bold"),
-    axis.title.x = element_text(size=18, face='bold'),
-    axis.title.y = element_text(size=18, face='bold'),
-    axis.text = element_text(size=15),
-    legend.title = element_blank(),
-    legend.text = element_text(size=14, face='bold'),
-    strip.text = element_text(size=17, face='bold'),
-    legend.key.size = unit(2.5, 'lines')) + 
-  scale_x_continuous(name="Trial Number", breaks =c(2,4,6,8)) +
-  facet_grid(~trial_complexity)
-
-```
-
-```{r}
-
-# exclude
-# exclude outliers
-filter_outlier_trial <- function(RT_data){
-  summary_lt <- RT_data %>%
-    summarize(
-      mean_lt = mean(log(as.numeric(rt)), na.rm = TRUE),
-      sd_lt = sd(log(rt), na.rm = TRUE),
-      upper_lt = mean_lt + 3 * sd_lt,
-      lower_lt = mean_lt - 3 * sd_lt
-    )
-  UPPER_LT <- summary_lt %>% select(upper_lt) %>% pull()
-  LOWER_LT <- summary_lt %>% select(lower_lt) %>% pull()
-  
-trial_filtered_df <- RT_data %>%
-    filter(!(log(rt) < LOWER_LT | log(rt) > UPPER_LT))
-  return(trial_filtered_df)
-}
-
-RT_data_filtered <- filter_outlier_trial(RT_data)
-
-# after exclusion
-summarized <- RT_data_filtered %>%
-group_by(trial_number, item_type, trial_complexity) %>% 
-summarise(meanRT=mean(rt), maxRT=max(rt), minRT=min(rt), medianRT=median(rt), Std=sd(rt), SE = std.error(rt), n = n())
 
 ggplot(summarized, aes(x=trial_number, y=medianRT, colour=item_type)) + geom_line() + geom_errorbar(aes(ymin=medianRT-SE, ymax=medianRT+SE),
                 width=0.8, size = 0.8, position = position_dodge(width = 0.2), show.legend = FALSE, alpha = 0.8) +

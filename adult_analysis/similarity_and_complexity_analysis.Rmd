@@ -1,0 +1,108 @@
+---
+title: "Similarity and Complexity"
+output:
+  html_document:
+    df_print: paged
+---
+
+
+```{r}
+library(tidyverse)
+library(here)
+library(stringr)
+SIMILARITY_DATA_PATH <- here("data/processed_data/trimmed_similaritydata.csv")
+COMPLEXITY_DATA_PATH <- here("data/processed_data/trimmed_complexitydata.csv")
+df.similarity <- read_csv(SIMILARITY_DATA_PATH)
+df.complexity <- read_csv(COMPLEXITY_DATA_PATH)
+```
+# Similarity ratings
+
+
+## data preprocessing 
+just to make sure the average ratings for similar pairs are higher than dissimilar pairs 
+```{r}
+df.similarity <- df.similarity %>% 
+  mutate(
+    complexity = case_when(
+      grepl("complex", stimulus_left) | grepl("complex", stimulus_right) ~ "complex", 
+      grepl("simple", stimulus_right) | grepl("simple", stimulus_right) ~ "simple"
+    ), 
+    stimulus_left_number = as.numeric(str_extract(stimulus_left, "[[:digit:]]+")), 
+    stimulus_right_number = as.numeric(str_extract(stimulus_right, "[[:digit:]]+")), 
+    similarity = case_when(
+      stimulus_left_number == stimulus_right_number ~ "similar", 
+      TRUE ~ "dissimilar"
+    )
+  )
+```
+
+## visualization 
+### raw 
+```{r}
+df.similarity %>% 
+  ggplot(aes(x = rating))+ 
+  geom_histogram(bins = 30)
+```
+
+### by complexity block 
+```{r}
+df.similarity %>% 
+  ggplot(aes(x = similarity, y= rating)) + 
+  geom_point(alpha = 0.1, 
+             position = position_jitter(width = 0.3)) + 
+   stat_summary(fun.data = "mean_cl_boot") + 
+  facet_wrap(~complexity)
+  
+```
+
+## formal testing 
+```{r}
+lm.similarity <- lm(formula = rating ~ similarity + complexity, 
+                    data = df.similarity)
+summary(lm.similarity)
+```
+
+# Complexity:
+
+## data preprocessing 
+
+```{r}
+df.complexity <- df.complexity %>% 
+  mutate(
+    complexity = case_when(
+      grepl("complex", stimulus) ~ "complex", 
+      grepl("simple", stimulus) ~ "simple"
+    )
+  )
+```
+
+## visualization 
+### raw ratings 
+
+```{r}
+df.complexity %>% 
+  ggplot(aes(x = rating))+ 
+  geom_histogram(bins = 30)
+```
+
+### plotting 
+
+```{r}
+df.complexity %>% 
+  ggplot(aes(x = complexity, y = rating)) + 
+  geom_point(alpha = 0.1, 
+             position = position_jitter(width = 0.3)) + 
+   stat_summary(fun.data = "mean_cl_boot") 
+```
+
+## formal testing 
+```{r}
+lm.complexity <- lm(formula = rating ~ complexity, 
+                    data = df.complexity)
+summary(lm.complexity)
+```
+
+
+
+
+

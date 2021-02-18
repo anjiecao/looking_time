@@ -2,3 +2,5 @@
 .Rhistory
 .RData
 .Ruserdata
+
+adult_analysis/data/raw_data/*

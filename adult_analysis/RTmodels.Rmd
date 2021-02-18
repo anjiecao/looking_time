@@ -21,7 +21,7 @@ library(broom)
 
 # Load data
 ```{r}
-RT_data <- read_csv(here('data/processed_data/processed_RTdata.csv'))
+RT_data <- read_csv(here('data/processed_data/trimmed_RTdata.csv'))
 ```
 
 # Model 
