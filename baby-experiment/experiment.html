@@ -139,7 +139,10 @@ var test_block = {
                     timeline: [
                         {
                             type: 'html-keyboard-response',
-                            stimulus: '<p><img src= images/blank.png width ="540" height = "540" style = "float:right"></p><p><img src=images/blank.png width ="800" height = "200"></p>',
+                            stimulus: function(){
+                                    var html='<p><img src='+ jsPsych.timelineVariable('inter_trial', true) +' width ="200" height = "200" style = "float:right"></p>'
+                                    return html
+                                  },
                             trial_duration: function(){
                                 var random_duration = 500 + 2000 * Math.random() // random jitter from 0.5 - 2.5 sec
                                 return random_duration  } ,
@@ -156,10 +159,8 @@ var test_block = {
                         {
                             type: 'sequential-stimulus-presentation',
                             wall_animation: function(){
-                                //var html = "<img src= "+jsPsych.timelineVariable('poke_ball_animation', true)+ "?a="+Math.random() +" width ='800' height = '200'></p>"
-                                var html =
-                                "<video width ='960' height = '540' autoplay " + sound_setting + "><source src=" + jsPsych.timelineVariable('wall_animation', true) + ' type="video/mp4"> <audio autoplay><source src="' + jsPsych.timelineVariable('music', true) + '" type="audio/mpeg"> </video>'
-                                //var html = "<img src= "+ "images/stimuli/pokeball_1.gif" +" width ='800' height = '200'></p>"
+                                var html = "<video width ='960' height = '540' autoplay " + sound_setting + "><source src=" + jsPsych.timelineVariable('wall_animation', true) + ' type="video/mp4">' +
+                                ' <audio autoplay><source src="' + jsPsych.timelineVariable('music', true) + '" type="audio/mpeg"> </video>'
                                 return html;
                             },
 

@@ -261,7 +261,8 @@ function generate_timeline_variables(block_information){
           location_percent: background_location_percent,
           stim_type: 'background',
           trial_duration: 6000,
-          music: music_array[i]
+          music: music_array[i],
+          inter_trial: 'images/blank_fam.png'
         }
       }
 
@@ -273,7 +274,8 @@ function generate_timeline_variables(block_information){
           location_percent: deviant_location_percent,
           stim_type: 'deviant',
           trial_duration: null,
-          music: 'resources/music_8.mp3'
+          music: 'resources/music_8.mp3',
+          inter_trial: 'images/blank_test.png'
       }
     }
 
@@ -285,7 +287,8 @@ function generate_timeline_variables(block_information){
           location_percent: background_location_percent,
           stim_type: 'background',
           trial_duration: null,
-          music: 'resources/music_8.mp3'
+          music: 'resources/music_8.mp3',
+          inter_trial: 'images/blank_test.png'
       }
     }
 
