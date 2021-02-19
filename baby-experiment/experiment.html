@@ -113,7 +113,7 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
   if (block_index > 0) {
     var between_block = {
       type: 'html-keyboard-response',
-      stimulus: '<p><img src= images/stimuli/attngetter_blank.jpg width ="640" height = "490" ></p>',
+      stimulus: '<p><img src= stimuli/images/attngetter_blank.png width ="640" height = "490" ></p>',
       choices: jsPsych.ALL_KEYS,
       data: {stimulus_type: 'between_block'}
     }
@@ -124,7 +124,7 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
     var attention_getter = {
       type: 'video-keyboard-response',
       stimulus: [
-          'images/stimuli/attngetter.mp4'],
+          'stimuli/images/attngetter.mp4'],
       autoplay: true,
       trial_ends_after_video: true,
       width: 640,

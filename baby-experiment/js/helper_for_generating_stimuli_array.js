@@ -135,7 +135,7 @@ function get_all_stimuli(TEST_RUN){
 
 
     all_stimuli = []
-    MAIN_DIR = "images/stimuli/spore_stims/"
+    MAIN_DIR = "stimuli/images/spore_stims/"
 
     if (TEST_RUN == 1) {
       // 30 species
@@ -182,22 +182,22 @@ function generate_timeline_variables(block_information){
      // pick the appropriate wall animation for background item
      if (background_location == "right"){
 
-         background_wall_animation = 'images/stimuli/wall_2.mp4'
+         background_wall_animation = 'stimuli/images/wall_2.mp4'
          background_location_percent = '50%'
 
      }else if (background_location == "left"){
 
-         background_wall_animation = 'images/stimuli/wall_1.mp4'
+         background_wall_animation = 'stimuli/images/wall_1.mp4'
          background_location_percent = '16%'
      }
 
      // pick the appropriate wall animation for deviant item
      if (deviant_location == "right"){
-         deviant_wall_animation = 'images/stimuli/wall_2.mp4'
+         deviant_wall_animation = 'stimuli/images/wall_2.mp4'
          deviant_location_percent = '55%'
 
      }else if (deviant_location == "left"){
-        deviant_wall_animation = 'images/stimuli/wall_1.mp4'
+        deviant_wall_animation = 'stimuli/images/wall_1.mp4'
         deviant_location_percent = '16%'
 
      }
@@ -245,10 +245,29 @@ function generate_timeline_variables(block_information){
     }
 
 
-    music_array = ['resources/music_1.mp3', 'resources/music_2.mp3', 'resources/music_3.mp3', 'resources/music_4.mp3','resources/music_5.mp3', 'resources/music_6.mp3', 'resources/music_7.mp3']
-    shuffleArray(music_array)
+    // get familiarization clips
+    music_fam_array = ['stimuli/audio/music_1.wav',
+                       'stimuli/audio/music_2.wav',
+                       'stimuli/audio/music_3.wav',
+                       'stimuli/audio/music_4.wav',
+                       'stimuli/audio/music_5.wav',
+                       'stimuli/audio/music_6.wav',
+                       'stimuli/audio/music_7.wav',
+                       'stimuli/audio/music_8.wav',
+                       'stimuli/audio/music_9.wav',
+                       'stimuli/audio/music_10.wav'
+   ]
 
-    music_array = getRandomSubarray(music_array, block_length)
+   // get test clips
+   music_test_array = ['stimuli/audio/music_test_1.wav',
+                      'stimuli/audio/music_test_2.wav',
+                      'stimuli/audio/music_test_3.wav'
+  ]
+
+
+    shuffleArray(music_fam_array)
+    shuffleArray(music_test_array)
+
 
     block_stimuli = []
 
@@ -261,8 +280,8 @@ function generate_timeline_variables(block_information){
           location_percent: background_location_percent,
           stim_type: 'background',
           trial_duration: 6000,
-          music: music_array[i],
-          inter_trial: 'images/blank_fam.png'
+          music: music_fam_array[i],
+          inter_trial: 'stimuli/images/blank_fam.png'
         }
       }
 
@@ -274,8 +293,8 @@ function generate_timeline_variables(block_information){
           location_percent: deviant_location_percent,
           stim_type: 'deviant',
           trial_duration: null,
-          music: 'resources/music_8.mp3',
-          inter_trial: 'images/blank_test.png'
+          music: music_test_array[1],
+          inter_trial: 'stimuli/images/blank_test.png'
       }
     }
 
@@ -287,8 +306,8 @@ function generate_timeline_variables(block_information){
           location_percent: background_location_percent,
           stim_type: 'background',
           trial_duration: null,
-          music: 'resources/music_8.mp3',
-          inter_trial: 'images/blank_test.png'
+          music: music_test_array[1],
+          inter_trial: 'stimuli/images/blank_test.png'
       }
     }
 
