@@ -92,6 +92,16 @@ RT_data %>%
   facet_wrap(~trial_type)
 ```
 
+## trial type and block 
+```{r}
+RT_data %>% 
+   ggplot(aes(x = rt)) + 
+  geom_histogram() + 
+  scale_x_log10() + 
+  facet_grid(block_type~trial_type)
+```
+
+
 ## by trial complexity 
 ```{r}
 RT_data %>% 
@@ -109,6 +119,8 @@ RT_data %>%
   scale_x_log10() + 
   facet_wrap(~block_type)
 ```
+
+
 
 ## by item id 
 ### simple 
@@ -135,8 +147,29 @@ RT_data %>%
 
 ## normal 
 
-### separate deviant by similarity
+### across block, nonlog 
 
+```{r}
+ggplot(RT_data, aes(x=block_number, y=rt, colour=item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot") + 
+  geom_smooth(method = "lm")
+  
+```
+
+
+### across block, log 
+```{r}
+ggplot(RT_data, aes(x=block_number, y=log(rt), colour=item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot") + 
+  geom_smooth(method = "lm")
+  
+```
+
+
+
+### separate deviant by similarity {.tabset}
+
+#### by hand 
 ```{r}
 
 summarized <- RT_data %>%
@@ -160,7 +193,20 @@ ggplot(summarized, aes(x=trial_number, y=medianRT, colour=item_type)) + geom_lin
   scale_x_continuous(name="Trial Number", breaks =c(2,4,6,8)) +
   facet_grid(~trial_complexity)
 ```
+
+#### tidyboot
+
+```{r}
+ggplot(RT_data, aes(x=trial_number, y=log(rt), colour=item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot") + 
+  facet_grid(~trial_complexity)
+```
+
+
+
 ### separate by first half/second half
+
+#### by hand 
 ```{r}
 
 summarized <- RT_data %>%
@@ -184,6 +230,45 @@ ggplot(summarized, aes(x=trial_number, y=medianRT, colour=item_type)) + geom_lin
   scale_x_continuous(name="Trial Number", breaks =c(2,4,6,8)) +
   facet_grid(half~trial_complexity)
 ```
+
+#### tidyboot 
+
+```{r}
+ggplot(RT_data, aes(x=trial_number, y=rt, colour=item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot") + 
+  facet_grid(half~trial_complexity)
+```
+
+#### log transformed 
+```{r}
+ggplot(RT_data, aes(x=trial_number, y=log(rt), colour=item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot") + 
+  facet_grid(half~trial_complexity)
+```
+
+```{r}
+summarized <- RT_data %>%
+group_by(trial_number, item_type, trial_complexity, half) %>% 
+summarise(meanRT=mean(log(rt)), maxRT=max(log(rt)), minRT=min(log(rt)), medianRT=median(log(rt)), Std=sd(log(rt)), SE = std.error(log(rt)), n = n())
+
+
+ggplot(summarized, aes(x=trial_number, y=medianRT, colour=item_type)) + geom_line() + geom_errorbar(aes(ymin=medianRT-SE, ymax=medianRT+SE),
+                width=0.8, size = 0.8, position = position_dodge(width = 0.2), show.legend = FALSE, alpha = 0.8) +
+  geom_point(position = position_dodge(width = 0.2), size=2.5) + geom_line(size=1.2, position = position_dodge(width = 0.2)) + ylab("RT [msec]") +
+  theme_gray()  + theme(
+    panel.grid.minor = element_blank(), 
+    plot.title = element_text(hjust=0.5, size=22, face="bold"),
+    axis.title.x = element_text(size=18, face='bold'),
+    axis.title.y = element_text(size=18, face='bold'),
+    axis.text = element_text(size=15),
+    legend.title = element_blank(),
+    legend.text = element_text(size=14, face='bold'),
+    strip.text = element_text(size=17, face='bold'),
+    legend.key.size = unit(2.5, 'lines')) + 
+  scale_x_continuous(name="Trial Number", breaks =c(2,4,6,8)) +
+  facet_grid(half~trial_complexity)
+```
+
 
 ### collapsed across similar/dissimilar deviant
 
@@ -247,6 +332,40 @@ ggplot(summarized_log,
   scale_x_continuous(name="Trial Number", breaks =c(2,4,6,8)) +
   facet_grid(item_type ~ trial_complexity)
 ```
+
+## exploring function form 
+```{r}
+ggplot(RT_data, aes(x=trial_number, y=log(rt), colour=item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot") + 
+  geom_smooth(method = "lm", 
+              formula = y ~ log(x))+ 
+  facet_grid(item_type~trial_complexity)
+```
+
+```{r}
+ggplot(RT_data, aes(x=trial_number, y=log(rt), colour=item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot") + 
+  geom_smooth(method = "lm", 
+              formula = y ~ x)+ 
+  facet_grid(item_type~trial_complexity)
+```
+
+```{r}
+ggplot(RT_data, aes(x=trial_number, y=log(rt), colour=item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot") + 
+  geom_smooth(method = "lm", 
+              formula = y ~ x^2)+ 
+  facet_grid(item_type~trial_complexity)
+```
+
+```{r}
+ggplot(RT_data, aes(x=trial_number, y=log(rt), colour=item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot") + 
+  geom_smooth(method = "lm", 
+              formula = y ~ x^3)+ 
+  facet_grid(item_type~trial_complexity)
+```
+
 
 
 # group all trials together
@@ -431,6 +550,27 @@ summarise(meanRT=mean(log(trial_looking_time)),
   facet_wrap(~stim_type_selected) 
 ```
 
+## preference and looking time curve 
+
+### 
+```{r}
+pref_temp <- pref_data %>% 
+  mutate(temp_id = paste(subject, block_number)) %>% 
+  select(temp_id, stim_type_selected)
+
+rt_temp <- RT_data %>% 
+  mutate(temp_id = paste(subject, block_number))
+
+RT_temp_df <- left_join(pref_temp, rt_temp, by = "temp_id")
+
+RT_temp_df %>% 
+  ggplot(aes(x = trial_number, y = log(rt))) + 
+  stat_summary(fun.data = "mean_cl_boot") + 
+  facet_wrap(~stim_type_selected) 
+```
+
+
+
 
 # Similarity ratings {.tabset}
 
@@ -495,4 +635,64 @@ complexity_data %>%
              position = position_jitter(width = 0.3)) + 
    stat_summary(fun.data = "mean_cl_boot") 
 ```
+
+## by item 
+first figure out action
+```{r}
+complexity_action <- complexity_data %>%
+  mutate(item_id_full = 
+             str_match(stimulus, "spore_stims/\\s*(.*?).gif")[,2], 
+         item_id_no_action = str_match(stimulus, "spore_stims/\\s*(.*?)..\\s*.gif")[,2],
+         action_type = str_sub(item_id_full, -1)) 
+
+action_summary <- complexity_action %>% 
+  group_by(action_type) %>% 
+  tidyboot::tidyboot_mean(rating) 
+
+action_summary %>% 
+ ggplot(aes(x = action_type, y = mean)) + 
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper))
+```
+
+## by complexity type 
+```{r}
+complexity_summary <- complexity_action %>% 
+  group_by(item_id_no_action) %>% 
+  tidyboot::tidyboot_mean(rating) %>% 
+  mutate(
+    complexity = case_when(
+      grepl("complex", item_id_no_action) ~ "complex", 
+      TRUE ~ "simple")
+  )
+
+complexity_summary %>% 
+  ggplot(aes(x = reorder(item_id_no_action, mean), y = mean, color = complexity)) + 
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper), 
+                  position = position_dodge(1.5)) + 
+   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
+```
+
+
+
+
+```{r}
+complexity_by_item <- complexity_data %>% 
+  group_by(stimulus) %>% 
+  tidyboot::tidyboot_mean(rating) 
+
+
+%>% 
+  ggplot(aes(x = stimulus, y = mean)) + 
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper))
+
+
+```
+
+```{r}
+RT_data %>% 
+  group_by(item_id) %>% 
+  summarize(n = n())
+```
+
 
