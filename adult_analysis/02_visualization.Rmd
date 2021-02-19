@@ -552,7 +552,6 @@ summarise(meanRT=mean(log(trial_looking_time)),
 
 ## preference and looking time curve 
 
-### 
 ```{r}
 pref_temp <- pref_data %>% 
   mutate(temp_id = paste(subject, block_number)) %>% 
@@ -785,6 +784,25 @@ log_rt_deviant %>%
   left_join(c_temp, by = "item_id") %>% 
   ggplot(aes(x = mean_rating, y = log_mean_dishab, 
              color = complexity)) + 
-  geom_point()
+  geom_point() + 
+  facet_wrap(~half)
 ```
+
+# Similarity redux 
+```{r}
+similarity_data %>% 
+  mutate(
+    stimulus_left_id =  str_match(stimulus_left, "spore_stims/\\s*(.*?)..\\s*.gif")[,2],
+    stimulus_right_id = str_match(stimulus_right, "spore_stims/\\s*(.*?)..\\s*.gif")[,2],
+   ) %>% 
+  group_by(stimulus_left_id, similarity) %>% 
+  tidyboot::tidyboot_mean(rating) %>% 
+  ggplot(aes(x = reorder(stimulus_left_id, mean), y = mean, 
+             color = similarity)) + 
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
+   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+  
+```
+
+
 
