@@ -673,26 +673,118 @@ complexity_summary %>%
 
 ```
 
-
-
-
-```{r}
-complexity_by_item <- complexity_data %>% 
-  group_by(stimulus) %>% 
-  tidyboot::tidyboot_mean(rating) 
-
-
-%>% 
-  ggplot(aes(x = stimulus, y = mean)) + 
-  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper))
-
-
-```
+# dishabituation effect 
 
 ```{r}
-RT_data %>% 
+log_rt_deviant <- RT_data %>% 
+  filter(trial_type == "deviant") %>% 
   group_by(item_id) %>% 
-  summarize(n = n())
+  tidyboot::tidyboot_mean(log(rt)) %>% 
+  mutate(type = "log_rt", 
+    complexity = case_when(
+      grepl("complex", item_id) ~ "complex", 
+      TRUE ~ "simple")
+  ) 
+
+complexity_temp <- complexity_summary %>% 
+  mutate(type = "rating") %>% 
+  mutate(item_id = item_id_no_action) %>% 
+  select(-item_id_no_action)
+
+dishab_df <- bind_rows(log_rt_deviant, 
+                       complexity_temp)
+
+dishab_df 
 ```
 
+## raw dishabitutaiton 
+
+```{r}
+dishab_df %>% 
+  ggplot(aes(x = reorder(item_id, mean), y = mean, 
+             color = complexity, 
+             shape = type)) + 
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper), 
+                  position = position_dodge(1.5)) + 
+   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+  
+```
+
+## effect? 
+```{r}
+
+c_temp <- complexity_temp %>% 
+  select(item_id, complexity, mean) %>% 
+  rename(mean_rating = mean)
+
+log_rt_deviant %>% 
+  select(item_id, mean) %>% 
+  rename(log_mean_dishab = mean) %>% 
+  left_join(c_temp, by = "item_id") %>% 
+  ggplot(aes(x = mean_rating, y = log_mean_dishab, 
+             color = complexity)) + 
+  geom_point()
+```
+
+
+```{r}
+log_rt_deviant %>% 
+  filter(complexity == "complex") %>% 
+  select(item_id, mean) %>% 
+  rename(log_mean_dishab = mean) %>% 
+  left_join(c_temp, by = "item_id") %>% 
+  ggplot(aes(x = mean_rating, y = log_mean_dishab, 
+             color = complexity)) + 
+  geom_point() + 
+  geom_smooth(method = "lm")
+```
+
+```{r}
+log_rt_deviant %>% 
+  filter(complexity == "simple") %>% 
+  select(item_id, mean) %>% 
+  rename(log_mean_dishab = mean) %>% 
+  left_join(c_temp, by = "item_id") %>% 
+  ggplot(aes(x = mean_rating, y = log_mean_dishab, 
+             color = complexity)) + 
+  geom_point() + 
+  geom_smooth(method = "lm")
+```
+
+## by half 
+```{r}
+log_rt_deviant <- RT_data %>% 
+  filter(trial_type == "deviant") %>% 
+  group_by(item_id, half) %>% 
+  tidyboot::tidyboot_mean(log(rt)) %>% 
+  mutate(type = "log_rt", 
+    complexity = case_when(
+      grepl("complex", item_id) ~ "complex", 
+      TRUE ~ "simple")
+  ) 
+
+complexity_temp <- complexity_summary %>% 
+  mutate(type = "rating") %>% 
+  mutate(item_id = item_id_no_action) %>% 
+  select(-item_id_no_action)
+
+dishab_df <- bind_rows(log_rt_deviant, 
+                       complexity_temp)
+
+dishab_df 
+```
+
+```{r}
+c_temp <- complexity_temp %>% 
+  select(item_id, complexity, mean) %>% 
+  rename(mean_rating = mean)
+
+log_rt_deviant %>% 
+  select(item_id, mean, half) %>% 
+  rename(log_mean_dishab = mean) %>% 
+  left_join(c_temp, by = "item_id") %>% 
+  ggplot(aes(x = mean_rating, y = log_mean_dishab, 
+             color = complexity)) + 
+  geom_point()
+```
 
