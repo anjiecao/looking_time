@@ -65,7 +65,12 @@ df.processed <- df.raw %>%
              str_match(stimulus_displayed, "spore_stims/\\s*(.*?)..\\s*.gif")[,2]
     )  %>% 
   select(subject, block_number, block_type, trial_number, item_type, trial_type, trial_complexity, item_id, rt) %>% 
-  transform(rt = as.numeric(rt))
+  transform(rt = as.numeric(rt)) %>%
+        mutate(half = case_when(
+     block_number <= max(block_number)/2 ~ 'first half' , 
+     block_number > max(block_number)/2 ~ 'second half', 
+      )
+    ) 
 
 write_csv(df.processed, here('data/processed_data/processed_RTdata.csv'))
 
