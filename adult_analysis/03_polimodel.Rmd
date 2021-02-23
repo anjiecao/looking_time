@@ -1,0 +1,62 @@
+---
+title: "03_polimodel"
+author: "anjie"
+date: "2/22/2021"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(patchwork)
+library(here)
+
+source(here("scripts/poli_model.R"))
+```
+
+reproducing poli: https://rpubs.com/anjiecao/729261
+
+# single block using example sequence
+```{r}
+example_seq <- c(1,1,1,1,1,1,2,1)
+single_block <- poli_model_pokebaby(example_seq)
+single_block
+```
+
+```{r}
+poli_model_plot(single_block)
+```
+
+# multiple block with various location 
+```{r}
+NUM_BLOCK = 20
+DEVIANT_POSITIONS = c(3,4,5,6,7,8)
+ALL_BLOCKS <- c()
+
+for (i in 1:NUM_BLOCK){
+  block_pair <- sample(1:3, 2, replace=F)
+  
+  background <- block_pair[1]
+  deviant <- block_pair[2]
+  
+  # fill the sequence with the background
+  block_seq <- rep(background, 8)
+  # randomly sample from the deviant position 
+  location <- sample(DEVIANT_POSITIONS, 1)
+  block_seq[location] <- deviant
+
+  ALL_BLOCKS <- c(ALL_BLOCKS, block_seq)
+  
+  
+}
+
+ALL_BLOCKS
+```
+
+```{r}
+all_blocks_model <- poli_model_pokebaby(ALL_BLOCKS)
+poli_model_plot(all_blocks_model)
+
+```
+
+
+
