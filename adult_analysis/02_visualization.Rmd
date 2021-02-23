@@ -160,11 +160,19 @@ ggplot(RT_data, aes(x=block_number, y=rt, colour=item_type)) +
 ### across block, log 
 ```{r}
 ggplot(RT_data, aes(x=block_number, y=log(rt), colour=item_type)) + 
-  stat_summary(fun.data = "mean_cl_boot") + 
-  geom_smooth(method = "lm")
+  stat_summary(fun.data = "mean_cl_boot")
   
 ```
 
+```{r}
+ggplot(RT_data, aes(x=block_number, y=log(rt), colour=item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot") + 
+  facet_wrap(~trial_complexity)
+
+ggplot(RT_data, aes(x=block_number, y=log(rt), colour=item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot") + 
+  facet_wrap(~block_type)
+```
 
 
 ### separate deviant by similarity {.tabset}
@@ -202,6 +210,11 @@ ggplot(RT_data, aes(x=trial_number, y=log(rt), colour=item_type)) +
   facet_grid(~trial_complexity)
 ```
 
+```{r}
+ggplot(RT_data, aes(x=trial_number, y=log(rt), colour=item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot") + 
+  facet_grid(half~trial_complexity) 
+```
 
 
 ### separate by first half/second half
@@ -271,6 +284,21 @@ ggplot(summarized, aes(x=trial_number, y=medianRT, colour=item_type)) + geom_lin
 
 
 ### collapsed across similar/dissimilar deviant
+
+```{r}
+RT_data 
+ggplot(RT_data, aes(x=trial_number, y=log(rt), color = trial_type)) + 
+  stat_summary(fun.data = "mean_cl_boot") + 
+  facet_grid(~trial_complexity)
+```
+
+```{r}
+ggplot(RT_data, aes(x=trial_number, y=log(rt), color = trial_complexity)) + 
+  stat_summary(fun.data = "mean_cl_boot") + 
+  facet_grid(half~trial_type)
+```
+
+
 
 ```{r}
 
@@ -568,7 +596,17 @@ RT_temp_df %>%
   facet_wrap(~stim_type_selected) 
 ```
 
+```{r}
 
+```
+
+```{r}
+RT_temp_df %>% 
+  filter(!is.na(block_type)) %>% 
+  ggplot(aes(x = trial_number, y = log(rt))) + 
+  stat_summary(fun.data = "mean_cl_boot") + 
+  facet_grid(half~stim_type_selected) 
+```
 
 
 # Similarity ratings {.tabset}
