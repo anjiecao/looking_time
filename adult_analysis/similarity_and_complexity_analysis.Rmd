@@ -95,6 +95,9 @@ df.complexity %>%
    stat_summary(fun.data = "mean_cl_boot") 
 ```
 
+
+
+
 ## formal testing 
 ```{r}
 lm.complexity <- lm(formula = rating ~ complexity, 
