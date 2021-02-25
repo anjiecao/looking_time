@@ -58,5 +58,93 @@ poli_model_plot(all_blocks_model)
 
 ```
 
+# how about just 10 blocks 
+```{r}
+NUM_BLOCK = 10
+DEVIANT_POSITIONS = c(3,4,5,6,7,8)
+ALL_BLOCKS <- c()
+
+for (i in 1:NUM_BLOCK){
+  block_pair <- sample(1:3, 2, replace=F)
+  
+  background <- block_pair[1]
+  deviant <- block_pair[2]
+  
+  # fill the sequence with the background
+  block_seq <- rep(background, 8)
+  # randomly sample from the deviant position 
+  location <- sample(DEVIANT_POSITIONS, 1)
+  block_seq[location] <- deviant
+
+  ALL_BLOCKS <- c(ALL_BLOCKS, block_seq)
+  
+  
+}
+
+all_blocks_model <- poli_model_pokebaby(ALL_BLOCKS)
+poli_model_plot(all_blocks_model)
+```
+
+# 10 blocks 5 trials? 
+```{r}
+NUM_BLOCK = 10
+DEVIANT_POSITIONS = c(1, 2, 3,4,5,6,7,8)
+ALL_BLOCKS <- c()
+
+for (i in 1:NUM_BLOCK){
+  block_pair <- sample(1:3, 2, replace=F)
+  
+  background <- block_pair[1]
+  deviant <- block_pair[2]
+  
+  # fill the sequence with the background
+  block_seq <- rep(background, 8)
+  # randomly sample from the deviant position 
+  location <- sample(DEVIANT_POSITIONS, 1)
+  block_seq[location] <- deviant
+
+  ALL_BLOCKS <- c(ALL_BLOCKS, block_seq)
+  
+  
+}
+
+all_blocks_model <- poli_model_pokebaby(ALL_BLOCKS)
+poli_model_plot(all_blocks_model)
+```
+
+# maybe simulate 100 times? 
+```{r}
+SIM = 3
+NUM_BLOCK = 10
+DEVIANT_POSITIONS = c(3,4,5,6,7)
+
+generate_sequence <- function(num_block, deviant_position){
+   all_block<- c()
+  for (block in 1:num_block){
+    block_pair <- sample(1:3, 2, replace=F)
+    background <- block_pair[1]
+    deviant <- block_pair[2]
+    
+    # fill the sequence with the background
+    block_seq <- rep(background, 8)
+    # randomly sample from the deviant position 
+    location <- sample(deviant_position, 1)
+    block_seq[location] <- deviant
+
+    all_block <- c(ALL_BLOCKS, block_seq)
+  }
+  return(all_block)
+}
+
+          
+df.sim <- tibble(index = seq(1:SIM)) %>% 
+  rowwise() %>% 
+  mutate(
+    seq = list(generate_sequence(NUM_BLOCK, DEVIANT_POSITIONS))
+  ) 
+
+```
+
+
 
 

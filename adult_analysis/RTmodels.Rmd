@@ -35,8 +35,29 @@ RT_data <- read_csv(here('data/processed_data/trimmed_RTdata.csv'))
 starts with the third one and prune; we don't need item level: https://osf.io/zqzsu/wiki/Standard%20Analytic%20Procedures/
 
 ```{r}
-model <- lmer('log(rt) ~ trial_number*item_type*trial_complexity  + (trial_complexity*item_type*trial_number|subject)', data=RT_data, REML=FALSE)
+model_full <- lmer('log(rt) ~ trial_number*item_type*trial_complexity  + (trial_complexity*item_type*trial_number|subject)', data=RT_data, REML=FALSE)
+#boundary (singular) fit: see ?isSingular
 ```
+
+```{r}
+summary(model_full)
+```
+
+# pruning
+```{r}
+model <- lmer('log(rt) ~ trial_number*item_type*trial_complexity  + (1|subject)', data=RT_data, REML=FALSE)
+summary(model)
+```
+
+
+
+
+
+
+
+
+
+
 
 
 ```{r}

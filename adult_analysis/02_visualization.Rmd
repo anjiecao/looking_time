@@ -842,5 +842,26 @@ similarity_data %>%
   
 ```
 
+# try nonlinear model 
+```{r}
+library(mgcv)
+gam_d <- RT_data %>% 
+  filter(trial_type == "background") %>% 
+  mutate(trial_complexity = as.factor(trial_complexity))
+```
+
+```{r}
+gam_m <- gam(log(rt) ~ s(trial_number), 
+             data = gam_d, 
+             method = "REML")
+summary(gam_m)
+plot(gam_m, 
+     pages = 1, 
+     se = TRUE, 
+     shade = TRUE)
+gam.check(gam_m)
+concurvity(gam_m, full = TRUE)
+```
+
 
 
