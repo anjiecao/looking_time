@@ -213,11 +213,11 @@ function generate_timeline_variables(block_information){
      }
 
 
-      background_item_last = {
-          wall_animation: background_wall_animation,
+      standard_item_last = {
+          wall_animation: deviant_wall_animation,
           stimuli: background_stimuli,
-          location: background_location,
-          location_percent: background_location_percent,
+          location: deviant_location,
+          location_percent: deviant_location_percent,
           stim_type: 'background',
           trial_duration: null
       }
@@ -241,7 +241,7 @@ function generate_timeline_variables(block_information){
       block_stimuli[block_length] = deviant_item // replace last with deviant
     }
     else if (block_type = 'Std') {
-      block_stimuli[block_length] = background_item_last // don't replace but set trial duration to null for indefinite looking
+      block_stimuli[block_length] = standard_item_last // don't replace but set trial duration to null for indefinite looking
     }
 
 
