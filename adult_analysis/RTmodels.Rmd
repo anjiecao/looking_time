@@ -46,7 +46,25 @@ summary(model_full)
 # pruning
 ```{r}
 model <- lmer('log(rt) ~ trial_number*item_type*trial_complexity  + (1|subject)', data=RT_data, REML=FALSE)
-summary(model)
+summary(model)$coef %>% knitr::kable(digits = 2)
+```
+```{r}
+model_log <- lmer(log(rt) ~ log(trial_number) * item_type * trial_complexity + 
+                     (1 | subject), 
+                   data = RT_data)
+
+anova(model, model_log)
+summary(model_log)$coef %>% knitr::kable(digits = 2)
+```
+
+```{r}
+ggplot(filter(RT_data, item_type == "background"), 
+       aes(x = trial_number, y = rt, col = trial_complexity)) + 
+  geom_jitter(width = .1, alpha = .03) +
+  stat_summary(geom = "line") +
+  # geom_smooth(method = "lm", se = FALSE, lty = 2) + 
+  scale_y_log10() + 
+  scale_x_log10()
 ```
 
 
