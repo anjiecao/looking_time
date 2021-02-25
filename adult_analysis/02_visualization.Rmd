@@ -949,5 +949,74 @@ gam.check(gam_m)
 concurvity(gam_m, full = TRUE)
 ```
 
+# LOOK AT FIRST BLOCK 
+```{r}
+RT_data %>% 
+  filter(block_number == 0) %>% 
+  ggplot(aes(x=trial_number, y=log(rt), colour=item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot") + 
+  facet_wrap(~block_type)
+  
+RT_data %>% 
+  filter(block_number == 0) %>% 
+  ggplot(aes(x = item_type, y = log(rt))) + 
+  stat_summary(fun.data = "mean_cl_boot") +
+  facet_wrap(~block_type)
 
+
+
+```
+
+# LOOK AT pre-deviant and after deviant 
+```{r}
+block_dev_summary <- RT_data %>% 
+  filter(trial_type == "deviant") %>% 
+  mutate(
+    block_id =  paste(subject, block_number),
+    temp_dev_id = paste(trial_type, trial_number, trial_complexity)) %>% 
+  select(temp_dev_id, block_id)
+
+dev_pos_df <- RT_data %>% 
+  mutate(block_id = paste(subject, block_number)) %>% 
+  left_join(block_dev_summary, by = "block_id") %>% 
+  separate(temp_dev_id, into = c("trial_type_temp", "deviant_pos", "deviant_complexity")) %>% 
+  select(-c(block_id, trial_type)) %>% 
+  rowwise() %>% 
+  mutate(dishabituation_position = case_when(
+    (trial_number == (as.numeric(deviant_pos)) - 1) ~ "before_deviant", 
+    (trial_number == (as.numeric(deviant_pos)) + 1) ~ "after_deviant", 
+    TRUE ~ "regular_deviant"
+  )) %>% 
+  filter(dishabituation_position != "regular_deviant" && deviant_pos != 8) 
+
+
+dev_pos_df %>% 
+  ggplot(aes(x = fct_rev(dishabituation_position), y = log(rt))) + 
+  stat_summary(fun.data = "mean_cl_boot") + 
+  facet_wrap(~deviant_complexity)
+
+dev_pos_df %>% 
+  ggplot(aes(x = fct_rev(dishabituation_position), y = log(rt))) + 
+  stat_summary(fun.data = "mean_cl_boot") + 
+  facet_wrap(~block_type)
+```
+
+# Preftest Redux 
+```{r}
+pref_data %>% 
+  group_by(block_number, stim_type_selected) %>% 
+  summarise(n = n()) %>% 
+  group_by(block_number) %>% 
+  mutate(
+    group_n = sum(n),
+    percent = n/group_n
+  ) %>% 
+  ggplot(aes(x = block_number, y = percent, color = stim_type_selected)) + 
+  geom_point() + 
+  geom_smooth(method = "lm")
+```
+
+
+```{r}
+```
 
