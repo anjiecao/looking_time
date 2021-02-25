@@ -41,7 +41,7 @@
     jsPsych.data.addProperties({ subject: subject_id });
 
 // Stimuli setup
-TEST_RUN = 1 //test run with smaller number of species etc.
+TEST_RUN = 0 //test run with smaller number of species etc.
 
 if (TEST_RUN == 1) {
   SHOW_INTRO = false
@@ -198,17 +198,20 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
 
         timeline.push(test_block)
 
-        var block_indicator = {
-            type: "instructions",
-            pages: [
-                "<p> Click below to see the next wall. </p>"
-            ],
-            data: {stimulus_type: 'block_indicator'},
-            show_clickable_nav: true
-          }
+        if (block_index < all_blocks_information.length - 1) {
 
-        timeline.push(block_indicator)
+          var block_indicator = {
+              type: "instructions",
+              pages: [
+                  "<p> Click below to see the next wall. </p>"
+              ],
+              data: {stimulus_type: 'block_indicator'},
+              show_clickable_nav: true
+            }
 
+         timeline.push(block_indicator)
+
+        }
 
      // keep track of when to insert break blocks
      block_counter = block_counter + 1

@@ -338,14 +338,28 @@ function generate_similar_block(stims, num_blocks, num_trial_per_block, all_devi
   // remove that species from pool
   stims = stims.filter(x => !(x.includes(speciesInfo)))
 
-  // random number of deviant
+  // get random trial number
+  num_trial_per_block = getRandomSubarray(num_trial_per_block, 1)
+
+  // random number of deviants
   num_deviants = getRandomSubarray(num_deviants, 1)
+
+  // make all deviant position array smaller such that it doesn't exceed the block length
+  all_deviant_position_array = all_deviant_position_array.filter(function(item) {return item <= num_trial_per_block});
+
 
   // get the position in which deviant trial appears
   deviant_position_array = getRandomSubarray(all_deviant_position_array, num_deviants)
 
-  // get random trial number
-  num_trial_per_block = getRandomSubarray(num_trial_per_block, 1)
+
+  console.log('block length:')
+  console.log(num_trial_per_block)
+
+  console.log('all_deviant_position_array:')
+  console.log(all_deviant_position_array)
+
+  console.log('deviant_position_array:')
+  console.log(deviant_position_array)
 
       block_information = {
           num_trial_per_block: num_trial_per_block,
@@ -391,14 +405,17 @@ function generate_dissimilar_block(stims, num_blocks, num_trial_per_block, all_d
   // remove these creatures from the list for next iteration (not including their modification)
   stims = stims.filter(x => !(x.includes(speciesInfo_2) && x.includes(modificationInfo_2)))
 
-  // random number of deviant
+  // get random trial number
+  num_trial_per_block = getRandomSubarray(num_trial_per_block, 1)
+
+  // random number of deviants
   num_deviants = getRandomSubarray(num_deviants, 1)
+
+  // make all deviant position array smaller such that it doesn't exceed the block length
+  all_deviant_position_array = all_deviant_position_array.filter(function(item) {return item <= num_trial_per_block});
 
   // get the position in which deviant trial appears
   deviant_position_array = getRandomSubarray(all_deviant_position_array, num_deviants)
-
-  // get random trial number
-  num_trial_per_block = getRandomSubarray(num_trial_per_block, 1)
 
       block_information = {
           num_trial_per_block: num_trial_per_block,
