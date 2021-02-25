@@ -306,12 +306,12 @@ ggplot(RT_data, aes(x=trial_number, y=log(rt), colour=item_type)) +
 
 summarized <- RT_data %>%
 group_by(trial_number, item_type, trial_complexity, half) %>% 
-summarise(meanRT=mean(rt), maxRT=max(rt), minRT=min(rt), medianRT=median(rt), Std=sd(rt), SE = std.error(rt), n = n())
+summarise(meanRT=mean(rt), maxRT=max(rt), minRT=min(rt), medianRT=median(log(rt)), Std=sd(rt), SE = std.error(log(rt)), n = n())
 
 
 ggplot(summarized, aes(x=trial_number, y=medianRT, colour=item_type)) + geom_line() + geom_errorbar(aes(ymin=medianRT-SE, ymax=medianRT+SE),
                 width=0.8, size = 0.8, position = position_dodge(width = 0.2), show.legend = FALSE, alpha = 0.8) +
-  geom_point(position = position_dodge(width = 0.2), size=2.5) + geom_line(size=1.2, position = position_dodge(width = 0.2)) + ylab("RT [msec]") +
+  geom_point(position = position_dodge(width = 0.2), size=2.5) + geom_line(size=1.2, position = position_dodge(width = 0.2)) + ylab("log RT [msec]") +
   theme_gray()  + theme(
     panel.grid.minor = element_blank(), 
     plot.title = element_text(hjust=0.5, size=22, face="bold"),
@@ -326,7 +326,6 @@ ggplot(summarized, aes(x=trial_number, y=medianRT, colour=item_type)) + geom_lin
   facet_grid(half~trial_complexity)
 ```
 
-<<<<<<< HEAD
 ## collapsed across similar/dissimilar deviant
 =======
 #### tidyboot 
@@ -369,7 +368,6 @@ ggplot(summarized, aes(x=trial_number, y=medianRT, colour=item_type)) + geom_lin
 
 
 ### collapsed across similar/dissimilar deviant
->>>>>>> 4820e9167a3c5fc8dd0e559fd373cb49a333cb2a
 
 ```{r}
 RT_data 
@@ -444,7 +442,7 @@ ggplot(summarized_log,
     strip.text = element_text(size=8, face='bold'),
     legend.key.size = unit(2.5, 'lines')) + 
   scale_x_continuous(name="Trial Number", breaks =c(2,4,6,8)) +
-  facet_grid(item_type ~ trial_complexity)
+  facet_grid(half ~ trial_complexity)
 ```
 
 ## exploring function form 

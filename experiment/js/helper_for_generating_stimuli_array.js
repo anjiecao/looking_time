@@ -158,16 +158,6 @@ function get_all_stimuli(TEST_RUN){
     }
 
 
-  for (i = 0; i < species.length; i++) {
-      // compute index for novel stimuli
-      novel_stim_num = i+1
-
-      current_stimuli = MAIN_DIR + 'novel_' + novel_stim_num + '.gif'
-
-      all_stimuli.push(current_stimuli)
-  }
-
-
     // set number is specified in experiment.html
     for (var i = 0; i < complexity_levels.length; i++){
         for (var j = 0; j < species.length; j++){
@@ -203,8 +193,6 @@ function get_all_stimuli(TEST_RUN){
                                                                                                                                                                                                                                                                                                                                                                     // -------- V2 generate timeline variable for each bl
 function generate_timeline_variables(block_information){
 
-    background_location = block_information.background_location
-    deviant_location = block_information.deviant_location
     background_stimuli = block_information.background_stimuli
     deviant_stimuli = block_information.deviant_stimuli
     deviant_position_array = block_information.deviant_position_array
@@ -212,57 +200,22 @@ function generate_timeline_variables(block_information){
     block_type = block_information.block_type
 
 
-     // pick the appropriate wall animation for background item
-     if (background_location == "right"){
-
-         background_wall_animation = 'images/stimuli/wall_3.mp4'
-         background_location_percent = '65%'
-
-     }else if (background_location == "left"){
-
-         background_wall_animation = 'images/stimuli/wall_1.mp4'
-         background_location_percent = '20%'
-
-     }else if (background_location == "middle"){
-
-         background_wall_animation = 'images/stimuli/wall_2.mp4'
-         background_location_percent = '43%'
-
-     }
-
-     // pick the appropriate wall animation for deviant item
-     if (deviant_location == "right"){
-         deviant_wall_animation = 'images/stimuli/wall_3.mp4'
-         deviant_location_percent = '65%'
-
-     }else if (deviant_location == "left"){
-        deviant_wall_animation = 'images/stimuli/wall_1.mp4'
-        deviant_location_percent = '20%'
-
-   }else if (deviant_location == "middle"){
-         deviant_wall_animation = 'images/stimuli/wall_2.mp4'
-         deviant_location_percent = '43%'
-
-     }
+     wall_animation = 'images/stimuli/wall.mp4'
 
 
      background_item = {
-         wall_animation: background_wall_animation,
+         wall_animation: wall_animation,
          stimuli: background_stimuli,
-         location: background_location,
-         location_percent: background_location_percent,
          stim_type: 'background'
      }
 
      deviant_item = {
-         wall_animation: deviant_wall_animation,
+         wall_animation: wall_animation,
          stimuli: deviant_stimuli,
-         location: deviant_location,
-         location_percent: deviant_location_percent,
          stim_type: 'deviant'
      }
 
-
+    // populate block
     block_stimuli = fillArray(background_item, block_length)
 
     // replace background with deviant
@@ -283,6 +236,7 @@ function generate_all_block(num_blocks,
                             num_trial_per_block,
                             stimuli_array,
                             all_deviant_position_array,
+                            num_deviants,
                             num_species){
 
     // check that number of blocks is divisible by 4
@@ -311,59 +265,40 @@ function generate_all_block(num_blocks,
       }
     }
 
-    // get paths to all novel stimuli
-
-    novel_stims = []
-    for (var i = 0; i < stimuli_array.length; i++) {
-      if (stimuli_array[i].includes('novel')) {
-        novel_stims.push(stimuli_array[i])
-      }
-    }
-
     all_block_information = []
-
-
-    // to do:
-    // - add novel stim procedure
-    // - shuffle block array
-    // - think what to do with positions
 
     // put a loop around this with the number of blocks of this type
     for (i = 0; i < num_blocks/4; i++) {
 
     // simple similar blocks
-     output = generate_similar_block(simple_stims, novel_stims, num_blocks, num_trial_per_block, all_deviant_position_array, num_species, block_type = 'simple_similar')
+     output = generate_similar_block(simple_stims, num_blocks, num_trial_per_block, all_deviant_position_array, num_deviants, num_species, block_type = 'simple_similar')
 
      simple_stims = output[0]
-     novel_stims = output[1]
-     block_information = output[2]
+     block_information = output[1]
 
      all_block_information.push(block_information)
 
      // simple dissimilar blocks
-     output = generate_dissimilar_block(simple_stims, novel_stims, num_blocks, num_trial_per_block, all_deviant_position_array, block_type = 'simple_dissimilar')
+     output = generate_dissimilar_block(simple_stims, num_blocks, num_trial_per_block, all_deviant_position_array, num_deviants,  block_type = 'simple_dissimilar')
 
      simple_stims = output[0]
-     novel_stims = output[1]
-     block_information = output[2]
+     block_information = output[1]
 
      all_block_information.push(block_information)
 
      // complex similar blocks
-    output = generate_similar_block(complex_stims, novel_stims, num_blocks, num_trial_per_block, all_deviant_position_array, num_species, block_type = 'complex_similar')
+    output = generate_similar_block(complex_stims, num_blocks, num_trial_per_block, all_deviant_position_array, num_deviants, num_species, block_type = 'complex_similar')
 
     complex_stims = output[0]
-    novel_stims = output[1]
-    block_information = output[2]
+    block_information = output[1]
 
     all_block_information.push(block_information)
 
     // complex dissimilar blocks
-    output = generate_dissimilar_block(complex_stims, novel_stims, num_blocks, num_trial_per_block, all_deviant_position_array, block_type = 'complex_dissimilar')
+    output = generate_dissimilar_block(complex_stims, num_blocks, num_trial_per_block, all_deviant_position_array, num_deviants, block_type = 'complex_dissimilar')
 
     complex_stims = output[0]
-    novel_stims = output[1]
-    block_information = output[2]
+    block_information = output[1]
 
     all_block_information.push(block_information)
   }
@@ -376,8 +311,7 @@ function generate_all_block(num_blocks,
     return (all_block_information)
 
 }
-
-function generate_similar_block(stims, novel_stims, num_blocks, num_trial_per_block, all_deviant_position_array, num_species, block_type){
+function generate_similar_block(stims, num_blocks, num_trial_per_block, all_deviant_position_array, num_deviants, num_species, block_type){
 
   // get paths of species that are complete (i.e. have both modifications)
   sampleFrom = complete_species_paths(stims, num_species)
@@ -385,6 +319,7 @@ function generate_similar_block(stims, novel_stims, num_blocks, num_trial_per_bl
   // choose random creature as background
   var randomIdx = Math.floor(Math.random() * sampleFrom.length)
   var background = sampleFrom[randomIdx];
+
 
   // choose its modification
   if (background.includes('A')){
@@ -403,67 +338,28 @@ function generate_similar_block(stims, novel_stims, num_blocks, num_trial_per_bl
   // remove that species from pool
   stims = stims.filter(x => !(x.includes(speciesInfo)))
 
-
-  // add novel stimulus
-  novelIdx = Math.floor(Math.random() * novel_stims.length)
-
-  novel = novel_stims[novelIdx];
-
-
-  // remove from pool
-  novel_stims.splice(novelIdx, 1)
-
-  // assign locations
-  locations = ["left", "middle", "right"]
-
-  block_stimuli = [background, deviant, novel]
-
-  // get location for the wall animation
-  shuffleArray(locations)
-
-  background_location = locations[0]
-  deviant_location = locations[1]
-  novel_location = locations[2]
+  // random number of deviant
+  num_deviants = getRandomSubarray(num_deviants, 1)
 
   // get the position in which deviant trial appears
-  deviant_position_array = getRandomSubarray(all_deviant_position_array, 1)
+  deviant_position_array = getRandomSubarray(all_deviant_position_array, num_deviants)
 
-  // generate array of stimulus paths to index into for pref tests
-  var stims_in_order = []
-
-  stims_in_order.push(block_stimuli[locations.indexOf('left')])
-  stims_in_order.push(block_stimuli[locations.indexOf('middle')])
-  stims_in_order.push(block_stimuli[locations.indexOf('right')])
-
-  // generate array of stimulus types to keep track
-  var stim_types = ['background', 'deviant', 'novel']
-
-  var stim_type_locations = []
-
-  stim_type_locations.push(stim_types[locations.indexOf('left')])
-  stim_type_locations.push(stim_types[locations.indexOf('middle')])
-  stim_type_locations.push(stim_types[locations.indexOf('right')])
-
+  // get random trial number
+  num_trial_per_block = getRandomSubarray(num_trial_per_block, 1)
 
       block_information = {
           num_trial_per_block: num_trial_per_block,
           background_stimuli: background,
           deviant_stimuli: deviant,
-          novel_stimuli: novel,
-          background_location: background_location,
-          deviant_location: deviant_location,
-          novel_location: novel_location,
           deviant_position_array: deviant_position_array,
-          stims_in_order: stims_in_order,
-          stim_type_locations: stim_type_locations,
           block_type: block_type
       }
 
 
-return ([stims, novel_stims, block_information])
+return ([stims, block_information])
 }
 
-function generate_dissimilar_block(stims, novel_stims, num_blocks, num_trial_per_block, all_deviant_position_array, block_type){
+function generate_dissimilar_block(stims, num_blocks, num_trial_per_block, all_deviant_position_array, num_deviants, block_type){
 
   // generate dissimilar blocks:
   // -> get random creature,
@@ -495,63 +391,26 @@ function generate_dissimilar_block(stims, novel_stims, num_blocks, num_trial_per
   // remove these creatures from the list for next iteration (not including their modification)
   stims = stims.filter(x => !(x.includes(speciesInfo_2) && x.includes(modificationInfo_2)))
 
-  // assign locations
-  locations = ["left", "middle", "right"]
-
-
-  // add novel stimulus
-  novelIdx = Math.floor(Math.random() * novel_stims.length)
-  novel = novel_stims[novelIdx];
-
-  // remove from pool
-  novel_stims.splice(novelIdx, 1)
-
-
-  block_stimuli = [background, deviant, novel]
-
-  // get location for the wall animation
-  shuffleArray(locations)
-
-  background_location = locations[0]
-  deviant_location = locations[1]
-  novel_location = locations[2]
+  // random number of deviant
+  num_deviants = getRandomSubarray(num_deviants, 1)
 
   // get the position in which deviant trial appears
-  deviant_position_array = getRandomSubarray(all_deviant_position_array, 1)
+  deviant_position_array = getRandomSubarray(all_deviant_position_array, num_deviants)
 
-  // generate array of stimulus paths to index into for pref tests
-  var stims_in_order = []
-
-  stims_in_order.push(block_stimuli[locations.indexOf('left')])
-  stims_in_order.push(block_stimuli[locations.indexOf('middle')])
-  stims_in_order.push(block_stimuli[locations.indexOf('right')])
-
-  // generate array of stimulus types to keep track
-  var stim_types = ['background', 'deviant', 'novel']
-
-  var stim_type_locations = []
-
-  stim_type_locations.push(stim_types[locations.indexOf('left')])
-  stim_type_locations.push(stim_types[locations.indexOf('middle')])
-  stim_type_locations.push(stim_types[locations.indexOf('right')])
+  // get random trial number
+  num_trial_per_block = getRandomSubarray(num_trial_per_block, 1)
 
       block_information = {
           num_trial_per_block: num_trial_per_block,
           background_stimuli: background,
           deviant_stimuli: deviant,
-          novel_stimuli: novel,
-          background_location: background_location,
-          deviant_location: deviant_location,
-          novel_location: novel_location,
           deviant_position_array: deviant_position_array,
-          stims_in_order: stims_in_order,
-          stim_type_locations: stim_type_locations,
           block_type: block_type
       }
 
 
 
-return ([stims, novel_stims, block_information])
+return ([stims, block_information])
 }
 
 
