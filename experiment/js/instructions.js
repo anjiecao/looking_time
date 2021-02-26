@@ -11,8 +11,8 @@ var intro0 = {
         "<p> So we really appreciate your help! </p>"
         ,
         "<p>Since this task was designed for babies, it's going to be really easy!</p>" +
-        "<p>You will repeatedly a wall on the screen, like this one:</p>" +
-        "<p><img src=images/stimuli/wall.jpg width ='960' height = '540' ></p>"
+        "<p>You will repeatedly see a frame on the screen, like this one:</p>" +
+        '<p><img src=images/blank.png width ="400" height = "400" style="border:5px solid black"></p>'
       ],
         data: {stimulus_type: 'instructions'},
         show_clickable_nav: true
@@ -25,8 +25,8 @@ var intro0 = {
           wall_animation: function(){
 
 
-        var html = "<video width ='960' height = '540' autoplay muted><source src=" + "images/stimuli/wall.mp4" + " type='video/mp4'></video>" +
-                  "<p> On every trial, the wall will disappear and a creature will appear behind it. </p>" +
+        var html = '<p><img src= images/blank.png width ="400" height = "400" style="border:5px solid black">' +
+                  "<p> On every trial, a creature will appear in the frame. </p>" +
                   "<p> To continue, <b> press the down arrow-key </b> on your keyboard. </p>" +
                   "<p> You can try it now! </p>"
 
@@ -34,10 +34,10 @@ var intro0 = {
          return html
        },
           stimuli_animation: function(){
-              var html = "<p><img src='images/stimuli/instructions_example_spore1.gif' width ='300' height = '300' style='position:absolute;top:28%;left:40%'></p>"
+              var html = "<p><img src='images/stimuli/instructions_example_spore1.gif' width ='400' height = '400' style='position:absolute;top:28%;left:40%'></p>"
               return html
           },
-          two_stimuli_interval: 800,
+          two_stimuli_interval: 0,
           key_response: [40],
           minimum_viewing_duration: 800, // daffner2000's info was 600, changed to 200
           response_ends_trial: true,
@@ -47,14 +47,17 @@ var intro0 = {
         var intro2 = {
           type: 'sequential-stimulus-presentation',
           wall_animation: function(){
-        var html = "<p><video width ='960' height = '540' autoplay muted><source src=" + 'images/stimuli/wall.mp4' + ' type="video/mp4"></video></p>' +
-                  "<p> Try again! Press the down arrow key when you've had enough of this little guy. </p>"
+        var html = '<p><img src= images/blank.png width ="400" height = "400" style="border:5px solid black">' +
+                  "<p> You are doing great! </p>" + 
+            "<p>Now, let's try again.</p>" + 
+                "<p> Press the down arrow key when you've had enough of this little guy. </p>" 
+                
 
          console.log(html)
          return html
        },
           stimuli_animation: function(){
-              var html = "<p><img src='images/stimuli/instructions_example_spore2.gif' width ='300' height = '300' style='position:absolute;top:28%;left:40%'></p>"
+              var html = "<p><img src='images/stimuli/instructions_example_spore0.gif' width ='400' height = '400' style='position:absolute;top:28%;left:40%'></p>"
               return html
           },
           two_stimuli_interval: 800,
@@ -73,7 +76,7 @@ var intro0 = {
 
         var intro4 = {
             type: "instructions",
-        pages: [            "<p> After some trials, you will be prompted to move to the next wall, behind which there are new creatures! </p>" +
+        pages: [            "<p> After some trials, you will be prompted to move to the next frame, behind which there are new creatures! </p>" +
                             "<p> That means, new creatures will appear, you can again look at them for as long as you like, </p>" +
                             "<p> and move to the next trial by pressing the down arrow. </p>",
                             "<p> We hope you enjoy our baby stimuli! </p>" +

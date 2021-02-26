@@ -165,7 +165,7 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
                         timeline: [
                             {
                                 type: 'html-keyboard-response',
-                                stimulus: '<p><img src= images/blank.png width ="200" height = "200" style = "float:right"></p><p><img src=images/blank.png width ="800" height = "200"></p>',
+                                stimulus: '<p><img src= images/blank.png width ="400" height = "400" style="border:5px solid black">',
                                 trial_duration: function(){
                                     var random_duration = 800 + 500 * Math.random()
                                     return random_duration  } , //The interval between the offset of one stimulus and the onset of the next stimulus ranged between 800 and 1300 msec
@@ -174,19 +174,19 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
                             {
                                 type: 'sequential-stimulus-presentation',
                                 wall_animation: function(){
-                                    //var html = "<img src= "+jsPsych.timelineVariable('poke_ball_animation', true)+ "?a="+Math.random() +" width ='800' height = '200'></p>"
-                                    var html = "<video width ='960' height = '540' autoplay muted><source src=" + jsPsych.timelineVariable('wall_animation', true) + ' type="video/mp4"></video>'
+                                    var html =  '<p><img src= images/blank.png width ="400" height = "400" style="border:5px solid black">'
+                                    //var html = "<video width ='960' height = '540' autoplay muted><source src=" + jsPsych.timelineVariable('wall_animation', true) + ' type="video/mp4"></video>'
                                     //var html = "<img src= "+ "images/stimuli/pokeball_1.gif" +" width ='800' height = '200'></p>"
                                     return html;
                                 },
 
                                 stimuli_animation: function(){
-                                    var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='300' height = '300' style='position:absolute;top:28%;left:40%'></p>"
+                                    var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='400' height = '400' style='position:absolute;top:28%;left:40%'></p>"
                                     return html
                                 },
                                 block_deviant: block_information.deviant_stimuli,
                                 block_background: block_information.background_stimuli,
-                                two_stimuli_interval: 800,
+                                two_stimuli_interval: 0,
                                 key_response: [40],
                                 minimum_viewing_duration: 800, // block responses until stimulus appears
                                 response_ends_trial: true,
@@ -203,7 +203,7 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
           var block_indicator = {
               type: "instructions",
               pages: [
-                  "<p> Click below to see the next wall. </p>"
+                  "<p> Click below to see the next frame. </p>"
               ],
               data: {stimulus_type: 'block_indicator'},
               show_clickable_nav: true
