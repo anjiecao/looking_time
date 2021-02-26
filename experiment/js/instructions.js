@@ -48,10 +48,10 @@ var intro0 = {
           type: 'sequential-stimulus-presentation',
           wall_animation: function(){
         var html = '<p><img src= images/blank.png width ="400" height = "400" style="border:5px solid black">' +
-                  "<p> You are doing great! </p>" + 
-            "<p>Now, let's try again.</p>" + 
-                "<p> Press the down arrow key when you've had enough of this little guy. </p>" 
-                
+                  "<p> You are doing great! </p>" +
+            "<p>Now, let's try again.</p>" +
+                "<p> Press the down arrow key when you've had enough of this little guy. </p>"
+
 
          console.log(html)
          return html
@@ -76,7 +76,7 @@ var intro0 = {
 
         var intro4 = {
             type: "instructions",
-        pages: [            "<p> After some trials, you will be prompted to move to the next frame, behind which there are new creatures! </p>" +
+        pages: [            "<p> After some trials, you will be prompted asked a simple math task before moving to the next frame, in new creatures will appear! </p>" +
                             "<p> That means, new creatures will appear, you can again look at them for as long as you like, </p>" +
                             "<p> and move to the next trial by pressing the down arrow. </p>",
                             "<p> We hope you enjoy our baby stimuli! </p>" +

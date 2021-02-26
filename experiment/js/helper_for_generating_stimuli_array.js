@@ -352,21 +352,44 @@ function generate_similar_block(stims, num_blocks, num_trial_per_block, all_devi
   deviant_position_array = getRandomSubarray(all_deviant_position_array, num_deviants)
 
 
-  console.log('block length:')
-  console.log(num_trial_per_block)
+  // generate random math question
 
-  console.log('all_deviant_position_array:')
-  console.log(all_deviant_position_array)
+    first_addend = Math.floor(Math.random() * 9) + 1;
 
-  console.log('deviant_position_array:')
-  console.log(deviant_position_array)
+    second_addend = Math.floor(Math.random() * 9) + 1;
+
+    result = first_addend + second_addend;
+
+    offset_array = [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+
+    offset1 = getRandomSubarray(offset_array, 1)
+
+    const index = offset_array.indexOf(offset1);
+      if (index > -1) {
+        offset_array.splice(index, 1);
+      }
+
+    offset2 = getRandomSubarray(offset_array, 1)
+
+    var option1 = parseFloat(result) + parseFloat(offset1)
+
+    var option2 = parseFloat(result) + parseFloat(offset2)
+
+    options = [result, option1, option2]
+
+    shuffleArray(options)
 
       block_information = {
           num_trial_per_block: num_trial_per_block,
           background_stimuli: background,
           deviant_stimuli: deviant,
           deviant_position_array: deviant_position_array,
-          block_type: block_type
+          block_type: block_type,
+          first_addend: first_addend,
+          second_addend: second_addend,
+          result: result,
+          options: options
+
       }
 
 
@@ -417,14 +440,48 @@ function generate_dissimilar_block(stims, num_blocks, num_trial_per_block, all_d
   // get the position in which deviant trial appears
   deviant_position_array = getRandomSubarray(all_deviant_position_array, num_deviants)
 
+  // generate random math question
+
+    first_addend = Math.floor(Math.random() * 9) + 1;
+
+    second_addend = Math.floor(Math.random() * 9) + 1;
+
+    result = first_addend + second_addend;
+
+    offset_array = [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
+
+    offset1 = getRandomSubarray(offset_array, 1)
+
+    const index = offset_array.indexOf(offset1);
+      if (index > -1) {
+        offset_array.splice(index, 1);
+      }
+
+    offset2 = getRandomSubarray(offset_array, 1)
+
+    var option1 = parseFloat(result) + parseFloat(offset1)
+
+    var option2 = parseFloat(result) + parseFloat(offset2)
+
+    options = [result, option1, option2]
+
+    console.log(result)
+    console.log(options)
+
+    shuffleArray(options)
+
       block_information = {
           num_trial_per_block: num_trial_per_block,
           background_stimuli: background,
           deviant_stimuli: deviant,
           deviant_position_array: deviant_position_array,
-          block_type: block_type
-      }
+          block_type: block_type,
+          first_addend: first_addend,
+          second_addend: second_addend,
+          result: result,
+          options: options
 
+      }
 
 
 return ([stims, block_information])

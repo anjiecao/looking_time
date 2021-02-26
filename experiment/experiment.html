@@ -3,28 +3,29 @@
 <head>
   <script src="js/jspsych.js"></script>
   <script src="js/instruction_and_transition.js"></script>
-<script src="js/jspsych-video-sequential-stimulus-presentation.js"></script>
+  <script src="js/jspsych-video-sequential-stimulus-presentation.js"></script>
   <script src = "js/practice_trial_package.js"></script>
   <script src = "js/demog_question_package.js"></script>
   <script src="js/jspsych-pratctice-block.js"></script>
   <script src="js/jspsych-stimulus-presentation.js"></script>
-<script src="js/jspsych-sequential-stimulus-presentation.js"></script>
-<script src = "js/jspsych-multi-stim-multi-response.js"></script>
+  <script src="js/jspsych-sequential-stimulus-presentation.js"></script>
+  <script src = "js/jspsych-multi-stim-multi-response.js"></script>
   <script src="js/jspsych-task-instructions.js"></script>
   <script src="js/jspsych-instructions.js"></script>
   <script src="js/instructions.js"></script>
   <script src= "js/jspsych-survey-text.js"></script>
   <script src= "js/jspsych-survey-likert.js"></script>
-    <script src="js/jspsych-html-slider-response.js"></script>
-    <script src="js/jspsych-html-keyboard-response.js"></script>
-    <script src="js/jspsych-image-keyboard-response.js"></script>
-    <script src= "js/jspsych-survey-text.js"></script>
-    <script src= "js/jspsych-categorize-image.js"></script>
-    <script src="js/helper_for_generating_stimuli_array.js"></script>
-    <script src="js/helper_for_checking_duplicate_stimuli.js"></script>
-    <script src= "js/jspsych-demog-age.js"></script>
-    <script src= "js/jspsych-demog-ethnic-US.js"></script>
-    <script src= "js/jspsych-demog-gender-and-education.js"></script>
+  <script src="js/jspsych-survey-multi-choice.js"></script>
+  <script src="js/jspsych-html-slider-response.js"></script>
+  <script src="js/jspsych-html-keyboard-response.js"></script>
+  <script src="js/jspsych-image-keyboard-response.js"></script>
+  <script src= "js/jspsych-survey-text.js"></script>
+  <script src= "js/jspsych-categorize-image.js"></script>
+  <script src="js/helper_for_generating_stimuli_array.js"></script>
+  <script src="js/helper_for_checking_duplicate_stimuli.js"></script>
+  <script src= "js/jspsych-demog-age.js"></script>
+  <script src= "js/jspsych-demog-ethnic-US.js"></script>
+  <script src= "js/jspsych-demog-gender-and-education.js"></script>
   <link rel="stylesheet" href="css/jspsych.css"></link>
 </head>
 <body></body>
@@ -186,13 +187,9 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
                                 },
                                 block_deviant: block_information.deviant_stimuli,
                                 block_background: block_information.background_stimuli,
-<<<<<<< HEAD
-                                two_stimuli_interval: 900,
-=======
                                 two_stimuli_interval: 0,
->>>>>>> 6ac8495d63e476ed9305260559594a5a2b778a58
                                 key_response: [40],
-                                minimum_viewing_duration: 900, // block responses until stimulus appears
+                                minimum_viewing_duration: 200, // block responses until stimulus appears
                                 response_ends_trial: true,
                                 data: {block_number: block_index, block_type: block_type,  stimulus_type: 'trial', stimulus_displayed: jsPsych.timelineVariable('stimuli'), trial_type: jsPsych.timelineVariable('stim_type')},
                             }
@@ -203,6 +200,17 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
         timeline.push(test_block)
 
         if (block_index < all_blocks_information.length - 1) {
+
+          var math_question = {
+              type: 'survey-multi-choice',
+              questions: [
+                {prompt: "What is " + block_information.first_addend + "+" + block_information.second_addend + "?", options: block_information.options, required: true, horizontal: true},
+              ],
+              data: {stimulus_type: 'math_question'},
+              }
+
+             timeline.push(math_question)
+
 
           var block_indicator = {
               type: "instructions",
