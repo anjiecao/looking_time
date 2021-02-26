@@ -3,7 +3,7 @@ library(tidyverse)
 # currently not deidentifiying!! 
 
 RAW_DATA_DIRECTORY <- here("data/raw_data/")
-MIN_ROW <- 400  #subject to change 
+MIN_ROW <- 120  #subject to change 
 MERGED_DATA_PATH <- here("data/merged_data/merged_data.csv")
 
 
