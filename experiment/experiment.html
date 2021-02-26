@@ -167,8 +167,8 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
                                 type: 'html-keyboard-response',
                                 stimulus: '<p><img src= images/blank.png width ="200" height = "200" style = "float:right"></p><p><img src=images/blank.png width ="800" height = "200"></p>',
                                 trial_duration: function(){
-                                    var random_duration = 800 + 500 * Math.random()
-                                    return random_duration  } , //The interval between the offset of one stimulus and the onset of the next stimulus ranged between 800 and 1300 msec
+                                    var random_duration = 800 + 500 * Math.random() //The interval between the offset of one stimulus and the onset of the next stimulus ranged between 800 and 1300 msec
+                                    return random_duration  } ,
                                 choices: jsPsych.NO_KEYS
                             },
                             {
