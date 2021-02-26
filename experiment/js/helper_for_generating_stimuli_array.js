@@ -127,7 +127,7 @@ function pop_multiple(array, n){
 // -------- V2 dealing with Stimuli --------- //
 // currently ignoring inter-relationship between stimuli
 // just get all stimuli
-function get_all_stimuli(TEST_RUN){
+function get_all_stimuli(TEST_RUN, SPECIES_NUM){
 
 
     all_stimuli = []
@@ -138,7 +138,7 @@ function get_all_stimuli(TEST_RUN){
 
     if (TEST_RUN == 1) {
       // 30 species
-      species = Array.from({length: 4}, (_, i) => i + 1)
+      species = Array.from({length: SPECIES_NUM}, (_, i) => i + 1)
 
       // 2 versions per species
       version = ['A', 'B']
@@ -148,7 +148,7 @@ function get_all_stimuli(TEST_RUN){
     }
     else {
       // 20 species
-      species = Array.from({length: 20}, (_, i) => i + 1)
+      species = Array.from({length: SPECIES_NUM}, (_, i) => i + 1)
 
       // 2 versions per species
       version = ['A', 'B']
