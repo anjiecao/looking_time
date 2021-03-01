@@ -172,7 +172,7 @@ jsPsych.plugins['survey-multi-choice'] = (function() {
       var response_time = endTime - startTime;
 
       // create object to hold responses
-      var question_data = {};
+     var question_data = {};
       for(var i=0; i<trial.questions.length; i++){
         var match = display_element.querySelector('#jspsych-survey-multi-choice-'+i);
         var id = "Q" + i;
@@ -191,9 +191,9 @@ jsPsych.plugins['survey-multi-choice'] = (function() {
       }
       // save data
       var trial_data = {
-        rt: response_time,
-        response: question_data,
-        question_order: question_order
+        "rt": response_time,
+        "responses": JSON.stringify(question_data),
+        "question_order": JSON.stringify(question_order)
       };
       display_element.innerHTML = '';
 
