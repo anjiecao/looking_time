@@ -39,7 +39,7 @@ var intro0 = {
           },
           two_stimuli_interval: 0,
           key_response: [40],
-          minimum_viewing_duration: 800, // daffner2000's info was 600, changed to 200
+          minimum_viewing_duration: 600, // daffner2000's info was 600, changed to 200
           response_ends_trial: true,
         }
 
@@ -60,9 +60,9 @@ var intro0 = {
               var html = "<p><img src='images/stimuli/instructions_example_spore0.gif' width ='400' height = '400' style='position:absolute;top:28%;left:40%'></p>"
               return html
           },
-          two_stimuli_interval: 800,
+          two_stimuli_interval: 0,
           key_response: [40],
-          minimum_viewing_duration: 800, // daffner2000's info was 600, changed to 200
+          minimum_viewing_duration: 600, // daffner2000's info was 600, changed to 200
           response_ends_trial: true,
         }
 
@@ -76,7 +76,7 @@ var intro0 = {
 
         var intro4 = {
             type: "instructions",
-        pages: [            "<p> After some trials, you will be prompted asked a simple math task before moving to the next frame, in new creatures will appear! </p>" +
+        pages: [            "<p> After some trials, you will be asked a <b> simple math question </b> before moving to the next frame, in which new creatures will appear! </p>" +
                             "<p> That means, new creatures will appear, you can again look at them for as long as you like, </p>" +
                             "<p> and move to the next trial by pressing the down arrow. </p>",
                             "<p> We hope you enjoy our baby stimuli! </p>" +

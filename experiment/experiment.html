@@ -189,7 +189,7 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
                                 block_background: block_information.background_stimuli,
                                 two_stimuli_interval: 0,
                                 key_response: [40],
-                                minimum_viewing_duration: 200, // block responses until stimulus appears
+                                minimum_viewing_duration: 600, // block responses until stimulus appears
                                 response_ends_trial: true,
                                 data: {block_number: block_index, block_type: block_type,  stimulus_type: 'trial', stimulus_displayed: jsPsych.timelineVariable('stimuli'), trial_type: jsPsych.timelineVariable('stim_type')},
                             }
@@ -206,11 +206,12 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
               questions: [
                 {prompt: "What is " + block_information.first_addend + "+" + block_information.second_addend + "?", options: block_information.options, required: true, horizontal: true},
               ],
-              data: {stimulus_type: 'math_question'},
+              data: {stimulus_type: 'math_question', 
+                    math_correct_answer: block_information.first_addend + block_information.second_addend},
               }
 
              timeline.push(math_question)
-
+        /*
 
           var block_indicator = {
               type: "instructions",
@@ -222,6 +223,8 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
             }
 
          timeline.push(block_indicator)
+         
+         */
 
         }
 
