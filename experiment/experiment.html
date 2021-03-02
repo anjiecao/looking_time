@@ -162,42 +162,42 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
 
   //  pref_timeline_variable =
 //<p><img src= images/blank.png width ="400" height = "400" style="border:5px solid black">
-    var test_block = {
-                        timeline: [
-                            {
-                                type: 'html-keyboard-response',
-                                stimulus: '<img src= images/blank.png width ="400" height = "400" style="border:5px solid black">',
-                                trial_duration: function(){
-                                    var random_duration = 800 + 500 * Math.random() //The interval between the offset of one stimulus and the onset of the next stimulus ranged between 800 and 1300 msec
-                                    return random_duration  } ,
-                                choices: jsPsych.NO_KEYS
+var test_block = {
+                    timeline: [
+                        {
+                            type: 'html-keyboard-response',
+                            stimulus: '<p><img src= images/blank.png width ="600" height = "600" style="border:5px solid black">',
+                            trial_duration: function(){
+                                var random_duration = 800 + 500 * Math.random() //The interval between the offset of one stimulus and the onset of the next stimulus ranged between 800 and 1300 msec
+                                return random_duration  } ,
+                            choices: jsPsych.NO_KEYS
+                        },
+                        {
+                            type: 'sequential-stimulus-presentation',
+                            wall_animation: function(){
+                                var html =  '<p><img src= images/blank.png width ="600" height = "600" style="border:5px solid black">'
+                                //var html = "<video width ='960' height = '540' autoplay muted><source src=" + jsPsych.timelineVariable('wall_animation', true) + ' type="video/mp4"></video>'
+                                //var html = "<img src= "+ "images/stimuli/pokeball_1.gif" +" width ='800' height = '200'></p>"
+                                return html;
                             },
-                            {//'<p><img src= images/blank.png width ="400" height = "400" style="border:5px solid black">'
-                                type: 'sequential-stimulus-presentation',
-                                wall_animation: function(){
-                                    var html =  ''
-                                    //var html = "<video width ='960' height = '540' autoplay muted><source src=" + jsPsych.timelineVariable('wall_animation', true) + ' type="video/mp4"></video>'
-                                    //var html = "<img src= "+ "images/stimuli/pokeball_1.gif" +" width ='800' height = '200'></p>"
-                                    return html;
-                                },
-//position:relative;top:28%;left:40% 
-                                stimuli_animation: function(){
-                                    var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='400' height = '400' style='border:5px solid black'></p>"
-                                    return html
-                                },
-                                block_deviant: block_information.deviant_stimuli,
-                                block_background: block_information.background_stimuli,
-                                two_stimuli_interval: 0,
-                                key_response: [40],
-                                minimum_viewing_duration: 600, // block responses until stimulus appears
-                                response_ends_trial: true,
-                                data: {block_number: block_index, block_type: block_type,  stimulus_type: 'trial', stimulus_displayed: jsPsych.timelineVariable('stimuli'), trial_type: jsPsych.timelineVariable('stim_type')},
-                            }
-                            ],
-                        timeline_variables: block_timeline_variable
-                      }
 
-        timeline.push(test_block)
+                            stimuli_animation: function(){
+                                var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='400' height = '400' style='position:absolute;top:28%;left:40%'></p>"
+                                return html
+                            },
+                            block_deviant: block_information.deviant_stimuli,
+                            block_background: block_information.background_stimuli,
+                            two_stimuli_interval: 0,
+                            key_response: [40],
+                            minimum_viewing_duration: 600, // block responses until stimulus appears
+                            response_ends_trial: true,
+                            data: {block_number: block_index, block_type: block_type,  stimulus_type: 'trial', stimulus_displayed: jsPsych.timelineVariable('stimuli'), trial_type: jsPsych.timelineVariable('stim_type')},
+                        }
+                        ],
+                    timeline_variables: block_timeline_variable
+                  }
+
+    timeline.push(test_block)
 
         if (block_index < all_blocks_information.length - 1) {
 
@@ -206,7 +206,7 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
               questions: [
                 {prompt: "What is " + block_information.first_addend + "+" + block_information.second_addend + "?", options: block_information.options, required: true, horizontal: true},
               ],
-              data: {stimulus_type: 'math_question', 
+              data: {stimulus_type: 'math_question',
                     math_correct_answer: block_information.first_addend + block_information.second_addend},
               }
 
@@ -223,7 +223,7 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
             }
 
          timeline.push(block_indicator)
-         
+
          */
 
         }
