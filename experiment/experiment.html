@@ -42,7 +42,7 @@
     jsPsych.data.addProperties({ subject: subject_id });
 
 // Stimuli setup
-TEST_RUN = 0//test run with smaller number of species etc.
+TEST_RUN = 0 //test run with smaller number of species etc.
 
 if (TEST_RUN == 1) {
   SHOW_INTRO = false
@@ -182,14 +182,15 @@ var test_block = {
                             },
 
                             stimuli_animation: function(){
-                                var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='400' height = '400' style='position:absolute;top:28%;left:40%'></p>"
+                                var width_height = parseFloat(Math.floor(Math.random() * 100) + 200);
+                                var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='" + width_height + "' height = '" + width_height + "' style='position:absolute;top:" + (parseFloat(28)+parseFloat(Math.floor(Math.random() * 20) - 10)) + "%;left:" + (parseFloat(40)+parseFloat(Math.floor(Math.random() * 20) - 10)) + "%'></p>"
                                 return html
                             },
                             block_deviant: block_information.deviant_stimuli,
                             block_background: block_information.background_stimuli,
                             two_stimuli_interval: 0,
                             key_response: [40],
-                            minimum_viewing_duration: 600, // block responses until stimulus appears
+                            minimum_viewing_duration: 500, // block responses until stimulus appears
                             response_ends_trial: true,
                             data: {block_number: block_index, block_type: block_type,  stimulus_type: 'trial', stimulus_displayed: jsPsych.timelineVariable('stimuli'), trial_type: jsPsych.timelineVariable('stim_type')},
                         }
