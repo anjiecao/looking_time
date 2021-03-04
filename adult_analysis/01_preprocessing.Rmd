@@ -73,10 +73,57 @@ df.processed <- df.raw %>%
       )
     ) 
 
+temp_block_number <- df.processed %>% 
+  group_by(subject, block_number) %>% 
+  summarise(
+    block_length = n()
+  ) %>% 
+  mutate(
+    temp_id = paste0(subject, block_number)
+  ) %>% 
+  ungroup() %>% 
+  select(subject, block_number, temp_id, block_length)
+
+# calculate background trial number and do substraction to know the # of deviants
+temp_background_number <- df.processed %>% 
+  group_by(subject, trial_type, block_number) %>% 
+  summarise(
+    trial_type_number = n()
+  ) %>% 
+  filter(trial_type == "background") %>% 
+  mutate(
+    temp_id = paste0(subject, block_number)
+  ) %>% 
+  rename(background_number = trial_type_number) %>% 
+  ungroup() %>% 
+  select(temp_id, background_number)
+ 
+temp_deviant <- left_join(temp_block_number, temp_background_number, 
+          by = "temp_id") %>% 
+  mutate(
+    block_deviant_number = block_length - background_number
+  ) %>% 
+  ungroup() %>% 
+  select(temp_id, block_deviant_number)
+
+
+df.processed <- df.processed %>% 
+  mutate(temp_id = paste0(subject, block_number)) %>% 
+  left_join(temp_deviant, by = "temp_id") %>% 
+  select(-temp_id)
+
+
 write_csv(df.processed, here('data/processed_data/processed_RTdata.csv'))
 
 # df.main
 ```
+
+
+```{r}
+
+```
+
+
 
 # Pref test
 ```{r}
