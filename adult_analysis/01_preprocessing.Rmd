@@ -73,10 +73,119 @@ df.processed <- df.raw %>%
       )
     ) 
 
+################# Calculate number of deviants per block ################# 
+
+temp_block_number <- df.processed %>% 
+  group_by(subject, block_number) %>% 
+  summarise(
+    block_length = n()
+  ) %>% 
+  mutate(
+    temp_id = paste0(subject, block_number)
+  ) %>% 
+  ungroup() %>% 
+  select(subject, block_number, temp_id, block_length)
+
+# calculate background trial number and do substraction to know the # of deviants
+temp_background_number <- df.processed %>% 
+  group_by(subject, trial_type, block_number) %>% 
+  summarise(
+    trial_type_number = n()
+  ) %>% 
+  filter(trial_type == "background") %>% 
+  mutate(
+    temp_id = paste0(subject, block_number)
+  ) %>% 
+  rename(background_number = trial_type_number) %>% 
+  ungroup() %>% 
+  select(temp_id, background_number)
+ 
+temp_deviant <- left_join(temp_block_number, temp_background_number, 
+          by = "temp_id") %>% 
+  mutate(
+    block_deviant_number = block_length - background_number
+  ) %>% 
+  ungroup() %>% 
+  select(temp_id, block_deviant_number)
+
+
+df.processed <- df.processed %>% 
+  mutate(temp_id = paste0(subject, block_number)) %>% 
+  left_join(temp_deviant, by = "temp_id") %>% 
+  select(-temp_id)
+
+
+################# Add first_deviant second_deviant ################# 
+
+temp_deviant_order <- df.processed %>% 
+  filter(trial_type == "deviant") %>% 
+  select(subject, block_number, trial_number, trial_type) %>% 
+  group_by(subject, block_number) %>% 
+  mutate(
+    index = row_number(),
+    trial_type_index = case_when(
+      index == 1 ~ "first_deviant", 
+      index == 2 ~ "second_deviant"
+    ), 
+    temp_id = paste0(subject, block_number, trial_number)
+  ) %>% 
+  ungroup() %>% 
+  select(temp_id, trial_type_index)
+
+
+df.processed <- df.processed %>% 
+  mutate(
+    temp_id = paste0(subject, block_number, trial_number)
+  ) %>% 
+  left_join(temp_deviant_order, by = "temp_id") %>% 
+  mutate(
+    trial_type_index = if_else(is.na(trial_type_index), 
+                               "background", 
+                               trial_type_index)
+  ) %>% 
+  select(- temp_id)
+
+
+
+################# Add first_deviant second_deviant position ################# 
+first_dev_pos_df <- df.processed %>% 
+  filter(trial_type_index == "first_deviant") %>% 
+  select(subject, block_number, trial_type_index, trial_number) %>% 
+  mutate(
+    temp_id = paste0(subject, block_number), 
+    first_dev_position = trial_number
+  ) %>% 
+  select(temp_id, first_dev_position)
+  
+df.processed <- df.processed %>% 
+  mutate(
+    temp_id = paste0(subject, block_number)) %>% 
+  left_join(first_dev_pos_df, by = "temp_id") %>% 
+  select(-temp_id)
+
+
+second_dev_pos_df <- df.processed %>% 
+  filter(trial_type_index == "second_deviant") %>% 
+  select(subject, block_number, trial_type_index, trial_number) %>% 
+  mutate(
+    temp_id = paste0(subject, block_number), 
+    second_dev_position = trial_number
+  ) %>% 
+  select(temp_id, second_dev_position)
+  
+df.processed <- df.processed %>% 
+  mutate(
+    temp_id = paste0(subject, block_number)) %>% 
+  left_join(second_dev_pos_df, by = "temp_id") %>% 
+  select(-temp_id)
+
+  
+
 write_csv(df.processed, here('data/processed_data/processed_RTdata.csv'))
 
 # df.main
 ```
+
 
 # Pref test
 ```{r}
@@ -167,8 +276,42 @@ write_csv(df.demog, here('data/processed_data/processed_demogdata.csv'))
 ```
 
 # trimmed data 
+
+## get the attention check question 
+```{r}
+df.attention_check <- df.raw %>% 
+  filter(stimulus_type == "math_question") %>% 
+  select(subject, responses, math_correct_answer) %>% 
+  toJSON() %>% 
+  fromJSON() %>% 
+    mutate(
+      math_response = map(responses, ~ fromJSON(.) %>% as.data.frame())) %>% 
+    unnest(math_response) %>% 
+  mutate(
+    math_correct_answer = as.numeric(math_correct_answer), 
+    math_response = as.numeric(as.character(Q0))
+  ) %>% 
+  mutate(
+    correct_response = (math_correct_answer == math_response)
+  ) %>% 
+  group_by(subject) %>% 
+  summarize(
+    total_question = n(),
+    correct_question = sum(correct_response), 
+    percent_correct = correct_question / total_question
+  )
+```
+
+
+
 ## participant level exclusion 
 ```{r}
+# attention check participant 
+attention_check_sbj <- df.attention_check %>% 
+  filter(percent_correct < 0.8) %>% 
+  pull(subject)
+
+# similarity rating 
 similarity_sbj <- df.similarity %>% 
   count(subject, rating) %>% 
   filter(n > 20 * 0.8) %>%  # twenty trials, 80% identical rating 
@@ -181,7 +324,9 @@ complexity_sbj <- df.complexity %>%
   filter(n > 20 * 0.8) %>%  # twenty trials, 80% identical rating 
   pull(subject)
 
-exlude_participant <- unique(c(similarity_sbj, complexity_sbj))
+exlude_participant <- unique(c(similarity_sbj, 
+                               complexity_sbj, 
+                               attention_check_sbj))
 
 
 df.rt_trimmed <- df.processed %>% filter(!(subject %in% exlude_participant))
