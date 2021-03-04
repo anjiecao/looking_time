@@ -217,6 +217,11 @@ ggplot(RT_data, aes(x=block_number, y=log(rt), colour=block_type)) +
 ```
 
 ## by number of deviants
+```{r}
+ggplot(RT_data, aes(x=block_number, y=log(rt), colour=as.factor(block_deviant_number))) + 
+  stat_summary(fun.data = "mean_cl_boot") 
+```
+
 
 
 ## across blocks 
