@@ -167,8 +167,42 @@ write_csv(df.demog, here('data/processed_data/processed_demogdata.csv'))
 ```
 
 # trimmed data 
+
+## get the attention check question 
+```{r}
+df.attention_check <- df.raw %>% 
+  filter(stimulus_type == "math_question") %>% 
+  select(subject, responses, math_correct_answer) %>% 
+  toJSON() %>% 
+  fromJSON() %>% 
+    mutate(
+      math_response = map(responses, ~ fromJSON(.) %>% as.data.frame())) %>% 
+    unnest(math_response) %>% 
+  mutate(
+    math_correct_answer = as.numeric(math_correct_answer), 
+    math_response = as.numeric(as.character(Q0))
+  ) %>% 
+  mutate(
+    correct_response = (math_correct_answer == math_response)
+  ) %>% 
+  group_by(subject) %>% 
+  summarize(
+    total_question = n(),
+    correct_question = sum(correct_response), 
+    percent_correct = correct_question / total_question
+  )
+```
+
+
+
 ## participant level exclusion 
 ```{r}
+# attention check participant 
+attention_check_sbj <- df.attention_check %>% 
+  filter(percent_correct < 0.8) %>% 
+  pull(subject)
+
+# similarity rating 
 similarity_sbj <- df.similarity %>% 
   count(subject, rating) %>% 
   filter(n > 20 * 0.8) %>%  # twenty trials, 80% identical rating 
@@ -181,7 +215,9 @@ complexity_sbj <- df.complexity %>%
   filter(n > 20 * 0.8) %>%  # twenty trials, 80% identical rating 
   pull(subject)
 
-exlude_participant <- unique(c(similarity_sbj, complexity_sbj))
+exlude_participant <- unique(c(similarity_sbj, 
+                               complexity_sbj, 
+                               attention_check_sbj))
 
 
 df.rt_trimmed <- df.processed %>% filter(!(subject %in% exlude_participant))
