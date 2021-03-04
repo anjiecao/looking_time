@@ -144,6 +144,41 @@ df.processed <- df.processed %>%
                                trial_type_index)
   ) %>% 
   select(- temp_id)
+
+
+
+################# Add first_deviant second_deviant position ################# 
+first_dev_pos_df <- df.processed %>% 
+  filter(trial_type_index == "first_deviant") %>% 
+  select(subject, block_number, trial_type_index, trial_number) %>% 
+  mutate(
+    temp_id = paste0(subject, block_number), 
+    first_dev_position = trial_number
+  ) %>% 
+  select(temp_id, first_dev_position)
+  
+df.processed <- df.processed %>% 
+  mutate(
+    temp_id = paste0(subject, block_number)) %>% 
+  left_join(first_dev_pos_df, by = "temp_id") %>% 
+  select(-temp_id)
+
+
+second_dev_pos_df <- df.processed %>% 
+  filter(trial_type_index == "second_deviant") %>% 
+  select(subject, block_number, trial_type_index, trial_number) %>% 
+  mutate(
+    temp_id = paste0(subject, block_number), 
+    second_dev_position = trial_number
+  ) %>% 
+  select(temp_id, second_dev_position)
+  
+df.processed <- df.processed %>% 
+  mutate(
+    temp_id = paste0(subject, block_number)) %>% 
+  left_join(second_dev_pos_df, by = "temp_id") %>% 
+  select(-temp_id)
+
   
 
 write_csv(df.processed, here('data/processed_data/processed_RTdata.csv'))

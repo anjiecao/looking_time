@@ -159,6 +159,13 @@ ggplot(RT_data, aes(x=trial_type, y=log(rt))) +
   
 ```
 
+```{r}
+ggplot(RT_data, aes(x=trial_type_index, y=log(rt))) + 
+  stat_summary(fun.data = "mean_cl_boot") + 
+  facet_wrap(~block_type)
+  
+```
+
 
 ## trial number based  
 ```{r}
@@ -190,6 +197,17 @@ ggplot(aes(x=trial_type, y=log(rt))) +
   labs(title = "No first trial")
 ```
 
+```{r}
+RT_data %>% 
+  filter(trial_number != 1) %>% 
+ggplot(aes(x=trial_type_index, y=log(rt))) + 
+  stat_summary(fun.data = "mean_cl_boot") + 
+  facet_wrap(~block_type) + 
+  labs(title = "No first trial")
+```
+
+
+
 ## complexity effect 
 ```{r}
 ggplot(data = RT_data, 
@@ -209,8 +227,11 @@ ggplot(aes(x=trial_type, y=log(rt), color = trial_complexity)) +
 
 ## only look at the first deviant 
 ```{r}
-
+RT_data %>% 
+  filter(trial_number <)
 ```
+
+
 
 
 
