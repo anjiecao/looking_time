@@ -73,6 +73,8 @@ df.processed <- df.raw %>%
       )
     ) 
 
+################# Calculate number of deviants per block ################# 
+
 temp_block_number <- df.processed %>% 
   group_by(subject, block_number) %>% 
   summarise(
@@ -113,16 +115,41 @@ df.processed <- df.processed %>%
   select(-temp_id)
 
 
+################# Add first_deviant second_deviant ################# 
+
+temp_deviant_order <- df.processed %>% 
+  filter(trial_type == "deviant") %>% 
+  select(subject, block_number, trial_number, trial_type) %>% 
+  group_by(subject, block_number) %>% 
+  mutate(
+    index = row_number(),
+    trial_type_index = case_when(
+      index == 1 ~ "first_deviant", 
+      index == 2 ~ "second_deviant"
+    ), 
+    temp_id = paste0(subject, block_number, trial_number)
+  ) %>% 
+  ungroup() %>% 
+  select(temp_id, trial_type_index)
+
+
+df.processed <- df.processed %>% 
+  mutate(
+    temp_id = paste0(subject, block_number, trial_number)
+  ) %>% 
+  left_join(temp_deviant_order, by = "temp_id") %>% 
+  mutate(
+    trial_type_index = if_else(is.na(trial_type_index), 
+                               "background", 
+                               trial_type_index)
+  ) %>% 
+  select(- temp_id)
+  
+
 write_csv(df.processed, here('data/processed_data/processed_RTdata.csv'))
 
 # df.main
 ```
-
-
-```{r}
-
-```
-
 
 
 # Pref test
