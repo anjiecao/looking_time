@@ -140,7 +140,7 @@ var test_block = {
                         {
                             type: 'html-keyboard-response',
                             stimulus: function(){
-                                    var html='<p><img src='+ jsPsych.timelineVariable('inter_trial', true) +' width ="200" height = "200" style = "float:right"></p>'
+                                    var html='<p><img src='+ jsPsych.timelineVariable('inter_trial', true) +' width ="700" height = "700" style="border:5px solid black"></p>'
                                     return html
                                   },
                             trial_duration: function(){
@@ -159,13 +159,14 @@ var test_block = {
                         {
                             type: 'sequential-stimulus-presentation',
                             wall_animation: function(){
-                                var html = "<video width ='960' height = '540' autoplay " + sound_setting + "><source src=" + jsPsych.timelineVariable('wall_animation', true) + ' type="video/mp4">' +
+                                var html = '<p><img src= stimuli/images/blank.png width ="700" height = "700" style="border:5px solid black">' +
                                 ' <audio autoplay><source src="' + jsPsych.timelineVariable('music', true) + '" type="audio/mpeg"> </video>'
                                 return html;
                             },
 
                             stimuli_animation: function(){
-                                var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='500' height = '500' style='position:absolute;top:25%;left:"+jsPsych.timelineVariable('location_percent', true)+"'></p>"
+                                var width_height = parseFloat(Math.floor(Math.random() * 200) + 300);
+                                var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='" + width_height + "' height = '" + width_height + "' style='position:absolute;top:" + (parseFloat(28)+parseFloat(Math.floor(Math.random() * 20) - 10)) + "%;left:" + (parseFloat(40)+parseFloat(Math.floor(Math.random() * 20) - 10)) + "%'></p>"
                                 return html
                             },
                             two_stimuli_interval: 1000,
