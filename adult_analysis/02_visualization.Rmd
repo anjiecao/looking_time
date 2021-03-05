@@ -1,20 +1,22 @@
 ---
 title: "02_visualization"
 author: "anjie & gal"
-date: "2/16/2021"
+date: "03/04/2021"
 html_document:
     toc: true
     toc_float: true
     number_sections: no
 ---
 ```{r message=FALSE, warning=FALSE}
-
+library(lme4)
 library(here)
 library(tidyverse)
 library(stringr) # for parsing r string 
 library(jsonlite) # for parsing r string 
 library(ggiraphExtra)
 library(plotrix)
+library(lmerTest)
+
 ```
 
 ```{r read_data, message=FALSE, warning=FALSE}
@@ -106,7 +108,6 @@ RT_data %>%
   facet_grid(block_type~trial_type)
 ```
 
-
 ## by trial complexity 
 ```{r}
 RT_data %>% 
@@ -150,7 +151,45 @@ RT_data %>%
 
 # Trial level RT basic plotting
 
-## trial type based
+## Model 
+```{r}
+model_log <- lmer(log(rt) ~ log(trial_number) * item_type * trial_complexity + 
+                     (1 | subject), 
+                   data = RT_data)
+
+summary(model_log)$coef %>% knitr::kable(digits = 2)
+```
+
+
+
+## break down by block 
+
+```{r}
+ggplot(RT_data, aes(x=trial_number, y=log(rt), colour=item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .1)) + 
+  stat_summary(geom = "line", alpha = .5) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ log(x)) + 
+  facet_wrap(~block_type) 
+```
+
+## break down by complexity 
+
+```{r}
+ggplot(RT_data, aes(x=trial_number, y=log(rt), color = trial_complexity)) + 
+  stat_summary(fun.data = "mean_cl_boot", 
+               position = position_dodge(width = .1)) + 
+  stat_summary(geom = "line", alpha = .5) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ log(x)) + 
+  facet_grid(~trial_type)
+
+```
+
+
+
+
+
 
 ```{r}
 ggplot(RT_data, aes(x=trial_type, y=log(rt))) + 
@@ -167,76 +206,38 @@ ggplot(RT_data, aes(x=trial_type_index, y=log(rt))) +
 ```
 
 
-## trial number based  
+## only look at trials before first deviant 
+
+
 ```{r}
-ggplot(RT_data, aes(x=trial_number, y=log(rt), color = item_type)) + 
-  stat_summary(fun.data = "mean_cl_boot") + 
+RT_data %>% 
+  filter(is.na(first_dev_position) | 
+         trial_number < first_dev_position | 
+         trial_number == first_dev_position) %>% 
+  ggplot(aes(x=trial_number, y=log(rt), color = item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", 
+               position = position_dodge(width = .1)) + 
+  stat_summary(geom = "line", alpha = .5) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ log(x)) +
   facet_wrap(~block_type)
 ```
 
-## trial number based no first trial 
 ```{r}
 RT_data %>% 
+  filter(is.na(first_dev_position) | 
+         trial_number < first_dev_position | 
+         trial_number == first_dev_position) %>% 
   filter(trial_number != 1) %>% 
-ggplot(aes(x=trial_number, y=log(rt), color = item_type)) + 
-  stat_summary(fun.data = "mean_cl_boot") + 
+  ggplot(aes(x=trial_number, y=log(rt), color = item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", 
+               position = position_dodge(width = .1)) + 
+  stat_summary(geom = "line", alpha = .5) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ log(x)) +
   facet_wrap(~block_type) + 
   labs(title = "No first trial")
 ```
-
-
-
-
-## trial type based no first trial  
-```{r}
-RT_data %>% 
-  filter(trial_number != 1) %>% 
-ggplot(aes(x=trial_type, y=log(rt))) + 
-  stat_summary(fun.data = "mean_cl_boot") + 
-  facet_wrap(~block_type) + 
-  labs(title = "No first trial")
-```
-
-```{r}
-RT_data %>% 
-  filter(trial_number != 1) %>% 
-ggplot(aes(x=trial_type_index, y=log(rt))) + 
-  stat_summary(fun.data = "mean_cl_boot") + 
-  facet_wrap(~block_type) + 
-  labs(title = "No first trial")
-```
-
-
-
-## complexity effect 
-```{r}
-ggplot(data = RT_data, 
-       aes(x=trial_type, y=log(rt), color = trial_complexity)) + 
-  stat_summary(fun.data = "mean_cl_boot") 
-```
-
-
-## complexity effect without the first trial 
-```{r}
-RT_data %>% 
-  filter(trial_number != 1) %>% 
-ggplot(aes(x=trial_type, y=log(rt), color = trial_complexity)) + 
-  stat_summary(fun.data = "mean_cl_boot") + 
-  labs(title = "No first trial")
-```
-
-## only look at the first deviant 
-```{r}
-RT_data %>% 
-  filter(trial_number <)
-```
-
-
-
-
-
-
-
 
 
 
@@ -244,423 +245,42 @@ RT_data %>%
 
 ## by block type 
 ```{r}
-ggplot(RT_data, aes(x=block_number, y=log(rt), colour=block_type)) + 
-  stat_summary(fun.data = "mean_cl_boot") 
+
+RT_data %>% 
+  mutate(block_number_for_plot = block_number + 1) %>% 
+ggplot(aes(x=block_number_for_plot, y=log(rt), colour=block_type)) + 
+  stat_summary(fun.data = "mean_cl_boot") + 
+  stat_smooth(method = "lm", 
+              formula = y ~ log(x))
 ```
 
 ## by number of deviants
 ```{r}
-ggplot(RT_data, aes(x=block_number, y=log(rt), colour=as.factor(block_deviant_number))) + 
-  stat_summary(fun.data = "mean_cl_boot") 
-```
 
-
-
-
-### separate deviant by similarity {.tabset}
-
-```{r}
-ggplot(RT_data, aes(x=trial_number, y=log(rt), colour=item_type)) + 
+RT_data %>% 
+  mutate(block_number_for_plot = block_number + 1) %>% 
+ggplot(aes(x=block_number_for_plot, y=log(rt), colour=as.factor(block_deviant_number))) + 
   stat_summary(fun.data = "mean_cl_boot") + 
-  facet_grid(half~trial_complexity) 
+  stat_smooth(method = "lm", 
+              formula = y ~ log(x))
 ```
 
 
-### separate by first half/second half
-
-#### by hand 
+## by complexity
 ```{r}
-
-summarized <- RT_data %>%
-group_by(trial_number, item_type, trial_complexity, half) %>% 
-summarise(meanRT=mean(rt), maxRT=max(rt), minRT=min(rt), medianRT=median(log(rt)), Std=sd(rt), SE = std.error(log(rt)), n = n())
-
-
-ggplot(summarized, aes(x=trial_number, y=medianRT, colour=item_type)) + geom_line() + geom_errorbar(aes(ymin=medianRT-SE, ymax=medianRT+SE),
-                width=0.8, size = 0.8, position = position_dodge(width = 0.2), show.legend = FALSE, alpha = 0.8) +
-  geom_point(position = position_dodge(width = 0.2), size=2.5) + geom_line(size=1.2, position = position_dodge(width = 0.2)) + ylab("log RT [msec]") +
-  theme_gray()  + theme(
-    panel.grid.minor = element_blank(), 
-    plot.title = element_text(hjust=0.5, size=22, face="bold"),
-    axis.title.x = element_text(size=18, face='bold'),
-    axis.title.y = element_text(size=18, face='bold'),
-    axis.text = element_text(size=15),
-    legend.title = element_blank(),
-    legend.text = element_text(size=14, face='bold'),
-    strip.text = element_text(size=17, face='bold'),
-    legend.key.size = unit(2.5, 'lines')) + 
-  scale_x_continuous(name="Trial Number", breaks =c(2,4,6,8)) +
-  facet_grid(half~trial_complexity)
-```
-
-## collapsed across similar/dissimilar deviant
-=======
-#### tidyboot 
-
-```{r}
-ggplot(RT_data, aes(x=trial_number, y=rt, colour=item_type)) + 
+RT_data %>% 
+  mutate(block_number_for_plot = block_number + 1) %>% 
+ggplot(aes(x=block_number_for_plot, 
+           y=log(rt), 
+           colour=trial_complexity)) + 
   stat_summary(fun.data = "mean_cl_boot") + 
-  facet_grid(half~trial_complexity)
+  stat_smooth(method = "lm", 
+              formula = y ~ log(x))
 ```
-
-#### log transformed 
-```{r}
-ggplot(RT_data, aes(x=trial_number, y=log(rt), colour=item_type)) + 
-  stat_summary(fun.data = "mean_cl_boot") + 
-  facet_grid(half~trial_complexity)
-```
-
-```{r}
-summarized <- RT_data %>%
-group_by(trial_number, item_type, trial_complexity, half) %>% 
-summarise(meanRT=mean(log(rt)), maxRT=max(log(rt)), minRT=min(log(rt)), medianRT=median(log(rt)), Std=sd(log(rt)), SE = std.error(log(rt)), n = n())
-
-
-ggplot(summarized, aes(x=trial_number, y=medianRT, colour=item_type)) + geom_line() + geom_errorbar(aes(ymin=medianRT-SE, ymax=medianRT+SE),
-                width=0.8, size = 0.8, position = position_dodge(width = 0.2), show.legend = FALSE, alpha = 0.8) +
-  geom_point(position = position_dodge(width = 0.2), size=2.5) + geom_line(size=1.2, position = position_dodge(width = 0.2)) + ylab("RT [msec]") +
-  theme_gray()  + theme(
-    panel.grid.minor = element_blank(), 
-    plot.title = element_text(hjust=0.5, size=22, face="bold"),
-    axis.title.x = element_text(size=18, face='bold'),
-    axis.title.y = element_text(size=18, face='bold'),
-    axis.text = element_text(size=15),
-    legend.title = element_blank(),
-    legend.text = element_text(size=14, face='bold'),
-    strip.text = element_text(size=17, face='bold'),
-    legend.key.size = unit(2.5, 'lines')) + 
-  scale_x_continuous(name="Trial Number", breaks =c(2,4,6,8)) +
-  facet_grid(half~trial_complexity)
-```
-
-
-### collapsed across similar/dissimilar deviant
-
-```{r}
-RT_data 
-ggplot(RT_data, aes(x=trial_number, y=log(rt), color = trial_type)) + 
-  stat_summary(fun.data = "mean_cl_boot") + 
-  facet_grid(~trial_complexity)
-```
-
-```{r}
-ggplot(RT_data, aes(x=trial_number, y=log(rt), color = trial_complexity)) + 
-  stat_summary(fun.data = "mean_cl_boot") + 
-  facet_grid(half~trial_type)
-```
-
-
-
-```{r}
-
-summarized <- RT_data %>%
-group_by(trial_number, trial_type, trial_complexity) %>% 
-summarise(meanRT=mean(rt), maxRT=max(rt), minRT=min(rt), medianRT=median(rt), Std=sd(rt), SE = std.error(rt), n = n())
-
-
-ggplot(summarized, aes(x=trial_number, y=medianRT, colour=trial_type)) + geom_line() + geom_errorbar(aes(ymin=medianRT-SE, ymax=medianRT+SE),
-                width=0.8, size = 0.8, position = position_dodge(width = 0.2), show.legend = FALSE, alpha = 0.8) +
-  geom_point(position = position_dodge(width = 0.2), size=2.5) + geom_line(size=1.2, position = position_dodge(width = 0.2)) + ylab("RT [msec]") +
-  theme_gray()  + theme(
-    panel.grid.minor = element_blank(), 
-    plot.title = element_text(hjust=0.5, size=22, face="bold"),
-    axis.title.x = element_text(size=18, face='bold'),
-    axis.title.y = element_text(size=18, face='bold'),
-    axis.text = element_text(size=15),
-    legend.title = element_blank(),
-    legend.text = element_text(size=14, face='bold'),
-    strip.text = element_text(size=17, face='bold'),
-    legend.key.size = unit(2.5, 'lines')) + 
-  scale_x_continuous(name="Trial Number", breaks =c(2,4,6,8)) +
-  facet_grid(~trial_complexity)
-```
-
-## log transformed 
-```{r}
-summarized_log <- RT_data %>%
-group_by(trial_number, item_type, trial_complexity) %>% 
-summarise(meanRT=mean(log(rt)), 
-          maxRT=max(log(rt)), 
-          minRT=min(log(rt)), 
-          medianRT=median(log(rt)), 
-          Std=sd(log(rt)), 
-          SE = std.error(log(rt)), 
-          n = n())
-
-
-ggplot(summarized_log, 
-       aes(x= trial_number, y=medianRT, colour=item_type)) + 
-  geom_line() + 
-  geom_errorbar(aes(ymin=medianRT-SE, 
-                    ymax=medianRT+SE),
-                width=0.8, size = 0.8, position = position_dodge(width = 0.2), 
-                show.legend = FALSE, alpha = 0.8) +
-  geom_point(position = position_dodge(width = 0.2), size=2.5) + 
-  geom_line(size=1.2, position = position_dodge(width = 0.2)) + 
-  ylab("log(RT) [msec]") +
-  theme_gray()  + theme(
-    panel.grid.minor = element_blank(), 
-    plot.title = element_text(hjust=0.5, size=15, face="bold"),
-    axis.title.x = element_text(size=18, face='bold'),
-    axis.title.y = element_text(size=18, face='bold'),
-    axis.text = element_text(size=15),
-    legend.title = element_blank(),
-    legend.text = element_text(size=14, face='bold'),
-    strip.text = element_text(size=8, face='bold'),
-    legend.key.size = unit(2.5, 'lines')) + 
-  scale_x_continuous(name="Trial Number", breaks =c(2,4,6,8)) +
-  facet_grid(half ~ trial_complexity)
-```
-
-## exploring function form 
-```{r}
-ggplot(RT_data, aes(x=trial_number, y=log(rt), colour=item_type)) + 
-  stat_summary(fun.data = "mean_cl_boot") + 
-  geom_smooth(method = "lm", 
-              formula = y ~ log(x))+ 
-  facet_grid(item_type~trial_complexity)
-```
-
-```{r}
-ggplot(RT_data, aes(x=trial_number, y=log(rt), colour=item_type)) + 
-  stat_summary(fun.data = "mean_cl_boot") + 
-  geom_smooth(method = "lm", 
-              formula = y ~ x)+ 
-  facet_grid(item_type~trial_complexity)
-```
-
-```{r}
-ggplot(RT_data, aes(x=trial_number, y=log(rt), colour=item_type)) + 
-  stat_summary(fun.data = "mean_cl_boot") + 
-  geom_smooth(method = "lm", 
-              formula = y ~ x^2)+ 
-  facet_grid(item_type~trial_complexity)
-```
-
-```{r}
-ggplot(RT_data, aes(x=trial_number, y=log(rt), colour=item_type)) + 
-  stat_summary(fun.data = "mean_cl_boot") + 
-  geom_smooth(method = "lm", 
-              formula = y ~ x^3)+ 
-  facet_grid(item_type~trial_complexity)
-```
-
-
-
-# group all trials together
-```{r}
-
-summarized_log <- RT_data %>%
-group_by(item_type, trial_complexity) %>% 
-summarise(meanRT=mean((rt)), 
-          maxRT=max((rt)), 
-          minRT=min((rt)), 
-          medianRT=median((rt)), 
-          Std=sd((rt)), 
-          SE = std.error((rt)), 
-          n = n())
-
-ggplot(summarized_log, 
-       aes(x = item_type, y=medianRT, colour=item_type)) + 
-  geom_line() + 
-  geom_errorbar(aes(ymin=medianRT-SE, 
-                    ymax=medianRT+SE),
-                width=0.8, size = 0.8, position = position_dodge(width = 0.2), 
-                show.legend = FALSE, alpha = 0.8) +
-  geom_point(position = position_dodge(width = 0.2), size=2.5) + 
-  geom_line(size=1.2, position = position_dodge(width = 0.2)) + 
-  ylab("RT [msec]") +
-  theme_gray()  + theme(
-    panel.grid.minor = element_blank(), 
-    plot.title = element_text(hjust=0.5, size=15, face="bold"),
-    axis.title.x = element_blank(),
-    axis.title.y = element_text(size=18, face='bold'),
-    axis.text.x = element_blank(),
-    axis.text.y = element_text(size=15),
-    legend.title = element_blank(),
-    legend.text = element_text(size=14, face='bold'),
-    strip.text = element_text(size=8, face='bold'),
-    legend.key.size = unit(2.5, 'lines')) + 
-  facet_grid(~ trial_complexity)
-
-```
-
-
-# Preference test
-
-## raw {.tabset}
-
-### overall
-
-```{r}
-pref_data %>% 
-  ggplot(aes(x = stim_type_selected)) + 
-  geom_histogram(stat = "count")
-  
-```
-
-### by block type 
-
-```{r}
-pref_data %>% 
-  ggplot(aes(x = stim_type_selected)) + 
-  geom_histogram(stat = "count") + 
-  facet_wrap(~block_type)
-```
-
-### by block number 
-
-```{r}
-pref_data %>% 
-  ggplot(aes(x = stim_type_selected)) + 
-  geom_histogram(stat = "count") + 
-  facet_wrap(~block_number) + 
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
-```
-
-## check participant pattern 
-```{r}
-pref_data %>% 
-  group_by(subject) %>% 
-  count(stim_type_selected) %>% 
-  filter(stim_type_selected == "novel") %>% 
-  mutate(percent_novel = n/20) %>% 
-  ggplot(aes(x = percent_novel)) +
-  geom_histogram(bins = 20)
-```
-
-
-
-## relationship with RT {.tabset}
-
-### overall 
-```{r}
-pref_data %>% 
-  ggplot(aes(x = stim_type_selected, 
-             y = log(trial_looking_time))) + 
-  geom_point(alpha = 0.05, 
-             position = position_jitter(width = 0.3)) + 
-   stat_summary(fun.data = "mean_cl_boot") 
-```
-
-### by block type 
-
-```{r}
-pref_data %>% 
-  ggplot(aes(x = stim_type_selected, 
-             y = log(trial_looking_time))) + 
-  geom_point(alpha = 0.05, 
-             position = position_jitter(width = 0.3)) + 
-   stat_summary(fun.data = "mean_cl_boot")  + 
-  facet_wrap(~block_type)
-```
-
-## RT and block num {.tabset}
-how long participants spent on the pref test 
-
-### by block type 
-```{r}
-pref_data %>% 
-  group_by(block_number, block_type) %>% 
-summarise(meanRT=mean(log(trial_looking_time)), 
-          maxRT=max(log(trial_looking_time)), 
-          minRT=min(log(trial_looking_time)), 
-          medianRT=median(log(trial_looking_time)), 
-          Std=sd(log(trial_looking_time)), 
-          SE = std.error(log(trial_looking_time)), 
-          n = n()) %>% 
-  ggplot( 
-       aes(x= block_number, y=medianRT, colour=block_type)) + 
-  geom_line() + 
-  geom_errorbar(aes(ymin=medianRT-SE, 
-                    ymax=medianRT+SE),
-                width=0.8, size = 0.8, position = position_dodge(width = 0.2), 
-                show.legend = FALSE, alpha = 0.8) +
-  geom_point(position = position_dodge(width = 0.2), size=2.5) + 
-  geom_line(size=1.2, position = position_dodge(width = 0.2)) + 
-  ylab("log(RT) [msec]") +
-  theme_gray()  + theme(
-    panel.grid.minor = element_blank(), 
-    plot.title = element_text(hjust=0.5, size=15, face="bold"),
-    axis.title.x = element_text(size=18, face='bold'),
-    axis.title.y = element_text(size=18, face='bold'),
-    axis.text = element_text(size=15),
-    legend.title = element_blank(),
-    legend.text = element_text(size=14, face='bold'),
-    strip.text = element_text(size=8, face='bold'),
-    legend.key.size = unit(2.5, 'lines')) + 
-  scale_x_continuous(name="Block Number") +
-  facet_wrap(~block_type) 
-```
-
-### by choice 
-
-```{r}
-pref_data %>% 
-  group_by(block_number, stim_type_selected) %>% 
-summarise(meanRT=mean(log(trial_looking_time)), 
-          maxRT=max(log(trial_looking_time)), 
-          minRT=min(log(trial_looking_time)), 
-          medianRT=median(log(trial_looking_time)), 
-          Std=sd(log(trial_looking_time)), 
-          SE = std.error(log(trial_looking_time)), 
-          n = n()) %>% 
-  ggplot( 
-       aes(x= block_number, y=medianRT, colour=stim_type_selected)) + 
-  geom_line() + 
-  geom_errorbar(aes(ymin=medianRT-SE, 
-                    ymax=medianRT+SE),
-                width=0.8, size = 0.8, position = position_dodge(width = 0.2), 
-                show.legend = FALSE, alpha = 0.8) +
-  geom_point(position = position_dodge(width = 0.2), size=2.5) + 
-  geom_line(size=1.2, position = position_dodge(width = 0.2)) + 
-  ylab("log(RT) [msec]") +
-  theme_gray()  + theme(
-    panel.grid.minor = element_blank(), 
-    plot.title = element_text(hjust=0.5, size=15, face="bold"),
-    axis.title.x = element_text(size=18, face='bold'),
-    axis.title.y = element_text(size=18, face='bold'),
-    axis.text = element_text(size=15),
-    legend.title = element_blank(),
-    legend.text = element_text(size=14, face='bold'),
-    strip.text = element_text(size=8, face='bold'),
-    legend.key.size = unit(2.5, 'lines')) + 
-  scale_x_continuous(name="Block Number") +
-  facet_wrap(~stim_type_selected) 
-```
-
-## preference and looking time curve 
-
-```{r}
-pref_temp <- pref_data %>% 
-  mutate(temp_id = paste(subject, block_number)) %>% 
-  select(temp_id, stim_type_selected)
-
-rt_temp <- RT_data %>% 
-  mutate(temp_id = paste(subject, block_number))
-
-RT_temp_df <- left_join(pref_temp, rt_temp, by = "temp_id")
-
-RT_temp_df %>% 
-  ggplot(aes(x = trial_number, y = log(rt))) + 
-  stat_summary(fun.data = "mean_cl_boot") + 
-  facet_wrap(~stim_type_selected) 
-```
-
-```{r}
-
-```
-
-```{r}
-RT_temp_df %>% 
-  filter(!is.na(block_type)) %>% 
-  ggplot(aes(x = trial_number, y = log(rt))) + 
-  stat_summary(fun.data = "mean_cl_boot") + 
-  facet_grid(half~stim_type_selected) 
-```
-
 
 # Similarity ratings {.tabset}
+
+
 
 ## Raw 
 
@@ -695,9 +315,29 @@ similarity_data %>%
   facet_wrap(~complexity)
 ```
 
+## Model
+
+```{r}
+similarity_rating_model_interaction <- lmer(rating~complexity*similarity + (1|subject), 
+     data = similarity_data, 
+     REML = FALSE)
+
+similarity_rating_model <- lmer(rating~similarity + (1|subject), 
+     data = similarity_data, 
+     REML = FALSE)
+
+anova(similarity_rating_model_interaction, similarity_rating_model)
+
+summary(similarity_rating_model_interaction)$coef %>% knitr::kable(digits = 2)
+```
+
 
 
 # Complexity Ratings {.tabset}
+
+
+
+
 ## Raw 
 ```{r}
 complexity_data %>% 
@@ -706,6 +346,7 @@ complexity_data %>%
 
 
 ```
+
 
 ## by intuitive complexity 
 ```{r}
@@ -723,6 +364,19 @@ complexity_data %>%
              position = position_jitter(width = 0.3)) + 
    stat_summary(fun.data = "mean_cl_boot") 
 ```
+
+## model 
+```{r}
+
+
+complexity_rating_model <- lmer(rating~complexity + (1|subject), 
+     data = complexity_data)
+
+summary(complexity_rating_model)$coef %>% knitr::kable(digits = 2)
+
+```
+
+
 
 ## by item 
 first figure out action
@@ -781,8 +435,6 @@ complexity_temp <- complexity_summary %>%
 
 dishab_df <- bind_rows(log_rt_deviant, 
                        complexity_temp)
-
-dishab_df 
 ```
 
 ## raw dishabitutaiton 
@@ -839,11 +491,11 @@ log_rt_deviant %>%
   geom_smooth(method = "lm")
 ```
 
-## by half 
+## first deviant only 
 ```{r}
 log_rt_deviant <- RT_data %>% 
-  filter(trial_type == "deviant") %>% 
-  group_by(item_id, half) %>% 
+  filter(trial_type_index == "first_deviant") %>% 
+  group_by(item_id) %>% 
   tidyboot::tidyboot_mean(log(rt)) %>% 
   mutate(type = "log_rt", 
     complexity = case_when(
@@ -859,22 +511,14 @@ complexity_temp <- complexity_summary %>%
 dishab_df <- bind_rows(log_rt_deviant, 
                        complexity_temp)
 
-dishab_df 
-```
 
-```{r}
-c_temp <- complexity_temp %>% 
-  select(item_id, complexity, mean) %>% 
-  rename(mean_rating = mean)
-
-log_rt_deviant %>% 
-  select(item_id, mean, half) %>% 
-  rename(log_mean_dishab = mean) %>% 
-  left_join(c_temp, by = "item_id") %>% 
-  ggplot(aes(x = mean_rating, y = log_mean_dishab, 
-             color = complexity)) + 
-  geom_point() + 
-  facet_wrap(~half)
+dishab_df %>% 
+  ggplot(aes(x = reorder(item_id, mean), y = mean, 
+             color = complexity, 
+             shape = type)) + 
+  geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper), 
+                  position = position_dodge(1.5)) + 
+   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) 
 ```
 
 # Similarity redux 
@@ -891,27 +535,6 @@ similarity_data %>%
   geom_pointrange(aes(ymin = ci_lower, ymax = ci_upper)) + 
    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
   
-```
-
-# try nonlinear model 
-```{r}
-library(mgcv)
-gam_d <- RT_data %>% 
-  filter(trial_type == "background") %>% 
-  mutate(trial_complexity = as.factor(trial_complexity))
-```
-
-```{r}
-gam_m <- gam(log(rt) ~ s(trial_number), 
-             data = gam_d, 
-             method = "REML")
-summary(gam_m)
-plot(gam_m, 
-     pages = 1, 
-     se = TRUE, 
-     shade = TRUE)
-gam.check(gam_m)
-concurvity(gam_m, full = TRUE)
 ```
 
 # LOOK AT FIRST BLOCK 
@@ -956,32 +579,16 @@ dev_pos_df <- RT_data %>%
 
 
 dev_pos_df %>% 
-  ggplot(aes(x = fct_rev(dishabituation_position), y = log(rt))) + 
+  ggplot(aes(x = trial_number, y = log(rt), 
+             color = dishabituation_position)) + 
   stat_summary(fun.data = "mean_cl_boot") + 
   facet_wrap(~deviant_complexity)
 
 dev_pos_df %>% 
-  ggplot(aes(x = fct_rev(dishabituation_position), y = log(rt))) + 
+  ggplot(aes(x = trial_number, y = log(rt), 
+             color = dishabituation_position)) + 
   stat_summary(fun.data = "mean_cl_boot") + 
   facet_wrap(~block_type)
 ```
 
-# Preftest Redux 
-```{r}
-pref_data %>% 
-  group_by(block_number, stim_type_selected) %>% 
-  summarise(n = n()) %>% 
-  group_by(block_number) %>% 
-  mutate(
-    group_n = sum(n),
-    percent = n/group_n
-  ) %>% 
-  ggplot(aes(x = block_number, y = percent, color = stim_type_selected)) + 
-  geom_point() + 
-  geom_smooth(method = "lm")
-```
-
-
-```{r}
-```
 
