@@ -160,6 +160,30 @@ model_log <- lmer(log(rt) ~ log(trial_number) * item_type * trial_complexity +
 summary(model_log)$coef %>% knitr::kable(digits = 2)
 ```
 
+## model with expotential fit minus the first block 
+```{r}
+model_log <- lmer(log(rt) ~ I((exp(1)**(-trial_number))) * item_type * trial_complexity + 
+                     (1 | subject), 
+                   data = RT_data)
+
+summary(model_log)$coef %>% knitr::kable(digits = 2)
+```
+
+## block model 
+```{r}
+block_model_log <- lmer(log(rt) ~ log(block_number_model) *  trial_complexity + 
+                     (1 | subject), 
+                   data = RT_data %>% mutate(block_number_model = block_number + 1))
+
+summary(block_model_log)$coef %>% knitr::kable(digits = 2)
+
+block_model_exp_log <- lmer(log(rt) ~ I((exp(1)**(-block_number_model))) *  trial_complexity + 
+                     (1 | subject), 
+                   data = RT_data %>% mutate(block_number_model = block_number + 1))
+
+summary(block_model_exp_log)$coef %>% knitr::kable(digits = 2)
+
+```
 
 
 ## break down by block 
@@ -419,7 +443,7 @@ complexity_summary %>%
 
 ```{r}
 log_rt_deviant <- RT_data %>% 
-  filter(trial_type == "deviant") %>% 
+  filter(trial_type == "background") %>% 
   group_by(item_id) %>% 
   tidyboot::tidyboot_mean(log(rt)) %>% 
   mutate(type = "log_rt", 

@@ -16,6 +16,124 @@ source(here("scripts/poli_model_wave2.R"))
 
 reproducing poli: https://rpubs.com/anjiecao/729261
 
+
+# feature based attempts
+
+## set up the parameter 
+
+```{r}
+# the length of vectors that contains 1 or 0
+TOTAL_FEATURE_N = 200  
+# the number of 1 in the feature vector 
+SIMPLE_FEATURE_N = 5
+COMPLEX_FEATURE_N = 20  
+# FD: down the road can try something like rbinom(20, 1, 0.5)
+
+# number of feature sampled per look 
+EACH_LOOK_N = 5
+
+
+```
+
+## generate stimuli: 
+```{r}
+f.generate_stimuli_vector <- function(total_feature_n, stimuli_feature_n){
+
+    vec <- c(rep(0, total_feature_n - stimuli_feature_n), rep(1, stimuli_feature_n))
+  return(sample(vec))
+
+}
+
+f.generate_stimuli_vector(TOTAL_FEATURE_N, COMPLEX_FEATURE_N)
+```
+
+## generate similar / dissimilar stimuli 
+```{r}
+# FD: try more continuous way of scaling similarity and try out different parameters 
+
+f.generate_stimuli_similarity <- function(original_stimuli, similarity){
+  
+   non_overlapping_feature <- ifelse(similarity == "similar", .2, .8)
+  
+    # first figure out where the 1s are at 
+    feature_pos <- which(original_stimuli %in% c(1))
+    non_feature_pos <- which(original_stimuli %in% c(0))
+    
+    # change 1 to 0
+    feature_change_pos <- sample(feature_pos, 
+                            non_overlapping_feature * length(feature_pos), 
+                            replace = FALSE)
+    
+    new_stim <- replace(original_stimuli, feature_change_pos, 0)
+    
+    # change 0 to 1 
+    non_feature_change_pos <- sample(non_feature_pos, 
+                            non_overlapping_feature * length(feature_pos), 
+                            replace = FALSE)
+    
+    new_stim <- replace(new_stim, non_feature_change_pos, 1)
+    
+  
+  return (new_stim)  
+
+}
+
+# example: 
+example_vector <- f.generate_stimuli_vector(10, 5)
+similar_vector <- f.generate_stimuli_similarity(example_vector, "similar")
+dissimilar_vector <- f.generate_stimuli_similarity(example_vector, "dissimilar")
+
+example_vector
+similar_vector
+dissimilar_vector
+```
+
+## create a stimuli sequence 
+```{r}
+f.block_sequence <- function(block_length, deviant_pos, complexity, similarity){
+  
+  TOTAL_FEATURE_N = 20  
+  # the number of 1 in the feature vector 
+  SIMPLE_FEATURE_N = 5
+  COMPLEX_FEATURE_N = 10  
+  
+  feature_n <- ifelse(complexity == "complex", COMPLEX_FEATURE_N, SIMPLE_FEATURE_N)
+  background_stim <- f.generate_stimuli_vector(TOTAL_FEATURE_N, feature_n)
+  deviant_stim <- f.generate_stimuli_similarity(background_stim, similarity)
+  
+  block_list <- replicate(block_length, background_stim, simplify = FALSE)
+  
+  block_list[deviant_pos] <- replicate(length(deviant_pos), 
+                                       deviant_stim, 
+                                       simplify = FALSE)
+  
+  return(block_list)
+
+}
+
+example_block_complex_similar <- f.block_sequence(8, c(7), "complex", "similar")
+example_block_complex_dissimilar <- f.block_sequence(8, c(7), "complex", "dissimilar")
+example_block_simple_similar <- f.block_sequence(8, c(7), "simple", "similar")
+example_block_simple_dissimilar <- f.block_sequence(8, c(7), "simple", "dissimilar")
+
+```
+
+
+```{r}
+tibble(
+  x = example_block_complex_similar
+) %>% 
+  unnest(list)
+```
+
+
+
+
+
+
+
+
+
 # single block using example sequence
 ```{r}
 example_seq <- c(1,1,1,1,2,1)
