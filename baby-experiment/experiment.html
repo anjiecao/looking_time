@@ -27,6 +27,8 @@
     <script src= "js/jspsych-demog-age.js"></script>
     <script src= "js/jspsych-demog-ethnic-US.js"></script>
     <script src= "js/jspsych-demog-gender-and-education.js"></script>
+    <script src= "js/jspsych-fullscreen.js"></script>
+
   <link rel="stylesheet" href="css/jspsych.css"></link>
 </head>
 <body></body>
@@ -92,6 +94,10 @@ all_blocks_information = generate_all_block(condition_num = CONDITION_NUM,
 
 timeline = []
 
+timeline.push({
+  type: 'fullscreen',
+  fullscreen_mode: true
+});
 
 if (SHOW_INTRO) {
   timeline = instructions(timeline)
@@ -141,7 +147,7 @@ var test_block = {
                             type: 'html-keyboard-response',
                             stimulus: function(){
                                     var html='<p><img src='+ jsPsych.timelineVariable('inter_trial', true) +' width ="300" height = "300" style="position:absolute;left:90%"></p>' +
-                                    '<p><img src= stimuli/images/blank.png width ="700" height = "700" style="border:5px solid black"></p>'
+                                    '<p><img src= stimuli/images/blank.png width ="650" height = "650" style="border:5px solid black"></p>'
                                     return html
                                   },
                             trial_duration: function(){
@@ -160,7 +166,7 @@ var test_block = {
                         {
                             type: 'sequential-stimulus-presentation',
                             wall_animation: function(){
-                                var html = '<p><img src= stimuli/images/blank.png width ="700" height = "700" style="border:5px solid black"></p>'
+                                var html = '<p><img src= stimuli/images/blank.png width ="650" height = "650" style="border:5px solid black"></p>'
                                 return html;
                             },
 
