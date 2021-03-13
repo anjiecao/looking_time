@@ -123,7 +123,7 @@ example_block_simple_dissimilar <- f.block_sequence(8, c(7), "simple", "dissimil
 tibble(
   x = example_block_complex_similar
 ) %>% 
-  unnest(list)
+  unnest(x)
 ```
 
 
