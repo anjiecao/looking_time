@@ -216,24 +216,54 @@ count_df
 
 for (i in 1:length(example_observation)) {
       count_df[count_df$count_trials == i, 2:21] <-  count_df[count_df$count_trials == i-1, 2:21]
-      count_df[count_df$count_trials == i, 2:21] <- example_observation[i]
-    }
+      count_df[count_df$count_trials == i, 2:21] <- count_df[count_df$count_trials == i, 2:21] + as.list(example_observation[[i]])
+      
+      count_vect <- count_df %>% 
+        select(-count_trials) %>% 
+        slice(i+1)
+      
+      # updating the probability by normalizing everything 
+      #probability_df[probability_df$prob_trials == i, 2:21] <- as.list((count_vect + 1) * (1 / (sum(count_vect) + length(count_vect))))
+      
+      probability_df[probability_df$prob_trials == i, 2:21] <- as.list(1 / sum(count_vect) * count_vect)
+}
 
+## what should be the updating rule for probability? 
+probability_df
 ```
 
 ```{r}
-m <- matrix(sample(c(0, 1), size = n*d, replace = TRUE), n, d,
-            dimnames = list(str_pad(1:n, str_length(n), pad = "0"), 
-                            c("A", "B", "C", "D", "E", "F")))
+library(glue)
+# calculate surprise based on probability 
+probability_df[probability_df == 0] <- NA
 
-df <- as_tibble(m, rownames = 'index')
+surprise_df <- probability_df %>% 
+  select(-prob_trials) %>% 
+  mutate(
+    across(
+      cols = starts_with("feature"),
+      .fns = ~-log2(.))
+  ) %>% 
+  mutate(trial_num = row_number() - 1) %>% 
+  rowwise() %>% 
+  mutate(
+    sum_surprise = sum(across(), 
+                       na.rm = TRUE)) 
 
+surprise_df
 ```
 
 
 
 
 
+```{r}
+surprise_df %>% 
+  ggplot(aes(x = trial_num, 
+         y = sum_surprise)) + 
+  geom_point() + 
+  geom_line()
+```
 
 
 
