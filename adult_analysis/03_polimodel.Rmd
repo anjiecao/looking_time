@@ -89,6 +89,7 @@ dissimilar_vector
 ```
 
 ## create a stimuli sequence 
+
 ```{r}
 f.block_sequence <- function(block_length, deviant_pos, complexity, similarity){
   
@@ -118,13 +119,129 @@ example_block_simple_dissimilar <- f.block_sequence(8, c(7), "simple", "dissimil
 
 ```
 
+## each observation 
 
 ```{r}
-tibble(
-  x = example_block_complex_similar
-) %>% 
-  unnest(x)
+#updating p(features) --> pay attention to a random set of two positive features
+#updating p(features): noisy process that only samples a random subset of positive features
+
+# not sure if it is better to assume proportion based or to assume feature number based
+# currently implementing number based 
+NUM_FEATURE_SAMPLE_PER_OBSERVATION <- 3
+
+make_observation <- function(stimuli, feature_sample){
+  
+  #figure out the feature position  
+  feature_pos <- which(stimuli %in% c(1))
+  sampled_feature <- sample(feature_pos, 
+                            feature_sample, 
+                            replace = FALSE)
+  observation <- rep(0, length(stimuli))
+  observation[sampled_feature] <- 1
+  
+  return(observation)
+  
+}
+
+example_block_complex_similar 
+example_observation <- lapply(example_block_complex_similar, make_observation, 
+       NUM_FEATURE_SAMPLE_PER_OBSERVATION)
+example_observation
 ```
+
+## trying to figure out how to update 
+```{r}
+# first convert to reasonable dataframe 
+feature_index <- seq(example_observation[[1]])
+as.data.frame(data.table::transpose(example_observation), 
+              col.names = seq(length(example_observation))) %>% 
+  mutate(
+    trial_num = row_number()
+  ) 
+  
+# not ideal just proof of concept need to figure out R details 
+probability_df <- tibble(prob_trials = 0:length(example_observation), 
+                         feature_1 = 0, 
+                         feature_2 = 0,
+                         feature_3 = 0, 
+                         feature_4 = 0,
+                         feature_5 = 0,
+                         feature_6 = 0,
+                         feature_7 = 0,
+                         feature_8 = 0,
+                         feature_9 = 0,
+                         feature_10 = 0,
+                         feature_11 = 0,
+                         feature_12 = 0,
+                         feature_13 = 0,
+                         feature_14 = 0,
+                         feature_15 = 0,
+                         feature_16 = 0,
+                         feature_17 = 0,
+                         feature_18 = 0,
+                         feature_19 = 0,
+                         feature_20 = 0
+                         )
+
+count_df <- tibble(count_trials = 0:length(example_observation), 
+                         feature_1 = 0, 
+                         feature_2 = 0,
+                         feature_3 = 0, 
+                         feature_4 = 0,
+                         feature_5 = 0,
+                         feature_6 = 0,
+                         feature_7 = 0,
+                         feature_8 = 0,
+                         feature_9 = 0,
+                         feature_10 = 0,
+                         feature_11 = 0,
+                         feature_12 = 0,
+                         feature_13 = 0,
+                         feature_14 = 0,
+                         feature_15 = 0,
+                         feature_16 = 0,
+                         feature_17 = 0,
+                         feature_18 = 0,
+                         feature_19 = 0,
+                         feature_20 = 0
+                         )
+
+
+# not sure if the prior makes sense 
+prior <- rep(1/length(example_observation[[1]]), length(example_observation[[1]]))
+probability_df[1, 2:21] <- as.list(prior)
+
+probability_df
+count_df
+
+for (i in 1:length(example_observation)) {
+      count_df[count_df$count_trials == i, 2:21] <-  count_df[count_df$count_trials == i-1, 2:21]
+      count_df[count_df$count_trials == i, 2:21] <- example_observation[i]
+    }
+
+```
+
+```{r}
+m <- matrix(sample(c(0, 1), size = n*d, replace = TRUE), n, d,
+            dimnames = list(str_pad(1:n, str_length(n), pad = "0"), 
+                            c("A", "B", "C", "D", "E", "F")))
+
+df <- as_tibble(m, rownames = 'index')
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
