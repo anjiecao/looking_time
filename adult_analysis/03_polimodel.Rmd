@@ -23,9 +23,7 @@ reproducing poli: https://rpubs.com/anjiecao/729261
 
 ```{r}
 # the length of vectors that contains 1 or 0
-TOTAL_FEATURE_N = 200  
-# the number of 1 in the feature vector 
-SIMPLE_FEATURE_N = 5
+T0.5FEATURE_N = 5
 COMPLEX_FEATURE_N = 20  
 # FD: down the road can try something like rbinom(20, 1, 0.5)
 
@@ -116,7 +114,8 @@ example_block_complex_similar <- f.block_sequence(8, c(7), "complex", "similar")
 example_block_complex_dissimilar <- f.block_sequence(8, c(7), "complex", "dissimilar")
 example_block_simple_similar <- f.block_sequence(8, c(7), "simple", "similar")
 example_block_simple_dissimilar <- f.block_sequence(8, c(7), "simple", "dissimilar")
-
+example_block_complex_similar
+example_block_simple_similar
 ```
 
 ## each observation 
@@ -223,12 +222,13 @@ for (i in 1:length(example_observation)) {
         slice(i+1)
       
       # updating the probability by normalizing everything 
-      #probability_df[probability_df$prob_trials == i, 2:21] <- as.list((count_vect + 1) * (1 / (sum(count_vect) + length(count_vect))))
+      probability_df[probability_df$prob_trials == i, 2:21] <- as.list((count_vect + 1) / sum(count_vect + 1))
       
-      probability_df[probability_df$prob_trials == i, 2:21] <- as.list(1 / sum(count_vect) * count_vect)
+      #probability_df[probability_df$prob_trials == i, 2:21] <- as.list(1 / sum(count_vect) * count_vect)
 }
 
 ## what should be the updating rule for probability? 
+count_df
 probability_df
 ```
 

@@ -264,6 +264,24 @@ RT_data %>%
 ```
 
 
+```{r}
+ggplot(RT_data, 
+       aes(x=trial_number, y=log(rt), colour=item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  facet_wrap(~trial_complexity) +
+  #langcog::theme_mikabr() +
+  theme_classic()+
+  langcog::scale_color_solarized(name = "Item Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("log RT (seconds)") + 
+  xlab("Trial Number")
+sessionInfo()
+```
+
+
+
 
 # Block level RT basic plotting
 
@@ -297,9 +315,13 @@ RT_data %>%
 ggplot(aes(x=block_number_for_plot, 
            y=log(rt), 
            colour=trial_complexity)) + 
+  scale_x_continuous(breaks = seq(1, 12, 1)) + 
   stat_summary(fun.data = "mean_cl_boot") + 
   stat_smooth(method = "lm", 
-              formula = y ~ log(x))
+              formula = y ~ log(x)) + 
+  theme_classic()+
+  xlab("Block Number")+ 
+  langcog::scale_color_solarized(name = "Complexity") 
 ```
 
 # Similarity ratings {.tabset}
@@ -443,8 +465,8 @@ complexity_summary %>%
 
 ```{r}
 log_rt_deviant <- RT_data %>% 
-  filter(trial_type == "background") %>% 
-  group_by(item_id) %>% 
+  filter(trial_type == "deviant") %>% 
+  group_by(item_id, first_dev_position) %>% 
   tidyboot::tidyboot_mean(log(rt)) %>% 
   mutate(type = "log_rt", 
     complexity = case_when(
@@ -482,12 +504,18 @@ c_temp <- complexity_temp %>%
   rename(mean_rating = mean)
 
 log_rt_deviant %>% 
-  select(item_id, mean) %>% 
+  select(item_id, mean, first_dev_position) %>% 
   rename(log_mean_dishab = mean) %>% 
   left_join(c_temp, by = "item_id") %>% 
   ggplot(aes(x = mean_rating, y = log_mean_dishab, 
              color = complexity)) + 
-  geom_point()
+  geom_point() + 
+  facet_wrap(~ first_dev_position) +
+   theme_classic() + 
+  xlab("Complexity Rating") + 
+  ylab("log(RT) on deviant trial") +
+langcog::scale_color_solarized(name = "Item Type") 
+  
 ```
 
 
