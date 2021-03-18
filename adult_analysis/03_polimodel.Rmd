@@ -233,40 +233,70 @@ probability_df
 ```
 
 ```{r}
-library(glue)
-# calculate surprise based on probability 
-probability_df[probability_df == 0] <- NA
+# ugliest code chunk ever! yuk! 
+#example_observation <- example_block_complex_similar
+example_observation <- lapply(example_block_complex_similar, make_observation, 
+       9)
 
-surprise_df <- probability_df %>% 
-  select(-prob_trials) %>% 
+update_prob_list <- list()
+
+for (i in 1:length(example_observation)) {
+      current_observation = example_observation[[i]]
+      current_prior = filter(probability_df, prob_trials == i-1) %>% as.vector()
+      
+      # loop through each observation feature vector
+      new_probability = c()
+      for (q in 2:length(current_prior)) {
+        feature_prior = current_prior[q]
+        if (current_observation[q-1] == 0){
+          current_feature_prob = 1 - feature_prior
+        }else if (current_observation[q-1] == 1){
+          current_feature_prob = feature_prior
+        }
+        new_probability = c(new_probability, 
+                            current_feature_prob)
+        
+      }
+      update_prob_list[[i]] <- new_probability
+    
+}
+
+updated_prob <- as.data.frame(do.call(rbind, update_prob_list)) %>% 
+  unnest()
+  
+
+df.prob <- tibble("probability" = updated_prob %>% 
+  as.matrix() %>% 
+  Rfast::rowprods())
+
+## multiply first then sum 
+df.prob %>% 
+  mutate(trial_num = row_number(), 
+         surprise = -log2(probability)) %>% 
+  ggplot(aes(x = trial_num, 
+         y = surprise)) + 
+  geom_point() + 
+  geom_line() + 
+  labs(title ="randomly sampling 9 features")
+  
+  
+## calculate feature-based suprirse then sum 
+updated_prob %>% 
   mutate(
     across(
-      cols = starts_with("feature"),
       .fns = ~-log2(.))
   ) %>% 
-  mutate(trial_num = row_number() - 1) %>% 
+  mutate(trial_num = row_number()) %>% 
   rowwise() %>% 
   mutate(
     sum_surprise = sum(across(), 
-                       na.rm = TRUE)) 
-
-surprise_df
-```
-
-
-
-
-
-```{r}
-surprise_df %>% 
+                       na.rm = TRUE)) %>% 
   ggplot(aes(x = trial_num, 
          y = sum_surprise)) + 
   geom_point() + 
-  geom_line()
+  geom_line() + 
+  labs("calculate feature-based surprise then sum together")
 ```
-
-
-
 
 
 
