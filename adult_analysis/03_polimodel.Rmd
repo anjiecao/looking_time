@@ -10,7 +10,7 @@ library(tidyverse)
 library(patchwork)
 library(here)
 
-source(here("scripts/poli_model_wave2.R"))
+#source(here("scripts/poli_model_wave2.R"))
 
 ```
 
@@ -23,7 +23,7 @@ reproducing poli: https://rpubs.com/anjiecao/729261
 
 ```{r}
 # the length of vectors that contains 1 or 0
-T0.5FEATURE_N = 5
+TOTAL_FEATURE_N = 50
 COMPLEX_FEATURE_N = 20  
 # FD: down the road can try something like rbinom(20, 1, 0.5)
 
@@ -147,6 +147,126 @@ example_observation <- lapply(example_block_complex_similar, make_observation,
        NUM_FEATURE_SAMPLE_PER_OBSERVATION)
 example_observation
 ```
+
+
+
+
+# naive bayes example 
+```{r}
+example_block_complex_similar
+
+prior <- replicate(length(example_block_complex_similar[[1]]), c(1,1), simplify = FALSE)
+
+beta_count <- list()
+
+for (trial in 1:length(example_block_complex_similar)){
+  current_observation = example_block_complex_similar[[trial]]
+  
+  if (trial == 1){
+    current_trial = prior 
+  }else{
+    current_trial = beta_count[[trial-1]]
+  }
+  
+  for (feature_index in 1:length(current_trial)){
+    
+    feature_bin = current_trial[[feature_index]]
+    
+    if (current_observation[[feature_index]] == 1){
+      current_trial[[feature_index]] <- c(current_trial[[feature_index]][1] + 1, 
+                                          current_trial[[feature_index]][2])
+    }else{
+      current_trial[[feature_index]] <- c(current_trial[[feature_index]][1], 
+                                          current_trial[[feature_index]][2] + 1)
+    }
+    
+  }
+  beta_count[[trial]] <- current_trial
+  
+  
+}
+
+
+```
+
+
+```{r}
+# calculate probability for each feature
+feature_prob <- lapply(beta_count, 
+       function(x) lapply(x, 
+                          function(x)x[[1]]/(x[[1]] + x[[2]])))
+
+
+update_prob_list <- list()
+
+for (trial in 1:length(example_block_complex_similar)) {
+      current_observation = example_block_complex_similar[[trial]]
+      
+      if (trial == 1){
+          current_trial = replicate(length(current_observation), 
+                                    0.5)
+      }else{
+          current_trial = feature_prob[[trial-1]]
+      }
+      
+      
+      # loop through each observation feature vector
+      new_probability = c()
+      for (feature in 1:length(current_observation)){
+        if (current_observation[[feature]] == 0){
+          current_trial[[feature]] <- 1 - current_trial[[feature]]
+        }
+      }
+      update_prob_list[[trial]] <- current_trial
+    
+}
+
+update_prob_list
+
+
+
+
+
+
+
+creature_prob <- lapply(update_prob_list, 
+       function(x)prod(as.data.frame(x)))
+
+feature_suprirse <- lapply(update_prob_list, 
+       function(x) lapply(x, 
+                          function(x)-log2(x)))
+
+sum_feature_surprise <- lapply(feature_suprirse, 
+                               function(x)sum(as.data.frame(x)))
+```
+
+
+```{r}
+tibble("lol" = creature_prob) %>% 
+  mutate( trial = row_number()) %>% 
+  unnest(lol) %>% 
+  ggplot(aes(x = trial, y = lol)) + 
+  geom_point() + 
+  geom_line()
+
+tibble("lol" = sum_feature_surprise) %>% 
+  mutate( trial = row_number()) %>% 
+  unnest(lol) %>% 
+  ggplot(aes(x = trial, y = lol)) + 
+  geom_point() + 
+  geom_line()
+```
+
+
+
+
+
+
+
+
+
+
+
 
 ## trying to figure out how to update 
 ```{r}
