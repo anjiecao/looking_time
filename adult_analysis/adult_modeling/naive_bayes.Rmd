@@ -305,6 +305,80 @@ df.suprirse %>%
 ```
 
 
+```{r}
+f.block_sequence <- function(
+  
+                             complexity, 
+                             similarity){
+  
+  TOTAL_FEATURE_N = 50  
+  # the number of 1 in the feature vector 
+  SIMPLE_FEATURE_N = 5
+  COMPLEX_FEATURE_N = 10  
+  block_length = 8
+  deviant_pos = c(3, 4, 5)
+  
+  feature_n <- ifelse(complexity == "complex", COMPLEX_FEATURE_N, SIMPLE_FEATURE_N)
+  background_stim <- f.generate_stimuli_vector(TOTAL_FEATURE_N, feature_n)
+  deviant_stim <- f.generate_stimuli_similarity(background_stim, similarity)
+  
+  block_list <- replicate(block_length, background_stim, simplify = FALSE)
+  
+  block_list[deviant_pos] <- replicate(length(deviant_pos), 
+                                       deviant_stim, 
+                                       simplify = FALSE)
+  
+  return(block_list)
+
+}
+
+# sorry this is disgusting i wish i know r better 
+df.seq <- bind_cols(
+  tibble(
+       complexity = c("complex", "simple"), 
+       similarity = c("similar", "dissimilar")) %>% 
+     expand(similarity, complexity), 
+  tibble(
+  "sequence" =
+  tibble(
+       complexity = c("complex", "simple"), 
+       similarity = c("similar", "dissimilar")) %>% 
+  expand(similarity, complexity) %>% 
+  pmap(f.block_sequence))
+)
+
+df.suprirse <- df.seq %>% 
+  mutate(
+    beta = map(.x = sequence, 
+               .f = f.beta_count
+         ), 
+    probability = map2(
+      .x = beta, 
+      .y = sequence, 
+      .f = f.probability), 
+    surprise = map(
+      .x = probability, 
+      .f = f.surprise
+    )) %>% 
+select(similarity, complexity, surprise) 
+  
+```
+
+```{r}
+df.suprirse %>% 
+  unnest(surprise) %>% 
+  unnest(surprise) %>% 
+  group_by(similarity, complexity) %>% 
+  mutate(trial = row_number(), 
+         block_type = paste(similarity, complexity)) %>% 
+  ggplot(aes(x = trial, 
+             y = surprise, 
+             color = block_type)) + 
+  geom_point() + 
+  geom_line()
+ 
+```
+```
 
 
 
