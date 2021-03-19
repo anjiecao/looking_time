@@ -1,0 +1,310 @@
+---
+title: "modeling attempt"
+author: "anjie"
+output: html_notebook
+---
+```{r}
+library(tidyverse)
+library(patchwork)
+library(here)
+
+```
+
+# helper function 
+
+## stimuli generation 
+```{r}
+TOTAL_FEATURE_N = 50
+COMPLEX_FEATURE_N = 20  
+SIMPLE_FEATURE_N = 10
+
+# generate stimuli
+f.generate_stimuli_vector <- function(total_feature_n, stimuli_feature_n){
+
+    vec <- c(rep(0, total_feature_n - stimuli_feature_n), rep(1, stimuli_feature_n))
+  return(sample(vec))
+
+}
+
+# generate similar / dissimilar stimuli
+f.generate_stimuli_similarity <- function(original_stimuli, similarity){
+  
+   non_overlapping_feature <- ifelse(similarity == "similar", .2, .8)
+  
+    # first figure out where the 1s are at 
+    feature_pos <- which(original_stimuli %in% c(1))
+    non_feature_pos <- which(original_stimuli %in% c(0))
+    
+    # change 1 to 0
+    feature_change_pos <- sample(feature_pos, 
+                            non_overlapping_feature * length(feature_pos), 
+                            replace = FALSE)
+    
+    new_stim <- replace(original_stimuli, feature_change_pos, 0)
+    
+    # change 0 to 1 
+    non_feature_change_pos <- sample(non_feature_pos, 
+                            non_overlapping_feature * length(feature_pos), 
+                            replace = FALSE)
+    
+    new_stim <- replace(new_stim, non_feature_change_pos, 1)
+    
+  
+  return (new_stim)  
+
+}
+
+## create a stimuli sequence 
+f.block_sequence <- function(total_feature_n, 
+                             simple_feature_n, 
+                             complex_feature_n,
+                             block_length, 
+                             deviant_pos, 
+                             complexity, 
+                             similarity){
+  
+  TOTAL_FEATURE_N = total_feature_n  
+  # the number of 1 in the feature vector 
+  SIMPLE_FEATURE_N = simple_feature_n
+  COMPLEX_FEATURE_N = complex_feature_n  
+  
+  feature_n <- ifelse(complexity == "complex", COMPLEX_FEATURE_N, SIMPLE_FEATURE_N)
+  background_stim <- f.generate_stimuli_vector(TOTAL_FEATURE_N, feature_n)
+  deviant_stim <- f.generate_stimuli_similarity(background_stim, similarity)
+  
+  block_list <- replicate(block_length, background_stim, simplify = FALSE)
+  
+  block_list[deviant_pos] <- replicate(length(deviant_pos), 
+                                       deviant_stim, 
+                                       simplify = FALSE)
+  
+  return(block_list)
+
+}
+
+
+example_block_complex_similar <- f.block_sequence(
+  TOTAL_FEATURE_N, 
+  SIMPLE_FEATURE_N, 
+  COMPLEX_FEATURE_N, 
+  8, c(7), "complex", "similar")
+example_block_complex_dissimilar <- f.block_sequence(
+  TOTAL_FEATURE_N, 
+  SIMPLE_FEATURE_N, 
+  COMPLEX_FEATURE_N, 
+  8, c(7), "complex", "dissimilar")
+example_block_simple_similar <- f.block_sequence(
+  TOTAL_FEATURE_N, 
+  SIMPLE_FEATURE_N, 
+  COMPLEX_FEATURE_N, 
+  8, c(7), "simple", "similar")
+example_block_simple_dissimilar <- f.block_sequence(
+  TOTAL_FEATURE_N, 
+  SIMPLE_FEATURE_N, 
+  COMPLEX_FEATURE_N, 8, c(7), "simple", "dissimilar")
+
+NUM_FEATURE_SAMPLE_PER_OBSERVATION <- 3
+
+# generate observation sequence 
+make_observation <- function(stimuli, feature_sample){
+  
+  #figure out the feature position  
+  feature_pos <- which(stimuli %in% c(1))
+  sampled_feature <- sample(feature_pos, 
+                            feature_sample, 
+                            replace = FALSE)
+  observation <- rep(0, length(stimuli))
+  observation[sampled_feature] <- 1
+  
+  return(observation)
+  
+}
+
+example_block_complex_similar 
+example_observation <- lapply(example_block_complex_similar, make_observation, 
+       NUM_FEATURE_SAMPLE_PER_OBSERVATION)
+example_observation
+
+```
+
+## naive bayes model
+
+```{r}
+# calculate beta count for a given block
+f.beta_count <- function(block){
+  prior <- replicate(length(block[[1]]), c(1,1), simplify = FALSE)
+
+  beta_count <- list()
+
+  for (trial in 1:length(block)){
+    current_observation = block[[trial]]
+    
+    if (trial == 1){
+      current_trial = prior 
+    }else{
+      current_trial = beta_count[[trial-1]]
+    }
+    
+    for (feature_index in 1:length(current_trial)){
+      
+      feature_bin = current_trial[[feature_index]]
+      
+      if (current_observation[[feature_index]] == 1){
+        current_trial[[feature_index]] <- c(current_trial[[feature_index]][1] + 1, 
+                                            current_trial[[feature_index]][2])
+      }else{
+        current_trial[[feature_index]] <- c(current_trial[[feature_index]][1], 
+                                            current_trial[[feature_index]][2] + 1)
+      }
+      
+    }
+    beta_count[[trial]] <- current_trial
+  }
+  
+  return(beta_count)
+}
+
+# use beta count to calculate feature probability 
+f.probability <- function(block_beta, block_stimuli){
+  
+  feature_prob <- lapply(block_beta, 
+       function(x) lapply(x, 
+                          function(x)x[[1]]/(x[[1]] + x[[2]])))
+  
+  update_prob_list <- list()
+
+  for (trial in 1:length(block_stimuli)) {
+        current_observation = block_stimuli[[trial]]
+        
+        if (trial == 1){
+            current_trial = replicate(length(current_observation), 
+                                      0.5)
+        }else{
+            current_trial = feature_prob[[trial-1]]
+        }
+        
+        
+        # loop through each observation feature vector
+        new_probability = c()
+        for (feature in 1:length(current_observation)){
+          if (current_observation[[feature]] == 0){
+            current_trial[[feature]] <- 1 - current_trial[[feature]]
+          }
+        }
+        update_prob_list[[trial]] <- current_trial
+      
+    }
+  
+  return(update_prob_list)
+  
+}
+
+f.surprise <- function(block_probability){
+  
+  feature_surprise <- lapply(block_probability, 
+       function(x) lapply(x, 
+                          function(x)-log2(x)))
+
+  sum_feature_surprise <- lapply(feature_surprise, 
+                               function(x)sum(as.data.frame(x)))
+  
+  return(sum_feature_surprise)
+
+}
+
+example_beta <- f.beta_count(example_block_complex_similar)
+example_prob <- f.probability(example_beta, example_block_complex_similar)
+example_suprirse <- f.surprise(example_prob)
+
+f.plot_suprirse <- function(surpise){
+  tibble("surprise" = surpise) %>% 
+  mutate( trial = row_number()) %>% 
+  unnest(surprise) %>% 
+  ggplot(aes(x = trial, y = surpise)) + 
+  geom_point() + 
+  geom_line()
+  
+}
+
+
+```
+
+# now running simulations 
+```{r}
+f.block_sequence <- function(
+  
+                             complexity, 
+                             similarity){
+  
+  TOTAL_FEATURE_N = 50  
+  # the number of 1 in the feature vector 
+  SIMPLE_FEATURE_N = 5
+  COMPLEX_FEATURE_N = 10  
+  block_length = 8
+  deviant_pos = c(7)
+  
+  feature_n <- ifelse(complexity == "complex", COMPLEX_FEATURE_N, SIMPLE_FEATURE_N)
+  background_stim <- f.generate_stimuli_vector(TOTAL_FEATURE_N, feature_n)
+  deviant_stim <- f.generate_stimuli_similarity(background_stim, similarity)
+  
+  block_list <- replicate(block_length, background_stim, simplify = FALSE)
+  
+  block_list[deviant_pos] <- replicate(length(deviant_pos), 
+                                       deviant_stim, 
+                                       simplify = FALSE)
+  
+  return(block_list)
+
+}
+
+# sorry this is disgusting i wish i know r better 
+df.seq <- bind_cols(
+  tibble(
+       complexity = c("complex", "simple"), 
+       similarity = c("similar", "dissimilar")) %>% 
+     expand(similarity, complexity), 
+  tibble(
+  "sequence" =
+  tibble(
+       complexity = c("complex", "simple"), 
+       similarity = c("similar", "dissimilar")) %>% 
+  expand(similarity, complexity) %>% 
+  pmap(f.block_sequence))
+)
+
+df.suprirse <- df.seq %>% 
+  mutate(
+    beta = map(.x = sequence, 
+               .f = f.beta_count
+         ), 
+    probability = map2(
+      .x = beta, 
+      .y = sequence, 
+      .f = f.probability), 
+    surprise = map(
+      .x = probability, 
+      .f = f.surprise
+    )) %>% 
+select(similarity, complexity, surprise) 
+  
+```
+
+```{r}
+df.suprirse %>% 
+  unnest(surprise) %>% 
+  unnest(surprise) %>% 
+  group_by(similarity, complexity) %>% 
+  mutate(trial = row_number(), 
+         block_type = paste(similarity, complexity)) %>% 
+  ggplot(aes(x = trial, 
+             y = surprise, 
+             color = block_type)) + 
+  geom_point() + 
+  geom_line()
+ 
+```
+
+
+
+
+

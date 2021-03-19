@@ -89,12 +89,22 @@ dissimilar_vector
 ## create a stimuli sequence 
 
 ```{r}
-f.block_sequence <- function(block_length, deviant_pos, complexity, similarity){
+
+TOTAL_FEATURE_N = 50
+COMPLEX_FEATURE_N = 20  
+SIMPLE_FEATURE_N = 10
+f.block_sequence <- function(total_feature_n, 
+                             simple_feature_n, 
+                             complex_feature_n,
+                             block_length, 
+                             deviant_pos, 
+                             complexity, 
+                             similarity){
   
-  TOTAL_FEATURE_N = 20  
+  TOTAL_FEATURE_N = total_feature_n  
   # the number of 1 in the feature vector 
-  SIMPLE_FEATURE_N = 5
-  COMPLEX_FEATURE_N = 10  
+  SIMPLE_FEATURE_N = simple_feature_n
+  COMPLEX_FEATURE_N = complex_feature_n  
   
   feature_n <- ifelse(complexity == "complex", COMPLEX_FEATURE_N, SIMPLE_FEATURE_N)
   background_stim <- f.generate_stimuli_vector(TOTAL_FEATURE_N, feature_n)
@@ -110,10 +120,25 @@ f.block_sequence <- function(block_length, deviant_pos, complexity, similarity){
 
 }
 
-example_block_complex_similar <- f.block_sequence(8, c(7), "complex", "similar")
-example_block_complex_dissimilar <- f.block_sequence(8, c(7), "complex", "dissimilar")
-example_block_simple_similar <- f.block_sequence(8, c(7), "simple", "similar")
-example_block_simple_dissimilar <- f.block_sequence(8, c(7), "simple", "dissimilar")
+example_block_complex_similar <- f.block_sequence(
+  TOTAL_FEATURE_N, 
+  SIMPLE_FEATURE_N, 
+  COMPLEX_FEATURE_N, 
+  8, c(7), "complex", "similar")
+example_block_complex_dissimilar <- f.block_sequence(
+  TOTAL_FEATURE_N, 
+  SIMPLE_FEATURE_N, 
+  COMPLEX_FEATURE_N, 
+  8, c(7), "complex", "dissimilar")
+example_block_simple_similar <- f.block_sequence(
+  TOTAL_FEATURE_N, 
+  SIMPLE_FEATURE_N, 
+  COMPLEX_FEATURE_N, 
+  8, c(7), "simple", "similar")
+example_block_simple_dissimilar <- f.block_sequence(
+  TOTAL_FEATURE_N, 
+  SIMPLE_FEATURE_N, 
+  COMPLEX_FEATURE_N, 8, c(7), "simple", "dissimilar")
 example_block_complex_similar
 example_block_simple_similar
 ```
