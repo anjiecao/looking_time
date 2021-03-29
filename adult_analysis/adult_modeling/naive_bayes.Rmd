@@ -178,7 +178,7 @@ f.probability <- function(block_beta, block_stimuli){
         
         if (trial == 1){
             current_trial = replicate(length(current_observation), 
-                                      0.5)
+                                      0.1)
         }else{
             current_trial = feature_prob[[trial-1]]
         }
