@@ -236,10 +236,10 @@ f.block_sequence <- function(
                              complexity, 
                              similarity){
   
-  TOTAL_FEATURE_N = 50  
+  TOTAL_FEATURE_N = 200 
   # the number of 1 in the feature vector 
-  SIMPLE_FEATURE_N = 5
-  COMPLEX_FEATURE_N = 10  
+  SIMPLE_FEATURE_N = 30
+  COMPLEX_FEATURE_N = 90  
   block_length = 8
   deviant_pos = c(7)
   
@@ -273,6 +273,7 @@ df.seq <- bind_cols(
 )
 
 df.suprirse <- df.seq %>% 
+  #rowwise() %>% 
   mutate(
     beta = map(.x = sequence, 
                .f = f.beta_count
@@ -293,6 +294,7 @@ select(similarity, complexity, surprise)
 df.suprirse %>% 
   unnest(surprise) %>% 
   unnest(surprise) %>% 
+  unnest(surprise) %>% 
   group_by(similarity, complexity) %>% 
   mutate(trial = row_number(), 
          block_type = paste(similarity, complexity)) %>% 
@@ -305,18 +307,21 @@ df.suprirse %>%
 ```
 
 
+
+
+
 ```{r}
 f.block_sequence <- function(
   
                              complexity, 
                              similarity){
   
-  TOTAL_FEATURE_N = 50  
+  TOTAL_FEATURE_N = 200  
   # the number of 1 in the feature vector 
-  SIMPLE_FEATURE_N = 5
-  COMPLEX_FEATURE_N = 10  
+  SIMPLE_FEATURE_N = 30
+  COMPLEX_FEATURE_N = 90  
   block_length = 8
-  deviant_pos = c(3, 4, 5)
+  deviant_pos = c(3,  5)
   
   feature_n <- ifelse(complexity == "complex", COMPLEX_FEATURE_N, SIMPLE_FEATURE_N)
   background_stim <- f.generate_stimuli_vector(TOTAL_FEATURE_N, feature_n)
