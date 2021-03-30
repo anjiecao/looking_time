@@ -19,7 +19,7 @@ COMPLEX_FEATURE_N = 3
 SIMPLE_FEATURE_N = 2
 
 # generate stimuli
-f.generate_stimuli_vector <- function(total_feature_n, stimuli_feature_n){
+generate_stimuli_vector <- function(total_feature_n, stimuli_feature_n){
   
   vec <- c(rep(0, total_feature_n - stimuli_feature_n), rep(1, stimuli_feature_n))
   return(sample(vec))
@@ -27,7 +27,7 @@ f.generate_stimuli_vector <- function(total_feature_n, stimuli_feature_n){
 }
 
 # generate similar / dissimilar stimuli
-f.generate_stimuli_similarity <- function(original_stimuli, similarity){
+generate_stimuli_similarity <- function(original_stimuli, similarity){
   
   non_overlapping_feature <- ifelse(similarity == "similar", .2, .8)
   
@@ -55,7 +55,7 @@ f.generate_stimuli_similarity <- function(original_stimuli, similarity){
 }
 
 ## create a stimuli sequence 
-f.block_sequence <- function(total_feature_n, 
+generate_block_sequence <- function(total_feature_n, 
                              simple_feature_n, 
                              complex_feature_n,
                              block_length, 
@@ -83,22 +83,22 @@ f.block_sequence <- function(total_feature_n,
 }
 
 
-example_block_complex_similar <- f.block_sequence(
+example_block_complex_similar <- generate_block_sequence(
   TOTAL_FEATURE_N, 
   SIMPLE_FEATURE_N, 
   COMPLEX_FEATURE_N, 
   8, c(7), "complex", "similar")
-example_block_complex_dissimilar <- f.block_sequence(
+example_block_complex_dissimilar <- generate_block_sequence(
   TOTAL_FEATURE_N, 
   SIMPLE_FEATURE_N, 
   COMPLEX_FEATURE_N, 
   8, c(7), "complex", "dissimilar")
-example_block_simple_similar <- f.block_sequence(
+example_block_simple_similar <- generate_block_sequence(
   TOTAL_FEATURE_N, 
   SIMPLE_FEATURE_N, 
   COMPLEX_FEATURE_N, 
   8, c(7), "simple", "similar")
-example_block_simple_dissimilar <- f.block_sequence(
+example_block_simple_dissimilar <- generate_block_sequence(
   TOTAL_FEATURE_N, 
   SIMPLE_FEATURE_N, 
   COMPLEX_FEATURE_N, 8, c(7), "simple", "dissimilar")
@@ -131,7 +131,7 @@ example_observation
 
 ```{r}
 # calculate beta count for a given block
-f.beta_count <- function(block, feature_prior = c(3,1)){
+get_beta_count <- function(block, feature_prior = c(3,1)){
   prior <- replicate(length(block[[1]]), feature_prior, simplify = FALSE)
   
   beta_count <- list()
@@ -154,25 +154,77 @@ f.beta_count <- function(block, feature_prior = c(3,1)){
 }
 
 # use beta count to calculate feature probability 
-f.probability <- function(block_beta){
+get_probability <- function(block_beta){
   
   lapply(block_beta, function(x) lapply(x, function(x) x/sum(x)))
   
 }
 
-f.surprise <- function(block_probability, block_sequence){
+get_surprise <- function(block_probability, block_sequence){
   
   mapply(function (probs, seq) {
-    sum(-log2(mapply(function (x, y) x[y + 1], probs, seq)))
+    sum(-log2(mapply(function (x, y) x[y + 1], probs, seq))) # why does it only index into the second feature? 
   }, block_probability, block_sequence)
   
 }
 
-example_beta <- f.beta_count(example_block_complex_similar)
-example_prob <- f.probability(example_beta)
-example_surprise <- f.surprise(example_prob,example_block_complex_similar)
+#KL divergence betwen two bernoulli distribution? https://math.stackexchange.com/questions/2604566/kl-divergence-between-two-multivariate-bernoulli-distribution#:~:text=The%20KL%20divergence%20between%20two%20such%20distributions%20is%20DK,z)q(z).
 
-f.plot_surprise <- function(surprise){
+get_learning_progress <- function(block_probability){
+  learning_progress <- list()
+
+  # stimuli_prob <- mapply(function (probs, seq) {
+  #   feature_prob <- list()
+  #   for (feature_pos in 1:length(seq)){
+  #     if (seq[[feature_pos]] == 1){
+  #       feature_prob[feature_pos] <- list(probs[[feature_pos]])
+  #     }else{
+  #       feature_prob[feature_pos] <- list(rev(probs[[feature_pos]]))
+  #     }
+  #   }
+  #   return(list(feature_prob))
+  #    # why does it only index into the second feature? 
+  # }, block_probability, block_sequence)
+  
+  # for (trial in 1:length(block_probability)){
+  #   prev = block_probability[[trial]]
+  #   curr = stimuli_prob[[trial]]
+  #   trial_lp = mapply(function(curr, prev){
+  #        #lp <- curr[[1]] * log2(curr[[1]]/prev[[1]]) #the probability of seeing the feature 
+  #        lp <- curr[[1]]*log2(curr[[1]]/prev[[1]]) + curr[[2]]*log2(curr[[2]]/prev[[2]])
+  #        return(lp) 
+  #      }, curr, prev)
+  #   learning_progress[trial] <- sum(trial_lp) 
+  #    }
+  #   
+  # return(learning_progress)
+  #   
+  # }  
+  
+
+   for (trial in 1:length(block_probability)){
+     
+     if (trial == 1){
+       trial_lp = rep(NA_real_, length(block_probability[[1]]))
+     }else{
+      prev_prob = block_probability[[trial-1]]
+      curr_prob = block_probability[[trial]]
+      trial_lp = mapply(function(curr, prev){
+        #lp <- curr[[1]] * log2(curr[[1]]/prev[[1]]) #the probability of seeing the feature 
+        lp <- curr[[1]]*log2(curr[[1]]/prev[[1]]) + curr[[2]]*log2(curr[[2]]/prev[[2]])
+        return(lp) 
+      }, curr_prob, prev_prob)
+    }
+   learning_progress[trial] <- sum(trial_lp) 
+   }
+  return(learning_progress)
+}
+
+example_beta <- get_beta_count(example_block_complex_similar)
+example_prob <- get_probability(example_beta)
+example_surprise <- get_surprise(example_prob,example_block_complex_similar)
+
+get_plot_surprise <- function(surprise){
   tibble("surprise" = surprise) %>% 
     mutate( trial = row_number()) %>% 
     unnest(surprise) %>% 
@@ -187,8 +239,7 @@ f.plot_surprise <- function(surprise){
 
 # now running simulations 
 ```{r}
-f.block_sequence <- function(
-  
+get_block_sequence <- function(
   complexity, 
   similarity){
   
@@ -225,20 +276,24 @@ df.seq <- bind_cols(
         complexity = c("complex", "simple"), 
         similarity = c("similar", "dissimilar")) %>% 
       expand(similarity, complexity) %>% 
-      pmap(f.block_sequence))
+      pmap(get_block_sequence))
 )
 
 df.surprise <- df.seq %>% 
   #rowwise() %>% 
   mutate(beta = map(.x = sequence, 
-                    .f = f.beta_count), 
+                    .f = get_beta_count), 
          probability = map(
            .x = beta, 
-           .f = f.probability), 
+           .f = get_probability), 
          surprise = map2(
            .x = probability, 
            .y = sequence,
-           .f = f.surprise)) 
+           .f = get_surprise), 
+         learning_progress = map(
+           .x = probability, 
+           .f = get_learning_progress
+         )) 
 # %>% 
 # select(similarity, complexity, surprise) 
 
@@ -261,11 +316,24 @@ df.surprise %>%
 ```
 
 
+```{r}
+df.surprise %>% 
+  unnest(learning_progress) %>% 
+  unnest(learning_progress) %>% 
+  group_by(similarity, complexity) %>% 
+  mutate(trial = row_number(), 
+         block_type = paste(similarity, complexity)) %>% 
+  ggplot(aes(x = trial, 
+             y = learning_progress, 
+             color = block_type)) + 
+  geom_point() + 
+  geom_line()
+```
 
 
 
 ```{r}
-f.block_sequence <- function(
+get_block_sequence <- function(
   complexity, 
   similarity){
   
@@ -277,8 +345,8 @@ f.block_sequence <- function(
   deviant_pos = c(3,  5)
   
   feature_n <- ifelse(complexity == "complex", COMPLEX_FEATURE_N, SIMPLE_FEATURE_N)
-  background_stim <- f.generate_stimuli_vector(TOTAL_FEATURE_N, feature_n)
-  deviant_stim <- f.generate_stimuli_similarity(background_stim, similarity)
+  background_stim <- generate_stimuli_vector(TOTAL_FEATURE_N, feature_n)
+  deviant_stim <- generate_stimuli_similarity(background_stim, similarity)
   
   block_list <- replicate(block_length, background_stim, simplify = FALSE)
   
@@ -302,14 +370,14 @@ df.surprise <- bind_cols(
         complexity = c("complex", "simple"), 
         similarity = c("similar", "dissimilar")) %>% 
       expand(similarity, complexity) %>% 
-      pmap(f.block_sequence))) %>% 
+      pmap(get_block_sequence))) %>% 
   mutate(beta = map(.x = sequence, 
-                    .f = f.beta_count), 
+                    .f = get_beta_count), 
          probability = map(.x = beta, 
-                           .f = f.probability), 
+                           .f = get_probability), 
          surprise = map2(.x = probability, 
                          .y = sequence, 
-                         .f = f.surprise)) 
+                         .f = get_surprise)) 
 
 df.surprise %>% 
   unnest(surprise) %>% 
