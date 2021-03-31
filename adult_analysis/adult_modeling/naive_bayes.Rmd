@@ -1,7 +1,9 @@
 ---
 title: "modeling attempt"
 author: "anjie"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
 ---
 
 ```{r}
@@ -327,8 +329,8 @@ similarity = c("similar", "dissimilar")
 feature = c(200)
 simple_feature = c(50)
 complex_feature = c(100)
-similar_ratio = c(0.3)
-dissimilar_ratio = c(0.8)
+similar_ratio = c(0.1,0.3)
+dissimilar_ratio = c(0.5,0.8)
 
 
 
@@ -364,7 +366,7 @@ df_feature_sim <- df_parameter %>%
 ```
 
 
-## sim  vis
+## look at similarity / dissimilarity ratio 
 ```{r}
 
 
@@ -375,7 +377,8 @@ df_visualization <- df_feature_sim %>%
            simple_feature, complex_feature, 
            similar_ratio, dissimilar_ratio) %>% 
   mutate(trial = row_number(), 
-         block_type = paste(similarity, complexity)) %>% 
+         block_type = paste(similarity, complexity), 
+         similarity_parameter = paste("similar ratio: ", similar_ratio, "dissimilar ratio: ", dissimilar_ratio)) %>% 
   pivot_longer(cols = c(surprise, learning_progress), 
                names_to = "measurement_type", 
                values_to = "value") 
@@ -387,7 +390,9 @@ df_visualization %>%
              y = value, 
              color = block_type)) + 
   geom_point() + 
-  geom_line() 
+  geom_line() + 
+  facet_wrap(~similarity_parameter) + 
+  ylab("surprise")
 
 df_visualization %>% 
   filter(measurement_type == "learning_progress") %>% 
@@ -395,10 +400,88 @@ df_visualization %>%
              y = value, 
              color = block_type)) + 
   geom_point() + 
-  geom_line() 
+  geom_line() + 
+  facet_wrap(~similarity_parameter) + 
+  ylab("KL divergence")
+```
+
+# look at simple complex feature 
+```{r}
+complexity = c("complex", "simple")
+similarity = c("similar", "dissimilar")
+feature = c(200)
+simple_feature = c(10, 30)
+complex_feature = c(50, 100)
+similar_ratio = c(0.3)
+dissimilar_ratio = c(0.5)
+
+
+df_parameter <- crossing(complexity, similarity, feature, 
+                         simple_feature, complex_feature, 
+                         similar_ratio, dissimilar_ratio) %>% 
+  filter(complex_feature > simple_feature) %>% 
+  filter(similar_ratio < dissimilar_ratio)
+
+df_feature_sim <- df_parameter %>% 
+  mutate(
+    sequence = pmap(df_parameter, .f = ~with(list(...), 
+                                             get_block_sequence(complexity, similarity, 
+                                                                feature, 
+                                                                simple_feature, complex_feature, 
+                                                                similar_ratio, dissimilar_ratio)))
+  ) %>% 
+   mutate(beta = map(.x = sequence, 
+                    .f = get_beta_count), 
+         probability = map(.x = beta, 
+                           .f = get_probability), 
+         surprise = map2(.x = probability, 
+                         .y = sequence, 
+                         .f = get_surprise), 
+         learning_progress = map(
+           .x = probability, 
+           .f = get_learning_progress
+         )) %>% 
+  mutate(
+    complex_simple_diff = complex_feature - simple_feature
+  )
 ```
 
 
+```{r}
+df_visualization <- df_feature_sim %>% 
+  unnest(c(learning_progress, surprise)) %>% 
+  unnest(c(learning_progress, surprise)) %>% 
+  group_by(similarity, complexity, feature, 
+           simple_feature, complex_feature, 
+           similar_ratio, dissimilar_ratio) %>% 
+  mutate(trial = row_number(), 
+         block_type = paste(similarity, complexity), 
+         complexity_parameter = paste("simple feature: ", simple_feature, "complex feature: ", complex_feature)) %>% 
+  pivot_longer(cols = c(surprise, learning_progress), 
+               names_to = "measurement_type", 
+               values_to = "value") 
+
+
+df_visualization %>% 
+  filter(measurement_type == "surprise") %>% 
+  ggplot(aes(x = trial, 
+             y = value, 
+             color = block_type)) + 
+  geom_point() + 
+  geom_line() + 
+  facet_wrap(~complexity_parameter) + 
+  ylab("surprise")
+
+df_visualization %>% 
+  filter(measurement_type == "learning_progress") %>% 
+  ggplot(aes(x = trial, 
+             y = value, 
+             color = block_type)) + 
+  geom_point() + 
+  geom_line() + 
+  facet_wrap(~complexity_parameter) + 
+  ylab("KL divergence")
+```
 
 
 
