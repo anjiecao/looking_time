@@ -17,6 +17,8 @@ library(here)
 TOTAL_FEATURE_N = 3
 COMPLEX_FEATURE_N = 1
 SIMPLE_FEATURE_N = 1
+SIMILAR_RATIO = .2
+DISSIMILAR_RATIO = .8
 
 # generate stimuli
 generate_stimuli_vector <- function(total_feature_n, stimuli_feature_n){
@@ -27,9 +29,13 @@ generate_stimuli_vector <- function(total_feature_n, stimuli_feature_n){
 }
 
 # generate similar / dissimilar stimuli
-generate_stimuli_similarity <- function(original_stimuli, similarity){
+# similar ratio is the proportion of different features for similar stimuli
+# dissimilar ratio is the proportion of different features for dissimilar stimuli
+generate_stimuli_similarity <- function(original_stimuli, similarity, 
+                                        similar_ratio, 
+                                        dissimilar_ratio){
   
-  non_overlapping_feature <- ifelse(similarity == "similar", .2, .8)
+  non_overlapping_feature <- ifelse(similarity == "similar", similar_ratio, dissimilar_ratio)
   
   # first figure out where the 1s are at 
   feature_pos <- which(original_stimuli %in% c(1))
@@ -58,6 +64,8 @@ generate_stimuli_similarity <- function(original_stimuli, similarity){
 generate_block_sequence <- function(total_feature_n, 
                              simple_feature_n, 
                              complex_feature_n,
+                             similar_ratio, 
+                             dissimilar_ratio, 
                              block_length, 
                              deviant_pos, 
                              complexity, 
@@ -69,8 +77,11 @@ generate_block_sequence <- function(total_feature_n,
   COMPLEX_FEATURE_N = complex_feature_n  
   
   feature_n <- ifelse(complexity == "complex", COMPLEX_FEATURE_N, SIMPLE_FEATURE_N)
-  background_stim <- f.generate_stimuli_vector(TOTAL_FEATURE_N, feature_n)
-  deviant_stim <- f.generate_stimuli_similarity(background_stim, similarity)
+  background_stim <- generate_stimuli_vector(TOTAL_FEATURE_N, feature_n)
+  deviant_stim <- generate_stimuli_similarity(background_stim, 
+                                              similarity, 
+                                              similar_ratio, 
+                                              dissimilar_ratio)
   
   block_list <- replicate(block_length, background_stim, simplify = FALSE)
   
@@ -87,20 +98,28 @@ example_block_complex_similar <- generate_block_sequence(
   TOTAL_FEATURE_N, 
   SIMPLE_FEATURE_N, 
   COMPLEX_FEATURE_N, 
+  SIMILAR_RATIO, 
+  DISSIMILAR_RATIO,
   8, c(7), "complex", "similar")
 example_block_complex_dissimilar <- generate_block_sequence(
   TOTAL_FEATURE_N, 
   SIMPLE_FEATURE_N, 
   COMPLEX_FEATURE_N, 
+  SIMILAR_RATIO, 
+  DISSIMILAR_RATIO,
   8, c(7), "complex", "dissimilar")
 example_block_simple_similar <- generate_block_sequence(
   TOTAL_FEATURE_N, 
   SIMPLE_FEATURE_N, 
   COMPLEX_FEATURE_N, 
+  SIMILAR_RATIO, 
+  DISSIMILAR_RATIO,
   8, c(7), "simple", "similar")
 example_block_simple_dissimilar <- generate_block_sequence(
   TOTAL_FEATURE_N, 
   SIMPLE_FEATURE_N, 
+  SIMILAR_RATIO, 
+  DISSIMILAR_RATIO,
   COMPLEX_FEATURE_N, 8, c(7), "simple", "dissimilar")
 
 NUM_FEATURE_SAMPLE_PER_OBSERVATION <- 3
@@ -123,7 +142,9 @@ make_observation <- function(stimuli, feature_sample){
 example_block_complex_similar <- generate_block_sequence(
   TOTAL_FEATURE_N, 
   SIMPLE_FEATURE_N, 
-  COMPLEX_FEATURE_N, 
+  COMPLEX_FEATURE_N,
+  SIMILAR_RATIO, 
+  DISSIMILAR_RATIO,
   5, c(4), "complex", "similar")
 
 example_block_complex_similar 
@@ -234,7 +255,7 @@ get_learning_progress <- function(block_probability){
     
    learning_progress[trial] <- sum(trial_lp) 
    }
-  return(learning_progress)
+  return(learning_progress[2:length(learning_progress)])
 }
 
 example_beta <- get_beta_count(example_block_complex_similar)
@@ -254,116 +275,35 @@ get_plot_surprise <- function(surprise){
 
 ```
 
-# now running simulations 
+
+
+
+
+
+# KEY FUNCTIONS
 ```{r}
 get_block_sequence <- function(
   complexity, 
-  similarity){
+  similarity, 
+  total_feature_n, 
+  simple_feature_n, 
+  complex_feature_n, 
+  similar_ratio, 
+  dissimilar_ratio){
   
-  TOTAL_FEATURE_N = 5
+  TOTAL_FEATURE_N = total_feature_n  
   # the number of 1 in the feature vector 
-  SIMPLE_FEATURE_N = 2
-  COMPLEX_FEATURE_N = 4  
-  block_length = 8
-  deviant_pos = c(7)
-  
-  feature_n <- ifelse(complexity == "complex", COMPLEX_FEATURE_N, SIMPLE_FEATURE_N)
-  background_stim <- f.generate_stimuli_vector(TOTAL_FEATURE_N, feature_n)
-  deviant_stim <- f.generate_stimuli_similarity(background_stim, similarity)
-  
-  block_list <- replicate(block_length, background_stim, simplify = FALSE)
-  
-  block_list[deviant_pos] <- replicate(length(deviant_pos), 
-                                       deviant_stim, 
-                                       simplify = FALSE)
-  
-  return(block_list)
-  
-}
-
-# sorry this is disgusting i wish i know r better 
-df.seq <- bind_cols(
-  tibble(
-    complexity = c("complex", "simple"), 
-    similarity = c("similar", "dissimilar")) %>% 
-    expand(similarity, complexity), 
-  tibble(
-    "sequence" =
-      tibble(
-        complexity = c("complex", "simple"), 
-        similarity = c("similar", "dissimilar")) %>% 
-      expand(similarity, complexity) %>% 
-      pmap(get_block_sequence))
-)
-
-df.surprise <- df.seq %>% 
-  #rowwise() %>% 
-  mutate(beta = map(.x = sequence, 
-                    .f = get_beta_count), 
-         probability = map(
-           .x = beta, 
-           .f = get_probability), 
-         surprise = map2(
-           .x = probability, 
-           .y = sequence,
-           .f = get_surprise), 
-         learning_progress = map(
-           .x = probability, 
-           .f = get_learning_progress
-         )) 
-# %>% 
-# select(similarity, complexity, surprise) 
-
-```
-
-```{r}
-df.surprise %>% 
-  unnest(surprise) %>% 
-  unnest(surprise) %>% 
-  unnest(surprise) %>% 
-  group_by(similarity, complexity) %>% 
-  mutate(trial = row_number(), 
-         block_type = paste(similarity, complexity)) %>% 
-  ggplot(aes(x = trial, 
-             y = surprise, 
-             color = block_type)) + 
-  geom_point() + 
-  geom_line()
-
-```
-
-
-```{r}
-df.surprise %>% 
-  unnest(learning_progress) %>% 
-  unnest(learning_progress) %>% 
-  group_by(similarity, complexity) %>% 
-  mutate(trial = row_number(), 
-         block_type = paste(similarity, complexity)) %>% 
-  ggplot(aes(x = trial, 
-             y = learning_progress, 
-             color = block_type)) + 
-  geom_point() + 
-  geom_line()
-```
-
-
-
-```{r}
-get_block_sequence <- function(
-  complexity, 
-  similarity){
-  
-  TOTAL_FEATURE_N = 200  
-  # the number of 1 in the feature vector 
-  SIMPLE_FEATURE_N = 30
-  COMPLEX_FEATURE_N = 90  
+  SIMPLE_FEATURE_N = simple_feature_n
+  COMPLEX_FEATURE_N = complex_feature_n  
   block_length = 8
   deviant_pos = c(3,  5)
   
   feature_n <- ifelse(complexity == "complex", COMPLEX_FEATURE_N, SIMPLE_FEATURE_N)
   background_stim <- generate_stimuli_vector(TOTAL_FEATURE_N, feature_n)
-  deviant_stim <- generate_stimuli_similarity(background_stim, similarity)
+  deviant_stim <- generate_stimuli_similarity(background_stim, 
+                                              similarity, 
+                                              similar_ratio, 
+                                              dissimilar_ratio)
   
   block_list <- replicate(block_length, background_stim, simplify = FALSE)
   
@@ -375,37 +315,92 @@ get_block_sequence <- function(
   
 }
 
-# sorry this is disgusting i wish i know r better 
-df.surprise <- bind_cols(
-  tibble(
-    complexity = c("complex", "simple"), 
-    similarity = c("similar", "dissimilar")) %>% 
-    expand(similarity, complexity), 
-  tibble(
-    "sequence" =
-      tibble(
-        complexity = c("complex", "simple"), 
-        similarity = c("similar", "dissimilar")) %>% 
-      expand(similarity, complexity) %>% 
-      pmap(get_block_sequence))) %>% 
-  mutate(beta = map(.x = sequence, 
+
+
+```
+
+# trying different parameter, not very robust now 
+```{r}
+
+complexity = c("complex", "simple")
+similarity = c("similar", "dissimilar")
+feature = c(200)
+simple_feature = c(50)
+complex_feature = c(100)
+similar_ratio = c(0.3)
+dissimilar_ratio = c(0.8)
+
+
+
+
+df_parameter <- crossing(complexity, similarity, feature, 
+                         simple_feature, complex_feature, 
+                         similar_ratio, dissimilar_ratio) %>% 
+  filter(complex_feature > simple_feature) %>% 
+  filter(similar_ratio < dissimilar_ratio)
+
+df_feature_sim <- df_parameter %>% 
+  mutate(
+    sequence = pmap(df_parameter, .f = ~with(list(...), 
+                                             get_block_sequence(complexity, similarity, 
+                                                                feature, 
+                                                                simple_feature, complex_feature, 
+                                                                similar_ratio, dissimilar_ratio)))
+  ) %>% 
+   mutate(beta = map(.x = sequence, 
                     .f = get_beta_count), 
          probability = map(.x = beta, 
                            .f = get_probability), 
          surprise = map2(.x = probability, 
                          .y = sequence, 
-                         .f = get_surprise)) 
+                         .f = get_surprise), 
+         learning_progress = map(
+           .x = probability, 
+           .f = get_learning_progress
+         )) %>% 
+  mutate(
+    complex_simple_diff = complex_feature - simple_feature
+  )
+```
 
-df.surprise %>% 
-  unnest(surprise) %>% 
-  unnest(surprise) %>% 
-  group_by(similarity, complexity) %>% 
+
+## sim  vis
+```{r}
+
+
+df_visualization <- df_feature_sim %>% 
+  unnest(c(learning_progress, surprise)) %>% 
+  unnest(c(learning_progress, surprise)) %>% 
+  group_by(similarity, complexity, feature, 
+           simple_feature, complex_feature, 
+           similar_ratio, dissimilar_ratio) %>% 
   mutate(trial = row_number(), 
          block_type = paste(similarity, complexity)) %>% 
+  pivot_longer(cols = c(surprise, learning_progress), 
+               names_to = "measurement_type", 
+               values_to = "value") 
+
+
+df_visualization %>% 
+  filter(measurement_type == "surprise") %>% 
   ggplot(aes(x = trial, 
-             y = surprise, 
+             y = value, 
              color = block_type)) + 
   geom_point() + 
-  geom_line()
+  geom_line() 
 
+df_visualization %>% 
+  filter(measurement_type == "learning_progress") %>% 
+  ggplot(aes(x = trial, 
+             y = value, 
+             color = block_type)) + 
+  geom_point() + 
+  geom_line() 
 ```
+
+
+
+
+
+
+
