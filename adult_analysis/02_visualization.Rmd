@@ -229,6 +229,21 @@ ggplot(RT_data, aes(x=trial_type_index, y=log(rt))) +
   
 ```
 
+## fancier version
+```{r}
+ggplot(RT_data, 
+       aes(x=trial_number, y=log(rt), colour=item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  facet_grid(half~trial_complexity) +
+  langcog::scale_color_solarized(name = "Item Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("log RT (ms)") + 
+  xlab("Trial Number") 
+```
+
+
 
 ## only look at trials before first deviant 
 
