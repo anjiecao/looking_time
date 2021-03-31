@@ -14,9 +14,9 @@ library(here)
 
 ## stimuli generation 
 ```{r}
-TOTAL_FEATURE_N = 6
-COMPLEX_FEATURE_N = 3  
-SIMPLE_FEATURE_N = 2
+TOTAL_FEATURE_N = 3
+COMPLEX_FEATURE_N = 1
+SIMPLE_FEATURE_N = 1
 
 # generate stimuli
 generate_stimuli_vector <- function(total_feature_n, stimuli_feature_n){
@@ -120,10 +120,16 @@ make_observation <- function(stimuli, feature_sample){
   
 }
 
+example_block_complex_similar <- generate_block_sequence(
+  TOTAL_FEATURE_N, 
+  SIMPLE_FEATURE_N, 
+  COMPLEX_FEATURE_N, 
+  5, c(4), "complex", "similar")
+
 example_block_complex_similar 
-example_observation <- lapply(example_block_complex_similar, make_observation, 
-                              NUM_FEATURE_SAMPLE_PER_OBSERVATION)
-example_observation
+#example_observation <- lapply(example_block_complex_similar, make_observation, 
+                              #NUM_FEATURE_SAMPLE_PER_OBSERVATION)
+#example_observation
 
 ```
 
@@ -135,23 +141,36 @@ get_beta_count <- function(block, feature_prior = c(3,1)){
   prior <- replicate(length(block[[1]]), feature_prior, simplify = FALSE)
   
   beta_count <- list()
-  
+  beta_count[[1]] <- prior 
   for (trial in 1:length(block)){
-
-    if (trial == 1) {
-      beta_count[[trial]] <- prior 
-    } else {
-      beta_count[[trial]] <- mapply(function(x, y) {
-        x[y + 1] <- x[y + 1] + 1
-        return(list(x))
-      },
-      beta_count[[trial-1]], 
-      block[[trial-1]])
-    }
+    beta_count[[trial+1]] <- mapply(function(x, y) {
+         x[y + 1] <- x[y + 1] + 1
+         return(list(x))
+       },
+       beta_count[[trial]], 
+       block[[trial]])
   }
   
-  return(beta_count)
-}
+    
+    
+    
+    
+    # if (trial == 1) {
+    #   beta_count[[trial]] <- prior 
+    # } else {
+    #   beta_count[[trial]] <- mapply(function(x, y) {
+    #     x[y + 1] <- x[y + 1] + 1
+    #     return(list(x))
+    #   },
+    #   beta_count[[trial-1]], 
+    #   block[[trial]])
+    # }
+  
+    return(beta_count)
+
+  }
+  
+
 
 # use beta count to calculate feature probability 
 get_probability <- function(block_beta){
@@ -163,8 +182,8 @@ get_probability <- function(block_beta){
 get_surprise <- function(block_probability, block_sequence){
   
   mapply(function (probs, seq) {
-    sum(-log2(mapply(function (x, y) x[y + 1], probs, seq))) # why does it only index into the second feature? 
-  }, block_probability, block_sequence)
+    sum(-log2(mapply(function (x, y) x[y + 1], probs, seq))) 
+  }, block_probability[1:length(block_probability)-1], block_sequence)
   
 }
 
@@ -202,11 +221,9 @@ get_learning_progress <- function(block_probability){
   # }  
   
 
-   for (trial in 1:length(block_probability)){
+   for (trial in 2:length(block_probability)){
      
-     if (trial == 1){
-       trial_lp = rep(NA_real_, length(block_probability[[1]]))
-     }else{
+    
       prev_prob = block_probability[[trial-1]]
       curr_prob = block_probability[[trial]]
       trial_lp = mapply(function(curr, prev){
@@ -214,7 +231,7 @@ get_learning_progress <- function(block_probability){
         lp <- curr[[1]]*log2(curr[[1]]/prev[[1]]) + curr[[2]]*log2(curr[[2]]/prev[[2]])
         return(lp) 
       }, curr_prob, prev_prob)
-    }
+    
    learning_progress[trial] <- sum(trial_lp) 
    }
   return(learning_progress)
@@ -392,6 +409,3 @@ df.surprise %>%
   geom_line()
 
 ```
-
-
-
