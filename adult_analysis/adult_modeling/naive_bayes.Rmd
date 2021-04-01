@@ -436,7 +436,7 @@ df_feature_sim <- df_parameter %>%
                                                                 feature, 
                                                                 simple_feature, complex_feature, 
                                                                 similar_ratio, dissimilar_ratio, 
-                                                                block_length, 4)))
+                                                                block_length, c(2,3))))
   ) %>% 
    mutate(beta = map(.x = sequence, 
                     .f = get_beta_count), 
@@ -494,6 +494,9 @@ df_visualization %>%
 # Now pretend it's the real thing 
 
 ```{r}
+
+# MUST MAKE SURE DEVIANT POSITIONS DO NOT SURPASS BLOCK LENGTH!! TRY AGAIN
+
 complexity = c("complex", "simple")
 similarity = c("similar", "dissimilar")
 feature = c(200)
@@ -523,10 +526,13 @@ df_parameter <- crossing(complexity, similarity, feature,
 # randomly assign deviant position (2,3,4,5,6) and randomly assign number of deviants (0,1,2)
 
 
+
+
 df_exp_sim <- df_parameter %>% 
   
   mutate(
     
+    # why would have an empty sequence? 
     sequence = pmap(df_parameter, .f = ~with(list(...), 
                                              get_block_sequence(e_complexity, e_similarity, 
                                                                 m_feature, 
@@ -534,7 +540,9 @@ df_exp_sim <- df_parameter %>%
                                                                 m_similar_ratio, m_dissimilar_ratio, 
                                                                 e_block_length, 
                                                                 e_deviant_pos)))
-  ) %>% 
+  ) 
+
+df_feature_sim %>% 
    mutate(beta = map(.x = sequence, 
                     .f = get_beta_count), 
          probability = map(.x = beta, 
