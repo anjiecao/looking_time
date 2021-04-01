@@ -518,7 +518,7 @@ df_parameter <- crossing(complexity, similarity, feature,
   mutate(
     e_block_length = sample(c(4,5,6), 1), 
     e_deviant_number = sample(c(0, 1, 2), 1), 
-    e_deviant_pos = as.vector(list(sample(c(2,3,4,5,6), e_deviant_number)))
+    e_deviant_pos = as.vector(list(sample(seq(2, e_block_length, 1), e_deviant_number)))
   ) %>% 
   ungroup()
 
@@ -540,9 +540,7 @@ df_exp_sim <- df_parameter %>%
                                                                 m_similar_ratio, m_dissimilar_ratio, 
                                                                 e_block_length, 
                                                                 e_deviant_pos)))
-  ) 
-
-df_feature_sim %>% 
+  )  %>% 
    mutate(beta = map(.x = sequence, 
                     .f = get_beta_count), 
          probability = map(.x = beta, 
@@ -647,7 +645,7 @@ run_simulation <- function(s_num){
   mutate(
     e_block_length = sample(c(4,5,6), 1), 
     e_deviant_number = sample(c(0, 1, 2), 1), 
-    e_deviant_pos = as.vector(list(sample(c(2,3,4,5,6), e_deviant_number)))
+   e_deviant_pos = as.vector(list(sample(seq(2, e_block_length, 1), e_deviant_number)))
   ) %>% 
   ungroup()
 
@@ -715,12 +713,12 @@ df_exp_sim <- df_parameter %>%
 
 
 ```{r}
-subject = 40
+subject = 400
 
 datalist = list()
 
 for (s in 1:subject) {
-    d <- run_similuation(s)
+    d <- run_simulation(s)
     datalist[[s]] <- d  # add it to your list
 }
 
@@ -730,5 +728,55 @@ sim_data = do.call(rbind, datalist)
   
 ```
 
+```{r}
+sim_data %>% 
+  #filter(item_type == "dissimilar deviant") %>% 
+ggplot(
+       aes(x=trial_number, y=surprise, colour=item_type)) + 
+  geom_point() + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  facet_grid(~block_complexity) +
+  langcog::scale_color_solarized(name = "Item Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("surprise") + 
+  xlab("Trial Number") 
+
+
+ggplot(sim_data, 
+       aes(x=trial_number, y=learning_progress, colour=item_type)) + 
+  geom_point() + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  facet_grid(~block_complexity) +
+  langcog::scale_color_solarized(name = "Item Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("learning_progress") + 
+  xlab("Trial Number") 
+```
+
+```{r}
+ggplot(sim_data, 
+       aes(x=trial_number, y=surprise, colour=item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  facet_wrap(~block_complexity) +
+  langcog::scale_color_solarized(name = "Item Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("log RT (ms)") + 
+  xlab("Trial Number") 
+
+ggplot(sim_data, 
+       aes(x=trial_number, y=learning_progress, colour=item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  facet_wrap(~block_complexity) +
+  langcog::scale_color_solarized(name = "Item Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("log RT (ms)") + 
+  xlab("Trial Number") 
+```
 
 
