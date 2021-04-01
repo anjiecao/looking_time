@@ -751,7 +751,7 @@ ggplot(sim_data,
   facet_grid(~block_complexity) +
   langcog::scale_color_solarized(name = "Item Type") + 
   theme(legend.position = "bottom") + 
-  ylab("learning_progress") + 
+  ylab("KL divergence") + 
   xlab("Trial Number") 
 ```
 
@@ -764,7 +764,7 @@ ggplot(sim_data,
   facet_wrap(~block_complexity) +
   langcog::scale_color_solarized(name = "Item Type") + 
   theme(legend.position = "bottom") + 
-  ylab("log RT (ms)") + 
+  ylab("surprise") + 
   xlab("Trial Number") 
 
 ggplot(sim_data, 
@@ -775,7 +775,7 @@ ggplot(sim_data,
   facet_wrap(~block_complexity) +
   langcog::scale_color_solarized(name = "Item Type") + 
   theme(legend.position = "bottom") + 
-  ylab("log RT (ms)") + 
+  ylab("KL divergence") + 
   xlab("Trial Number") 
 ```
 
