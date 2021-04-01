@@ -648,7 +648,7 @@ run_simulation <- function(s_num){
 
 
 df_exp_sim <- df_parameter %>% 
-  ungroup() %>% 
+  # the block length doesn't match 
   mutate(
     
     sequence = pmap(df_parameter, .f = ~with(list(...), 
