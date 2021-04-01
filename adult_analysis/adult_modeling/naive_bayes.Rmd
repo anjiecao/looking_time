@@ -291,14 +291,15 @@ get_block_sequence <- function(
   simple_feature_n, 
   complex_feature_n, 
   similar_ratio, 
-  dissimilar_ratio){
+  dissimilar_ratio, 
+  block_length, 
+  deviant_pos = c(3, 5)){
   
   TOTAL_FEATURE_N = total_feature_n  
   # the number of 1 in the feature vector 
   SIMPLE_FEATURE_N = simple_feature_n
   COMPLEX_FEATURE_N = complex_feature_n  
-  block_length = 8
-  deviant_pos = c(3,  5)
+  
   
   feature_n <- ifelse(complexity == "complex", COMPLEX_FEATURE_N, SIMPLE_FEATURE_N)
   background_stim <- generate_stimuli_vector(TOTAL_FEATURE_N, feature_n)
@@ -309,15 +310,16 @@ get_block_sequence <- function(
   
   block_list <- replicate(block_length, background_stim, simplify = FALSE)
   
-  block_list[deviant_pos] <- replicate(length(deviant_pos),
-                                       deviant_stim,
-                                       simplify = FALSE)
-  
+  if (length(deviant_pos) > 0){
+    block_list[deviant_pos] <- replicate(length(deviant_pos),
+                                         deviant_stim,
+                                         simplify = FALSE)
+  }
   return(block_list)
   
 }
 
-
+get_block_sequence("complexity", "similar", 10, 3, 5, 0.2, 0.8, 7, NULL)
 
 ```
 
@@ -331,7 +333,7 @@ simple_feature = c(50)
 complex_feature = c(100)
 similar_ratio = c(0.1,0.3)
 dissimilar_ratio = c(0.5,0.8)
-
+block_length = c(7)
 
 
 
@@ -347,7 +349,8 @@ df_feature_sim <- df_parameter %>%
                                              get_block_sequence(complexity, similarity, 
                                                                 feature, 
                                                                 simple_feature, complex_feature, 
-                                                                similar_ratio, dissimilar_ratio)))
+                                                                similar_ratio, dissimilar_ratio, 
+                                                                block_length)))
   ) %>% 
    mutate(beta = map(.x = sequence, 
                     .f = get_beta_count), 
@@ -416,6 +419,10 @@ similar_ratio = c(0.3)
 dissimilar_ratio = c(0.5)
 
 
+block_length = c(7)
+
+
+
 df_parameter <- crossing(complexity, similarity, feature, 
                          simple_feature, complex_feature, 
                          similar_ratio, dissimilar_ratio) %>% 
@@ -428,7 +435,8 @@ df_feature_sim <- df_parameter %>%
                                              get_block_sequence(complexity, similarity, 
                                                                 feature, 
                                                                 simple_feature, complex_feature, 
-                                                                similar_ratio, dissimilar_ratio)))
+                                                                similar_ratio, dissimilar_ratio, 
+                                                                block_length, 4)))
   ) %>% 
    mutate(beta = map(.x = sequence, 
                     .f = get_beta_count), 
@@ -483,7 +491,236 @@ df_visualization %>%
   ylab("KL divergence")
 ```
 
+# Now pretend it's the real thing 
 
+```{r}
+complexity = c("complex", "simple")
+similarity = c("similar", "dissimilar")
+feature = c(200)
+simple_feature = c(30)
+complex_feature = c(50)
+similar_ratio = c(0.3)
+dissimilar_ratio = c(0.5)
+#block_length
+#deviant_pos = c(3,5)
+
+block_number <- c(1, 2, 3)
+df_parameter <- crossing(complexity, similarity, feature, 
+                         simple_feature, complex_feature, 
+                         similar_ratio, dissimilar_ratio, 
+                         block_number)  %>% 
+  rename_with(.cols = -c(complexity, similarity, block_number), ~ paste0("m_", .x)) %>% # model parameter 
+  rename_with(.cols = c(complexity, similarity, block_number), ~ paste0("e_", .x)) %>% # experiment parameter
+  rowwise() %>% 
+  mutate(
+    e_block_length = sample(c(4,5,6), 1), 
+    e_deviant_number = sample(c(0, 1, 2), 1), 
+    e_deviant_pos = as.vector(list(sample(c(2,3,4,5,6), e_deviant_number)))
+  ) %>% 
+  ungroup()
+
+# randomly assign block length (4,5,6)
+# randomly assign deviant position (2,3,4,5,6) and randomly assign number of deviants (0,1,2)
+
+
+df_exp_sim <- df_parameter %>% 
+  
+  mutate(
+    
+    sequence = pmap(df_parameter, .f = ~with(list(...), 
+                                             get_block_sequence(e_complexity, e_similarity, 
+                                                                m_feature, 
+                                                                m_simple_feature, m_complex_feature, 
+                                                                m_similar_ratio, m_dissimilar_ratio, 
+                                                                e_block_length, 
+                                                                e_deviant_pos)))
+  ) %>% 
+   mutate(beta = map(.x = sequence, 
+                    .f = get_beta_count), 
+         probability = map(.x = beta, 
+                           .f = get_probability), 
+         surprise = map2(.x = probability, 
+                         .y = sequence, 
+                         .f = get_surprise), 
+         learning_progress = map(
+           .x = probability, 
+           .f = get_learning_progress
+         )) %>% 
+  # randomize row order and block number 
+  sample_n(nrow(.))%>% 
+  mutate(block_number = row_number()) %>% 
+  unnest(sequence, surprise, learning_progress) %>% 
+  # figure out the corresponding trial number 
+  group_by(block_number) %>% 
+  mutate(trial_number = row_number())
+  
+
+
+
+  
+```
+
+```{r}
+df_exp <- df_exp_sim %>% 
+  rename(block_complexity = e_complexity, 
+         block_similarity = e_similarity, 
+         ) %>% 
+  select(block_number, trial_number, 
+         block_complexity, block_similarity, e_deviant_pos, 
+         surprise, learning_progress) %>% 
+  unnest(learning_progress) %>% 
+  mutate(
+    trial_type = case_when(
+      trial_number %in% e_deviant_pos ~ "deviant", 
+      TRUE ~ "background"
+    ), 
+    item_type = case_when(
+      trial_type == "background" ~ "background", 
+      trial_type == "deviant" ~ paste(block_similarity, "deviant")
+    )
+  )
+
+
+```
+# single participant! 
+```{r}
+df_exp %>% 
+  #filter(item_type == "dissimilar deviant") %>% 
+ggplot(
+       aes(x=trial_number, y=surprise, colour=item_type)) + 
+  geom_point() + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  facet_grid(~block_complexity) +
+  langcog::scale_color_solarized(name = "Item Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("surprise") + 
+  xlab("Trial Number") 
+
+
+ggplot(df_exp, 
+       aes(x=trial_number, y=learning_progress, colour=item_type)) + 
+  geom_point() + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  facet_grid(~block_complexity) +
+  langcog::scale_color_solarized(name = "Item Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("learning_progress") + 
+  xlab("Trial Number") 
+  
+```
+
+
+
+
+# let's pretend we have 400 participant, non-tidy way
+```{r}
+run_simulation <- function(s_num){
+  
+  complexity = c("complex", "simple")
+  similarity = c("similar", "dissimilar")
+  feature = c(200)
+  simple_feature = c(30)
+  complex_feature = c(50)
+  similar_ratio = c(0.3)
+  dissimilar_ratio = c(0.5)
+  #block_length
+  #deviant_pos = c(3,5)
+  
+  block_number <- c(1, 2, 3)
+  df_parameter <- crossing(complexity, similarity, feature, 
+                         simple_feature, complex_feature, 
+                         similar_ratio, dissimilar_ratio, 
+                         block_number)  %>% 
+  rename_with(.cols = -c(complexity, similarity, block_number), ~ paste0("m_", .x)) %>% # model parameter 
+  rename_with(.cols = c(complexity, similarity, block_number), ~ paste0("e_", .x)) %>% # experiment parameter
+  rowwise() %>% 
+  mutate(
+    e_block_length = sample(c(4,5,6), 1), 
+    e_deviant_number = sample(c(0, 1, 2), 1), 
+    e_deviant_pos = as.vector(list(sample(c(2,3,4,5,6), e_deviant_number)))
+  ) %>% 
+  ungroup()
+
+# randomly assign block length (4,5,6)
+# randomly assign deviant position (2,3,4,5,6) and randomly assign number of deviants (0,1,2)
+
+
+df_exp_sim <- df_parameter %>% 
+  ungroup() %>% 
+  mutate(
+    
+    sequence = pmap(df_parameter, .f = ~with(list(...), 
+                                             get_block_sequence(e_complexity, e_similarity, 
+                                                                m_feature, 
+                                                                m_simple_feature, m_complex_feature, 
+                                                                m_similar_ratio, m_dissimilar_ratio, 
+                                                                e_block_length, 
+                                                                e_deviant_pos)))
+  ) %>% 
+   mutate(beta = map(.x = sequence, 
+                    .f = get_beta_count), 
+         probability = map(.x = beta, 
+                           .f = get_probability), 
+         surprise = map2(.x = probability, 
+                         .y = sequence, 
+                         .f = get_surprise), 
+         learning_progress = map(
+           .x = probability, 
+           .f = get_learning_progress
+         )) %>% 
+  # randomize row order and block number 
+  sample_n(nrow(.))%>% 
+  mutate(block_number = row_number()) %>% 
+  unnest(sequence, surprise, learning_progress) %>% 
+  # figure out the corresponding trial number 
+  group_by(block_number) %>% 
+  mutate(trial_number = row_number())
+
+  df_exp <- df_exp_sim %>% 
+        rename(block_complexity = e_complexity, 
+               block_similarity = e_similarity, 
+               ) %>% 
+        select(block_number, trial_number, 
+               block_complexity, block_similarity, e_deviant_pos, 
+               surprise, learning_progress) %>% 
+        unnest(learning_progress) %>% 
+        mutate(
+          trial_type = case_when(
+            trial_number %in% e_deviant_pos ~ "deviant", 
+            TRUE ~ "background"
+          ), 
+          item_type = case_when(
+            trial_type == "background" ~ "background", 
+            trial_type == "deviant" ~ paste(block_similarity, "deviant")
+          )
+        ) %>% 
+    mutate(subject = s_num)
+  
+  return(df_exp)
+  
+  
+}
+```
+
+
+
+```{r}
+subject = 40
+
+datalist = list()
+
+for (s in 1:subject) {
+    d <- run_similuation(s)
+    datalist[[s]] <- d  # add it to your list
+}
+
+
+sim_data = do.call(rbind, datalist)
+
+  
+```
 
 
 

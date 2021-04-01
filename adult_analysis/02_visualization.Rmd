@@ -83,6 +83,16 @@ demog_data %>%
 # RT raw {.tabset}
 
 ## overall 
+
+```{r}
+RT_data %>% 
+ # filter(trial_number == 1) %>% 
+   ggplot(aes(x = rt)) + 
+  geom_histogram() + 
+ # scale_x_log10() 
+```
+
+
 ```{r}
 RT_data %>% 
    ggplot(aes(x = rt)) + 
