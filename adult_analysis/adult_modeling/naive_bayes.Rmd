@@ -12,6 +12,32 @@ library(patchwork)
 library(here)
 ```
 
+# don't understand this: 
+```{r}
+get_beta_count <- function(block, feature_prior = c(3,1)){
+  prior <- replicate(length(block[[1]]), feature_prior, simplify = FALSE)
+  
+  beta_count <- list()
+  beta_count[[1]] <- prior 
+  for (trial in 1:length(block)){
+    beta_count[[trial+1]] <- mapply(function(x, y) {
+         x[y + 1] <- x[y + 1] + 1
+         return(list(x))
+       },
+       beta_count[[trial]], 
+       block[[trial]])
+  }
+
+    return(beta_count)
+
+}
+
+block <- list(c(1, 1, 0), c(1,1,0), c(1,0,1))
+get_beta_count(block)
+```
+
+
+
 # helper function 
 
 ## stimuli generation 
@@ -174,7 +200,7 @@ get_beta_count <- function(block, feature_prior = c(3,1)){
        block[[trial]])
   }
   
-    
+  
     
     
     

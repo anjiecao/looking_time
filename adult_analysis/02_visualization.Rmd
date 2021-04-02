@@ -253,6 +253,31 @@ ggplot(RT_data,
   xlab("Trial Number") 
 ```
 
+```{r}
+first_trial <- RT_data %>%
+  filter(trial_number == 1) %>% 
+  select(subject, block_number, rt) %>% 
+  mutate(temp_id = paste(subject, "_", block_number)) %>% 
+  mutate(rt = log(rt)) %>% 
+  rename(first_trial_rt = rt) %>% 
+  select(-block_number)
+
+RT_data %>% 
+  mutate(temp_id = paste(subject, "_", block_number)) %>% 
+  left_join(first_trial, by = "temp_id") %>% 
+  mutate(percent_rt = log(rt) / first_trial_rt) %>% 
+  ggplot( 
+       aes(x=trial_number, y=percent_rt, colour=item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  facet_grid(half~trial_complexity) +
+  langcog::scale_color_solarized(name = "Item Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("percent RT of first trial") + 
+  xlab("Trial Number") 
+```
+
 
 
 ## only look at trials before first deviant 
