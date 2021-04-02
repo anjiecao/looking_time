@@ -36,8 +36,7 @@
 <body></body>
 <script>
 
-
-CONDITION_NUM = 2
+CONDITION_NUM = 9
 
 // Experiment setup
     var verbose = false
@@ -95,6 +94,7 @@ all_blocks_information = generate_all_block(condition_num = CONDITION_NUM,
                                             num_species = SPECIES_NUM)
 
 timeline = []
+
 
 if (SHOW_INTRO) {
   timeline = instructions(timeline)
@@ -174,7 +174,7 @@ var test_block = {
                                 " <audio autoplay><source src='" + jsPsych.timelineVariable('music', true) + "' type='audio/mpeg'> </audio>"
                                 return html
                             },
-                            two_stimuli_interval: 1000,
+                            two_stimuli_interval: 0,
                             key_response: [40, 32],
                             minimum_viewing_duration: 1000, // block responses until stimulus appears
                             response_ends_trial: true,
@@ -189,6 +189,12 @@ var test_block = {
 
   }
 
+  var thank_you = {
+      type: "html-keyboard-response",
+      stimulus: "<p><span style=\"font-family: arial, helvetica, sans-serif; font-size: 48px; color: #993300;\"> That's it! Thank you so much for your participation! </span></p>"
+  }
+
+  timeline.push(thank_you)
 
   function saveData(name, data){
           var xhr = new XMLHttpRequest();
@@ -206,6 +212,9 @@ jsPsych.init({
         show_progress_bar: false,
         //use_webaudio: true, // this won't work for local testing (CORS), but maybe on server
         preload_images: all_stimuli,
+        on_finish: function(){
+          jsPsych.data.get().localSave('csv','mydata.csv');
+        },
         //preload_video: VIDEO,
         on_trial_finish: function(){
             saveData("test" + subject_id, jsPsych.data.get().csv());

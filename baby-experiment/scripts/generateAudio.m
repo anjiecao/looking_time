@@ -50,7 +50,7 @@ for i = 1:3
     current_clip = x(startPoints(i):endPoints(i));
     
     % break chunk into 5 equal pieces
-    indices = round([1/5, 2/5, 3/5, 4/5, 5/5] * length(current_clip));
+    indices = round([1/40, 2/5, 3/5, 19/20, 5/5] * length(current_clip));
 
     % ramp up on the first 20%
     current_clip(1:indices(1)) = current_clip(1:indices(1)) .* linspace(0, 1, indices(1));
