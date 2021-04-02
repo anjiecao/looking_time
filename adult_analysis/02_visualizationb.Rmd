@@ -1,0 +1,130 @@
+---
+title: "02_visualization redux"
+author: "anjie & gal"
+date: "03/04/2021"
+html_document:
+    toc: true
+    toc_float: true
+    number_sections: no
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r message=FALSE, warning=FALSE}
+library(lme4)
+library(here)
+library(tidyverse)
+library(stringr) # for parsing r string 
+library(jsonlite) # for parsing r string 
+library(ggiraphExtra)
+library(plotrix)
+library(lmerTest)
+
+```
+
+```{r read_data, message=FALSE, warning=FALSE}
+RT_data <- read_csv(here('data/processed_data/trimmed_RTdata.csv'))
+#pref_data <- read_csv(here('data/processed_data/trimmed_prefdata.csv'))
+similarity_data <- read_csv(here('data/processed_data/trimmed_similaritydata.csv'))
+complexity_data <- read_csv(here('data/processed_data/trimmed_complexitydata.csv'))
+demog_data <- read_csv(here('data/processed_data/trimmed_demogdata.csv'))
+```
+
+```{r}
+RT_data <- RT_data %>% 
+  mutate(rt = rt + 500)
+```
+
+
+# Raw RT in linear space 
+```{r}
+RT_data %>% 
+  #filter(rt < 10000) %>% 
+   ggplot(aes(x = rt)) + 
+  geom_histogram() + 
+  labs(title = "everything") + 
+  xlab("RT(ms)") 
+```
+
+```{r}
+RT_data %>% 
+  filter(rt < 10000) %>% 
+   ggplot(aes(x = rt)) + 
+  geom_histogram() + 
+  labs(title = "exclude RT > 10s") + 
+  xlab("RT(ms)") + 
+  scale_x_continuous(breaks = seq(0, 10000, 500))
+```
+
+```{r}
+RT_data %>% 
+  filter(rt < 5000) %>% 
+   ggplot(aes(x = rt)) + 
+  geom_histogram() + 
+  labs(title = "exclude RT > 5s") + 
+  xlab("RT(ms)") +
+  scale_x_continuous(breaks = seq(0, 10000, 500))
+```
+
+
+```{r}
+RT_data %>% 
+  filter(rt < 10000) %>% 
+   ggplot(aes(x = rt)) + 
+  geom_histogram() + 
+  labs(title = "everything") + 
+  xlab("RT(ms)") + 
+  facet_wrap(~trial_number)
+```
+
+
+# raw looking time on the first trial only
+
+```{r}
+RT_data %>% 
+  filter(trial_number == 1) %>% 
+   ggplot(aes(x = rt)) + 
+  geom_histogram() + 
+  labs(title = "First trial only") + 
+  xlab("RT(ms)") 
+```
+
+```{r}
+RT_data %>% 
+  filter(trial_number == 1) %>% 
+  filter(rt < 10000) %>% 
+   ggplot(aes(x = rt)) + 
+  geom_histogram() + 
+  labs(title = "First trial only, exclude RT > 10s") + 
+  xlab("RT(ms)") + 
+  scale_x_continuous(breaks = seq(0, 10000, 500))
+```
+
+```{r}
+RT_data %>%
+  filter(trial_number == 1) %>% 
+  filter(rt < 5000) %>% 
+   ggplot(aes(x = rt)) + 
+  geom_histogram() + 
+  labs(title = "First trial only, exclude RT > 5s") + 
+  xlab("RT(ms)") +
+  scale_x_continuous(breaks = seq(0, 10000, 500))
+```
+
+# pattern after excluding super long looking time 
+```{r}
+ggplot(filter(RT_data, rt < 10000), 
+       aes(x=trial_number, y=log(rt), colour=item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  facet_wrap(~trial_complexity) +
+  langcog::scale_color_solarized(name = "Item Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("log RT (ms)") + 
+  xlab("Trial Number") + 
+  labs(title = "Excluding RT above 10s")
+```
+
