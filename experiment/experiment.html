@@ -4,6 +4,7 @@
   <script src="js/jspsych.js"></script>
   <script src="js/instruction_and_transition.js"></script>
   <script src="js/jspsych-video-sequential-stimulus-presentation.js"></script>
+  <script src="js/jspsych-sequential-stimulus-presentation-old.js"></script>
   <script src = "js/practice_trial_package.js"></script>
   <script src = "js/demog_question_package.js"></script>
   <script src="js/jspsych-pratctice-block.js"></script>
@@ -32,7 +33,7 @@
 <script>
 
 // Experiment setup
-    var verbose = false
+    var verbose = true
     var timenum = Date.now();
     var turkInfo = jsPsych.turk.turkInfo();
 
@@ -53,6 +54,7 @@ if (TEST_RUN == 1) {
   // number of species per complexity level
   SPECIES_NUM = 4
   NUM_DEVIANTS = [0]
+  SHOW_SIMILAR = 0
 
 
 }
@@ -65,10 +67,11 @@ else {
   BREAK_EVERY_N_BLOCKS = 10
   // number of species per complexity level
   SPECIES_NUM = 20
+  SHOW_SIMILAR = false
 
 }
 
-all_stimuli = get_all_stimuli(TEST_RUN, SPECIES_NUM)
+all_stimuli = get_all_stimuli(TEST_RUN, SPECIES_NUM, SHOW_SIMILAR)
 
 console.log('all_stimuli')
 
@@ -78,7 +81,8 @@ all_blocks_information = generate_all_block(num_blocks = NUM_BLOCKS,
                                             stimuli_array = all_stimuli,
                                             all_deviant_position_array = DEVIANT_POSITIONS,
                                             num_deviants = NUM_DEVIANTS,
-                                            num_species = SPECIES_NUM)
+                                            num_species = SPECIES_NUM,
+                                            show_similar = SHOW_SIMILAR)
 
 
 if (verbose){
@@ -139,10 +143,6 @@ if (SHOW_INTRO) {
   timeline = instructions(timeline)
 }
 
-
-
-
-
 // need to loop through an outer loop that has all the blocks
 // each block is a timeline variable array
 // each timeline variable arrays contain the combination needed: N background + 10-N deviant, currently set to all 9 + 1
@@ -166,7 +166,7 @@ var test_block = {
                     timeline: [
                         {
                             type: 'html-keyboard-response',
-                            stimulus: '<p><img src= images/blank.png width ="600" height = "600" style="border:5px solid black">',
+                            stimulus: '<p><img src= images/blank.png width ="600" height = "600" style="position:fixed;top:50%; left:50%; transform: translate(-50%, -50%); border:5px solid black">',
                             trial_duration: function(){
                                 var random_duration = 800 + 500 * Math.random() //The interval between the offset of one stimulus and the onset of the next stimulus ranged between 800 and 1300 msec
                                 return random_duration  } ,
@@ -174,23 +174,32 @@ var test_block = {
                         },
                         {
                             type: 'sequential-stimulus-presentation',
-                            wall_animation: function(){
-                                var html =  '<p><img src= images/blank.png width ="600" height = "600" style="border:5px solid black">'
+                            frame_animation: function(){
+                                var html =  '<p><img src= images/blank.png width ="600" height = "600" style="position:fixed; top:50%; transform: translate(-50%, -50%);left:50%;border:5px solid black">'
                                 //var html = "<video width ='960' height = '540' autoplay muted><source src=" + jsPsych.timelineVariable('wall_animation', true) + ' type="video/mp4"></video>'
                                 //var html = "<img src= "+ "images/stimuli/pokeball_1.gif" +" width ='800' height = '200'></p>"
                                 return html;
                             },
 
-                            stimuli_animation: function(){
-                                var width_height = parseFloat(Math.floor(Math.random() * 100) + 200);
-                                var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='" + width_height + "' height = '" + width_height + "' style='position:absolute;top:" + (parseFloat(28)+parseFloat(Math.floor(Math.random() * 20) - 10)) + "%;left:" + (parseFloat(40)+parseFloat(Math.floor(Math.random() * 20) - 10)) + "%'></p>"
+                          stimuli_animation: function(){
+                                var width_height = parseFloat(Math.floor(Math.random() * 100) + 300);
+                                var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='" + width_height + "' height = '" + width_height + "' style='position:fixed;top:" + (parseFloat(28)+parseFloat(Math.floor(Math.random() * 20) - 10)) + "%;left:" + (parseFloat(40)+parseFloat(Math.floor(Math.random() * 20) - 10)) + "%'></p>"
                                 return html
                             },
+
+                          red_frame_animation: function(){
+                                var html =  '<p><img src= images/blank.png width ="600" height = "600" style="position:fixed;top:50%; left:50%; transform: translate(-50%, -50%); border:5px solid red">'
+                                //var html = "<video width ='960' height = '540' autoplay muted><source src=" + jsPsych.timelineVariable('wall_animation', true) + ' type="video/mp4"></video>'
+                                //var html = "<img src= "+ "images/stimuli/pokeball_1.gif" +" width ='800' height = '200'></p>"
+                                return html;
+                            },
+
                             block_deviant: block_information.deviant_stimuli,
                             block_background: block_information.background_stimuli,
-                            two_stimuli_interval: 0,
+                            two_stimuli_interval: 1000,
                             key_response: [40],
                             minimum_viewing_duration: 500, // block responses until stimulus appears
+                            red_frame_onset: 1000,
                             response_ends_trial: true,
                             data: {block_number: block_index, block_type: block_type,  stimulus_type: 'trial', stimulus_displayed: jsPsych.timelineVariable('stimuli'), trial_type: jsPsych.timelineVariable('stim_type')},
                         }

@@ -127,7 +127,7 @@ function pop_multiple(array, n){
 // -------- V2 dealing with Stimuli --------- //
 // currently ignoring inter-relationship between stimuli
 // just get all stimuli
-function get_all_stimuli(TEST_RUN, SPECIES_NUM){
+function get_all_stimuli(TEST_RUN, SPECIES_NUM, SHOW_SIMILAR){
 
 
     all_stimuli = []
@@ -143,7 +143,7 @@ function get_all_stimuli(TEST_RUN, SPECIES_NUM){
       // 2 versions per species
       version = ['A', 'B']
 
-      // 6 actions per creature
+      // 2 actions per creature
       action = ['a', 'b']
     }
     else {
@@ -151,10 +151,10 @@ function get_all_stimuli(TEST_RUN, SPECIES_NUM){
       species = Array.from({length: SPECIES_NUM}, (_, i) => i + 1)
 
       // 2 versions per species
-      version = ['A', 'B']
+      version = ['A']
 
-      // 6 actions per creature
-      action = ['a', 'b', 'c', 'd']
+      // 2 actions/rotations per creature
+      action = ['a', 'b']
     }
 
 
@@ -237,7 +237,8 @@ function generate_all_block(num_blocks,
                             stimuli_array,
                             all_deviant_position_array,
                             num_deviants,
-                            num_species){
+                            num_species,
+                            show_similar){
 
     // check that number of blocks is divisible by 4
     if (num_blocks % 4 != 0){
@@ -267,41 +268,63 @@ function generate_all_block(num_blocks,
 
     all_block_information = []
 
-    // put a loop around this with the number of blocks of this type
-    for (i = 0; i < num_blocks/4; i++) {
 
-    // simple similar blocks
-     output = generate_similar_block(simple_stims, num_blocks, num_trial_per_block, all_deviant_position_array, num_deviants, num_species, block_type = 'simple_similar')
 
-     simple_stims = output[0]
-     block_information = output[1]
+    if (show_similar)
+    {
+      loop_length = num_blocks/4
+    }
+    else {
+      loop_length = num_blocks/2
+    }
 
-     all_block_information.push(block_information)
+if (show_similar) {
 
-     // simple dissimilar blocks
-     output = generate_dissimilar_block(simple_stims, num_blocks, num_trial_per_block, all_deviant_position_array, num_deviants,  block_type = 'simple_dissimilar')
+  // SIMILAR BLOCKS
+  // put a loop around this with the number of blocks of this type
+  for (i = 0; i < loop_length; i++) {
 
-     simple_stims = output[0]
-     block_information = output[1]
+  // simple similar blocks
+   output = generate_similar_block(simple_stims, num_blocks, num_trial_per_block, all_deviant_position_array, num_deviants, num_species, block_type = 'simple_similar')
 
-     all_block_information.push(block_information)
+   simple_stims = output[0]
+   block_information = output[1]
 
-     // complex similar blocks
-    output = generate_similar_block(complex_stims, num_blocks, num_trial_per_block, all_deviant_position_array, num_deviants, num_species, block_type = 'complex_similar')
+   all_block_information.push(block_information)
 
-    complex_stims = output[0]
-    block_information = output[1]
+   // complex similar blocks
+  output = generate_similar_block(complex_stims, num_blocks, num_trial_per_block, all_deviant_position_array, num_deviants, num_species, block_type = 'complex_similar')
 
-    all_block_information.push(block_information)
+  complex_stims = output[0]
+  block_information = output[1]
 
-    // complex dissimilar blocks
-    output = generate_dissimilar_block(complex_stims, num_blocks, num_trial_per_block, all_deviant_position_array, num_deviants, block_type = 'complex_dissimilar')
-
-    complex_stims = output[0]
-    block_information = output[1]
-
-    all_block_information.push(block_information)
+  all_block_information.push(block_information)
   }
+}
+
+
+// DISSIMILAR BLOCKS
+
+// put a loop around this with the number of blocks of this type
+for (i = 0; i < loop_length; i++) {
+
+  // simple dissimilar blocks
+  output = generate_dissimilar_block(simple_stims, num_blocks, num_trial_per_block, all_deviant_position_array, num_deviants,  block_type = 'simple_dissimilar')
+
+ simple_stims = output[0]
+ block_information = output[1]
+
+ all_block_information.push(block_information)
+
+ // complex dissimilar blocks
+ output = generate_dissimilar_block(complex_stims, num_blocks, num_trial_per_block, all_deviant_position_array, num_deviants, block_type = 'complex_dissimilar')
+
+complex_stims = output[0]
+block_information = output[1]
+
+all_block_information.push(block_information)
+  }
+
 
     // shuffle blocks
     shuffleArray(all_block_information)
@@ -406,16 +429,39 @@ function generate_dissimilar_block(stims, num_blocks, num_trial_per_block, all_d
   var randomIdx = Math.floor(Math.random() * stims.length)
   var background = stims[randomIdx];
 
-  // and choose another simple creature that differs in species and movement
+  // console.log('stims')
+  // console.log(stims)
+
+  console.log('background')
+  console.log(background)
+
+  // and get info about species, modification, movement/rotation
   speciesInfo_1 = background.slice(background.length-10, background.length-8)
-  movementInfo_1 = background.slice(background.length-5, background.length-4)
   modificationInfo_1 = background.slice(background.length-7, background.length-6)
+  movementInfo_1 = background.slice(background.length-5, background.length-1)
+
+  console.log(speciesInfo_1)
+  console.log(modificationInfo_1)
+  console.log(movementInfo_1)
+  console.log('stims0:')
+  console.log(stims)
 
   // remove these creatures from the list for next iteration (not including their modification)
-  stims = stims.filter(x => !(x.includes(speciesInfo_1) && x.includes(modificationInfo_1)))
+  stims.splice(randomIdx, 1)
+
+  //stims = stims.filter(x => !(x.includes(speciesInfo_1) && x.includes(modificationInfo_1) && x.includes(movementInfo_1)))
+
+  console.log('stims:')
+  console.log(stims)
 
   // stimuli to sample from, which don't come from the same species or movement
-  sampleFrom = stims.filter(x => !(x.includes(speciesInfo_1) && x.includes(movementInfo_1)))
+  sampleFrom = stims.filter(x => !(x.includes(speciesInfo_1) || x.includes(movementInfo_1)))
+
+  // console.log('stims2:')
+  // console.log(stims)
+
+  console.log('sampleFrom:')
+  console.log(sampleFrom)
 
   // choose random index to get deviant stim
   var randomIdx = Math.floor(Math.random() * sampleFrom.length)
@@ -424,9 +470,19 @@ function generate_dissimilar_block(stims, num_blocks, num_trial_per_block, all_d
   // get relevant info about deviant to exclude that species
   speciesInfo_2 = deviant.slice(deviant.length-10, deviant.length-8)
   modificationInfo_2 = deviant.slice(deviant.length-7, deviant.length-6)
+  movementInfo_2 = deviant.slice(background.length-5, background.length-1)
+  //
+  // console.log('stims3:')
+  // console.log(stims)
+
 
   // remove these creatures from the list for next iteration (not including their modification)
-  stims = stims.filter(x => !(x.includes(speciesInfo_2) && x.includes(modificationInfo_2)))
+  //stims.splice(randomIdx, 1)
+
+  // console.log('stims4:')
+  // console.log(stims)
+
+  stims = stims.filter(x => !(x.includes(speciesInfo_2) && x.includes(modificationInfo_2) && x.includes(movementInfo_2)))
 
   // get random trial number
   num_trial_per_block = getRandomSubarray(num_trial_per_block, 1)

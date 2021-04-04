@@ -18,9 +18,9 @@ jsPsych.plugins["sequential-stimulus-presentation"] = (function() {
     description: '',
     parameters: {
 
-     wall_animation: {
+     frame_animation: {
         type: jsPsych.plugins.parameterType.HTML_STRING,
-        pretty_name: 'wall_animation',
+        pretty_name: 'frame_animation',
         default: undefined,
         description: 'The HTML string to be displayed first'
       },
@@ -29,8 +29,15 @@ jsPsych.plugins["sequential-stimulus-presentation"] = (function() {
         type: jsPsych.plugins.parameterType.HTML_STRING,
         pretty_name: 'stimulus',
         default: undefined,
-        description: 'The HTML string to be displayed first'
+        description: 'The HTML string to be displayed second'
       },
+
+      red_frame_animation: {
+         type: jsPsych.plugins.parameterType.HTML_STRING,
+         pretty_name: 'red_frame_animation',
+         default: undefined,
+         description: 'The HTML string to be displayed last'
+       },
 
       two_stimuli_interval: {
         type: jsPsych.plugins.parameterType.HTML_STRING,
@@ -39,6 +46,12 @@ jsPsych.plugins["sequential-stimulus-presentation"] = (function() {
         description: 'The HTML string to be displayed first'
       },
 
+      red_frame_onset: {
+        type: jsPsych.plugins.parameterType.HTML_STRING,
+        pretty_name: 'interval between playing first and red frame',
+        default: undefined,
+        description: 'The HTML string to be displayed first'
+      },
       key_response: {
         type: jsPsych.plugins.parameterType.KEYCODE,
         array: true,
@@ -128,7 +141,9 @@ jsPsych.plugins["sequential-stimulus-presentation"] = (function() {
   }
   plugin.trial = function(display_element, trial) {
 
-    var html_string = '<div id="stimuli-animation">' + trial.stimuli_animation + '</div>' + '<div id="wall">'+ trial.wall_animation+'</div>';
+    var html_string = '<div id="stimuli-animation">' + trial.stimuli_animation + '</div>' + '<div id="frame">'+ trial.frame_animation+'</div>';
+
+    var html_string = html_string + '<div id="red-frame-animation">' + trial.red_frame_animation + '</div>'
 
     display_element.innerHTML = html_string;
 
@@ -137,7 +152,21 @@ jsPsych.plugins["sequential-stimulus-presentation"] = (function() {
     jsPsych.pluginAPI.setTimeout(function() {
 
         display_element.querySelector('#stimuli-animation').style.visibility = 'visible';
-                                    }, trial.two_stimuli_interval);
+                                    }, trial.minimum_viewing_duration);
+
+
+    jsPsych.pluginAPI.setTimeout(function() {
+
+        display_element.querySelector('#frame').remove();
+      }, trial.red_frame_onset);
+
+
+    display_element.querySelector('#red-frame-animation').style.visibility = 'hidden'
+
+    jsPsych.pluginAPI.setTimeout(function() {
+
+        display_element.querySelector('#red-frame-animation').style.visibility = 'visible';
+      }, trial.red_frame_onset);
 
     // store response
     var response = {
@@ -165,7 +194,7 @@ jsPsych.plugins["sequential-stimulus-presentation"] = (function() {
         "key_press": response.key,
         "minimum_viewing_duration":trial.minimum_viewing_duration,
         "trial_looking_time": trial.minimum_viewing_duration + response.rt,
-        "block_deviant": trial.block_deviant, 
+        "block_deviant": trial.block_deviant,
         "block_background": trial.block_background
 
       };
