@@ -72,7 +72,7 @@ var intro0 = {
             type: "instructions",
             pages: [
                 "<p> In the real experiment, you will find that the frame turns <span style='color:red;'>red</span> a short while after the creature appeared. </p>" +
-                "<p> This just signals that the keyboard has been activated and you are OK to move on to the next creature when you are ready. </p>" +
+                "<p> This just signals that the keyboard has been activated and you can press the down arrow to move on to the next creature when you are ready. </p>" +
                 "<p> You can see how a regular trial will look like next. <b> Remember to press the down arrow when you've had enough of the creature. <b> </p>"
               ],
                 data: {stimulus_type: 'instructions'},

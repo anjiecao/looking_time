@@ -141,7 +141,7 @@ function get_all_stimuli(TEST_RUN, SPECIES_NUM, SHOW_SIMILAR){
       species = Array.from({length: SPECIES_NUM}, (_, i) => i + 1)
 
       // 2 versions per species
-      version = ['A', 'B']
+      version = ['A']
 
       // 2 actions per creature
       action = ['a', 'b']

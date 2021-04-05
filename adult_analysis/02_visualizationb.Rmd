@@ -39,6 +39,29 @@ RT_data <- RT_data %>%
 
 
 # Raw RT in linear space 
+
+```{r}
+RT_summary <- RT_data %>% 
+  summarise(
+    mean_lt = mean(rt), 
+    sd = sd(rt), 
+    upper = mean_lt + sd, 
+    lower = mean_lt - sd
+  )
+
+RT_summary
+```
+
+```{r}
+RT_data %>% 
+  filter(rt < RT_summary$upper) %>% 
+   ggplot(aes(x = rt)) + 
+  geom_histogram() + 
+  labs(title = "< mean + 1sd") + 
+  xlab("RT(ms)") 
+```
+
+
 ```{r}
 RT_data %>% 
   #filter(rt < 10000) %>% 

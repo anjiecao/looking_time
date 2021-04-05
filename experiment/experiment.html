@@ -43,7 +43,7 @@
     jsPsych.data.addProperties({ subject: subject_id });
 
 // Stimuli setup
-TEST_RUN = 0 //test run with smaller number of species etc.
+TEST_RUN = 0//test run with smaller number of species etc.
 
 if (TEST_RUN == 1) {
   SHOW_INTRO = false
@@ -182,8 +182,14 @@ var test_block = {
                             },
 
                           stimuli_animation: function(){
-                                var width_height = parseFloat(Math.floor(Math.random() * 100) + 300);
-                                var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='" + width_height + "' height = '" + width_height + "' style='position:fixed;top:" + (parseFloat(28)+parseFloat(Math.floor(Math.random() * 20) - 10)) + "%;left:" + (parseFloat(40)+parseFloat(Math.floor(Math.random() * 20) - 10)) + "%'></p>"
+                              
+                                function getRandomInt(max) {
+                                    return Math.floor(Math.random() * max);
+                                    }
+                                var width_height = parseFloat(Math.floor(Math.random() * 100) + 100);
+                                //var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='" + width_height + "' height = '" + width_height + "' style='position:fixed;top:" + (parseFloat(20)+ (Math.pow(-1, parseFloat(Math.floor(Math.random *3)))) * parseFloat(Math.floor(Math.random() * 20) - 10)) + "%;left:" + (parseFloat(20)+ (Math.pow(-1, parseFloat(Math.floor(Math.random *3)))) * parseFloat(Math.floor(Math.random() * 20) - 10)) + "%'></p>"
+                              
+                                var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='" + width_height + "' height = '" + width_height + "' style='position:relative;top:" + Math.random() * (80 - 10) + 10 + "%;left:" +  Math.random() * (80 - 10) + 10  +  "%'></p>"
                                 return html
                             },
 
