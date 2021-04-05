@@ -63,7 +63,7 @@ var intro0 = {
           },
           two_stimuli_interval: 0,
           key_response: [40],
-          minimum_viewing_duration: 600, // daffner2000's info was 600, changed to 200
+          minimum_viewing_duration: 500, // daffner2000's info was 600, changed to 200
           response_ends_trial: true,
         }
 
@@ -99,9 +99,9 @@ var intro0 = {
                   //var html = "<img src= "+ "images/stimuli/pokeball_1.gif" +" width ='800' height = '200'></p>"
                   return html;
               },
-              two_stimuli_interval: 0,
+              two_stimuli_interval: 500,
               key_response: [40],
-              minimum_viewing_duration: 600, // daffner2000's info was 600, changed to 200
+              minimum_viewing_duration: 1000, // daffner2000's info was 600, changed to 200
               response_ends_trial: true,
               red_frame_onset: 1000,
             }

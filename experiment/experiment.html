@@ -182,13 +182,13 @@ var test_block = {
                             },
 
                           stimuli_animation: function(){
-                              
+
                                 function getRandomInt(max) {
                                     return Math.floor(Math.random() * max);
                                     }
                                 var width_height = parseFloat(Math.floor(Math.random() * 100) + 100);
                                 //var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='" + width_height + "' height = '" + width_height + "' style='position:fixed;top:" + (parseFloat(20)+ (Math.pow(-1, parseFloat(Math.floor(Math.random *3)))) * parseFloat(Math.floor(Math.random() * 20) - 10)) + "%;left:" + (parseFloat(20)+ (Math.pow(-1, parseFloat(Math.floor(Math.random *3)))) * parseFloat(Math.floor(Math.random() * 20) - 10)) + "%'></p>"
-                              
+
                                 var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='" + width_height + "' height = '" + width_height + "' style='position:relative;top:" + Math.random() * (80 - 10) + 10 + "%;left:" +  Math.random() * (80 - 10) + 10  +  "%'></p>"
                                 return html
                             },
@@ -202,9 +202,9 @@ var test_block = {
 
                             block_deviant: block_information.deviant_stimuli,
                             block_background: block_information.background_stimuli,
-                            two_stimuli_interval: 1000,
+                            two_stimuli_interval: 500,
                             key_response: [40],
-                            minimum_viewing_duration: 500, // block responses until stimulus appears
+                            minimum_viewing_duration: 1000, // block responses until stimulus appears
                             red_frame_onset: 1000,
                             response_ends_trial: true,
                             data: {block_number: block_index, block_type: block_type,  stimulus_type: 'trial', stimulus_displayed: jsPsych.timelineVariable('stimuli'), trial_type: jsPsych.timelineVariable('stim_type')},

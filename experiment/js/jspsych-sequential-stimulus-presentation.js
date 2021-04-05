@@ -152,7 +152,7 @@ jsPsych.plugins["sequential-stimulus-presentation"] = (function() {
     jsPsych.pluginAPI.setTimeout(function() {
 
         display_element.querySelector('#stimuli-animation').style.visibility = 'visible';
-                                    }, trial.minimum_viewing_duration);
+      }, trial.two_stimuli_interval);
 
 
     jsPsych.pluginAPI.setTimeout(function() {
