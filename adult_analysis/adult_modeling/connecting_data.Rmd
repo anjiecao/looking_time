@@ -1,0 +1,109 @@
+---
+title: "connecting_data_model"
+author: "anjie"
+date: "4/6/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(here)
+library(tidyverse)
+```
+
+# process the original data 
+```{r}
+d <- read_csv(here("adult_modeling/data/processed_RTdata.csv"))
+
+
+```
+## recover the block sequence 
+```{r}
+
+d_block_length <- d %>% 
+  mutate(temp_id = paste(subject, block_number)) %>% 
+  group_by(temp_id) %>% 
+  count() %>% 
+  rename(block_length = n)
+
+d_experiment_parameter <- d %>% 
+  rowwise() %>% 
+  mutate(
+    temp_id = paste(subject, block_number), 
+    dev_positions = case_when(
+    !is.na(first_dev_position) && !is.na(second_dev_position) ~ map2(first_dev_position, second_dev_position, c), 
+    is.na(first_dev_position) && !is.na(second_dev_position) ~ list(second_dev_position), 
+    !is.na(first_dev_position) && is.na(second_dev_position) ~ list(first_dev_position),
+    TRUE ~ list(NA)
+    )) %>% 
+  left_join(d_block_length, by = "temp_id") %>% 
+  select(-temp_id) %>% 
+  separate(block_type, into = c("complexity", "similarity"), sep = "_") %>% 
+  select(subject, block_number, complexity, similarity, block_length, dev_positions) %>% 
+  distinct(subject, block_number, .keep_all = TRUE)
+  
+
+d_experiment_parameter
+```
+
+recover the experiment sequence 
+```{r}
+d_exp_sim <- d_experiment_parameter %>% 
+  # the block length doesn't match 
+  mutate(
+    
+    sequence = pmap(d_experiment_parameter %>% select(-c(subject, block_number)), .f = ~with(list(...), 
+                                             get_block_sequence(complexity, similarity, 
+                                                                200, 
+                                                                10, 50, 
+                                                                0.2, 0.8, 
+                                                                block_length, 
+                                                                dev_positions)))
+  ) %>% 
+   mutate(beta = map(.x = sequence, 
+                    .f = get_beta_count), 
+         probability = map(.x = beta, 
+                           .f = get_probability), 
+         surprise = map2(.x = probability, 
+                         .y = sequence, 
+                         .f = get_surprise), 
+         learning_progress = map(
+           .x = probability, 
+           .f = get_learning_progress
+         )) %>% 
+  unnest(sequence, surprise, learning_progress) %>%
+  unnest(learning_progress) %>% 
+  # figure out the corresponding trial number 
+  group_by(subject, block_number) %>% 
+  mutate(trial_number = row_number()) 
+```
+
+```{r}
+d_rt <- d %>% 
+  select(subject, block_number, trial_number, rt, item_type, trial_type, trial_complexity) %>% 
+  mutate(rt = rt + 500) %>%  # add the baseline back 
+  mutate(temp_id = paste(subject, block_number, trial_number)) %>% 
+  select(temp_id, rt, item_type, trial_type, trial_complexity)
+
+d_exp_sim <- d_exp_sim %>% 
+  mutate(temp_id = paste(subject, block_number, trial_number)) %>% 
+  left_join(d_rt, by = "temp_id")
+```
+
+now d_exp_sim has all the relevant info, let's plot them 
+```{r}
+ggplot(d_exp_sim, 
+       aes(x=trial_number, y=surprise, colour=item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  facet_wrap(~complexity) +
+  langcog::scale_color_solarized(name = "Item Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("surprise") + 
+  xlab("Trial Number") 
+```
+
+## debugging 
+
+
