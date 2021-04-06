@@ -411,9 +411,9 @@ var test_block = {
    console.log(timeline)
 
 
-VIDEO = ["images/stimuli/wall_1.mp4",
-                     "images/stimuli/wall_2.mp4",
-                    "images/stimuli/wall_3.mp4"]
+//VIDEO = ["images/stimuli/wall_1.mp4",
+                     //"images/stimuli/wall_2.mp4",
+                    //"images/stimuli/wall_3.mp4"]
 
 
 function saveData(name, data){
@@ -433,7 +433,6 @@ jsPsych.init({
         show_progress_bar: false,
         //use_webaudio: true, // this won't work for local testing (CORS), but maybe on server
         preload_images: all_stimuli,
-        preload_video: VIDEO,
         on_trial_finish: function(){
             saveData("test" + subject_id, jsPsych.data.get().csv());
             //jsPsych.data.displayData();
