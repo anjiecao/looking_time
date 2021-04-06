@@ -27,6 +27,7 @@
   <script src= "js/jspsych-demog-age.js"></script>
   <script src= "js/jspsych-demog-ethnic-US.js"></script>
   <script src= "js/jspsych-demog-gender-and-education.js"></script>
+ <script src = "js/jspsych-prolific-ID.js"></script>
   <link rel="stylesheet" href="css/jspsych.css"></link>
 </head>
 <body></body>
@@ -36,6 +37,8 @@
     var verbose = true
     var timenum = Date.now();
     var turkInfo = jsPsych.turk.turkInfo();
+    var Prolific = true
+    var prolific_code = "??????"
 
     // if we're not on MTurk, create a timestamp-based subject number; otherwise use turker ID
     var subject_id = 'SS' + timenum;
@@ -373,14 +376,31 @@ var test_block = {
 
 
   // mTurk
-    var survey_code_page = {
-     type: "instructions",
-     pages:[
-         "Your survey code is<p><b>"+ survey_code + "</b></p><p>Please make sure you save this somewhere safe. You will need to enter this code into mturk to be paid.</p>"
-     ],
-     show_clickable_nav: false
+    
+    
+    if (Prolific){
+        
+        var survey_code_page = {
+         type: "instructions",
+         pages:[
+             "Your survey code is<p><b>"+ prolific_code + "</b></p><p>Please make sure you save this somewhere safe. You will need to enter this code into Prolific to be paid.</p>"
+         ],
+         show_clickable_nav: false
 
- }
+        } 
+        
+        
+    }else{
+        var survey_code_page = {
+         type: "instructions",
+         pages:[
+             "Your survey code is<p><b>"+ survey_code + "</b></p><p>Please make sure you save this somewhere safe. You will need to enter this code into mturk to be paid.</p>"
+         ],
+         show_clickable_nav: false
+
+        } 
+    
+    }
 
  timeline.push(survey_code_page)
 
