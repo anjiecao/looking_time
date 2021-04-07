@@ -147,7 +147,7 @@ var intro0 = {
         timeline.push(intro3)
         timeline.push(intro4)
         timeline.push(intro5)
-        timeline.push(intro6)
+        //timeline.push(intro6)
         timeline.push(intro7)
 
 

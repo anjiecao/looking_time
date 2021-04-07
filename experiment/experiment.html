@@ -46,7 +46,7 @@
     jsPsych.data.addProperties({ subject: subject_id });
 
 // Stimuli setup
-TEST_RUN = 1//test run with smaller number of species etc.
+TEST_RUN = 0//test run with smaller number of species etc.
 
 if (TEST_RUN == 1) {
   SHOW_INTRO = false
@@ -364,7 +364,7 @@ var test_block = {
    var feedback = {
      type: 'survey-text',
      questions: [
-       {prompt: "That's it! If you have any other final comments, feedback or questions please mention them below!", placeholder: "Any bugs? Was it fun? Anything else!"},
+       {prompt: "One last thing! Did you encounter any issue with the experiment? Was the animation laggy? Any other comments you’d like to share with us?", placeholder: "", required: true},
      ],
      data: {stimulus_type: 'feedback'},
    };
