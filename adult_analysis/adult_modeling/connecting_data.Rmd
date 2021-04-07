@@ -54,8 +54,8 @@ d_exp_sim <- d_experiment_parameter %>%
     
     sequence = pmap(d_experiment_parameter %>% select(-c(subject, block_number)), .f = ~with(list(...), 
                                              get_block_sequence(complexity, similarity, 
-                                                                200, 
-                                                                10, 50, 
+                                                                20, 
+                                                                5, 10, 
                                                                 0.2, 0.8, 
                                                                 block_length, 
                                                                 dev_positions)))
@@ -78,32 +78,185 @@ d_exp_sim <- d_experiment_parameter %>%
   mutate(trial_number = row_number()) 
 ```
 
+
+
+
 ```{r}
 d_rt <- d %>% 
   select(subject, block_number, trial_number, rt, item_type, trial_type, trial_complexity) %>% 
   mutate(rt = rt + 500) %>%  # add the baseline back 
   mutate(temp_id = paste(subject, block_number, trial_number)) %>% 
+  #rename(real_trial_number = trial_number) %>% 
   select(temp_id, rt, item_type, trial_type, trial_complexity)
 
 d_exp_sim <- d_exp_sim %>% 
   mutate(temp_id = paste(subject, block_number, trial_number)) %>% 
-  left_join(d_rt, by = "temp_id")
+  left_join(d_rt, by = "temp_id") 
+
+
 ```
 
 now d_exp_sim has all the relevant info, let's plot them 
 ```{r}
 ggplot(d_exp_sim, 
-       aes(x=trial_number, y=surprise, colour=item_type)) + 
+       aes(x= trial_number, y=log(rt), colour=item_type)) + 
   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
   geom_smooth(method = "lm", 
               formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
-  facet_wrap(~complexity) +
+  facet_wrap(~trial_complexity) +
   langcog::scale_color_solarized(name = "Item Type") + 
   theme(legend.position = "bottom") + 
   ylab("surprise") + 
   xlab("Trial Number") 
+
+# just double check if the plot is right 
+
+ggplot(d %>% mutate(rt = 500 +as.numeric(rt)), 
+       aes(x=trial_number, y=log(rt), colour=item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  facet_wrap(~trial_complexity) +
+  langcog::scale_color_solarized(name = "Item Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("surprise") + 
+  xlab("Trial Number") 
+
+# oh well, what i thought was a bug was not a bug after all. adding 500 did change the plot a little bit. rip my morning. 
 ```
 
-## debugging 
+```{r}
+d_exp_sim %>% 
+  pivot_longer(cols = c(surprise, learning_progress, rt), 
+               names_to = "measure_type", 
+               values_to = "measure_value") %>% 
+  filter(measure_type == "surprise") %>% 
+  ggplot(
+       aes(x=trial_number, y=measure_value, colour=item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  facet_grid(~trial_complexity) +
+  langcog::scale_color_solarized(name = "Item Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("surprise") + 
+  xlab("Trial Number") 
+
+
+d_exp_sim %>% 
+  pivot_longer(cols = c(surprise, learning_progress, rt), 
+               names_to = "measure_type", 
+               values_to = "measure_value") %>% 
+  filter(measure_type == "learning_progress") %>% 
+  ggplot(
+       aes(x=trial_number, y=measure_value, colour=item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  facet_grid(~trial_complexity) +
+  langcog::scale_color_solarized(name = "Item Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("learning_progress") + 
+  xlab("Trial Number") 
+
+
+d_exp_sim %>% 
+  pivot_longer(cols = c(surprise, learning_progress, rt), 
+               names_to = "measure_type", 
+               values_to = "measure_value") %>% 
+  filter(measure_type == "rt") %>% 
+  ggplot(
+       aes(x=trial_number, y=log(measure_value), colour=item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  facet_grid(~trial_complexity) +
+  langcog::scale_color_solarized(name = "Item Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("rt") + 
+  xlab("Trial Number") 
+  
+```
+
+
+# explore correlation 
+
+```{r}
+d_cor <- d_exp_sim %>% 
+  select(subject, block_number, trial_number, 
+         trial_type, trial_complexity, item_type,
+         surprise, learning_progress, rt) 
+```
+
+## surprise and rt 
+```{r}
+
+d_cor %>% 
+  ggplot(aes(x = surprise, y = log(rt))) + 
+  geom_jitter(height = .1, alpha = .1) + 
+  geom_smooth()
+  
+d_cor %>% 
+  ggplot(aes(x = surprise, y = log(rt), color = trial_number)) + 
+  geom_jitter(height = .1, alpha = .1) + 
+  geom_smooth()
+
+d_cor %>% 
+  ggplot(aes(x = surprise, y = log(rt), color = trial_complexity)) + 
+  geom_jitter(height = .1, alpha = .1) + 
+  geom_smooth()
+
+d_cor %>% 
+  ggplot(aes(x = surprise, y = log(rt), color = item_type)) + 
+  geom_jitter(height = .1, alpha = .1) + 
+  geom_smooth()
+```
+
+## learning progress and rt 
+```{r}
+
+d_cor %>% 
+  ggplot(aes(x = learning_progress, y = log(rt))) + 
+  geom_jitter(height = .1, alpha = .1) + 
+  geom_smooth()
+  
+d_cor %>% 
+  ggplot(aes(x = learning_progress, y = log(rt), color = trial_number)) + 
+  geom_jitter(height = .1, alpha = .1) + 
+  geom_smooth()
+
+d_cor %>% 
+  ggplot(aes(x = learning_progress, y = log(rt), color = trial_complexity)) + 
+  geom_jitter(height = .1, alpha = .1) + 
+  geom_smooth()
+
+d_cor %>% 
+  ggplot(aes(x = learning_progress, y = log(rt), color = item_type)) + 
+  geom_jitter(height = .1, alpha = .1) + 
+  geom_smooth()
+```
+
+## omg why is it so flat learning progress and surprise? 
+```{r}
+d_cor %>% 
+  ggplot(aes(x = learning_progress, y = surprise)) + 
+  geom_jitter(height = .1, alpha = .1) + 
+  geom_smooth()
+  
+d_cor %>% 
+  ggplot(aes(x = learning_progress, y = surprise, color = trial_number)) + 
+  geom_jitter(height = .1, alpha = .1) + 
+  geom_smooth()
+
+d_cor %>% 
+  ggplot(aes(x = learning_progress, y = surprise, color = trial_complexity)) + 
+  geom_jitter(height = .1, alpha = .1) + 
+  geom_smooth()
+
+d_cor %>% 
+  ggplot(aes(x = learning_progress, y = surprise, color = item_type)) + 
+  geom_jitter(height = .1, alpha = .1) + 
+  geom_smooth()
+```
 
 
