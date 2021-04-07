@@ -1,0 +1,423 @@
+---
+title: "connecting_data_model"
+author: "anjie"
+date: "4/6/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(here)
+library(tidyverse)
+```
+
+# process the original data 
+```{r}
+d <- read_csv(here("adult_modeling/data/processed_RTdata.csv"))
+
+
+```
+## recover the block sequence 
+```{r}
+
+d_block_length <- d %>% 
+  mutate(temp_id = paste(subject, block_number)) %>% 
+  group_by(temp_id) %>% 
+  count() %>% 
+  rename(block_length = n)
+
+d_experiment_parameter <- d %>% 
+  rowwise() %>% 
+  mutate(
+    temp_id = paste(subject, block_number), 
+    dev_positions = case_when(
+    !is.na(first_dev_position) && !is.na(second_dev_position) ~ map2(first_dev_position, second_dev_position, c), 
+    is.na(first_dev_position) && !is.na(second_dev_position) ~ list(second_dev_position), 
+    !is.na(first_dev_position) && is.na(second_dev_position) ~ list(first_dev_position),
+    TRUE ~ list(NA)
+    )) %>% 
+  left_join(d_block_length, by = "temp_id") %>% 
+  select(-temp_id) %>% 
+  separate(block_type, into = c("complexity", "similarity"), sep = "_") %>% 
+  select(subject, block_number, complexity, similarity, block_length, dev_positions) %>% 
+  distinct(subject, block_number, .keep_all = TRUE)
+  
+
+d_experiment_parameter
+```
+
+recover the experiment sequence 
+```{r}
+d_exp_sim <- d_experiment_parameter %>% 
+  # the block length doesn't match 
+  mutate(
+    
+    sequence = pmap(d_experiment_parameter %>% select(-c(subject, block_number)), .f = ~with(list(...), 
+                                             get_block_sequence(complexity, similarity, 
+                                                                20, 
+                                                                5, 10, 
+                                                                0.2, 0.8, 
+                                                                block_length, 
+                                                                dev_positions)))
+  ) %>% 
+   mutate(beta = map(.x = sequence, 
+                    .f = get_beta_count), 
+         probability = map(.x = beta, 
+                           .f = get_probability), 
+         surprise = map2(.x = probability, 
+                         .y = sequence, 
+                         .f = get_surprise), 
+         learning_progress = map(
+           .x = probability, 
+           .f = get_learning_progress
+         )) %>% 
+  unnest(sequence, surprise, learning_progress) %>%
+  unnest(learning_progress) %>% 
+  # figure out the corresponding trial number 
+  group_by(subject, block_number) %>% 
+  mutate(trial_number = row_number()) 
+```
+
+
+
+
+```{r}
+d_rt <- d %>% 
+  select(subject, block_number, trial_number, rt, item_type, trial_type, trial_complexity) %>% 
+  mutate(rt = rt + 500) %>%  # add the baseline back 
+  mutate(temp_id = paste(subject, block_number, trial_number)) %>% 
+  #rename(real_trial_number = trial_number) %>% 
+  select(temp_id, rt, item_type, trial_type, trial_complexity)
+
+d_exp_sim <- d_exp_sim %>% 
+  mutate(temp_id = paste(subject, block_number, trial_number)) %>% 
+  left_join(d_rt, by = "temp_id") 
+
+
+```
+
+now d_exp_sim has all the relevant info, let's plot them 
+```{r}
+ggplot(d_exp_sim, 
+       aes(x= trial_number, y=log(rt), colour=item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  facet_wrap(~trial_complexity) +
+  langcog::scale_color_solarized(name = "Item Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("surprise") + 
+  xlab("Trial Number") 
+
+# just double check if the plot is right 
+
+ggplot(d %>% mutate(rt = 500 +as.numeric(rt)), 
+       aes(x=trial_number, y=log(rt), colour=item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  facet_wrap(~trial_complexity) +
+  langcog::scale_color_solarized(name = "Item Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("surprise") + 
+  xlab("Trial Number") 
+
+# oh well, what i thought was a bug was not a bug after all. adding 500 did change the plot a little bit. rip my morning. 
+```
+
+```{r}
+d_exp_sim %>% 
+  pivot_longer(cols = c(surprise, learning_progress, rt), 
+               names_to = "measure_type", 
+               values_to = "measure_value") %>% 
+  filter(measure_type == "surprise") %>% 
+  ggplot(
+       aes(x=trial_number, y=measure_value, colour=item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  facet_grid(~trial_complexity) +
+  langcog::scale_color_solarized(name = "Item Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("surprise") + 
+  xlab("Trial Number") 
+
+
+d_exp_sim %>% 
+  pivot_longer(cols = c(surprise, learning_progress, rt), 
+               names_to = "measure_type", 
+               values_to = "measure_value") %>% 
+  filter(measure_type == "learning_progress") %>% 
+  ggplot(
+       aes(x=trial_number, y=measure_value, colour=item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  facet_grid(~trial_complexity) +
+  langcog::scale_color_solarized(name = "Item Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("learning_progress") + 
+  xlab("Trial Number") 
+
+
+d_exp_sim %>% 
+  pivot_longer(cols = c(surprise, learning_progress, rt), 
+               names_to = "measure_type", 
+               values_to = "measure_value") %>% 
+  filter(measure_type == "rt") %>% 
+  ggplot(
+       aes(x=trial_number, y=log(measure_value), colour=item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  facet_grid(~trial_complexity) +
+  langcog::scale_color_solarized(name = "Item Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("rt") + 
+  xlab("Trial Number") 
+  
+```
+
+
+# explore correlation 
+
+```{r}
+d_cor <- d_exp_sim %>% 
+  select(subject, block_number, trial_number, 
+         trial_type, trial_complexity, item_type,
+         surprise, learning_progress, rt) %>% 
+  mutate(log_rt = log(rt))
+```
+
+## surprise and rt 
+```{r}
+
+d_cor %>% 
+  ggplot(aes(x = surprise, y = log(rt))) + 
+  geom_jitter(height = .1, alpha = .1) + 
+  geom_smooth()
+  
+d_cor %>% 
+  ggplot(aes(x = surprise, y = log(rt), color = trial_number)) + 
+  geom_jitter(height = .1, alpha = .1) + 
+  geom_smooth()
+
+d_cor %>% 
+  ggplot(aes(x = surprise, y = log(rt), color = trial_complexity)) + 
+  geom_jitter(height = .1, alpha = .1) + 
+  geom_smooth()
+
+d_cor %>% 
+  ggplot(aes(x = surprise, y = log(rt), color = item_type)) + 
+  geom_jitter(height = .1, alpha = .1) + 
+  geom_smooth()
+```
+
+## learning progress and rt 
+```{r}
+
+d_cor %>% 
+  ggplot(aes(x = learning_progress, y = log(rt))) + 
+  geom_jitter(height = .1, alpha = .1) + 
+  geom_smooth()
+  
+d_cor %>% 
+  ggplot(aes(x = learning_progress, y = log(rt), color = trial_number)) + 
+  geom_jitter(height = .1, alpha = .1) + 
+  geom_smooth()
+
+d_cor %>% 
+  ggplot(aes(x = learning_progress, y = log(rt), color = trial_complexity)) + 
+  geom_jitter(height = .1, alpha = .1) + 
+  geom_smooth()
+
+d_cor %>% 
+  ggplot(aes(x = learning_progress, y = log(rt), color = item_type)) + 
+  geom_jitter(height = .1, alpha = .1) + 
+  geom_smooth()
+```
+
+## omg why is it so flat learning progress and surprise? 
+```{r}
+d_cor %>% 
+  ggplot(aes(x = learning_progress, y = surprise)) + 
+  geom_jitter(height = .1, alpha = .1) + 
+  geom_smooth()
+  
+d_cor %>% 
+  ggplot(aes(x = learning_progress, y = surprise, color = trial_number)) + 
+  geom_jitter(height = .1, alpha = .1) + 
+  geom_smooth()
+
+d_cor %>% 
+  ggplot(aes(x = learning_progress, y = surprise, color = trial_complexity)) + 
+  geom_jitter(height = .1, alpha = .1) + 
+  geom_smooth()
+
+d_cor %>% 
+  ggplot(aes(x = learning_progress, y = surprise, color = item_type)) + 
+  geom_jitter(height = .1, alpha = .1) + 
+  geom_smooth()
+```
+
+
+# Calculate RMSE and Pearson 
+```{r}
+library(Metrics)
+rmse(d_cor$log_rt, d_cor$learning_progress)
+cor(x = d_cor$log_rt, y = d_cor$learning_progress, method = "pearson")
+rmse(d_cor$log_rt, d_cor$surprise)
+cor(x = d_cor$log_rt, y = d_cor$surprise, method = "pearson")
+```
+
+## now try a bunch of parameters 
+```{r}
+run_one_simulation <- function(d,
+                               d_rt, 
+                               total_feature_n, 
+                               complex_feature_n, 
+                               simple_feature_n, 
+                               similar_ratio, 
+                               dissimilar_ratio, 
+                               prior) {
+  
+  
+  get_beta_count <- function(block, feature_prior = prior){
+    prior <- replicate(length(block[[1]]), feature_prior, simplify = FALSE)
+    
+    beta_count <- list()
+    beta_count[[1]] <- prior 
+    for (trial in 1:length(block)){
+      beta_count[[trial+1]] <- mapply(function(x, y) {
+           x[y + 1] <- x[y + 1] + 1
+           return(list(x))
+         },
+         beta_count[[trial]], 
+         block[[trial]])
+    }
+  
+      return(beta_count)
+
+  }
+  
+  
+  d_exp_sim <- d %>% 
+  # the block length doesn't match 
+  mutate(
+    
+    sequence = pmap(d_experiment_parameter %>% select(-c(subject, block_number)), .f = ~with(list(...), 
+                                             get_block_sequence(complexity, similarity, 
+                                                                total_feature_n, 
+                                                                simple_feature_n, 
+                                                                complex_feature_n, 
+                                                                similar_ratio, 
+                                                                dissimilar_ratio, 
+                                                                block_length, 
+                                                                dev_positions)))
+  ) %>% 
+   mutate(beta = map(.x = sequence, 
+                    .f = get_beta_count), 
+         probability = map(.x = beta, 
+                           .f = get_probability), 
+         surprise = map2(.x = probability, 
+                         .y = sequence, 
+                         .f = get_surprise), 
+         learning_progress = map(
+           .x = probability, 
+           .f = get_learning_progress
+         )) %>% 
+  unnest(sequence, surprise, learning_progress) %>%
+  unnest(learning_progress) %>% 
+  # figure out the corresponding trial number 
+  group_by(subject, block_number) %>% 
+  mutate(trial_number = row_number(), 
+         prior = list(prior), 
+         similar_ratio = similar_ratio, 
+         dissimilar_ratio = dissimilar_ratio) 
+
+  d_rt <- d_rt %>% 
+  select(subject, block_number, trial_number, rt, item_type, trial_type, trial_complexity) %>% 
+  mutate(rt = rt + 500) %>%  # add the baseline back 
+  mutate(temp_id = paste(subject, block_number, trial_number)) %>% 
+  #rename(real_trial_number = trial_number) %>% 
+  select(temp_id, rt, item_type, trial_type, trial_complexity)
+
+  d_exp_sim <- d_exp_sim %>% 
+   mutate(temp_id = paste(subject, block_number, trial_number)) %>% 
+    left_join(d_rt, by = "temp_id") 
+  
+  
+  return(d_exp_sim)
+  
+  
+}
+
+test <- run_one_simulation(d_experiment_parameter, 
+                           d,
+                   200, 
+                   100, 
+                   50, 
+                   0.2, 
+                   0.6, 
+                   c(2,5))
+
+```
+
+```{r}
+
+calculate_correlation <- function(df){
+  
+  d <- df %>% 
+    mutate(log_rt = log(rt))
+  
+  lp_rmse <- rmse(d$log_rt, d$learning_progress)
+  s_rmse <- rmse(d$log_rt, d$surprise)
+  
+  lp_pearson <- cor(x = d_cor$log_rt, y = d_cor$learning_progress, 
+                    method = "pearson")
+  s_pearson <- cor(x = d_cor$log_rt, y = d_cor$surprise, 
+                    method = "pearson")
+
+  d_result <- d %>% 
+    ungroup() %>% 
+    distinct(prior, similar_ratio, dissimilar_ratio) %>% 
+    mutate(
+      lp_rmse = lp_rmse, 
+      s_rmse = s_rmse, 
+      lp_pearson = lp_pearson, 
+      s_pearson = s_pearson)
+    # ) %>% 
+    # pivot_longer(
+    #   lp_rmse:s_rmse, 
+    #   names_to = "rmse_type", 
+    #   values_to = "rmse_value"
+    # ) %>% 
+    # pivot_longer(
+    #   lp_pearson:s_pearson, 
+    #   names_to = "pearson_type", 
+    #   values_to = "pearson_value"
+    # )
+  
+  return (d_result)
+}
+
+calculate_correlation(test)
+```
+
+## varying prior? 
+```{r}
+pos <- as.list(seq(1,5, 1))
+neg <- as.list(seq(1, 5, 1))
+
+#pos <- seq(1,10, 1)
+#neg <- seq(1, 10, 1)
+
+prior_df <- expand.grid(pos, neg)
+
+ 
+prior_list <- lapply(apply(prior_df, 1, identity), unlist)
+
+
+```
+
+
