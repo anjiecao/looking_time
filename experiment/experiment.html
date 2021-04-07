@@ -43,7 +43,7 @@
     jsPsych.data.addProperties({ subject: subject_id });
 
 // Stimuli setup
-TEST_RUN = 0//test run with smaller number of species etc.
+TEST_RUN = 1//test run with smaller number of species etc.
 
 if (TEST_RUN == 1) {
   SHOW_INTRO = false
@@ -195,8 +195,6 @@ var test_block = {
 
                           red_frame_animation: function(){
                                 var html =  '<p><img src= images/blank.png width ="600" height = "600" style="position:fixed;top:50%; left:50%; transform: translate(-50%, -50%); border:5px solid red">'
-                                //var html = "<video width ='960' height = '540' autoplay muted><source src=" + jsPsych.timelineVariable('wall_animation', true) + ' type="video/mp4"></video>'
-                                //var html = "<img src= "+ "images/stimuli/pokeball_1.gif" +" width ='800' height = '200'></p>"
                                 return html;
                             },
 
@@ -261,10 +259,22 @@ var test_block = {
          timeline.push(timer_break)
      }
 
+
+        var lag_question = {
+            type: 'survey-likert',
+            questions: [
+              {prompt: '<p> Nice job! You are doing great. Quick question: Was there any lag in the animations (after the instruction section)? </p>',
+              labels: ["None", "A bit", "A lot", "Creatures didn't move or show up"], required: true}
+            ],
+            data: {stimulus_type: 'lag_question_end'}
+          }
+
+       timeline.push(lag_question)
+
      var similarity_instructions = {
          type: "instructions",
          pages: [
-             "<p>You are almost done! </p><p>In this section, you will be asked to judge the similarity between two creatures you saw.</p>" +
+             "<p> In this section, you will be asked to judge the similarity between two creatures you saw.</p>" +
              "<p>There is no right or wrong answer, so feel free to judge the similarity based on your intuition.</p>"
          ],
          data: {stimulus_type: 'instructions'},
@@ -334,7 +344,6 @@ var test_block = {
    timeline.push(complexity_instruction)
    timeline = timeline.concat(complexity_stims)
 
-
   var pre_demog_instruction = {
         type: "instructions",
         pages: [
@@ -352,7 +361,7 @@ var test_block = {
    var feedback = {
      type: 'survey-text',
      questions: [
-       {prompt: "That's it! If you have any final comments, feedback or questions please mention them below!", placeholder: "Any bugs? Was it fun? Anything else!"},
+       {prompt: "That's it! If you have any other final comments, feedback or questions please mention them below!", placeholder: "Any bugs? Was it fun? Anything else!"},
      ],
      data: {stimulus_type: 'feedback'},
    };
@@ -363,7 +372,7 @@ var test_block = {
    var thank_you = {
        type: "instructions",
        pages: [
-           "<p>That's it! Thank you so much for participating in our study! Pleas go to next page for your payment information. </p>"
+           "<p>Thank you so much for participating in our study! Pleas go to next page for your payment information. </p>"
        ],
        data: {stimulus_type: 'instructions'},
        show_clickable_nav: true

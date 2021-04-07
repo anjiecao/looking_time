@@ -385,14 +385,12 @@ function generate_similar_block(stims, num_blocks, num_trial_per_block, all_devi
 
     offset_array = [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
 
-    offset1 = getRandomSubarray(offset_array, 1)
+    shuffleArray(offset_array)
 
-    const index = offset_array.indexOf(offset1);
-      if (index > -1) {
-        offset_array.splice(index, 1);
-      }
+    // pop off to make sure offset2 is different from offset1
+    offset1 = offset_array.pop()
 
-    offset2 = getRandomSubarray(offset_array, 1)
+    offset2 = offset_array.pop()
 
     var option1 = parseFloat(result) + parseFloat(offset1)
 
@@ -506,14 +504,17 @@ function generate_dissimilar_block(stims, num_blocks, num_trial_per_block, all_d
 
     offset_array = [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
 
-    offset1 = getRandomSubarray(offset_array, 1)
+    shuffleArray(offset_array)
 
-    const index = offset_array.indexOf(offset1);
-      if (index > -1) {
-        offset_array.splice(index, 1);
-      }
+    // pop off to make sure offset2 is different from offset1
+    offset1 = offset_array.pop()
 
-    offset2 = getRandomSubarray(offset_array, 1)
+    offset2 = offset_array.pop()
+
+    console.log('offset1:')
+    console.log(offset1)
+    console.log('offset2:')
+    console.log(offset2)
 
     var option1 = parseFloat(result) + parseFloat(offset1)
 

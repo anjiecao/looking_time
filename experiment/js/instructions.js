@@ -116,10 +116,21 @@ var intro0 = {
                 show_clickable_nav: true}
 
         var intro6 = {
+            type: 'survey-likert',
+            questions: [
+              {prompt: '<p> Quick question before we proceed: Was there any lag in the animations? </p>',
+              labels: ["None", "A bit", "A lot", "Creatures didn't move or show up"], required: true}
+            ],
+            data: {stimulus_type: "lag_question_intro"}
+          }
+
+        var intro7 = {
             type: "instructions",
-        pages: [            "<p> After some trials, you will be asked a <b> simple math question </b> before moving to the next frame, in which new creatures will appear! </p>" +
-                            "<p> That means, new creatures will appear, you can again look at them for as long as you like, </p>" +
-                            "<p> and move to the next trial by pressing the down arrow. </p>",
+        pages: [             "<p> If you did experience significant lag in the preceding animations, it will probably get better once we start the actual experiment. </p>" +
+                            "<p> If the lagginess persists however, we would really appreciate if you could let us know in the feedback section at the end of the experiment. </p>",
+                            "<p> Final point about the experiment:</p> <p>  Every couple of trials, you will see a <b> simple math question</b>. This is just to check that you're engaged. </p>" +
+                            "<p> Then you will see a new set of creatures to look at for as long as you like, </p>" +
+                            "<p> and you can still move between creatures by pressing the down arrow. </p>",
                             "<p> We hope you enjoy our baby stimuli! </p>" +
                             "<p> The task should take no longer than 6 minutes, </p>" +
                             "<p> after which we will ask you some questions about the stimuli for 2-3 minutes, </p>" +
@@ -137,6 +148,7 @@ var intro0 = {
         timeline.push(intro4)
         timeline.push(intro5)
         timeline.push(intro6)
+        timeline.push(intro7)
 
 
 return timeline
