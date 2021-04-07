@@ -162,7 +162,6 @@ SS1617819306516,8,simple_dissimilar,3,dissimilar deviant,deviant,simple,simple_0
 SS1617819306516,8,simple_dissimilar,4,background,background,simple,simple_10_A,311.0999999989872,second half,2,background,2,3
 SS1617819306516,8,simple_dissimilar,5,background,background,simple,simple_10_A,155.51000000047497,second half,2,background,2,3
 SS1617819306516,8,simple_dissimilar,6,background,background,simple,simple_10_A,268.0350000009639,second half,2,background,2,3
-SS1617819306516,9,simple_dissimilar,1,background,background,simple,simple_16_A,92935.30000000104,second half,2,background,3,4
 SS1617819306516,9,simple_dissimilar,2,background,background,simple,simple_16_A,214.07999999797903,second half,2,background,3,4
 SS1617819306516,9,simple_dissimilar,3,dissimilar deviant,deviant,simple,simple_05_A,289.72000000067055,second half,2,first_deviant,3,4
 SS1617819306516,9,simple_dissimilar,4,dissimilar deviant,deviant,simple,simple_05_A,339.41499999852385,second half,2,second_deviant,3,4
@@ -311,7 +310,6 @@ SS1617819409100,0,complex_dissimilar,3,background,background,complex,complex_09_
 SS1617819409100,0,complex_dissimilar,4,background,background,complex,complex_09_A,434.9249999995809,first half,1,background,5,NA
 SS1617819409100,0,complex_dissimilar,5,dissimilar deviant,deviant,complex,complex_18_A,1272.580000000773,first half,1,first_deviant,5,NA
 SS1617819409100,1,simple_dissimilar,1,background,background,simple,simple_07_A,3079.0799999994924,first half,0,background,NA,NA
-SS1617819409100,1,simple_dissimilar,2,background,background,simple,simple_07_A,20.42999999865424,first half,0,background,NA,NA
 SS1617819409100,1,simple_dissimilar,3,background,background,simple,simple_07_A,1257.144999999553,first half,0,background,NA,NA
 SS1617819409100,1,simple_dissimilar,4,background,background,simple,simple_07_A,413.9799999992829,first half,0,background,NA,NA
 SS1617819409100,2,simple_dissimilar,1,background,background,simple,simple_03_A,359.67999999958556,first half,2,background,4,6

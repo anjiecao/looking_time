@@ -1,0 +1,170 @@
+---
+title: 'compare new pilot with old data'
+author: ""
+date: "4/7/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+library(jsonlite) 
+```
+
+# read data 
+
+```{r cars}
+new <- read_csv(here('data/processed_data/trimmed_RTdata.csv')) %>% 
+  mutate(version = "new")
+old <- read_csv(here('data/processed_data/sample_1/trimmed_RTdata.csv')) %>% 
+  mutate(version = "old")
+
+d <- bind_rows(new, old)
+```
+
+# density 
+
+
+```{r}
+d %>% 
+   ggplot(aes(x = rt, fill = version)) + 
+  geom_density(alpha = .3) + 
+  scale_x_log10() + 
+  facet_wrap(~block_type)
+
+```
+
+```{r}
+d %>% 
+   ggplot(aes(x = rt, fill = version)) + 
+  geom_density(alpha = .3) + 
+  scale_x_log10() + 
+  facet_wrap(~item_type)
+```
+
+should we worry about the bimodal distribution? let's look at the subject-level breakdown
+```{r}
+d %>% 
+  filter(version == "new") %>% 
+   ggplot(aes(x = rt)) + 
+  geom_density(alpha = .3) + 
+  scale_x_log10() + 
+  facet_wrap(~subject)
+```
+
+something funky is going on with SS1617819916752, what does it look like after excluding them? 
+```{r}
+d %>% 
+  filter(subject != "SS1617819916752") %>% 
+   ggplot(aes(x = rt, fill = version)) + 
+  geom_density(alpha = .3) + 
+  scale_x_log10() + 
+  facet_wrap(~block_type)
+
+```
+
+
+```{r}
+d %>% 
+  filter(subject != "SS1617819916752") %>% 
+   ggplot(aes(x = rt, fill = version)) + 
+  geom_density(alpha = .3) + 
+  scale_x_log10() + 
+  facet_wrap(~trial_complexity)
+```
+
+weird distribution! 
+
+reasonable for individual participant though
+```{r}
+d %>% 
+  filter(version == "new") %>% 
+  #filter(subject != "SS1617819916752") %>% 
+   ggplot(aes(x = rt, fill = trial_complexity)) + 
+  geom_density(alpha = .3) + 
+  scale_x_log10() + 
+  facet_wrap(~subject)
+```
+
+
+
+
+
+# change across trials
+
+```{r}
+ggplot(d, 
+       aes(x=trial_number, y=log(rt), colour=item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  facet_grid(version~trial_complexity) +
+  langcog::scale_color_solarized(name = "Item Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("log RT (ms)") + 
+  xlab("Trial Number") 
+```
+
+```{r}
+ggplot(d %>% filter(version == "new"), 
+       aes(x=trial_number, y=log(rt), colour=item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  facet_wrap(~subject) +
+  langcog::scale_color_solarized(name = "Item Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("log RT (ms)") + 
+  xlab("Trial Number") 
+```
+
+16752 is probably a keyboard smasher. need to find a way to exlcude them
+
+
+
+
+# change across blocks
+
+```{r}
+ggplot(d, 
+       aes(x=block_number, y=log(rt), colour=trial_complexity)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  facet_wrap(~version) +
+  langcog::scale_color_solarized(name = "Item Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("log RT (ms)") + 
+  xlab("Block Number") 
+```
+
+```{r}
+ggplot(d %>% filter(version == "new"), 
+       aes(x=block_number, y=log(rt), colour=trial_complexity)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  facet_wrap(~subject) +
+  langcog::scale_color_solarized(name = "Item Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("log RT (ms)") + 
+  xlab("Block Number") 
+```
+
+
+
+```{r}
+feedback <- read_csv(here('data/merged_data/merged_data.csv')) %>% 
+  filter(stimulus_type == "feedback") %>% 
+  select(subject, responses) %>% 
+  toJSON() %>% 
+  fromJSON() %>% 
+    mutate(
+      feedback = map(responses, ~ fromJSON(.) %>% as.data.frame())) %>% 
+    unnest(feedback) %>% 
+  select(subject, Q0)
+
+feedback %>% kableExtra::kable()
+```
+
