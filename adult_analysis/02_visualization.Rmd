@@ -27,6 +27,24 @@ complexity_data <- read_csv(here('data/processed_data/trimmed_complexitydata.csv
 demog_data <- read_csv(here('data/processed_data/trimmed_demogdata.csv'))
 ```
 
+# look at the verbal feedback
+```{r}
+feedback <- read_csv(here('data/merged_data/sample_1/merged_data.csv')) %>% 
+  filter(stimulus_type == "feedback") %>% 
+  select(subject, responses) %>% 
+  toJSON() %>% 
+  fromJSON() %>% 
+    mutate(
+      feedback = map(responses, ~ fromJSON(.) %>% as.data.frame())) %>% 
+    unnest(feedback) %>% 
+  select(subject, Q0) 
+
+write_csv(feedback, here("data/merged_data/sample_1/feedback.csv"))
+
+```
+
+
+
 # Descriptive Info 
 
 N = 402
