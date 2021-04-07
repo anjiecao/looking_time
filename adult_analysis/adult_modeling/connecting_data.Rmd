@@ -185,7 +185,8 @@ d_exp_sim %>%
 d_cor <- d_exp_sim %>% 
   select(subject, block_number, trial_number, 
          trial_type, trial_complexity, item_type,
-         surprise, learning_progress, rt) 
+         surprise, learning_progress, rt) %>% 
+  mutate(log_rt = log(rt))
 ```
 
 ## surprise and rt 
@@ -257,6 +258,166 @@ d_cor %>%
   ggplot(aes(x = learning_progress, y = surprise, color = item_type)) + 
   geom_jitter(height = .1, alpha = .1) + 
   geom_smooth()
+```
+
+
+# Calculate RMSE and Pearson 
+```{r}
+library(Metrics)
+rmse(d_cor$log_rt, d_cor$learning_progress)
+cor(x = d_cor$log_rt, y = d_cor$learning_progress, method = "pearson")
+rmse(d_cor$log_rt, d_cor$surprise)
+cor(x = d_cor$log_rt, y = d_cor$surprise, method = "pearson")
+```
+
+## now try a bunch of parameters 
+```{r}
+run_one_simulation <- function(d,
+                               d_rt, 
+                               total_feature_n, 
+                               complex_feature_n, 
+                               simple_feature_n, 
+                               similar_ratio, 
+                               dissimilar_ratio, 
+                               prior) {
+  
+  
+  get_beta_count <- function(block, feature_prior = prior){
+    prior <- replicate(length(block[[1]]), feature_prior, simplify = FALSE)
+    
+    beta_count <- list()
+    beta_count[[1]] <- prior 
+    for (trial in 1:length(block)){
+      beta_count[[trial+1]] <- mapply(function(x, y) {
+           x[y + 1] <- x[y + 1] + 1
+           return(list(x))
+         },
+         beta_count[[trial]], 
+         block[[trial]])
+    }
+  
+      return(beta_count)
+
+  }
+  
+  
+  d_exp_sim <- d %>% 
+  # the block length doesn't match 
+  mutate(
+    
+    sequence = pmap(d_experiment_parameter %>% select(-c(subject, block_number)), .f = ~with(list(...), 
+                                             get_block_sequence(complexity, similarity, 
+                                                                total_feature_n, 
+                                                                simple_feature_n, 
+                                                                complex_feature_n, 
+                                                                similar_ratio, 
+                                                                dissimilar_ratio, 
+                                                                block_length, 
+                                                                dev_positions)))
+  ) %>% 
+   mutate(beta = map(.x = sequence, 
+                    .f = get_beta_count), 
+         probability = map(.x = beta, 
+                           .f = get_probability), 
+         surprise = map2(.x = probability, 
+                         .y = sequence, 
+                         .f = get_surprise), 
+         learning_progress = map(
+           .x = probability, 
+           .f = get_learning_progress
+         )) %>% 
+  unnest(sequence, surprise, learning_progress) %>%
+  unnest(learning_progress) %>% 
+  # figure out the corresponding trial number 
+  group_by(subject, block_number) %>% 
+  mutate(trial_number = row_number(), 
+         prior = list(prior), 
+         similar_ratio = similar_ratio, 
+         dissimilar_ratio = dissimilar_ratio) 
+
+  d_rt <- d_rt %>% 
+  select(subject, block_number, trial_number, rt, item_type, trial_type, trial_complexity) %>% 
+  mutate(rt = rt + 500) %>%  # add the baseline back 
+  mutate(temp_id = paste(subject, block_number, trial_number)) %>% 
+  #rename(real_trial_number = trial_number) %>% 
+  select(temp_id, rt, item_type, trial_type, trial_complexity)
+
+  d_exp_sim <- d_exp_sim %>% 
+   mutate(temp_id = paste(subject, block_number, trial_number)) %>% 
+    left_join(d_rt, by = "temp_id") 
+  
+  
+  return(d_exp_sim)
+  
+  
+}
+
+test <- run_one_simulation(d_experiment_parameter, 
+                           d,
+                   200, 
+                   100, 
+                   50, 
+                   0.2, 
+                   0.6, 
+                   c(2,5))
+
+```
+
+```{r}
+
+calculate_correlation <- function(df){
+  
+  d <- df %>% 
+    mutate(log_rt = log(rt))
+  
+  lp_rmse <- rmse(d$log_rt, d$learning_progress)
+  s_rmse <- rmse(d$log_rt, d$surprise)
+  
+  lp_pearson <- cor(x = d_cor$log_rt, y = d_cor$learning_progress, 
+                    method = "pearson")
+  s_pearson <- cor(x = d_cor$log_rt, y = d_cor$surprise, 
+                    method = "pearson")
+
+  d_result <- d %>% 
+    ungroup() %>% 
+    distinct(prior, similar_ratio, dissimilar_ratio) %>% 
+    mutate(
+      lp_rmse = lp_rmse, 
+      s_rmse = s_rmse, 
+      lp_pearson = lp_pearson, 
+      s_pearson = s_pearson)
+    # ) %>% 
+    # pivot_longer(
+    #   lp_rmse:s_rmse, 
+    #   names_to = "rmse_type", 
+    #   values_to = "rmse_value"
+    # ) %>% 
+    # pivot_longer(
+    #   lp_pearson:s_pearson, 
+    #   names_to = "pearson_type", 
+    #   values_to = "pearson_value"
+    # )
+  
+  return (d_result)
+}
+
+calculate_correlation(test)
+```
+
+## varying prior? 
+```{r}
+pos <- as.list(seq(1,5, 1))
+neg <- as.list(seq(1, 5, 1))
+
+#pos <- seq(1,10, 1)
+#neg <- seq(1, 10, 1)
+
+prior_df <- expand.grid(pos, neg)
+
+ 
+prior_list <- lapply(apply(prior_df, 1, identity), unlist)
+
+
 ```
 
 
