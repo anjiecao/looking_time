@@ -271,14 +271,77 @@ cor(x = d_cor$log_rt, y = d_cor$surprise, method = "pearson")
 ```
 
 ## now try a bunch of parameters 
+
 ```{r}
-run_one_simulation <- function(d,
+#technically we only need one sequence if we want to vary prior
+generate_sequence <- function(d,
                                d_rt, 
                                total_feature_n, 
                                complex_feature_n, 
                                simple_feature_n, 
                                similar_ratio, 
                                dissimilar_ratio, 
+                               prior){
+ 
+  d_exp_sim <- d %>% 
+  # the block length doesn't match 
+  mutate(
+    
+    sequence = pmap(d_experiment_parameter %>% select(-c(subject, block_number)), .f = ~with(list(...), 
+                                             get_block_sequence(complexity, similarity, 
+                                                                total_feature_n, 
+                                                                simple_feature_n, 
+                                                                complex_feature_n, 
+                                                                similar_ratio, 
+                                                                dissimilar_ratio, 
+                                                                block_length, 
+                                                                dev_positions)))
+    ) #%>% 
+    # unnest(sequence) %>% 
+   # group_by(subject, block_number) %>% 
+  #mutate(trial_number = row_number())
+    
+  # this should be added later so less computation load 
+  
+  # d_rt <- d_rt %>% 
+  # select(subject, block_number, trial_number, rt, item_type, trial_type, trial_complexity) %>% 
+  # mutate(rt = rt + 500) %>%  # add the baseline back 
+  # mutate(temp_id = paste(subject, block_number, trial_number)) %>% 
+  # #rename(real_trial_number = trial_number) %>% 
+  # select(temp_id, rt, item_type, trial_type, trial_complexity)
+  # 
+  # d_exp_sim <- d_exp_sim %>% 
+  #  mutate(temp_id = paste(subject, block_number, trial_number)) %>% 
+  #   left_join(d_rt, by = "temp_id") 
+  
+  
+  
+  return(d_exp_sim)
+  
+  
+  
+}
+
+df_sequence <- generate_sequence(d_experiment_parameter, 
+                           d,
+                   200, 
+                   100, 
+                   50, 
+                   0.2, 
+                   0.6)
+
+
+```
+
+
+```{r}
+df_sequence
+```
+
+
+
+```{r}
+calculate_prior <- function(d_sequence,  
                                prior) {
   
   
@@ -301,20 +364,7 @@ run_one_simulation <- function(d,
   }
   
   
-  d_exp_sim <- d %>% 
-  # the block length doesn't match 
-  mutate(
-    
-    sequence = pmap(d_experiment_parameter %>% select(-c(subject, block_number)), .f = ~with(list(...), 
-                                             get_block_sequence(complexity, similarity, 
-                                                                total_feature_n, 
-                                                                simple_feature_n, 
-                                                                complex_feature_n, 
-                                                                similar_ratio, 
-                                                                dissimilar_ratio, 
-                                                                block_length, 
-                                                                dev_positions)))
-  ) %>% 
+  d_measure <- d_sequence %>% 
    mutate(beta = map(.x = sequence, 
                     .f = get_beta_count), 
          probability = map(.x = beta, 
@@ -327,41 +377,56 @@ run_one_simulation <- function(d,
            .f = get_learning_progress
          )) %>% 
   unnest(sequence, surprise, learning_progress) %>%
-  unnest(learning_progress) %>% 
+  unnest(learning_progress) #%>% 
   # figure out the corresponding trial number 
-  group_by(subject, block_number) %>% 
-  mutate(trial_number = row_number(), 
-         prior = list(prior), 
-         similar_ratio = similar_ratio, 
-         dissimilar_ratio = dissimilar_ratio) 
+  #mutate( 
+   #      prior =  lapply(list(prior), function(x) x/sum(x))
+  #       ) 
 
-  d_rt <- d_rt %>% 
-  select(subject, block_number, trial_number, rt, item_type, trial_type, trial_complexity) %>% 
-  mutate(rt = rt + 500) %>%  # add the baseline back 
-  mutate(temp_id = paste(subject, block_number, trial_number)) %>% 
-  #rename(real_trial_number = trial_number) %>% 
-  select(temp_id, rt, item_type, trial_type, trial_complexity)
-
-  d_exp_sim <- d_exp_sim %>% 
-   mutate(temp_id = paste(subject, block_number, trial_number)) %>% 
-    left_join(d_rt, by = "temp_id") 
+ 
   
   
-  return(d_exp_sim)
+  return(d_measure)
   
   
 }
 
-test <- run_one_simulation(d_experiment_parameter, 
-                           d,
-                   200, 
-                   100, 
-                   50, 
-                   0.2, 
-                   0.6, 
-                   c(2,5))
+ptm <- proc.time()
+df_calculated <- calculate_prior(df_sequence, c(3,1))
+proc.time() - ptm
+```
+
+```{r}
+df_calculated
+```
+
+```{r}
+combine_rt_df <- function(df_measurement, d_rt){
+   d_rt <- d_rt %>% 
+  select(subject, block_number, trial_number, rt, item_type, trial_type, trial_complexity) %>% 
+   mutate(rt = rt + 500) %>%  # add the baseline back 
+   mutate(temp_id = paste(subject, block_number, trial_number)) %>% 
+   select(temp_id, rt, item_type, trial_type, trial_complexity)
+   
+   df_combined <- df_measurement %>% 
+     group_by(subject, block_number) %>% 
+     mutate(trial_number = row_number()) %>% 
+    mutate(temp_id = paste(subject, block_number, trial_number)) %>% 
+     left_join(d_rt, by = "temp_id") 
+   
+   return(df_combined)
+  
+}
+
+df_combined <- combine_rt_df(df_calculated, d)
 
 ```
+
+```{r}
+df_combined
+```
+
+
 
 ```{r}
 
@@ -373,19 +438,19 @@ calculate_correlation <- function(df){
   lp_rmse <- rmse(d$log_rt, d$learning_progress)
   s_rmse <- rmse(d$log_rt, d$surprise)
   
-  lp_pearson <- cor(x = d_cor$log_rt, y = d_cor$learning_progress, 
+  lp_pearson <- cor(x = d$log_rt, y = d$learning_progress, 
                     method = "pearson")
-  s_pearson <- cor(x = d_cor$log_rt, y = d_cor$surprise, 
+  s_pearson <- cor(x = d$log_rt, y = d$surprise, 
                     method = "pearson")
 
   d_result <- d %>% 
     ungroup() %>% 
-    distinct(prior, similar_ratio, dissimilar_ratio) %>% 
     mutate(
       lp_rmse = lp_rmse, 
       s_rmse = s_rmse, 
       lp_pearson = lp_pearson, 
-      s_pearson = s_pearson)
+      s_pearson = s_pearson) %>% 
+    distinct(lp_rmse, s_rmse, lp_pearson, s_pearson)
     # ) %>% 
     # pivot_longer(
     #   lp_rmse:s_rmse, 
@@ -401,7 +466,7 @@ calculate_correlation <- function(df){
   return (d_result)
 }
 
-calculate_correlation(test)
+calculate_correlation(df_combined)
 ```
 
 ## varying prior? 
@@ -412,12 +477,187 @@ neg <- as.list(seq(1, 5, 1))
 #pos <- seq(1,10, 1)
 #neg <- seq(1, 10, 1)
 
-prior_df <- expand.grid(pos, neg)
+prior_df <- expand.grid(pos, neg) %>% 
+  as.data.frame() %>% 
+  unnest(`Var1`, `Var2`) %>% 
+  filter(`Var1` > `Var2`)
 
  
-prior_list <- lapply(apply(prior_df, 1, identity), unlist)
+#prior_list <- lapply(apply(prior_df,2 , identity), unlist)
 
+prior_list <- list(c(1, 1), 
+                   c(2, 1), 
+                   c(3, 1), 
+                   c(4, 1), 
+                   c(5, 1),
+                   c(6, 1),
+                   c(3, 2), 
+                   c(5, 2))
 
 ```
 
+# looping over the prior list and run simulation
+```{r}
+correlation = list()
+
+
+for (s in 1:length(prior_list)) {
+    prior = prior_list[[s]]
+    prior_value = prior[[1]] / (prior[[1]] + prior[[2]])
+
+    sim_data <- calculate_prior(df_sequence, prior)
+    combined_rt_df <- combine_rt_df(sim_data, d)
+    sim_corrleation <- calculate_correlation(combined_rt_df) %>% 
+      mutate(sim_id = s, 
+             prior_v = prior_value)
+    correlation[[s]] <- sim_corrleation  # add it to your list
+}
+
+
+calculated_correlation = do.call(rbind, correlation)
+```
+
+```{r}
+calculated_correlation
+save(calculated_correlation, file = here("adult_modeling/calculated_correlation.RData"))
+
+```
+```{r}
+calculated_correlation %>% 
+  pivot_lo
+```
+
+
+
+
+
+## a mini version 
+```{r}
+df_mini_sequence <- generate_sequence(d_experiment_parameter, 
+                           d,
+                   30, 
+                   10, 
+                   5, 
+                   0.2, 
+                   0.6)
+
+correlation = list()
+
+
+for (s in 1:length(prior_list)) {
+    prior = prior_list[[s]]
+    prior_value = prior[[1]] / (prior[[1]] + prior[[2]])
+
+    sim_data <- calculate_prior(df_mini_sequence, prior)
+    combined_rt_df <- combine_rt_df(sim_data, d)
+    sim_corrleation <- calculate_correlation(combined_rt_df) %>% 
+      mutate(sim_id = s, 
+             prior_v = prior_value)
+    correlation[[s]] <- sim_corrleation  # add it to your list
+}
+
+
+calculated_correlation = do.call(rbind, correlation)
+```
+
+```{r}
+calculated_correlation %>% 
+  pivot_longer(lp_rmse:s_pearson, names_to = "measure_type", 
+               values_to = "correlation_value") %>% 
+  separate(measure_type, into = c("learning_measure_type", "correlation_measure_type")) %>% 
+  filter(correlation_measure_type == "rmse") %>% 
+  ggplot(aes(x = prior_v, 
+             y = correlation_value, 
+             color = learning_measure_type)) + 
+  geom_point() + 
+  geom_line() + 
+  ylab("rmse")
+
+calculated_correlation %>% 
+  pivot_longer(lp_rmse:s_pearson, names_to = "measure_type", 
+               values_to = "correlation_value") %>% 
+  separate(measure_type, into = c("learning_measure_type", "correlation_measure_type")) %>% 
+  filter(correlation_measure_type == "pearson") %>% 
+  ggplot(aes(x = prior_v, 
+             y = correlation_value, 
+             color = learning_measure_type)) + 
+  geom_point() + 
+  geom_line() + 
+  ylab("pearson")
+```
+
+## trying different similar / dissimilar ratio 
+```{r}
+similarity_list = list(c(0.1, 0.3 ), 
+                       c(0.1, 0.4 ), 
+                       c(0.1, 0.5 ), 
+                       c(0.1, 0.6 ), 
+                       c(0.1, 0.7 ), 
+                       c(0.2, 0.3 ), 
+                       c(0.2, 0.4 ), 
+                       c(0.2, 0.5 ), 
+                       c(0.2, 0.6 ), 
+                       c(0.2, 0.7 ))
+
+
+correlation = list()
+
+
+for (s in 1:length(similarity_list)) {
+  
+    df_mini_sequence <- generate_sequence(d_experiment_parameter, 
+                           d,
+                   30, 
+                   10, 
+                   5, 
+                   similarity_list[[s]][1], 
+                    similarity_list[[s]][2])
+
+    
+    prior = c(3, 1)
+
+    sim_data <- calculate_prior(df_mini_sequence, c(3, 1))
+    combined_rt_df <- combine_rt_df(sim_data, d)
+    sim_corrleation <- calculate_correlation(combined_rt_df) %>% 
+      mutate(sim_id = s, 
+             prior_v = prior_value)
+    correlation[[s]] <- sim_corrleation  # add it to your list
+}
+
+
+calculated_correlation = do.call(rbind, correlation)
+```
+
+```{r}
+save(calculated_correlation, file = here("adult_modeling/varying_similarity.RData"))
+calculated_correlation$similarity <- as.vector(similarity_list)
+df_vis_correlation <- calculated_correlation %>% 
+  unnest_wider(similarity) %>% 
+  rename(similar_ratio = ...1, 
+         dissimilar_ratio = ...2) %>% 
+  mutate(sim_diff = dissimilar_ratio - similar_ratio, 
+         sim_ratio = dissimilar_ratio / similar_ratio) %>% 
+  pivot_longer(lp_rmse:s_pearson, names_to = "measure_type", 
+               values_to = "correlation_value") %>% 
+  pivot_longer(sim_diff : sim_ratio, 
+               names_to = "similarity_measure", 
+               values_to = "similarity_value") %>% 
+  separate(measure_type, into = c("learning_measure_type", "correlation_measure_type")) 
+
+
+  
+  
+```
+
+```{r}
+df_vis_correlation %>% 
+filter(correlation_measure_type == "pearson") %>% 
+  ggplot(aes(x = dissimilar_ratio, 
+             y = correlation_value, 
+             color = learning_measure_type)) + 
+  geom_point() + 
+  geom_line() + 
+  ylab("pearson") + 
+  facet_wrap(~similar_ratio)
+```
 
