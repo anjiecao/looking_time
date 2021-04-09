@@ -21,6 +21,7 @@ df.raw <- read_csv(d_path)
 
 
 # RT data 
+note that the rt here does not take into account the forced exposure phase (50,5000,500)
 ```{r}
 TEST_TRIAL <- c("pref_reveal", "trial")
 # do we want to go w/ the data wrangling route or the jspsych route? 
@@ -30,7 +31,8 @@ df.processed <- df.raw %>%
   filter(stimulus_type == "trial") %>% 
   select(subject, rt,
          block_number, block_type, stimulus_displayed, 
-         block_deviant, block_background) %>% 
+         block_deviant, block_background, 
+         exposure_type) %>% 
   group_by(subject, block_number) %>% 
   mutate(
     trial_number = row_number()) %>% 
@@ -65,7 +67,7 @@ df.processed <- df.raw %>%
     mutate(item_id = 
              str_match(stimulus_displayed, "spore_stims/\\s*(.*?)..\\s*.gif")[,2]
     )  %>% 
-  select(subject, block_number, block_type, trial_number, item_type, trial_type, trial_complexity, item_id, rt) %>% 
+  select(subject, block_number, block_type, trial_number, item_type, trial_type, trial_complexity, item_id, rt, exposure_type) %>% 
   transform(rt = as.numeric(rt)) %>%
         mutate(half = case_when(
      block_number <= max(block_number)/2 ~ 'first half' , 
