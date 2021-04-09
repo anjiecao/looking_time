@@ -194,6 +194,13 @@ jsPsych.plugins["sequential-stimulus-presentation-old"] = (function() {
         display_element.querySelector('#stimuli-animation').style.visibility = 'hidden'
                                     }, minimum_viewing_duration);
         
+    }else if (trial.exposure_type == "forced_long" && trial.first_trial){
+        
+        jsPsych.pluginAPI.setTimeout(function() {
+
+        display_element.querySelector('#stimuli-animation').style.visibility = 'hidden'
+                                    }, minimum_viewing_duration);
+        
     }
     
 

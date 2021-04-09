@@ -22,7 +22,7 @@ var intro0 = {
 
         var intro1 = {
           type: 'sequential-stimulus-presentation-old',
-          wall_animation: function(){
+          frame_animation: function(){
 
 
         var html =
@@ -40,21 +40,21 @@ var intro0 = {
           },
           two_stimuli_interval: 0,
           key_response: [40],
-          minimum_viewing_duration: 600, // daffner2000's info was 600, changed to 200
+          minimum_viewing_duration: 500, // daffner2000's info was 600, changed to 200
           response_ends_trial: true,
+          exposure_type: "self_paced"
         }
 
 
         var intro2 = {
           type: 'sequential-stimulus-presentation-old',
-          wall_animation: function(){
+          frame_animation: function(){
         var html =
                   "<p> You are doing great! </p>" +
             "<p>Now, let's try again.</p>" +
                 "<p> Press the down arrow key when you've had enough of this little guy. </p>"
 
 
-         console.log(html)
          return html
        },
           stimuli_animation: function(){
@@ -65,68 +65,84 @@ var intro0 = {
           key_response: [40],
           minimum_viewing_duration: 500, // daffner2000's info was 600, changed to 200
           response_ends_trial: true,
+            exposure_type: "self_paced"
         }
 
 
         var intro3 = {
             type: "instructions",
             pages: [
-                "<p> In the real experiment, you will find that the frame turns <span style='color:red;'>red</span> a short while after the creature appeared. </p>" +
-                "<p> This just signals that the keyboard has been activated and you can press the down arrow to move on to the next creature when you are ready. </p>" +
-                "<p> You can see how a regular trial will look like next. <b> Remember to press the down arrow when you've had enough of the creature. <b> </p>"
+                "<p> In the real experiment, during some trials, you might find that the creature will stay for a while on the screen. </p>" +
+                "<p> During other trials, you might find that the creature will just flash for a short period of time. </p>" + 
+                "<p> In these trials where you can not control how long you can see the creature, you can press the down arrow to go to the next trial <b>after</b> the creature disappears. </p>" + 
+                "Next, you will see what a very long trial and a very short trial looks like."
               ],
                 data: {stimulus_type: 'instructions'},
                 show_clickable_nav: true}
 
 
             var intro4 = {
-              type: 'sequential-stimulus-presentation',
-              frame_animation: function(){
-                  var html =  '<p><img src= images/blank.png width ="600" height = "600" style="position:fixed; top:50%; transform: translate(-50%, -50%);left:50%;border:5px solid black">'
-
-                  //var html = "<video width ='960' height = '540' autoplay muted><source src=" + jsPsych.timelineVariable('wall_animation', true) + ' type="video/mp4"></video>'
-                  //var html = "<img src= "+ "images/stimuli/pokeball_1.gif" +" width ='800' height = '200'></p>"
-                  return html;
-              },
-
-            stimuli_animation: function(){
-                var html = "<img src='images/stimuli/instructions_example_spore2.gif' width ='400' height = '400'>"
-                  return html
-              },
-
-            red_frame_animation: function(){
-                  var html =  '<p><img src= images/blank.png width ="600" height = "600" style="position:fixed;top:50%; left:50%; transform: translate(-50%, -50%); border:5px solid red">'
-                  //var html = "<img src= "+ "images/stimuli/pokeball_1.gif" +" width ='800' height = '200'></p>"
-                  return html;
-              },
-              two_stimuli_interval: 500,
-              key_response: [40],
-              minimum_viewing_duration: 1000, // daffner2000's info was 600, changed to 200
-              response_ends_trial: true,
-              red_frame_onset: 1000,
-            }
+            
+            type: 'sequential-stimulus-presentation-old',
+          frame_animation: function(){
+        var html = '<p>&nbsp;</p>' + '<p>&nbsp;</p>'+ '<p>&nbsp;</p>'+ '<p>This is a long trial, which means that you can not go to the next trial when the creature is on the screen. </p><p>But you can press the down arrow when the creature disappears!</p>' + 
+           
+'<p><img src= images/blank.png width ="400" height = "400" style="position:absolute; top:40%; transform: translate(-50%, -50%);left:50%;border:5px solid black"></p>'
 
 
-        var intro5 = {
+         return html
+       },
+          stimuli_animation: function(){
+              var html = "<img src='images/stimuli/instructions_example_spore2.gif' width ='400' height = '400'>"
+              return html
+          },
+          two_stimuli_interval: 0,
+          key_response: [40],
+          minimum_viewing_duration: 500, // daffner2000's info was 600, changed to 200
+          response_ends_trial: true,
+                forced_long_viewing_duration: 5000,
+            exposure_type: "forced_long"
+        }
+
+               
+            
+            var intro5 = {
+            
+            type: 'sequential-stimulus-presentation-old',
+          frame_animation: function(){
+        var html = '<p>&nbsp;</p>' + '<p>&nbsp;</p>'+ '<p>&nbsp;</p>'+ '<p>This is a short trial, which means that the creature will just flash. </p><p>You can go to the next trial as soon as the creature disappears.</p>' + 
+           
+'<p><img src= images/blank.png width ="400" height = "400" style="position:absolute; top:40%; transform: translate(-50%, -50%);left:50%;border:5px solid black"></p>'
+
+
+         return html
+       },
+          stimuli_animation: function(){
+              var html = "<img src='images/stimuli/instructions_example_spore2.gif' width ='400' height = '400'>"
+              return html
+          },
+          two_stimuli_interval: 0,
+          key_response: [40],
+          minimum_viewing_duration: 50, // daffner2000's info was 600, changed to 200
+          response_ends_trial: true,
+                forced_long_viewing_duration: 50,
+            exposure_type: "forced_long"
+        }
+
+               
+
+
+        var intro6 = {
             type: "instructions",
             pages: [
-                "<p> Pretty simple, huh? That means that you can go through the task at your own speed, </p>" +
-                "<p> and you can look at each creature for as long as you like. </p>"],
+                "<p> Pretty simple, huh? , </p>" +
+                "<p> In most trials, however, you can look at each creature for as long as you like. </p>"],
                 data: {stimulus_type: 'instructions'},
                 show_clickable_nav: true}
 
-        var intro6 = {
-            type: 'survey-likert',
-            questions: [
-              {prompt: '<p> Quick question before we proceed: Was there any lag in the animations? </p>',
-              labels: ["None", "A bit", "A lot", "Creatures didn't move or show up"], required: true}
-            ],
-            data: {stimulus_type: "lag_question_intro"}
-          }
-
         var intro7 = {
             type: "instructions",
-        pages: [             "<p> If you did experience significant lag in the preceding animations, it will probably get better once we start the actual experiment. </p>" +
+        pages: [             "<p> Before we get started, please know that if you experienced significant lag in the preceding animations, it will probably get better once we start the actual experiment. </p>" +
                             "<p> If the lagginess persists however, we would really appreciate if you could let us know in the feedback section at the end of the experiment. </p>",
                             "<p> Final point about the experiment:</p> <p>  Every couple of trials, you will see a <b> simple math question</b>. This is just to check that you're engaged. </p>" +
                             "<p> Then you will see a new set of creatures to look at for as long as you like, </p>" +
@@ -141,13 +157,14 @@ var intro0 = {
                 data: {stimulus_type: 'instructions'},
                 show_clickable_nav: true}
 
+      
         timeline.push(intro0)
         timeline.push(intro1)
         timeline.push(intro2)
         timeline.push(intro3)
         timeline.push(intro4)
         timeline.push(intro5)
-        //timeline.push(intro6)
+        timeline.push(intro6)
         timeline.push(intro7)
 
 
