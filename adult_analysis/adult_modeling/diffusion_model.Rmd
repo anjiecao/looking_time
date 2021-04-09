@@ -190,7 +190,7 @@ ensure_fit <-
 ```
 
 ```{r}
-
+library(tidyverse)
 fit_diffusion <- d_nested
 fit_diffusion$fit <- 
   parallel::mclapply(d_nested$data, function(x) 
@@ -205,6 +205,14 @@ fit_diffusion <- unnest(fit_diffusion, fit)
 fit_diffusion
 ```
 
+## graphical model fit 
+```{r}
+pars_separate_l <- fit_diffusion %>% gather("strength_bin", "v", starts_with("v"))
+pars_separate_l$strength_bin <- factor(substr(pars_separate_l$strength_bin, 3,3), 
+                                       levels = as.character(seq_len(length(bins)-1)))
+
+pars_separate_l
+```
 
 
 

@@ -17,10 +17,9 @@ jsPsych.plugins["sequential-stimulus-presentation-old"] = (function() {
     name: 'sequential-stimulus-presentation-old',
     description: '',
     parameters: {
-
-     wall_animation: {
+          frame_animation: {
         type: jsPsych.plugins.parameterType.HTML_STRING,
-        pretty_name: 'wall_animation',
+        pretty_name: 'frame_animation',
         default: undefined,
         description: 'The HTML string to be displayed first'
       },
@@ -73,6 +72,20 @@ jsPsych.plugins["sequential-stimulus-presentation-old"] = (function() {
         description: 'minimum time the participants need to look at the stimuli'
 
       },
+      forced_short_viewing_duration:{
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'forced-short viewing time duration',
+        default: 0,
+        description: 'duration in which the stimulus flash in the forced short blocks'
+
+      },
+      forced_long_viewing_duration:{
+        type: jsPsych.plugins.parameterType.INT,
+        pretty_name: 'forced-long viewing time duration',
+        default: 0,
+        description: 'duration in which the stimulus stays in the forced long viewing time'
+
+      },    
       response_ends_trial: {
         type: jsPsych.plugins.parameterType.BOOL,
         pretty_name: 'Response ends trial',
@@ -123,21 +136,66 @@ jsPsych.plugins["sequential-stimulus-presentation-old"] = (function() {
         default: 10,
         description: 'the number of trials in one block'
 
-      }
+      }, 
+        
+      exposure_type: {
+          type: jsPsych.plugins.parameterType.STRING,
+          pretty_name: 'exposure type',
+          default: null,
+         description: 'type of exposure: forced_long, forced_short, self_paced'
+      }, 
+        
+     first_trial: {
+         
+         type: jsPsych.plugins.parameterType.BOOL,
+        pretty_name: 'whether this is the first trial',
+        default: true,
+        description: 'If true, will depend on the exposure t ype'
+         
+         
+         
+     }
   }
   }
   plugin.trial = function(display_element, trial) {
 
-    var html_string = '<div id="stimuli-animation">' + trial.stimuli_animation + '</div>' + '<div id="wall">'+ trial.wall_animation+'</div>';
+    if (trial.first_trial){ 
+        if (trial.exposure_type == "self_paced"){
+
+            var minimum_viewing_duration = trial.minimum_viewing_duration
+
+        }else if(trial.exposure_type == "forced_short"){
+            
+            var minimum_viewing_duration = trial.forced_short_viewing_duration
+
+        }else if(trial.exposure_type == "forced_long"){
+            
+            var minimum_viewing_duration = trial.forced_long_viewing_duration
+            
+        }else{
+            throw "wrong exposure type"
+        }
+      
+      
+    }else{
+        var minimum_viewing_duration = trial.minimum_viewing_duration
+    }
+      
+      
+    var html_string = '<div id="stimuli-animation">' + trial.stimuli_animation + '</div>' + '<div id="wall">'+ trial.frame_animation+'</div>';
 
     display_element.innerHTML = html_string;
 
-    display_element.querySelector('#stimuli-animation').style.visibility = 'hidden'
+    
+    
+    if (trial.exposure_type == "forced_short" && trial.first_trial){
+        jsPsych.pluginAPI.setTimeout(function() {
 
-    jsPsych.pluginAPI.setTimeout(function() {
-
-        display_element.querySelector('#stimuli-animation').style.visibility = 'visible';
-                                    }, trial.two_stimuli_interval);
+        display_element.querySelector('#stimuli-animation').style.visibility = 'hidden'
+                                    }, minimum_viewing_duration);
+        
+    }
+    
 
     // store response
     var response = {
@@ -166,8 +224,8 @@ jsPsych.plugins["sequential-stimulus-presentation-old"] = (function() {
         "minimum_viewing_duration":trial.minimum_viewing_duration,
         "trial_looking_time": trial.minimum_viewing_duration + response.rt,
         "block_deviant": trial.block_deviant,
-        "block_background": trial.block_background
-
+        "block_background": trial.block_background, 
+        "exposure_type": trial.exposure_type
       };
 
       // clear the display
@@ -215,7 +273,7 @@ if (trial.key_response != jsPsych.NO_KEYS){
         allow_held_key: false
       });
 
-      }, trial.minimum_viewing_duration)
+      }, minimum_viewing_duration)
 
 
 

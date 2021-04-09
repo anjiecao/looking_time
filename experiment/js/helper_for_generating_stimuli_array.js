@@ -198,33 +198,60 @@ function generate_timeline_variables(block_information){
     deviant_position_array = block_information.deviant_position_array
     block_length = block_information.num_trial_per_block
     block_type = block_information.block_type
-
+    exposure_type = block_information.exposure_type
 
      wall_animation = 'images/stimuli/wall.mp4'
 
-
-     background_item = {
+    block_stimuli = []
+    
+    // because some copy-making issue, somewhat hacky solution
+    // the first trial is always background 
+    
+    var first_trial = {
          wall_animation: wall_animation,
          stimuli: background_stimuli,
-         stim_type: 'background'
+         stim_type: 'background', 
+         exposure_type: exposure_type, 
+         first_trial: true
      }
-
-     deviant_item = {
+    block_stimuli.push(first_trial)
+    for (var i = 0; i < block_length-1; i++){
+        
+        var background_item = {
          wall_animation: wall_animation,
-         stimuli: deviant_stimuli,
-         stim_type: 'deviant'
-     }
+         stimuli: background_stimuli,
+         stim_type: 'background', 
+         exposure_type: exposure_type, 
+         first_trial: false
+        }
+        
+        
+        
+        block_stimuli.push(background_item)
+        
+        
+    }
 
-    // populate block
-    block_stimuli = fillArray(background_item, block_length)
+     
 
+    
     // replace background with deviant
     for (var i = 0; i < deviant_position_array.length; i++){
+         var deviant_item = {
+         wall_animation: wall_animation,
+         stimuli: deviant_stimuli,
+         stim_type: 'deviant', 
+         exposure_type: exposure_type, 
+         first_trial: false
+            }
         deviant_position = deviant_position_array[i]
         block_stimuli[deviant_position] = deviant_item
     }
+    
+
 
     return (block_stimuli)
+    //return (block_stimuli)
 
 }
 
@@ -243,6 +270,10 @@ function generate_all_block(num_blocks,
     // check that number of blocks is divisible by 4
     if (num_blocks % 4 != 0){
       throw 'Number of blocks should be divisible by 4, to have equal number of each block type';
+    }
+    
+    if (num_blocks % 6 != 0){
+      throw 'Number of blocks should be divisible by 6, to have equal number of each block type (simple, complex vs 3 variation of trial length)';
     }
 
     // check that there's no deviant position larger than the total number of trials per block
@@ -290,7 +321,9 @@ if (show_similar) {
    simple_stims = output[0]
    block_information = output[1]
 
+
    all_block_information.push(block_information)
+      
 
    // complex similar blocks
   output = generate_similar_block(complex_stims, num_blocks, num_trial_per_block, all_deviant_position_array, num_deviants, num_species, block_type = 'complex_similar')
@@ -325,11 +358,50 @@ block_information = output[1]
 all_block_information.push(block_information)
   }
 
+    //  each block type has 3 exposure types 
+    
+    var num_block_each_exposure_type = loop_length / 3 
+    
+    // will be replaced by non-hardcoded version 
+    var forced_long_arr = fillArray("forced_long", 
+                               num_block_each_exposure_type)
+    var forced_short_arr = fillArray("forced_short", 
+                               num_block_each_exposure_type)
+    var self_paced_arr = fillArray("self_paced", 
+                               num_block_each_exposure_type)
+    
+    
+    var exposure_type = forced_long_arr.concat(forced_short_arr, self_paced_arr)
+    
+    
+    var simple_dissimilar_blocks =  all_block_information.filter(x => x.block_type == "simple_dissimilar") 
+    var complex_dissimilar_blocks = all_block_information.filter(x => x.block_type == "complex_dissimilar") 
+    
+    // first shuffle these two block types
+    shuffleArray(simple_dissimilar_blocks)
+    shuffleArray(complex_dissimilar_blocks)
+     
+    
+    for (i = 0; i < loop_length; i++){
+        
+        
+        // add the exposure type 
+        var current_sd = simple_dissimilar_blocks[i]
+        var current_cd = complex_dissimilar_blocks[i]
+        
+        current_sd.exposure_type = exposure_type[i]
+        current_cd.exposure_type = exposure_type[i]
+
+    }
+    
+    
+    
+    
 
     // shuffle blocks
     shuffleArray(all_block_information)
 
-    console.log(all_block_information)
+    
 
     return (all_block_information)
 
