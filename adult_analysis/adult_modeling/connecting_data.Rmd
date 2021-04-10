@@ -258,6 +258,8 @@ d_cor %>%
   ggplot(aes(x = learning_progress, y = surprise, color = item_type)) + 
   geom_jitter(height = .1, alpha = .1) + 
   geom_smooth()
+
+d_cor
 ```
 
 

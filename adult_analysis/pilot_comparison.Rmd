@@ -16,12 +16,20 @@ library(jsonlite)
 
 ```{r cars}
 new <- read_csv(here('data/processed_data/trimmed_RTdata.csv')) %>% 
-  mutate(version = "new")
+  mutate(version = "new") %>% 
+  mutate(looking_time = case_when(
+    exposure_type == "forced_short" & trial_number == 1 ~ 50, 
+    exposure_type == "forced_long" & trial_number == 1 ~ 5000, 
+    TRUE ~ 500 + rt
+  ))
 old <- read_csv(here('data/processed_data/sample_1/trimmed_RTdata.csv')) %>% 
-  mutate(version = "old")
-
+  mutate(version = "old", 
+         exposure_type = "old_self_paced") %>% 
+  mutate(looking_time = 500 + rt)
 d <- bind_rows(new, old)
+
 ```
+
 
 # density 
 
@@ -31,7 +39,25 @@ d %>%
    ggplot(aes(x = rt, fill = version)) + 
   geom_density(alpha = .3) + 
   scale_x_log10() + 
-  facet_wrap(~block_type)
+  facet_wrap(~block_type) + 
+  xlab("rt(log)")
+
+d %>% 
+   ggplot(aes(x = looking_time, fill = version)) + 
+  geom_density(alpha = .3) + 
+  scale_x_log10() + 
+  facet_wrap(~block_type) + 
+  xlab("looking time(log)")
+
+d %>% 
+  filter(exposure_type == "self_paced") %>% 
+   ggplot(aes(x = looking_time, fill = version)) + 
+  geom_density(alpha = .3) + 
+  scale_x_log10() + 
+  facet_wrap(~block_type) + 
+  xlab("looking time(log)")
+
+
 
 ```
 
@@ -40,10 +66,9 @@ d %>%
    ggplot(aes(x = rt, fill = version)) + 
   geom_density(alpha = .3) + 
   scale_x_log10() + 
-  facet_wrap(~item_type)
+  facet_grid(exposure_type~item_type)
 ```
 
-should we worry about the bimodal distribution? let's look at the subject-level breakdown
 ```{r}
 d %>% 
   filter(version == "new") %>% 
@@ -53,47 +78,122 @@ d %>%
   facet_wrap(~subject)
 ```
 
-something funky is going on with SS1617819916752, what does it look like after excluding them? 
-```{r}
-d %>% 
-  filter(subject != "SS1617819916752") %>% 
-   ggplot(aes(x = rt, fill = version)) + 
-  geom_density(alpha = .3) + 
-  scale_x_log10() + 
-  facet_wrap(~block_type)
 
+
+
+
+
+# exposure type 
+
+
+it looks like forced long and forced short increase participants' reaction time? maybe because they are less automatic? 
+
+# Reaction time on the first trial 
+
+unclear why the new design will create such a big increase on the reaction time at the first trial. maybe because the participants are actually looking? maybe in the old version participants are more likely to be in the "auto pilot" version? 
+
+- forced short > forced long, not sure if the difference would be meaningful. 
+- forced long < self paced, make sense, forced long participants might be like "oh i can't wait to get this over with". 
+
+from the perspective of blank space: forced short condition participants might have slightly longer blank screen than participants in the forced long condition. 
+
+```{r}
+d  %>%  
+  filter(trial_number == 1) %>% 
+ggplot(
+       aes(x=exposure_type, y=log(rt), colour=exposure_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  langcog::scale_color_solarized(name = "Item Type") + 
+  theme(legend.position = "bottom") + 
+  #facet_wrap(~trial_complexity)+
+  ylab("log RT (ms) at the first trial") + 
+  xlab("exposure type") 
 ```
 
+this shows a couple of puzzles: 
+
+- why would participants in this new version have longer looking time in self-paced blocks too? clearly there are some across-block interference, but should that be a worry? 
+
+- participants getting slower for the forced long?
+
+- forced short > forced long across blocks make sense. 
+
 
 ```{r}
-d %>% 
-  filter(subject != "SS1617819916752") %>% 
-   ggplot(aes(x = rt, fill = version)) + 
-  geom_density(alpha = .3) + 
-  scale_x_log10() + 
-  facet_wrap(~trial_complexity)
+d  %>%  
+  filter(trial_number == 1) %>% 
+ggplot(
+       aes(x=block_number, y=log(rt), colour=exposure_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  langcog::scale_color_solarized(name = "Item Type") + 
+  theme(legend.position = "bottom") + 
+  #facet_wrap(~trial_complexity)+
+  ylab("log RT (ms)  at the first trial") + 
+  xlab("Block Number") 
 ```
 
-weird distribution! 
+# looking time on the second trial 
 
-reasonable for individual participant though
+looking time on the second trial: 
+it's interesting that, in the forced long and self paced condition,  the relationship between looking time at the 2nd trial for background and deviants mirrors the self paced condition and is different from the forced short exposure condition. 
+
+Maybe we can tell this story: participants in the forced short condition didn't get a chance to have a careful look at the background stimulus, so they don't really discriminate between the background (another occurrence of the stimulus) and the newer stimulus. (also mirrors the old self-paced!) 
+
+however, the fact that looking time at the second trial in the both forced condition is longer than the second trial in the self paced condition might be a little bit worrying. where is the familiarity preference?  
+
 ```{r}
-d %>% 
-  filter(version == "new") %>% 
-  #filter(subject != "SS1617819916752") %>% 
-   ggplot(aes(x = rt, fill = trial_complexity)) + 
-  geom_density(alpha = .3) + 
-  scale_x_log10() + 
-  facet_wrap(~subject)
+d  %>%  
+  filter(trial_number == 2) %>% 
+ggplot(
+       aes(x=exposure_type, y=log(looking_time), colour=exposure_type, shape = item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  langcog::scale_color_solarized(name = "Item Type") + 
+  #theme(legend.position = "bottom") + 
+  ylab("log looking time (ms) at the second trial") + 
+  xlab("exposure type") 
 ```
 
+however, if we breakdown this by block number, it looks like at least in the first part of the experiment, participants in forced short condition is still disriminating the background and deviants. are they just tired?
 
+```{r}
+d  %>%  
+  filter(trial_number == 2) %>% 
+ggplot(
+       aes(x=block_number, y=log(looking_time), colour=item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  langcog::scale_color_solarized(name = "Item Type") + 
+  theme(legend.position = "bottom") + 
+  facet_wrap(~exposure_type)+
+  ylab("log looking time (ms)  at the second trial") + 
+  xlab("Block Number") 
+```
 
+familiarity preference, but only in the first half? 
+
+```{r}
+d  %>%  
+  filter(trial_number == 2) %>% 
+ggplot(
+       aes(x=exposure_type, y=log(looking_time), colour=exposure_type, shape = item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  langcog::scale_color_solarized(name = "Item Type") + 
+  #theme(legend.position = "bottom") + 
+  ylab("log looking time (ms) at the second trial") + 
+  xlab("exposure type")  + 
+  facet_wrap(~half)
+```
+
+# now look at change within trial 
+good that we have the basic dishabituation effect in *reaction time*
+
+```{r}
 
 
 # change across trials
-
-```{r}
 ggplot(d, 
        aes(x=trial_number, y=log(rt), colour=item_type)) + 
   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
@@ -106,65 +206,42 @@ ggplot(d,
   xlab("Trial Number") 
 ```
 
+now we look at the looking time. 
+difficult to plot the first trial looking time because the scale, so just starts with the second trial. seeing dishabituation effect across three exposure type, good. 
+
 ```{r}
-ggplot(d %>% filter(version == "new"), 
-       aes(x=trial_number, y=log(rt), colour=item_type)) + 
+ggplot(d %>% filter(trial_number != 1), 
+       aes(x=trial_number, y=log(looking_time), colour=item_type)) + 
   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
   geom_smooth(method = "lm", 
               formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
-  facet_wrap(~subject) +
+  facet_wrap(~exposure_type) +
+  langcog::scale_color_solarized(name = "Item Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("log looking_time (ms)") + 
+  xlab("Trial Number") 
+```
+
+what if we just look at the looking time decreases at teh background trials? 
+- complexity effect? particularly strong in the forced condition? 
+- the fact that both forced short and forced long habituate slower than the self-paced. what does this tell us about the nature of the background trials? 
+
+```{r}
+d  %>%  
+  filter(version == "new") %>% 
+ filter(item_type == "background") %>% 
+  filter(trial_number != 1) %>% 
+ggplot(
+       aes(x=trial_number, y=log(looking_time), colour=exposure_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  facet_grid(~trial_complexity) +
   langcog::scale_color_solarized(name = "Item Type") + 
   theme(legend.position = "bottom") + 
   ylab("log RT (ms)") + 
   xlab("Trial Number") 
 ```
 
-16752 is probably a keyboard smasher. need to find a way to exlcude them
 
-
-
-
-# change across blocks
-
-```{r}
-ggplot(d, 
-       aes(x=block_number, y=log(rt), colour=trial_complexity)) + 
-  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
-  geom_smooth(method = "lm", 
-              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
-  facet_wrap(~version) +
-  langcog::scale_color_solarized(name = "Item Type") + 
-  theme(legend.position = "bottom") + 
-  ylab("log RT (ms)") + 
-  xlab("Block Number") 
-```
-
-```{r}
-ggplot(d %>% filter(version == "new"), 
-       aes(x=block_number, y=log(rt), colour=trial_complexity)) + 
-  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
-  geom_smooth(method = "lm", 
-              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
-  facet_wrap(~subject) +
-  langcog::scale_color_solarized(name = "Item Type") + 
-  theme(legend.position = "bottom") + 
-  ylab("log RT (ms)") + 
-  xlab("Block Number") 
-```
-
-
-
-```{r}
-feedback <- read_csv(here('data/merged_data/merged_data.csv')) %>% 
-  filter(stimulus_type == "feedback") %>% 
-  select(subject, responses) %>% 
-  toJSON() %>% 
-  fromJSON() %>% 
-    mutate(
-      feedback = map(responses, ~ fromJSON(.) %>% as.data.frame())) %>% 
-    unnest(feedback) %>% 
-  select(subject, Q0)
-
-feedback %>% kableExtra::kable()
-```
 
