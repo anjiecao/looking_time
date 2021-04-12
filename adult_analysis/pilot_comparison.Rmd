@@ -12,6 +12,8 @@ library(here)
 library(jsonlite) 
 ```
 
+
+
 # read data 
 
 ```{r cars}
@@ -28,6 +30,44 @@ old <- read_csv(here('data/processed_data/sample_1/trimmed_RTdata.csv')) %>%
   mutate(looking_time = 500 + rt)
 d <- bind_rows(new, old)
 
+```
+
+```{r}
+old_rt <- d %>% 
+  filter(version == "old", trial_number == 1) %>% 
+  group_by(subject) %>% 
+  summarize(mean_rt = mean(rt))
+
+old_means <- c()
+for (i in 1:1000) {
+  old_mean <- mean(sample(old_rt$mean_rt, 10, replace = TRUE, prob = NULL))
+  old_means <- c(old_means, old_mean)
+}
+
+new_rt <- d %>% 
+  filter(version == "new", trial_number == 1) %>% 
+  summarize(mean_rt = mean(rt)) %>% 
+  pull(mean_rt)
+
+
+old_means %>% 
+  as.data.frame() %>% 
+  ggplot(aes(x = .)) +
+  geom_histogram() + 
+  geom_vline(xintercept = new_rt, color = "red") + 
+  xlab("mean rt (n = 10, sampled from old data)") + 
+  theme_classic()
+
+```
+
+
+
+```{r}
+d %>% 
+  filter(version == "new") %>% 
+  filter(trial_number == 2) %>% 
+  group_by(trial_type) %>% 
+  count()
 ```
 
 
@@ -110,6 +150,20 @@ ggplot(
   xlab("exposure type") 
 ```
 
+```{r}
+d  %>%  
+  filter(trial_number == 1) %>% 
+ggplot(
+       aes(x=exposure_type, y=log(rt), colour=exposure_type, shape = half)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  langcog::scale_color_solarized(name = "Item Type") + 
+  theme(legend.position = "bottom") + 
+  #facet_wrap(~trial_complexity)+
+  ylab("log RT (ms) at the first trial") + 
+  xlab("exposure type") 
+```
+
+
 this shows a couple of puzzles: 
 
 - why would participants in this new version have longer looking time in self-paced blocks too? clearly there are some across-block interference, but should that be a worry? 
@@ -142,6 +196,7 @@ it's interesting that, in the forced long and self paced condition,  the relatio
 Maybe we can tell this story: participants in the forced short condition didn't get a chance to have a careful look at the background stimulus, so they don't really discriminate between the background (another occurrence of the stimulus) and the newer stimulus. (also mirrors the old self-paced!) 
 
 however, the fact that looking time at the second trial in the both forced condition is longer than the second trial in the self paced condition might be a little bit worrying. where is the familiarity preference?  
+
 
 ```{r}
 d  %>%  
