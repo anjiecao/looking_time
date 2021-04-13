@@ -31,6 +31,27 @@ old <- read_csv(here('data/processed_data/sample_1/trimmed_RTdata.csv')) %>%
 d <- bind_rows(new, old)
 
 ```
+```{r}
+new  %>% 
+  group_by(subject) %>% 
+  summarise(
+    sd = sd(log(rt))
+  ) %>% 
+  filter(sd > 0.15) %>% 
+  ggplot(aes(x = sd)) + 
+  geom_histogram()
+```
+
+
+```{r}
+new  %>% 
+  ggplot(aes(x = rt)) + 
+  geom_histogram()+
+  scale_x_log10()+
+  facet_wrap(~subject)
+```
+
+
 
 ```{r}
 old_rt <- d %>% 
