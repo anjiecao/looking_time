@@ -14,9 +14,9 @@ library(tidyverse)
 library(stringr) # for parsing r string 
 library(jsonlite) # for parsing r string 
 
-# d_path <- here("data/merged_data/merged_data.csv")
+ d_path <- here("data/merged_data/merged_data.csv")
 # d_path <- here("data/raw_data/testSS1612925903745.csv")
-d_path <- here("data/merged_data/sample_1/merged_data.csv")
+#d_path <- here("data/merged_data/sample_1/merged_data.csv")
 df.raw <- read_csv(d_path)
 ```
 
@@ -30,13 +30,13 @@ TEST_TRIAL <- c("pref_reveal", "trial")
 
 df.processed <- df.raw %>% 
   filter(stimulus_type == "trial") %>% 
-  select(subject, rt,
-         block_number, block_type, stimulus_displayed, 
-          block_deviant, block_background) %>% 
   # select(subject, rt,
   #        block_number, block_type, stimulus_displayed, 
-  #        block_deviant, block_background, 
-  #        exposure_type) %>% 
+  #         block_deviant, block_background) %>% 
+  select(subject, rt,
+          block_number, block_type, stimulus_displayed, 
+          block_deviant, block_background, 
+          exposure_type) %>% 
   group_by(subject, block_number) %>% 
   mutate(
     trial_number = row_number()) %>% 
@@ -71,8 +71,8 @@ df.processed <- df.raw %>%
     mutate(item_id = 
              str_match(stimulus_displayed, "spore_stims/\\s*(.*?)..\\s*.gif")[,2]
     )  %>% 
-  select(subject, block_number, block_type, trial_number, item_type, trial_type, trial_complexity, item_id, rt) %>% 
-#  select(subject, block_number, block_type, trial_number, item_type, trial_type, trial_complexity, item_id, rt, exposure_type) %>% 
+  # select(subject, block_number, block_type, trial_number, item_type, trial_type, trial_complexity, item_id, rt) %>% 
+ select(subject, block_number, block_type, trial_number, item_type, trial_type, trial_complexity, item_id, rt, exposure_type) %>% 
   transform(rt = as.numeric(rt)) %>%
         mutate(half = case_when(
      block_number <= max(block_number)/2 ~ 'first half' , 

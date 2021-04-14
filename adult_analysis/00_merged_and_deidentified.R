@@ -2,8 +2,8 @@ library(here)
 library(tidyverse)
 # currently not deidentifiying!! 
 
-#RAW_DATA_DIRECTORY <- here("data/raw_data/")
-RAW_DATA_DIRECTORY <- here("data/raw_data/03_pilot/")
+RAW_DATA_DIRECTORY <- here("data/raw_data/")
+#RAW_DATA_DIRECTORY <- here("data/raw_data/03_pilot/")
 
 MIN_ROW <- 120  #subject to change 
 MERGED_DATA_PATH <- here("data/merged_data/merged_data.csv")
