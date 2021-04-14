@@ -120,3 +120,52 @@ make_observation <- function(stimuli, feature_sample){
   return(observation)
   
 }
+
+
+generate_sequence_with_parameter <- function(d,
+                                             total_feature_n, 
+                                             complex_feature_n, 
+                                             simple_feature_n, 
+                                             similar_ratio, 
+                                             dissimilar_ratio, 
+                                             prior){
+  
+  d_exp_sim <- d %>% 
+    # the block length doesn't match 
+    mutate(
+      
+      sequence = pmap(d_experiment_parameter %>% select(-c(subject, block_number)), .f = ~with(list(...), 
+                                                                                               get_block_sequence(complexity, similarity, 
+                                                                                                                  total_feature_n, 
+                                                                                                                  simple_feature_n, 
+                                                                                                                  complex_feature_n, 
+                                                                                                                  similar_ratio, 
+                                                                                                                  dissimilar_ratio, 
+                                                                                                                  block_length, 
+                                                                                                                  dev_positions)))
+    ) #%>% 
+  # unnest(sequence) %>% 
+  # group_by(subject, block_number) %>% 
+  #mutate(trial_number = row_number())
+  
+  # this should be added later so less computation load 
+  
+  # d_rt <- d_rt %>% 
+  # select(subject, block_number, trial_number, rt, item_type, trial_type, trial_complexity) %>% 
+  # mutate(rt = rt + 500) %>%  # add the baseline back 
+  # mutate(temp_id = paste(subject, block_number, trial_number)) %>% 
+  # #rename(real_trial_number = trial_number) %>% 
+  # select(temp_id, rt, item_type, trial_type, trial_complexity)
+  # 
+  # d_exp_sim <- d_exp_sim %>% 
+  #  mutate(temp_id = paste(subject, block_number, trial_number)) %>% 
+  #   left_join(d_rt, by = "temp_id") 
+  
+  
+  
+  return(d_exp_sim)
+  
+  
+  
+}
+

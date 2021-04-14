@@ -222,56 +222,10 @@ cor(x = d_cor$log_rt, y = d_cor$surprise, method = "pearson")
 
 ```{r}
 #technically we only need one sequence if we want to vary prior
-generate_sequence <- function(d,
-                               d_rt, 
-                               total_feature_n, 
-                               complex_feature_n, 
-                               simple_feature_n, 
-                               similar_ratio, 
-                               dissimilar_ratio, 
-                               prior){
- 
-  d_exp_sim <- d %>% 
-  # the block length doesn't match 
-  mutate(
-    
-    sequence = pmap(d_experiment_parameter %>% select(-c(subject, block_number)), .f = ~with(list(...), 
-                                             get_block_sequence(complexity, similarity, 
-                                                                total_feature_n, 
-                                                                simple_feature_n, 
-                                                                complex_feature_n, 
-                                                                similar_ratio, 
-                                                                dissimilar_ratio, 
-                                                                block_length, 
-                                                                dev_positions)))
-    ) #%>% 
-    # unnest(sequence) %>% 
-   # group_by(subject, block_number) %>% 
-  #mutate(trial_number = row_number())
-    
-  # this should be added later so less computation load 
-  
-  # d_rt <- d_rt %>% 
-  # select(subject, block_number, trial_number, rt, item_type, trial_type, trial_complexity) %>% 
-  # mutate(rt = rt + 500) %>%  # add the baseline back 
-  # mutate(temp_id = paste(subject, block_number, trial_number)) %>% 
-  # #rename(real_trial_number = trial_number) %>% 
-  # select(temp_id, rt, item_type, trial_type, trial_complexity)
-  # 
-  # d_exp_sim <- d_exp_sim %>% 
-  #  mutate(temp_id = paste(subject, block_number, trial_number)) %>% 
-  #   left_join(d_rt, by = "temp_id") 
-  
-  
-  
-  return(d_exp_sim)
-  
-  
-  
-}
 
-df_sequence <- generate_sequence(d_experiment_parameter, 
-                           d,
+
+df_sequence <- generate_sequence_with_parameter(
+  d_experiment_parameter, 
                    200, 
                    100, 
                    50, 
@@ -286,7 +240,105 @@ df_sequence <- generate_sequence(d_experiment_parameter,
 df_sequence
 ```
 
+## do a line by line profiling 
+```{r}
+library(lineprof)
+library(furrr)
+test_beta_count <- function(df_sequence){
+  get_beta_count <- function(block, feature_prior = c(3, 1)){
+    prior <- replicate(length(block[[1]]), feature_prior, simplify = FALSE)
+    
+    beta_count <- list()
+    beta_count[[1]] <- prior 
+    for (trial in 1:length(block)){
+      beta_count[[trial+1]] <- mapply(function(x, y) {
+           x[y + 1] <- x[y + 1] + 1
+           return(list(x))
+         },
+         beta_count[[trial]], 
+         block[[trial]])
+    }
+  
+      return(beta_count)
 
+  }
+  
+  
+  d_measure <- df_sequence %>% 
+   mutate(beta = future_map(.x = sequence, 
+                    .f = get_beta_count)) 
+  
+  return(d_measure)
+  
+}
+
+ptm <- proc.time()
+test <- test_beta_count(df_sequence)
+proc.time() - ptm
+
+future::plan(multiprocess())
+test_beta_count <- function(df_sequence){
+  get_beta_count <- function(block, feature_prior = c(3, 1)){
+    prior <- replicate(length(block[[1]]), feature_prior, simplify = FALSE)
+    
+    beta_count <- list()
+    beta_count[[1]] <- prior 
+    for (trial in 1:length(block)){
+      beta_count[[trial+1]] <- mapply(function(x, y) {
+           x[y + 1] <- x[y + 1] + 1
+           return(list(x))
+         },
+         beta_count[[trial]], 
+         block[[trial]])
+    }
+    
+      return(beta_count)
+
+  }
+ 
+      
+  ptm <- proc.time()
+  d_measure <- df_sequence %>% 
+   mutate(beta = future_map(.x = sequence, 
+                    .f = get_beta_count), 
+          probability = future_map(.x = beta, 
+                           .f = get_probability), 
+          surprise = future_map2(.x = probability, 
+                         .y = sequence, 
+                         .f = get_surprise), 
+          learning_progress = future_map(
+           .x = probability, 
+           .f = get_learning_progress
+         )) 
+  time <- proc.time() - ptm
+  
+  return(time)
+  
+}
+
+ptm <- proc.time()
+test <- test_beta_count(df_sequence)
+proc.time() - ptm
+#test <- lineprof(test_beta_count(df_sequence))
+```
+
+time record 
+just beta: 
+user  system elapsed 
+7.596   0.076   7.692 
+
+beta + probability 
+user  system elapsed 
+13.047   0.245  13.384
+
+beta + probability + surprise 
+user  system elapsed 
+17.808   0.685  18.539 
+
+beta + probability + surprise + learning progress 
+user  system elapsed 
+24.679   0.476  25.209 
+ 
 
 ```{r}
 library(lineprof)
