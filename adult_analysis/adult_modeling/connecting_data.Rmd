@@ -276,8 +276,15 @@ ptm <- proc.time()
 test <- test_beta_count(df_sequence)
 proc.time() - ptm
 
-future::plan(multiprocess())
+library(foreach)
+library(doParallel)
+myCluster <- makeCluster(7, TYPE = "PSOCK")
+registerDoParallel(myCluster)
+
+
 test_beta_count <- function(df_sequence){
+  
+  
   get_beta_count <- function(block, feature_prior = c(3, 1)){
     prior <- replicate(length(block[[1]]), feature_prior, simplify = FALSE)
     
@@ -295,21 +302,40 @@ test_beta_count <- function(df_sequence){
       return(beta_count)
 
   }
+  
+  get_beta_count_parallel <- function(block, feature_prior = c(3, 1)){
+    
+    prior <- replicate(length(block[[1]]), feature_prior, simplify = FALSE)
+    
+    beta_count <- list()
+    beta_count[[1]] <- prior 
+    foreach (trial = 1:length(block)) %dopar% {
+      beta_count[[trial+1]] <- mapply(function(x, y) {
+           x[y + 1] <- x[y + 1] + 1
+           return(list(x))
+         },
+         beta_count[[trial]], 
+         block[[trial]])
+    }
+    
+      return(beta_count)
+
+  }
  
       
   ptm <- proc.time()
   d_measure <- df_sequence %>% 
-   mutate(beta = future_map(.x = sequence, 
-                    .f = get_beta_count), 
-          probability = future_map(.x = beta, 
-                           .f = get_probability), 
-          surprise = future_map2(.x = probability, 
-                         .y = sequence, 
-                         .f = get_surprise), 
-          learning_progress = future_map(
-           .x = probability, 
-           .f = get_learning_progress
-         )) 
+   mutate(beta = map(.x = sequence, 
+                    .f = get_beta_count_parallel), 
+          # probability = future_map(.x = beta, 
+          #                  .f = get_probability), 
+          # surprise = future_map2(.x = probability, 
+          #                .y = sequence, 
+          #                .f = get_surprise), 
+          # learning_progress = future_map(
+          #  .x = probability, 
+          #  .f = get_learning_progress)
+          ) 
   time <- proc.time() - ptm
   
   return(time)
