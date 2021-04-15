@@ -312,7 +312,16 @@ df.attention_check <- df.raw %>%
 
 
 ## participant level exclusion 
+
+
 ```{r}
+# flat rt participant 
+flat_rt_sbj <- df.processed %>% 
+  group_by(subject) %>% 
+  summarise(sd = sd(log(rt))) %>% 
+  filter(sd < 0.15) %>% 
+  pull(subject)
+
 # attention check participant 
 attention_check_sbj <- df.attention_check %>% 
   filter(percent_correct < 0.8) %>% 
@@ -331,7 +340,10 @@ complexity_sbj <- df.complexity %>%
   filter(n > 20 * 0.8) %>%  # twenty trials, 80% identical rating 
   pull(subject)
 
-exlude_participant <- unique(c(similarity_sbj, 
+
+
+exlude_participant <- unique(c(flat_rt_sbj, 
+                               similarity_sbj, 
                                complexity_sbj, 
                                attention_check_sbj))
 

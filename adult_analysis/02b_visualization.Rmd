@@ -1,0 +1,287 @@
+---
+title: "02b_visualization"
+author: "anjie"
+date: "4/14/2021"
+html_document:
+    toc: true
+    toc_float: true
+    number_sections: no
+---
+
+```{r message=FALSE, warning=FALSE}
+library(lme4)
+library(here)
+library(tidyverse)
+library(stringr) # for parsing r string 
+library(jsonlite) # for parsing r string 
+library(ggiraphExtra)
+library(plotrix)
+library(lmerTest)
+
+```
+
+```{r read_data, message=FALSE, warning=FALSE}
+RT_data <- read_csv(here('data/processed_data/trimmed_RTdata.csv'))
+similarity_data <- read_csv(here('data/processed_data/trimmed_similaritydata.csv'))
+complexity_data <- read_csv(here('data/processed_data/trimmed_complexitydata.csv'))
+demog_data <- read_csv(here('data/processed_data/trimmed_demogdata.csv'))
+```
+
+process the looking time! 
+```{r}
+RT_data <- RT_data %>% 
+  mutate(looking_time = case_when(
+    exposure_type == "forced_short" & trial_number == 1 ~ 50, 
+    exposure_type == "forced_long" & trial_number == 1 ~ 5000, 
+    TRUE ~ 500 + rt
+  ))
+```
+
+
+check verbal feedback: 
+```{r}
+
+feedback <- read_csv(here('data/merged_data/merged_data.csv')) %>% 
+  filter(stimulus_type == "feedback") %>% 
+  select(subject, responses) %>% 
+  toJSON() %>% 
+  fromJSON() %>% 
+    mutate(
+      feedback = map(responses, ~ fromJSON(.) %>% as.data.frame())) %>% 
+    unnest(feedback) %>% 
+  select(subject, Q0) 
+
+feedback %>% kableExtra::kable()
+```
+
+
+
+# Descriptive Info 
+N = 203
+```{r}
+RT_data %>% 
+  distinct(subject) %>% 
+  count()
+  
+# reorder
+RT_data$trial_complexity = factor(RT_data$trial_complexity, levels=c('simple', 'complex'))
+RT_data$item_type = factor(RT_data$item_type, levels=c('background', 'similar deviant', 'dissimilar deviant'))
+
+```
+
+## demographic {.tabset}
+
+## age 
+
+```{r}
+demog_data %>% 
+  ggplot(aes(x = as.numeric(age))) + 
+  geom_histogram()
+```
+
+### ethnicity 
+
+```{r}
+demog_data %>% 
+  ggplot(aes(x = ethnicity)) + 
+  geom_histogram(stat = "count") + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+```
+
+### Gender 
+
+```{r}
+demog_data %>% 
+  ggplot(aes(x = gender)) + 
+  geom_histogram(stat = "count") + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+```
+
+### education 
+```{r}
+demog_data %>% 
+  ggplot(aes(x = education)) + 
+  geom_histogram(stat = "count") + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+```
+
+# RT raw {.tabset}
+
+## overall 
+
+```{r}
+RT_data %>% 
+   ggplot(aes(x = rt)) + 
+  geom_histogram() + 
+  scale_x_log10()
+
+```
+
+
+
+## by trial type 
+```{r}
+RT_data %>% 
+   ggplot(aes(x = rt)) + 
+  geom_histogram() + 
+  scale_x_log10() + 
+  facet_wrap(~trial_type)
+```
+
+## trial type and block 
+```{r}
+RT_data %>% 
+   ggplot(aes(x = rt)) + 
+  geom_histogram() + 
+  scale_x_log10() + 
+  facet_grid(block_type~trial_type)
+```
+
+## by trial complexity 
+```{r}
+RT_data %>% 
+  ggplot(aes(x = rt)) + 
+  geom_histogram() + 
+  scale_x_log10() + 
+  facet_wrap(~trial_complexity)
+```
+
+## by block type 
+```{r}
+RT_data %>% 
+   ggplot(aes(x = rt)) + 
+  geom_histogram() + 
+  scale_x_log10() + 
+  facet_wrap(~block_type)
+```
+
+## by exposure type 
+```{r}
+RT_data %>% 
+   ggplot(aes(x = rt)) + 
+  geom_histogram() + 
+  scale_x_log10() + 
+  facet_wrap(~exposure_type)
+```
+
+
+
+## by item id 
+### simple 
+```{r}
+RT_data %>% 
+  filter(trial_complexity == "simple") %>% 
+   ggplot(aes(x = rt)) + 
+  geom_histogram() + 
+  scale_x_log10() + 
+  facet_wrap(~item_id)
+```
+
+### complex 
+```{r}
+RT_data %>% 
+  filter(trial_complexity == "complex") %>% 
+   ggplot(aes(x = rt)) + 
+  geom_histogram() + 
+  scale_x_log10() + 
+  facet_wrap(~item_id)
+```
+# zoom in on the effect of forced look duration 
+
+## RT on the first block (blank space confounding factor? )
+
+```{r}
+RT_data  %>%  
+  filter(trial_number == 1) %>% 
+ggplot(
+       aes(x=exposure_type, y=log(rt), colour=exposure_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  langcog::scale_color_solarized(name = "Item Type") + 
+  theme(legend.position = "bottom") + 
+  #facet_wrap(~trial_complexity)+
+  ylab("log RT (ms) at the first trial") + 
+  xlab("exposure type") 
+```
+
+## look at the dynamics of the first trial self paced and the second trial 
+
+```{r}
+RT_data  %>%  
+  mutate(
+    exposure_trial_comparison = case_when(
+      trial_number == 2 & exposure_type == "forced_long" ~ "forced_long_second", 
+      trial_number == 2 & exposure_type == "forced_short" ~ "forced_short_second", 
+      trial_number == 1 & exposure_type == "self_paced" ~ "self_paced_first",
+      TRUE ~ "irrelevant"
+    )
+  ) %>% 
+  filter(exposure_trial_comparison != "irrelevant") %>% 
+ggplot(
+       aes(x = exposure_trial_comparison, 
+           y = log(looking_time), colour=item_type)) +
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  langcog::scale_color_solarized(name = "Item Type") + 
+  #facet_wrap(~half)+
+  #theme(legend.position = "bottom") + 
+  ylab("log looking time (ms) at the second trial for forced block") + 
+  xlab("exposure type") + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+```
+
+crazy dynamic across the blocks....
+```{r}
+RT_data  %>%  
+  mutate(
+    exposure_trial_comparison = case_when(
+      trial_number == 2 & exposure_type == "forced_long" ~ "forced_long_second", 
+      trial_number == 2 & exposure_type == "forced_short" ~ "forced_short_second", 
+      trial_number == 1 & exposure_type == "self_paced" ~ "self_paced_first",
+      TRUE ~ "irrelevant"
+    )
+  ) %>% 
+  filter(exposure_trial_comparison != "irrelevant") %>% 
+ggplot(
+       aes(x = block_number, 
+           y = log(looking_time), colour=exposure_type)) +
+  geom_smooth(se = FALSE)+
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  langcog::scale_color_solarized(name = "Item Type") + 
+  facet_wrap(~item_type)+
+  #theme(legend.position = "bottom") + 
+  ylab("log looking time (ms) at the second trial for forced block") + 
+  xlab("exposure type") + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+```
+
+
+
+# Within-block change plotting 
+
+## RT
+```{r}
+ggplot(RT_data, 
+       aes(x=trial_number, y=log(rt), colour=item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  facet_grid(exposure_type~trial_complexity) +
+  langcog::scale_color_solarized(name = "Item Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("log RT (ms)") + 
+  xlab("Trial Number") 
+```
+
+## Looking time 
+```{r}
+ggplot(RT_data %>% filter(trial_number != 1), 
+       aes(x=trial_number, y=log(looking_time), colour=item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  facet_grid(~exposure_type) +
+  langcog::scale_color_solarized(name = "Item Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("Looking time)") + 
+  xlab("Trial Number") 
+```
+
