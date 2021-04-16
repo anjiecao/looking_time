@@ -1,0 +1,117 @@
+---
+title: "02c_version_comparison"
+author: "anjie"
+date: "4/16/2021"
+output: html_document
+---
+
+```{r message=FALSE, warning=FALSE}
+library(lme4)
+library(here)
+library(tidyverse)
+library(stringr) # for parsing r string 
+library(jsonlite) # for parsing r string 
+library(ggiraphExtra)
+library(plotrix)
+library(lmerTest)
+
+```
+
+```{r read_data, message=FALSE, warning=FALSE}
+RT_data <- read_csv(here('data/processed_data/trimmed_RTdata.csv'))
+similarity_data <- read_csv(here('data/processed_data/trimmed_similaritydata.csv'))
+complexity_data <- read_csv(here('data/processed_data/trimmed_complexitydata.csv'))
+demog_data <- read_csv(here('data/processed_data/trimmed_demogdata.csv'))
+```
+
+combine two looking time data! 
+```{r}
+new <- RT_data %>% 
+  mutate(looking_time = case_when(
+    exposure_type == "forced_short" & trial_number == 1 ~ 50, 
+    exposure_type == "forced_long" & trial_number == 1 ~ 5000, 
+    TRUE ~ 500 + rt
+  )) %>% 
+  mutate(version = "new")
+
+old <- read_csv(here('data/processed_data/sample_1/trimmed_RTdata.csv')) %>% 
+  mutate(version = "old", 
+         exposure_type = "old_self_paced") %>% 
+  mutate(looking_time = 500 + rt)
+d <- bind_rows(new, old)
+```
+
+## look at distribution of mean looking time 
+```{r}
+d %>% 
+  group_by(version, subject) %>% 
+  summarise(
+    mean_lt = mean(looking_time), 
+    mean_rt = mean(rt)) %>%  
+  pivot_longer(
+    cols = c(mean_lt,mean_rt), 
+    names_to = "measurement_type", 
+    values_to = "duration"
+  ) %>% 
+  ggplot(aes(x = duration, fill = version)) + 
+  geom_density(alpha = .5) + 
+  #scale_x_log10()+
+  facet_wrap(~measurement_type) 
+```
+
+just compare the looking time of the first trial of the self paced? 
+```{r}
+d %>% 
+  filter(exposure_type == "self_paced" | exposure_type == "old_self_paced") %>% 
+  filter(trial_number == 1) %>% 
+  ggplot(aes(x = block_number, 
+             y = looking_time, 
+             color = version)) + 
+  stat_summary(position = position_dodge(width = 0.1))  + 
+  stat_summary(geom = "line") + 
+  xlab("Block") + 
+  ylab("Looking time at first self-paced trial")
+```
+
+does the long exposure block create expectations in participants to wait? 
+hypothesis: if forced block comes before the self paced, self paced might show longer first trial wait time. 
+
+```{r}
+forced_long_first_subject <- d %>% 
+  filter(block_number == 0 & exposure_type == "forced_long") %>% 
+  distinct(subject) %>% 
+  pull()
+
+self_paced_first_subject <- d %>% 
+  filter(block_number == 0 & exposure_type == "self_paced") %>% 
+  distinct(subject) %>% 
+  pull()
+
+
+```
+
+
+```{r}
+
+d %>%  
+  mutate(
+    exposure_order_type = case_when(
+      subject %in% forced_long_first_subject ~ "forced_long_first", 
+      subject %in% self_paced_first_subject ~ "self_paced_first", 
+      TRUE ~ "irrelevant"
+    )
+  ) %>% 
+  filter(version == "new") %>%
+  filter(exposure_type == "self_paced" | exposure_type == "forced_long") %>% 
+  filter(trial_number == 1) %>%
+  filter(block_number %in% c(0, 1)) %>% 
+  ggplot(aes(x = block_number, 
+             y = looking_time, 
+             color = exposure_order_type)) + 
+  stat_summary(position = position_dodge(width = .2))
+  
+```
+
+
+
+
