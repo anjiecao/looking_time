@@ -21,7 +21,8 @@ library(lmerTest)
 RT_data <- read_csv(here('data/processed_data/trimmed_RTdata.csv'))
 similarity_data <- read_csv(here('data/processed_data/trimmed_similaritydata.csv'))
 complexity_data <- read_csv(here('data/processed_data/trimmed_complexitydata.csv'))
-demog_data <- read_csv(here('data/processed_data/trimmed_demogdata.csv'))
+demog_data_new <- read_csv(here('data/processed_data/trimmed_demogdata.csv'))
+demog_data_old <- read_csv(here('data/processed_data/trimmed_demogdata.csv'))
 ```
 
 combine two looking time data! 
@@ -70,11 +71,43 @@ d %>%
   stat_summary(position = position_dodge(width = 0.1))  + 
   stat_summary(geom = "line") + 
   xlab("Block") + 
-  ylab("Looking time at first self-paced trial")
+  ylab("Looking time at first self-paced trial") 
+  #facet_wrap(~exposure_type)
 ```
+
+```{r}
+d %>% 
+  filter((version == "new" & block_number == 0 & exposure_type == "self_paced") |
+          (version == "old" & block_number == 0 )) %>% 
+  filter(trial_type == "background") %>% 
+  ggplot(aes(x = trial_number, 
+             y = looking_time, 
+             color = version)) + 
+  stat_summary(position = position_dodge(width = 0.1))  + 
+  stat_summary(geom = "line") + 
+  xlab("Trial") + 
+  ylab("Looking time at first block") 
+
+d %>% 
+  filter((version == "new" & block_number == 0 & exposure_type == "self_paced") |
+          (version == "old" & block_number == 0 )) %>% 
+  filter(trial_type == "background") %>% 
+  ggplot(aes(x = trial_number, 
+             y = rt, 
+             color = version)) + 
+  stat_summary(position = position_dodge(width = 0.1))  + 
+  stat_summary(geom = "line") + 
+  xlab("Trial") + 
+  ylab("RT at first block") 
+  
+```
+
+
 
 does the long exposure block create expectations in participants to wait? 
 hypothesis: if forced block comes before the self paced, self paced might show longer first trial wait time. 
+
+
 
 ```{r}
 forced_long_first_subject <- d %>% 
@@ -94,13 +127,6 @@ self_paced_first_subject <- d %>%
 ```{r}
 
 d %>%  
-  mutate(
-    exposure_order_type = case_when(
-      subject %in% forced_long_first_subject ~ "forced_long_first", 
-      subject %in% self_paced_first_subject ~ "self_paced_first", 
-      TRUE ~ "irrelevant"
-    )
-  ) %>% 
   filter(version == "new") %>%
   filter(exposure_type == "self_paced" | exposure_type == "forced_long") %>% 
   filter(trial_number == 1) %>%
@@ -113,5 +139,23 @@ d %>%
 ```
 
 
+```{r}
+v_fit <- lmer(log(rt) ~ I((exp(1)**(-trial_number))) * item_type * trial_complexity * version + 
+                     (1 | subject), 
+                   data = d)
+
+no_v_fit <- lmer(log(rt) ~ I((exp(1)**(-trial_number))) * item_type * trial_complexity + 
+                     (1 | subject), 
+                   data = d)
+
+anova(v_fit, no_v_fit)
+```
 
 
+```{r}
+v_fit <- lmer(log(rt) ~ I((exp(1)**(-trial_number))) * item_type * trial_complexity * version + 
+                     (1 | subject), 
+                   data = d)
+
+summary(v_fit)$coef %>% knitr::kable(digits = 2)
+```

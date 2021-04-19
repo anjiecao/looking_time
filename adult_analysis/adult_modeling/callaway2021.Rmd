@@ -1,0 +1,132 @@
+---
+title: "callaway2021"
+author: "anjie"
+date: "4/19/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+```
+
+We consider simple choice problems in which a decision maker (DM) is presented with a set of items (e.g., snacks) and must choose one. 
+- $i$: item
+- $u^{(i)}$: the utility that the DM would gain by choosing it 
+
+
+DM's belief about the item values at time t is described by a set of Gaussians, one for each item
+- $\mu^{(i)}_{t}$: means of the gaussian 
+- $\lambda^{(i)}_{t}$: the precision is the inverse of the variance 
+
+these estimated value distributions are initialized to the DM's prior belief about the distribution of values in the environment. that is, she assummes that: 
+
+$u^{(i)} ~ \sim Gaussians(\overline{\mu}, \overline{\sigma }^{2})$
+
+and consequently set 
+
+$\mu^{(i)}_{0} = \overline{\mu}$
+$\lambda^{(i)}_{0} = \overline{\sigma }^{2}$
+
+for all i. 
+
+We model the control of attention as the selection of cognitive operations, $c_{t}$ that specify either an item to sample, or the termination of sampling. if the DM wishes to sample from item c at tiem-step t. she selects $c_{t} = c$ and receives a signal 
+
+
+```{r}
+
+unknown_true_value_for_c = 0
+fp_amount_of_noise = 1
+
+signal_for_c = rnorm(100, 
+                     unknown_true_value_for_c, 
+                     fp_amount_of_noise ^ 2)
+
+
+hist(signal_for_c)
+```
+
+```{r}
+percision_at_time_t0 = 0.2
+utility_at_t0 = .1
+
+precision_at_t1 = percision_at_time_t0 + fp_amount_of_noise ^ (-2)
+utilitiy_at_t1 = (fp_amount_of_noise ^ (-2) * sample(signal_for_c, 1) + percision_at_time_t0 * utility_at_t0) / precision_at_t1
+
+precision_at_t1
+utilitiy_at_t1
+  
+```
+
+```{r}
+update_precision <- function(previous_timepoint_precision, 
+                             noise_in_signal){
+  
+  current_precision <- previous_timepoint_precision + noise_in_signal
+  return (current_precision)
+  
+}
+
+update_mean_item_value <- function(signal_noise, signal_distribution, 
+                                   previous_timepoint_precision,
+                                   previous_timepoint_mean_item_value, 
+                                   current_precision){
+  
+  current_mean_value <- ((signal_noise ^ (-2) * sample(signal_distribution, 1) + 
+                            previous_timepoint_precision * previous_timepoint_mean_item_value)) / current_precision
+  
+  return (current_mean_value)
+
+}
+
+
+
+```
+
+```{r}
+initial_belief_mean_item_value <- 1
+initial_belief_variance <- .2
+noise_in_signal <- initial_belief_variance ^ 2
+prior_distribution <- rnorm(100, 
+                            mean = initial_belief_mean_item_value, 
+                            sd = noise_in_signal)
+
+initial_utility <- initial_belief_mean_item_value
+initial_precision <- initial_belief_variance ^ (-2)
+
+
+# pretend to have 100 time points 
+precision_vector <- c(initial_precision)
+utility_vector <- c(initial_utility)
+
+for (i in 1:100){
+  
+  previous_timepoint_precision = precision_vector[i]
+  noise_in_signal = noise_in_signal
+  current_timepoint_precision = update_precision(previous_timepoint_precision, 
+                                                 noise_in_signal)
+  
+  precision_vector <- c(precision_vector, current_timepoint_precision)
+  
+  
+  previous_timepoint_utility = utility_vector[i]
+  previous_time_point_distribution = rnorm(100, 
+                            mean = previous_timepoint_utility, 
+                            sd = noise_in_signal)
+  
+  
+  
+  current_timepoint_utility = update_mean_item_value(noise_in_signal, 
+                                                     previous_time_point_distribution,  
+                                   previous_timepoint_precision,
+                                   previous_timepoint_utility, 
+                                   current_timepoint_precision)
+
+  utility_vector <- c(utility_vector, current_timepoint_utility)
+  
+}
+
+  
+```
+
