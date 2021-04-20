@@ -54,6 +54,12 @@ feedback <- read_csv(here('data/merged_data/merged_data.csv')) %>%
 feedback %>% kableExtra::kable()
 ```
 
+```{r}
+read_csv(here('data/merged_data/merged_data.csv')) %>% 
+  filter(subject == "SS1618438527994") %>% 
+  select(stimulus_displayed) %>% 
+  distinct()
+```
 
 
 # Descriptive Info 
