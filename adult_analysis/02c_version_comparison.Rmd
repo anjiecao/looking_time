@@ -22,7 +22,7 @@ RT_data <- read_csv(here('data/processed_data/trimmed_RTdata.csv'))
 similarity_data <- read_csv(here('data/processed_data/trimmed_similaritydata.csv'))
 complexity_data <- read_csv(here('data/processed_data/trimmed_complexitydata.csv'))
 demog_data_new <- read_csv(here('data/processed_data/trimmed_demogdata.csv'))
-demog_data_old <- read_csv(here('data/processed_data/trimmed_demogdata.csv'))
+demog_data_old <- read_csv(here('data/processed_data/sample_1/trimmed_demogdata.csv'))
 ```
 
 combine two looking time data! 
@@ -35,14 +35,73 @@ new <- RT_data %>%
   )) %>% 
   mutate(version = "new")
 
+
+
+
 old <- read_csv(here('data/processed_data/sample_1/trimmed_RTdata.csv')) %>% 
   mutate(version = "old", 
          exposure_type = "old_self_paced") %>% 
-  mutate(looking_time = 500 + rt)
+  mutate(looking_time = 500 + rt) 
+
+# i believe the old version was not processed this way 
+flat_rt_sbj <- old %>% 
+  group_by(subject) %>% 
+  summarise(sd = sd(log(rt))) %>% 
+  filter(sd < 0.15) %>% 
+  pull(subject)
+
+old <- old %>% 
+  filter(!(subject %in% flat_rt_sbj))
+
 d <- bind_rows(new, old)
 ```
+## look at demographic distribution 
+```{r}
+demog_data_new <- demog_data_new %>% 
+  mutate(version = "new", 
+         age = as.double(age)) 
+
+demog_data_old <- demog_data_old %>% 
+  mutate(version = "old", 
+         age = as.double(age))
+
+demog_data_full <- bind_rows(demog_data_new, demog_data_old)
+```
+
+## age 
+```{r}
+demog_data_full %>% 
+  ggplot(aes(x = age, fill = version)) + 
+  geom_density(alpha = .5)
+```
+
+```{r}
+demog_data_full %>% 
+  ggplot(aes(x = ethnicity)) + 
+  geom_histogram(stat = "count") + 
+  facet_wrap(~version) + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+```
+
+```{r}
+demog_data_full %>% 
+  ggplot(aes(x = education)) + 
+  geom_histogram(stat = "count") + 
+  facet_wrap(~version) + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+```
+
+```{r}
+demog_data_full %>% 
+  ggplot(aes(x = gender)) + 
+  geom_histogram(stat = "count") + 
+  facet_wrap(~version) + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+```
+
 
 ## look at distribution of mean looking time 
+
 ```{r}
 d %>% 
   group_by(version, subject) %>% 

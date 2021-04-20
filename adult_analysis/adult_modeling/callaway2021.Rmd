@@ -84,6 +84,7 @@ update_mean_item_value <- function(signal_noise, signal_distribution,
 
 ```
 
+# need to better understand the relationship betwee noise in the signal and the estimated precision etc 
 ```{r}
 initial_belief_mean_item_value <- 1
 initial_belief_variance <- .2
