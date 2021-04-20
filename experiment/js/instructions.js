@@ -1,5 +1,9 @@
 function instructions(timeline){
 
+var forced_short_viewing_duration = 100
+var forced_long_viewing_duration = 10 * 1000
+        
+    
 var intro0 = {
     type: "instructions",
     pages: [
@@ -100,7 +104,7 @@ var intro0 = {
           key_response: [40],
           minimum_viewing_duration: 500, // daffner2000's info was 600, changed to 200
           response_ends_trial: true,
-                forced_long_viewing_duration: 5000,
+         forced_long_viewing_duration: forced_long_viewing_duration,
             exposure_type: "forced_long"
         }
 
@@ -123,9 +127,9 @@ var intro0 = {
           },
           two_stimuli_interval: 0,
           key_response: [40],
-          minimum_viewing_duration: 50, // daffner2000's info was 600, changed to 200
+          minimum_viewing_duration: 500, // daffner2000's info was 600, changed to 200
           response_ends_trial: true,
-                forced_long_viewing_duration: 50,
+                forced_long_viewing_duration: forced_short_viewing_duration,
             exposure_type: "forced_long"
         }
 
