@@ -59,75 +59,125 @@ utilitiy_at_t1
   
 ```
 
+
+
+
+# need to better understand the relationship betwee noise in the signal and the estimated precision etc 
+
+
 ```{r}
-update_precision <- function(previous_timepoint_precision, 
-                             noise_in_signal){
-  
-  current_precision <- previous_timepoint_precision + noise_in_signal
-  return (current_precision)
-  
-}
+# belief about the item 
+b_mu = 1
+b_variance = 0.2 
+b_precision = 1/b_variance 
 
-update_mean_item_value <- function(signal_noise, signal_distribution, 
-                                   previous_timepoint_precision,
-                                   previous_timepoint_mean_item_value, 
-                                   current_precision){
-  
-  current_mean_value <- ((signal_noise ^ (-2) * sample(signal_distribution, 1) + 
-                            previous_timepoint_precision * previous_timepoint_mean_item_value)) / current_precision
-  
-  return (current_mean_value)
+b_prior_distribution = rnorm(100, 
+                b_mu, 
+                b_variance)
+b_prior = sample(b_prior_distribution, 1)
 
-}
+
+# signal received after choosing the item 
+s_mu = 0.8 # unknown true value of item being sampled 
+s_variance = 0.1 # the amount of noise in each signal 
+s_precision = 1/s_variance
+
+s_x_distribution = rnorm(100, 
+                       s_mu, 
+                       s_variance)
+s_x = sample(s_x_distribution, 1)
+
+# update the belief after receiving the item 
+b_new_precision = b_precision + s_precision 
+b_posterior = ((s_precision * s_x) + (b_precision * b_prior)) / b_new_precision
+
 
 
 
 ```
 
-# need to better understand the relationship betwee noise in the signal and the estimated precision etc 
 ```{r}
-initial_belief_mean_item_value <- 1
-initial_belief_variance <- .2
-noise_in_signal <- initial_belief_variance ^ 2
-prior_distribution <- rnorm(100, 
-                            mean = initial_belief_mean_item_value, 
-                            sd = noise_in_signal)
+update_precision <- function(prior_belief_precision, 
+                             signal_precision){
+  return (prior_belief_precision + signal_precision)
+}
 
-initial_utility <- initial_belief_mean_item_value
-initial_precision <- initial_belief_variance ^ (-2)
+update_belief <- function(signal_precision, 
+                          signal_value, 
+                          belief_precision, 
+                          belief_value, 
+                          updated_signal_precision){
+  
+  updated_belief <- ((signal_precision * signal_value) + 
+                       (belief_precision * belief_value)) / updated_signal_precision
+  
+  return (updated_belief)
 
+}
+
+
+```
+
+
+
+```{r}
+
+# belief about the item 
+b_mu = .2
+b_variance = 0.2 
+b_precision = 1/b_variance 
+
+b_prior_distribution = rnorm(100, 
+                b_mu, 
+                b_variance)
+b_prior = sample(b_prior_distribution, 1)
+
+
+# signal received after choosing the item 
+s_mu = 5 # unknown true value of item being sampled 
+s_variance = 0.1 # the amount of noise in each signal 
+s_precision = 1/s_variance
+
+s_x_distribution = rnorm(100, 
+                       s_mu, 
+                       s_variance)
+s_x = sample(s_x_distribution, 1)
 
 # pretend to have 100 time points 
-precision_vector <- c(initial_precision)
-utility_vector <- c(initial_utility)
+belief_precision_vector <- c(b_precision)
+belief_mu_vector <- c(b_mu)
 
 for (i in 1:100){
   
-  previous_timepoint_precision = precision_vector[i]
-  noise_in_signal = noise_in_signal
-  current_timepoint_precision = update_precision(previous_timepoint_precision, 
-                                                 noise_in_signal)
+  current_belief_precision = belief_precision_vector[i]
+  current_belief_mu = belief_mu_vector[i]
   
-  precision_vector <- c(precision_vector, current_timepoint_precision)
+  updated_belief_precision = update_precision(current_belief_precision, 
+                                       s_precision)
   
+  updated_mu = update_belief(s_precision,
+                             s_x, 
+                             current_belief_precision, 
+                             current_belief_mu, 
+                             updated_belief_precision)
   
-  previous_timepoint_utility = utility_vector[i]
-  previous_time_point_distribution = rnorm(100, 
-                            mean = previous_timepoint_utility, 
-                            sd = noise_in_signal)
-  
-  
-  
-  current_timepoint_utility = update_mean_item_value(noise_in_signal, 
-                                                     previous_time_point_distribution,  
-                                   previous_timepoint_precision,
-                                   previous_timepoint_utility, 
-                                   current_timepoint_precision)
-
-  utility_vector <- c(utility_vector, current_timepoint_utility)
+  belief_precision_vector <- c(belief_precision_vector, updated_belief_precision)
+  belief_mu_vector <- c(belief_mu_vector, updated_mu)
   
 }
 
-  
+tibble("time_point" = seq(1, 101, 1),
+       "belief" = belief_mu_vector, 
+       "precision" = belief_precision_vector, 
+)
 ```
+
+
+# Metalevel markov decision process 
+```{r}
+
+```
+
+
+
 
