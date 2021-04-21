@@ -335,7 +335,6 @@ function generate_all_block(condition_num,
     // rotate fam order and block type arrays by rotation num
     rotation_num = condition_num % num_blocks
 
-
     // determine familiarization order
     fam_num = [3,7,5,5,7,3]
     fam_num.length = num_blocks
