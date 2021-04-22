@@ -68,7 +68,7 @@ utilitiy_at_t1
 ```{r}
 # belief about the item 
 b_mu = 1
-b_variance = 0.2 
+b_variance = 0.1 
 b_precision = 1/b_variance 
 
 b_prior_distribution = rnorm(100, 
@@ -124,7 +124,8 @@ update_belief <- function(signal_precision,
 
 # belief about the item 
 b_mu = .2
-b_variance = 0.2 
+b_variance = 0.3
+
 b_precision = 1/b_variance 
 
 b_prior_distribution = rnorm(100, 
@@ -135,7 +136,7 @@ b_prior = sample(b_prior_distribution, 1)
 
 # signal received after choosing the item 
 s_mu = 5 # unknown true value of item being sampled 
-s_variance = 0.1 # the amount of noise in each signal 
+s_variance = 1.8 # the amount of noise in each signal, varying this will change the curve of KL. more noise slower habituation 
 s_precision = 1/s_variance
 
 s_x_distribution = rnorm(100, 
@@ -166,15 +167,183 @@ for (i in 1:100){
   
 }
 
-tibble("time_point" = seq(1, 101, 1),
+example <- tibble("time_point" = seq(1, 101, 1),
        "belief" = belief_mu_vector, 
        "precision" = belief_precision_vector, 
-)
+) %>% 
+  mutate("variance" = 1/precision)
+```
+```{r}
+example_d <- example %>% 
+  select(time_point, belief, variance)
+example_d
+```
+
+```{r}
+densities <- apply(example_d[, -1], 1, function(x) rnorm(n = 1000, mean = x[1], sd = x[2]))
+colnames(densities) <- example_d$time_point
+
+plot(0, type = "n", xlim = c(min(densities), max(densities)), ylim = c(0, 10))
+for (d in 1:ncol(densities)){
+  lines(density(densities[, d]), lty = d)
+}
+#legend("topright", legend=colnames(densities), lty=1:ncol(densities))
+```
+
+```{r}
+example_d %>% 
+  ggplot(aes(x = time_point), 
+         y = belief) + 
+  geom_pointrange(aes(y = belief, ymin = belief + variance, ymax = belief - variance))
+```
+https://stats.stackexchange.com/questions/7440/kl-divergence-between-two-univariate-gaussians
+
+
+```{r}
+calculate_KL_between_gaussian <- function(mu1, mu2, sig1, sig2){
+    
+  return(log(sig2/sig1) + (sig1^2 + (mu1-mu2)^2)/(2*(sig2^2)) - 1/2)
+}
+
+```
+
+```{r}
+example
+
+kls <- c()
+for (t in 2:101){
+
+  mu1 <- example %>% 
+    filter(time_point == t-1) %>%
+    select(belief) %>% 
+    pull()
+  
+  sig1 <- (example %>% 
+    filter(time_point == t-1) %>%
+    select(variance) %>% 
+    pull()) ^ .5
+  
+  mu2 <- example %>% 
+    filter(time_point == t) %>% 
+    select(belief) %>% 
+    pull()
+  
+  sig2 <- (example %>% 
+    filter(time_point == t) %>%
+    select(variance) %>% 
+    pull()) ^ .5
+  
+  kl <- calculate_KL_between_gaussian(mu1, mu2, sig1, sig2)
+  kls <- c(kls, kl)
+  
+}
+
+example_with_kl <- example %>% 
+  filter(time_point != 1)
+
+example_with_kl$kl <- kls
+
+example_with_kl %>% 
+  ggplot(aes(x = time_point, 
+                    y = kl)) + 
+  geom_point()
+```
+```{r}
+
 ```
 
 
-# Metalevel markov decision process 
+
+# what if we put them into vectors? 
+
 ```{r}
+update_precision_vector <- function(prior_belief_precision_vector, 
+                             signal_precision_vector){
+  return (prior_belief_precision + signal_precision)
+}
+
+update_belief <- function(signal_precision, 
+                          signal_value, 
+                          belief_precision, 
+                          belief_value, 
+                          updated_signal_precision){
+  
+  updated_belief <- ((signal_precision * signal_value) + 
+                       (belief_precision * belief_value)) / updated_signal_precision
+  
+  return (updated_belief)
+
+}
+```
+
+
+
+```{r}
+stimuli <- c(1, 0, 1)
+
+stimuli_b_mu = c(.5, .5, .5)
+stimuli_b_variance = c(.3, .3, .3)
+stimuli_b_precision = 1/stimuli_b_variance
+stimuli_b_prior = c()
+
+for (i in 1: length(stimuli_b_mu)){
+  
+  b_prior = sample(rnorm(100, 
+                stimuli_b_mu[i], 
+                stimuli_b_variance[i]), 1)
+  
+  stimuli_b_prior = c(stimuli_b_prior, b_prior)
+  
+}
+
+
+# signal received after choosing the item 
+stimuli_s_mu = stimuli # unknown true value of item being sampled 
+stimuli_s_variance = c(0.1, 0.1, 0.1) # the amount of noise in each signal, maybe can be changed as a function of exposure duration? 
+stimuli_s_precision = 1/stimuli_s_variance
+stimuli_s_prior = c()
+
+for (i in 1: length(stimuli_s_mu)){
+  
+  s_prior = sample(rnorm(100, 
+                stimuli_s_mu[i], 
+                stimuli_s_variance[i]), 1) # shouldn't be negative, logit? 
+  
+  stimuli_s_prior = c(stimuli_s_prior, s_prior)
+  
+}
+
+
+# pretend to have 100 time points 
+belief_precision_list <- list(stimuli_b_precision)
+belief_mu_list <- list(stimuli_b_mu)
+
+for (i in 1:3){
+  
+  current_belief_precision_vector = belief_precision_list[[i]]
+  current_belief_mu_vector = belief_mu_list[[i]]
+  
+  updated_belief_precision_vector = list(update_precision(current_belief_precision_vector, 
+                                       stimuli_s_precision))
+  
+  updated_mu_vector = list(update_belief(stimuli_s_precision,
+                             stimuli_s_mu, 
+                             current_belief_precision_vector, 
+                             current_belief_mu_vector, 
+                             updated_belief_precision_vector[[1]]))
+  
+  belief_precision_list <- c(belief_precision_list, 
+                             updated_belief_precision_vector)
+  #belief_mu_list[[i+1]] <- updated_mu_vector
+  belief_mu_list <- c(belief_mu_list, updated_mu_vector)
+  
+}
+
+example <- tibble("time_point" = seq(1, 101, 1),
+       "belief" = belief_mu_vector, 
+       "precision" = belief_precision_vector, 
+) %>% 
+  mutate("variance" = 1/precision)
 
 ```
 
