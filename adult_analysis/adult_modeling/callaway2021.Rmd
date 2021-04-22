@@ -96,27 +96,6 @@ b_posterior = ((s_precision * s_x) + (b_precision * b_prior)) / b_new_precision
 
 ```
 
-```{r}
-update_precision <- function(prior_belief_precision, 
-                             signal_precision){
-  return (prior_belief_precision + signal_precision)
-}
-
-update_belief <- function(signal_precision, 
-                          signal_value, 
-                          belief_precision, 
-                          belief_value, 
-                          updated_signal_precision){
-  
-  updated_belief <- ((signal_precision * signal_value) + 
-                       (belief_precision * belief_value)) / updated_signal_precision
-  
-  return (updated_belief)
-
-}
-
-
-```
 
 ```{r}
 calculate_KL_between_gaussian <- function(mu1, mu2, sig1, sig2){
@@ -126,79 +105,52 @@ calculate_KL_between_gaussian <- function(mu1, mu2, sig1, sig2){
 
 
 calculate_probability <- function(mu, sigma, value){
-  
   return (pnorm(value, mean = mu, sd = sigma, lower.tail = FALSE))
-  
 }
 ```
 
 ```{r}
-
-# belief about the item 
-b_mu = .2
-b_variance = 0.3
-
-b_precision = 1/b_variance 
-
-b_prior_distribution = rnorm(100, 
-                b_mu, 
-                b_variance)
-b_prior = sample(b_prior_distribution, 1)
-
-
-# signal received after choosing the item 
+n <- 100
 s_mu = 5 # unknown true value of item being sampled 
-s_variance = 1.8 # the amount of noise in each signal, varying this will change the curve of KL. more noise slower habituation 
-s_precision = 1/s_variance
+s_variance = 1.8 # the amount of noise in each signal
+b_prior <- 10
+b_variance_prior <- .5
 
-s_x_distribution = rnorm(100, 
-                       s_mu, 
-                       s_variance)
-s_x = sample(s_x_distribution, 1)
-
-# pretend to have 100 time points 
-belief_precision_vector <- c(b_precision)
-belief_mu_vector <- c(b_mu)
-observation_vector <- c(s_x)
-
-for (i in 1:100){
-  
-  current_belief_precision = belief_precision_vector[i]
-  current_belief_mu = belief_mu_vector[i]
-  
-  s_mu = 5 # unknown true value of item being sampled 
-  s_variance = 1.8 # the amount of noise in each signal, varying this will change the curve of KL. more noise slower habituation 
-    s_precision = 1/s_variance
-
-  s_x_distribution = rnorm(100, 
-                       s_mu, 
-                       s_variance)
-  s_x = sample(s_x_distribution, 1)
-  
-  observation_vector <- c(observation_vector, s_x)
-  
-  updated_belief_precision = update_precision(current_belief_precision, 
-                                       s_precision)
-  
-  updated_mu = update_belief(s_precision,
-                             s_x, 
-                             current_belief_precision, 
-                             current_belief_mu, 
-                             updated_belief_precision)
-  
-  belief_precision_vector <- c(belief_precision_vector, updated_belief_precision)
-  belief_mu_vector <- c(belief_mu_vector, updated_mu)
-  
+update_precision <- function(prior_belief_precision, signal_precision){
+  return (prior_belief_precision + signal_precision)
 }
 
-example <- tibble("time_point" = seq(1, 101, 1),
-       "belief" = belief_mu_vector, 
-       
-       "precision" = belief_precision_vector, 
-       "observation" = observation_vector,
-) %>% 
-  mutate("variance" = 1/precision) %>% 
-  mutate(noise_in_signal = s_variance)
+update_belief <- function(signal_precision, 
+                          signal_value, 
+                          belief_precision, 
+                          belief_value, 
+                          updated_signal_precision){
+  
+  updated_belief <- ((signal_precision * signal_value) + (belief_precision * belief_value)) /
+    updated_signal_precision
+  
+  return (updated_belief)
+
+}
+# belief about the item 
+example <- data_frame(time_point = 1:n,
+                      b_mu = b_prior,
+                      b_variance = b_variance_prior,
+                      b_precision = 1/b_variance,
+                      s_precision = 1/s_variance,
+                      s_x = rnorm(n, s_mu, s_variance^.5)) # signal received after choosing the item 
+
+# pretend to have 100 time points 
+for (i in 2:n) {
+  example$b_precision[i] <- update_precision(example$b_precision[i-1], example$s_precision[1])
+  
+  example$b_mu[i] <- update_belief(example$s_precision[1], example$s_x[i], example$b_precision[i-1], 
+                               example$b_mu[i-1], example$b_precision[i])
+}
+
+ggplot(example, aes(x = time_point, y = b_mu)) + 
+  geom_line() + 
+  geom_hline(yintercept = 5, lty = 2)
 ```
 
 
@@ -229,7 +181,7 @@ for (i in 1:100){
 
   s_x_distribution = rnorm(100, 
                        s_mu, 
-                       s_variance)
+                       s_variance^.5)
   s_x = sample(s_x_distribution, 1)
   
   observation_vector <- c(observation_vector, s_x)
