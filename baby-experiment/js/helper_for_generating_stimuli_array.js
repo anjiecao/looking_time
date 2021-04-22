@@ -159,8 +159,12 @@ function get_all_stimuli(TEST_RUN){
 
           current_stimuli = MAIN_DIR + 'simple_' + current_species + "_A.gif"
 
-           all_stimuli.push(current_stimuli)
+          all_stimuli.push(current_stimuli)
          }
+
+
+    // put creatures in pairs
+
 
     return (all_stimuli)
 
@@ -335,62 +339,44 @@ function generate_all_block(condition_num,
     // rotate fam order and block type arrays by rotation num
     rotation_num = condition_num % num_blocks
 
-
     // determine familiarization order
     fam_num = [3,7,5,5,7,3]
     fam_num.length = num_blocks
     fam_orders = arrayRotate(fam_num, rotation_num)
 
-    console.log('fam_orders')
-
-    console.log(fam_orders)
+    console.log('stimuli_array')
+    console.log(stimuli_array)
 
     // determine block types
     block_types = ["Std", "Dev", "Dev", "Std", "Std", "Dev"]
     block_orders = arrayRotate(block_types, rotation_num)
 
 
-    // determine the rotation number for stimuli
-    if (condition_num / 6 <= 1){
-      pair_rotation_num = 0
-    }
+    // random order of pairs
+    pairs = [0,1,2,3,4,5]
+    shuffleArray(pairs)
 
-    else if (condition_num / 6 <= 2) {
-      pair_rotation_num = 1
-    }
+    console.log('pairs')
+    console.log(pairs)
 
-    else if (condition_num / 6 <= 3) {
-      pair_rotation_num = 2
-    }
+    background_shifts = Array.from({length: 6}, () => Math.floor(Math.random() * 2));
 
-    // determine the order of pairs
-    pairs = [1,2,3,4,5,6]
-    pairs_order = arrayRotate(pairs, pair_rotation_num)
+    deviant_shifts = Array()
 
-    // backgrounds are even indices and deviants are uneven indices
-    randomNum = Math.random()
-    if (randomNum < 0.5){
-      background_shift = 0
-      deviant_shift = 1
-
-    }
-    // backgrounds are uneven indices and deviants are even indices
-    else {
-      background_shift = 1
-      deviant_shift = 0
-
+    for (var i = 0; i < background_shifts.length; i++) {
+      deviant_shifts.push(Math.abs(background_shifts[i]-1))
     }
 
     // get paths to all background stimuli
     backgrounds = []
     for (var i = 0; i < stimuli_array.length/2; i++) {
-        backgrounds.push(stimuli_array[i*2 + background_shift])
+        backgrounds.push(stimuli_array[pairs[i]*2 + background_shifts[i]])
       }
 
     // get paths to all deviant stimuli
     deviants = []
     for (var i = 0; i < stimuli_array.length/2; i++) {
-        deviants.push(stimuli_array[i*2 + deviant_shift])
+        deviants.push(stimuli_array[pairs[i]*2 + deviant_shifts[i]])
       }
 
 
@@ -401,13 +387,8 @@ function generate_all_block(condition_num,
 
     all_block_information = []
 
-
-    // put a loop around this with the number of blocks of this type
     for (i = 0; i < num_blocks; i++) {
-
-    // simple similar blocks
-     block_information = generate_block(backgrounds[i], deviants[i], fam_orders[i], num_species, block_types[i])
-
+     block_information = generate_block(backgrounds[i], deviants[i], fam_orders[i], num_species, block_orders[i])
      all_block_information.push(block_information)
   }
 
