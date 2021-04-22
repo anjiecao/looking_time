@@ -118,7 +118,19 @@ update_belief <- function(signal_precision,
 
 ```
 
+```{r}
+calculate_KL_between_gaussian <- function(mu1, mu2, sig1, sig2){
+    
+  return(log(sig2/sig1) + (sig1^2 + (mu1-mu2)^2)/(2*(sig2^2)) - 1/2)
+}
 
+
+calculate_probability <- function(mu, sigma, value){
+  
+  return (pnorm(value, mean = mu, sd = sigma, lower.tail = FALSE))
+  
+}
+```
 
 ```{r}
 
@@ -147,11 +159,23 @@ s_x = sample(s_x_distribution, 1)
 # pretend to have 100 time points 
 belief_precision_vector <- c(b_precision)
 belief_mu_vector <- c(b_mu)
+observation_vector <- c(s_x)
 
 for (i in 1:100){
   
   current_belief_precision = belief_precision_vector[i]
   current_belief_mu = belief_mu_vector[i]
+  
+  s_mu = 5 # unknown true value of item being sampled 
+  s_variance = 1.8 # the amount of noise in each signal, varying this will change the curve of KL. more noise slower habituation 
+    s_precision = 1/s_variance
+
+  s_x_distribution = rnorm(100, 
+                       s_mu, 
+                       s_variance)
+  s_x = sample(s_x_distribution, 1)
+  
+  observation_vector <- c(observation_vector, s_x)
   
   updated_belief_precision = update_precision(current_belief_precision, 
                                        s_precision)
@@ -169,43 +193,75 @@ for (i in 1:100){
 
 example <- tibble("time_point" = seq(1, 101, 1),
        "belief" = belief_mu_vector, 
+       
        "precision" = belief_precision_vector, 
+       "observation" = observation_vector,
 ) %>% 
-  mutate("variance" = 1/precision)
-```
-```{r}
-example_d <- example %>% 
-  select(time_point, belief, variance)
-example_d
+  mutate("variance" = 1/precision) %>% 
+  mutate(noise_in_signal = s_variance)
 ```
 
-```{r}
-densities <- apply(example_d[, -1], 1, function(x) rnorm(n = 1000, mean = x[1], sd = x[2]))
-colnames(densities) <- example_d$time_point
 
-plot(0, type = "n", xlim = c(min(densities), max(densities)), ylim = c(0, 10))
-for (d in 1:ncol(densities)){
-  lines(density(densities[, d]), lty = d)
+```{r}
+# signal received after choosing the item 
+s_mu = 5 # unknown true value of item being sampled 
+s_variance = 3 # the amount of noise in each signal, varying this will change the curve of KL. more noise slower habituation 
+s_precision = 1/s_variance
+
+s_x_distribution = rnorm(100, 
+                       s_mu, 
+                       s_variance)
+s_x = sample(s_x_distribution, 1)
+
+# pretend to have 100 time points 
+belief_precision_vector <- c(b_precision)
+belief_mu_vector <- c(b_mu)
+observation_vector <- c(s_x)
+
+for (i in 1:100){
+  
+  current_belief_precision = belief_precision_vector[i]
+  current_belief_mu = belief_mu_vector[i]
+  
+  s_mu = 5 # unknown true value of item being sampled 
+  s_variance = 3 # the amount of noise in each signal, varying this will change the curve of KL. more noise slower habituation 
+    s_precision = 1/s_variance
+
+  s_x_distribution = rnorm(100, 
+                       s_mu, 
+                       s_variance)
+  s_x = sample(s_x_distribution, 1)
+  
+  observation_vector <- c(observation_vector, s_x)
+  
+  updated_belief_precision = update_precision(current_belief_precision, 
+                                       s_precision)
+  
+  updated_mu = update_belief(s_precision,
+                             s_x, 
+                             current_belief_precision, 
+                             current_belief_mu, 
+                             updated_belief_precision)
+  
+  belief_precision_vector <- c(belief_precision_vector, updated_belief_precision)
+  belief_mu_vector <- c(belief_mu_vector, updated_mu)
+  
 }
-#legend("topright", legend=colnames(densities), lty=1:ncol(densities))
+
+blurrier_example <- tibble("time_point" = seq(1, 101, 1),
+       "belief" = belief_mu_vector, 
+       
+       "precision" = belief_precision_vector, 
+       "observation" = observation_vector,
+) %>% 
+  mutate("variance" = 1/precision) %>% 
+  mutate(noise_in_signal = s_variance)
 ```
 
-```{r}
-example_d %>% 
-  ggplot(aes(x = time_point), 
-         y = belief) + 
-  geom_pointrange(aes(y = belief, ymin = belief + variance, ymax = belief - variance))
-```
+
+
 https://stats.stackexchange.com/questions/7440/kl-divergence-between-two-univariate-gaussians
 
-
-```{r}
-calculate_KL_between_gaussian <- function(mu1, mu2, sig1, sig2){
-    
-  return(log(sig2/sig1) + (sig1^2 + (mu1-mu2)^2)/(2*(sig2^2)) - 1/2)
-}
-
-```
 
 ```{r}
 example
@@ -246,11 +302,160 @@ example_with_kl$kl <- kls
 example_with_kl %>% 
   ggplot(aes(x = time_point, 
                     y = kl)) + 
-  geom_point()
+  geom_point() + 
+  geom_line()
 ```
+
 ```{r}
+kls <- c()
+for (t in 2:101){
+
+  mu1 <- blurrier_example %>% 
+    filter(time_point == t-1) %>%
+    select(belief) %>% 
+    pull()
+  
+  sig1 <- (blurrier_example %>% 
+    filter(time_point == t-1) %>%
+    select(variance) %>% 
+    pull()) ^ .5
+  
+  mu2 <- blurrier_example %>% 
+    filter(time_point == t) %>% 
+    select(belief) %>% 
+    pull()
+  
+  sig2 <- (blurrier_example %>% 
+    filter(time_point == t) %>%
+    select(variance) %>% 
+    pull()) ^ .5
+  
+  kl <- calculate_KL_between_gaussian(mu1, mu2, sig1, sig2)
+  kls <- c(kls, kl)
+  
+}
+
+blurrier_example_with_kl <- blurrier_example %>% 
+  filter(time_point != 1)
+
+blurrier_example_with_kl$kl <- kls
+```
+
+```{r}
+bind_rows(blurrier_example_with_kl, example_with_kl) %>% 
+  mutate(noise_level = if_else(noise_in_signal == 1.8, "low", "high")) %>% 
+  filter(time_point < 25) %>% 
+  ggplot(aes(x = time_point, 
+                    y = kl, 
+             color = noise_level)) + 
+  geom_point() + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE)
+```
+
+
+
+```{r}
+# the probablity of getting the observation X given the prior belief 
+probs <- c()
+for (t in 2:101){
+  
+  observation <- example %>% 
+    filter(time_point == t) %>%
+    select(observation) %>% 
+    pull()
+  
+  prior_belief_mu <- example %>% 
+    filter(time_point == t-1) %>%
+    select(belief) %>% 
+    pull()
+  
+  prior_belief_sigma <- (example %>% 
+    filter(time_point == t-1) %>%
+    select(variance) %>% 
+    pull()) ^ .5
+  
+  prob <- calculate_probability(prior_belief_mu, 
+                                prior_belief_sigma, 
+                                observation)
+  
+  probs <- c(probs, prob)
+ 
+}
+
+
+example_with_probs <- example %>% 
+  filter(time_point != 1)
+
+example_with_probs$prob <- probs
+
+example_with_probs %>% 
+  ggplot(aes(x = time_point, 
+                    y = probs)) + 
+  geom_point() + 
+  geom_line()
+
+example_with_probs %>% 
+  mutate(surprise = -log(prob)) %>% 
+  ggplot(aes(x = time_point, 
+                    y = surprise)) + 
+  geom_point() + 
+  geom_line()
+```
+
+
+
+
+
+
+
+```{r}
+# belief about the item 
+b_mu = .2
+b_variance = 0.3
+
+b_precision = 1/b_variance 
+
+b_prior_distribution = rnorm(100, 
+                b_mu, 
+                b_variance)
+b_prior = sample(b_prior_distribution, 1)
+
+
+# signal received after choosing the item 
+s_mu = 5 # unknown true value of item being sampled 
+s_variance = c(0.5, 1, 1.5) # the amount of noise in each signal, varying this will change the curve of KL. more noise slower habituation 
+s_precision = 1/s_variance
+
+s_x_distribution = rnorm(100, 
+                       s_mu, 
+                       s_variance)
+s_x = sample(s_x_distribution, 1)
 
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
