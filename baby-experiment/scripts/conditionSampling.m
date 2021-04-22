@@ -7,7 +7,7 @@ function currentCondition = conditionSampling(varargin)
 if isempty(varargin)
     0;
 elseif varargin{1} == 1
-    possibleConditions = 1:18; % iall conditions are possible
+    possibleConditions = 1:6; % iall conditions are possible
     save('possibleConditions.mat', 'possibleConditions')
     return
 end
@@ -16,7 +16,7 @@ createCounter = 0;
 try
     possibleConditions = importdata('possibleConditions.mat');
 catch
-    possibleConditions = 1:18; % iall conditions are possible
+    possibleConditions = 1:6; % iall conditions are possible
 end
 
 randomIdx = randi(length(possibleConditions), 1);
@@ -28,7 +28,7 @@ sprintf('current condition: %i', currentCondition)
 possibleConditions(randomIdx) = [];
 
 if isempty(possibleConditions)
-    possibleConditions = 1:18;
+    possibleConditions = 1:6;
 end
 
 save('possibleConditions.mat', 'possibleConditions')
