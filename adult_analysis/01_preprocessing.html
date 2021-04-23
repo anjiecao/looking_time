@@ -9,7 +9,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="anjie" />
+<meta name="author" content="anjie &amp; gal" />
 
 
 <title>01_preprocessing.rmd</title>
@@ -1523,7 +1523,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">01_preprocessing.rmd</h1>
-<h4 class="author">anjie</h4>
+<h4 class="author">anjie &amp; gal</h4>
 
 </div>
 
@@ -1533,39 +1533,41 @@ library(tidyverse)
 library(stringr) # for parsing r string 
 library(jsonlite) # for parsing r string 
 
-d_path &lt;- here(&quot;data/merged_data/merged_data.csv&quot;)
-df.raw &lt;- read_csv(d_path)</code></pre>
+# d_path &lt;- here(&quot;data/merged_data/merged_data.csv&quot;)
+MERGED_DATA_PATH &lt;- here(&quot;data/platform_comparison_data/prolific/merged_data/merged_data.csv&quot;)
+
+rt_path &lt;- here(&quot;data/platform_comparison_data/prolific/processed_data/trimmed_RTdata.csv&quot;)
+demog_path &lt;- here(&quot;data/platform_comparison_data/prolific/processed_data/trimmed_demogdata.csv&quot;)
+similarity_path &lt;- here(&quot;data/platform_comparison_data/prolific/processed_data/trimmed_similaritydata.csv&quot;)
+complexity_path &lt;- here(&quot;data/platform_comparison_data/prolific/processed_data/trimmed_complexitydata.csv&quot;)
+
+# d_path &lt;- here(&quot;data/raw_data/testSS1612925903745.csv&quot;)
+#d_path &lt;- here(&quot;data/merged_data/sample_1/merged_data.csv&quot;)
+df.raw &lt;- read_csv(MERGED_DATA_PATH)</code></pre>
 <div id="rt-data" class="section level1">
 <h1>RT data</h1>
+<p>note that the rt here does not take into account the forced exposure phase (50,5000,500)</p>
 <pre class="r"><code>TEST_TRIAL &lt;- c(&quot;pref_reveal&quot;, &quot;trial&quot;)
 # do we want to go w/ the data wrangling route or the jspsych route? 
-df.deviant &lt;- df.raw %&gt;% 
-  filter(stimulus_type == &quot;trial&quot;) %&gt;% 
-  select(subject, rt,
-         block_number, block_type, stimulus_displayed) %&gt;% 
-  group_by(subject, block_number, stimulus_displayed) %&gt;%
-  count() %&gt;% 
-  group_by(subject, block_number) %&gt;% 
-  mutate(
-   deviant = !(n == max(n)) # deviant has less occurence
-  ) %&gt;% 
-  mutate(
-    identifier = paste0(subject, stimulus_displayed)
-  ) %&gt;% 
-  ungroup() %&gt;% 
-  select(identifier, deviant) 
+
 
 df.processed &lt;- df.raw %&gt;% 
   filter(stimulus_type == &quot;trial&quot;) %&gt;% 
+  # select(subject, rt,
+  #        block_number, block_type, stimulus_displayed, 
+  #         block_deviant, block_background) %&gt;% 
   select(subject, rt,
-         block_number, block_type, stimulus_displayed) %&gt;% 
+          block_number, block_type, stimulus_displayed, 
+          block_deviant, block_background, 
+          exposure_type) %&gt;% 
   group_by(subject, block_number) %&gt;% 
   mutate(
-    trial_number = row_number(), 
-    identifier = paste0(subject, stimulus_displayed)) %&gt;% 
-  left_join(df.deviant, by = &quot;identifier&quot;) %&gt;% 
+    trial_number = row_number()) %&gt;% 
   mutate(
-    trial_type = if_else(deviant, &quot;deviant&quot;, &quot;background&quot;),
+    trial_type = case_when(
+     stimulus_displayed == block_deviant ~ &quot;deviant&quot;, 
+     TRUE ~ &quot;background&quot;
+    ),
     trial_complexity = case_when(
       grepl(&quot;simple&quot;, stimulus_displayed) ~ &quot;simple&quot;, 
       grepl(&quot;complex&quot;, stimulus_displayed) ~ &quot;complex&quot;
@@ -1592,12 +1594,146 @@ df.processed &lt;- df.raw %&gt;%
     mutate(item_id = 
              str_match(stimulus_displayed, &quot;spore_stims/\\s*(.*?)..\\s*.gif&quot;)[,2]
     )  %&gt;% 
-  select(subject, block_number, block_type, trial_number, item_type, trial_type, trial_complexity, item_id, rt) %&gt;% 
-  transform(rt = as.numeric(rt))
+  # select(subject, block_number, block_type, trial_number, item_type, trial_type, trial_complexity, item_id, rt) %&gt;% 
+ select(subject, block_number, block_type, trial_number, item_type, trial_type, trial_complexity, item_id, rt, exposure_type) %&gt;% 
+  transform(rt = as.numeric(rt)) %&gt;%
+        mutate(half = case_when(
+     block_number &lt;= max(block_number)/2 ~ &#39;first half&#39; , 
+     block_number &gt; max(block_number)/2 ~ &#39;second half&#39;, 
+      )
+    ) 
 
-write_csv(df.processed, here(&#39;data/processed_data/processed_RTdata.csv&#39;))
+################# Calculate number of deviants per block ################# 
+
+temp_block_number &lt;- df.processed %&gt;% 
+  group_by(subject, block_number) %&gt;% 
+  summarise(
+    block_length = n()
+  ) %&gt;% 
+  mutate(
+    temp_id = paste0(subject, block_number)
+  ) %&gt;% 
+  ungroup() %&gt;% 
+  select(subject, block_number, temp_id, block_length)</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;subject&#39;. You can override using the `.groups` argument.</code></pre>
+<pre class="r"><code># calculate background trial number and do substraction to know the # of deviants
+temp_background_number &lt;- df.processed %&gt;% 
+  group_by(subject, trial_type, block_number) %&gt;% 
+  summarise(
+    trial_type_number = n()
+  ) %&gt;% 
+  filter(trial_type == &quot;background&quot;) %&gt;% 
+  mutate(
+    temp_id = paste0(subject, block_number)
+  ) %&gt;% 
+  rename(background_number = trial_type_number) %&gt;% 
+  ungroup() %&gt;% 
+  select(temp_id, background_number)</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;subject&#39;, &#39;trial_type&#39;. You can override using the `.groups` argument.</code></pre>
+<pre class="r"><code>temp_deviant &lt;- left_join(temp_block_number, temp_background_number, 
+          by = &quot;temp_id&quot;) %&gt;% 
+  mutate(
+    block_deviant_number = block_length - background_number
+  ) %&gt;% 
+  ungroup() %&gt;% 
+  select(temp_id, block_deviant_number)
+
+
+df.processed &lt;- df.processed %&gt;% 
+  mutate(temp_id = paste0(subject, block_number)) %&gt;% 
+  left_join(temp_deviant, by = &quot;temp_id&quot;) %&gt;% 
+  select(-temp_id)
+
+
+################# Add first_deviant second_deviant ################# 
+
+temp_deviant_order &lt;- df.processed %&gt;% 
+  filter(trial_type == &quot;deviant&quot;) %&gt;% 
+  select(subject, block_number, trial_number, trial_type) %&gt;% 
+  group_by(subject, block_number) %&gt;% 
+  mutate(
+    index = row_number(),
+    trial_type_index = case_when(
+      index == 1 ~ &quot;first_deviant&quot;, 
+      index == 2 ~ &quot;second_deviant&quot;
+    ), 
+    temp_id = paste0(subject, block_number, trial_number)
+  ) %&gt;% 
+  ungroup() %&gt;% 
+  select(temp_id, trial_type_index)
+
+
+df.processed &lt;- df.processed %&gt;% 
+  mutate(
+    temp_id = paste0(subject, block_number, trial_number)
+  ) %&gt;% 
+  left_join(temp_deviant_order, by = &quot;temp_id&quot;) %&gt;% 
+  mutate(
+    trial_type_index = if_else(is.na(trial_type_index), 
+                               &quot;background&quot;, 
+                               trial_type_index)
+  ) %&gt;% 
+  select(- temp_id)
+
+
+
+################# Add first_deviant second_deviant position ################# 
+first_dev_pos_df &lt;- df.processed %&gt;% 
+  filter(trial_type_index == &quot;first_deviant&quot;) %&gt;% 
+  select(subject, block_number, trial_type_index, trial_number) %&gt;% 
+  mutate(
+    temp_id = paste0(subject, block_number), 
+    first_dev_position = trial_number
+  ) %&gt;% 
+  select(temp_id, first_dev_position)
+  
+df.processed &lt;- df.processed %&gt;% 
+  mutate(
+    temp_id = paste0(subject, block_number)) %&gt;% 
+  left_join(first_dev_pos_df, by = &quot;temp_id&quot;) %&gt;% 
+  select(-temp_id)
+
+
+second_dev_pos_df &lt;- df.processed %&gt;% 
+  filter(trial_type_index == &quot;second_deviant&quot;) %&gt;% 
+  select(subject, block_number, trial_type_index, trial_number) %&gt;% 
+  mutate(
+    temp_id = paste0(subject, block_number), 
+    second_dev_position = trial_number
+  ) %&gt;% 
+  select(temp_id, second_dev_position)
+  
+df.processed &lt;- df.processed %&gt;% 
+  mutate(
+    temp_id = paste0(subject, block_number)) %&gt;% 
+  left_join(second_dev_pos_df, by = &quot;temp_id&quot;) %&gt;% 
+  select(-temp_id)
+
+  
+
+#write_csv(df.processed, here(&#39;data/processed_data/processed_RTdata.csv&#39;))
 
 # df.main</code></pre>
+</div>
+<div id="pref-test" class="section level1">
+<h1>Pref test</h1>
+<pre class="r"><code># df.temp_rt &lt;- df.processed %&gt;% 
+#   mutate(subject_block = paste0(subject, block_number)) %&gt;% 
+#   distinct(subject_block, block_type)
+# 
+# df.temp_pref &lt;- df.raw %&gt;% 
+#   filter(stimulus_type == &quot;pref_reveal&quot;) %&gt;% 
+#   filter(!is.na(block_number)) %&gt;% 
+#   mutate(
+#     subject_block = paste0(subject, block_number)
+#   ) %&gt;% 
+#   select(trial_looking_time, subject, subject_block, block_number, stim_type_selected)
+# 
+# df.pref &lt;- df.temp_pref %&gt;% 
+#   left_join(df.temp_rt, by = &quot;subject_block&quot;) %&gt;% 
+#   select(subject, trial_looking_time, block_number, block_type, stim_type_selected) 
+# 
+# write_csv(df.pref, here(&#39;data/processed_data/processed_prefdata.csv&#39;))</code></pre>
 </div>
 <div id="norming-data" class="section level1">
 <h1>Norming Data</h1>
@@ -1620,7 +1756,7 @@ df.similarity &lt;- df.raw %&gt;%
     rating = as.numeric(str_extract(raw_answer, &quot;[[:digit:]]+&quot;))) %&gt;% 
   select(subject, question_type, stimulus_left, stimulus_right, rating)
 
-write_csv(df.processed, here(&#39;data/processed_data/processed_similaritydata.csv&#39;))</code></pre>
+#write_csv(df.similarity, here(&#39;data/processed_data/processed_similaritydata.csv&#39;))</code></pre>
 </div>
 <div id="complexity" class="section level2">
 <h2>complexity</h2>
@@ -1641,7 +1777,7 @@ write_csv(df.processed, here(&#39;data/processed_data/processed_similaritydata.c
   select(subject, question_type, stimulus, rating)
 
 
-write_csv(df.processed, here(&#39;data/processed_data/processed_complexitydata.csv&#39;))</code></pre>
+#write_csv(df.complexity, here(&#39;data/processed_data/processed_complexitydata.csv&#39;))</code></pre>
 </div>
 </div>
 <div id="demographic-information" class="section level1">
@@ -1659,15 +1795,94 @@ write_csv(df.processed, here(&#39;data/processed_data/processed_complexitydata.c
   distinct() %&gt;% 
   select(-responses, -trial_type)
 
-write_csv(df.processed, here(&#39;data/processed_data/processed_demogdata.csv&#39;))</code></pre>
+#write_csv(df.demog, here(&#39;data/processed_data/processed_demogdata.csv&#39;))</code></pre>
 </div>
-<div id="todo" class="section level1">
-<h1>TODO</h1>
-<div id="put-them-together---not-sure-if-necessary" class="section level2">
-<h2>put them together? &lt;- not sure if necessary</h2>
+<div id="trimmed-data" class="section level1">
+<h1>trimmed data</h1>
+<div id="get-the-attention-check-question" class="section level2">
+<h2>get the attention check question</h2>
+<pre class="r"><code>df.attention_check &lt;- df.raw %&gt;% 
+  filter(stimulus_type == &quot;math_question&quot;) %&gt;% 
+  select(subject, responses, math_correct_answer) %&gt;% 
+  toJSON() %&gt;% 
+  fromJSON() %&gt;% 
+    mutate(
+      math_response = map(responses, ~ fromJSON(.) %&gt;% as.data.frame())) %&gt;% 
+    unnest(math_response) %&gt;% 
+  mutate(
+    math_correct_answer = as.numeric(math_correct_answer), 
+    math_response = as.numeric(as.character(Q0))
+  ) %&gt;% 
+  mutate(
+    correct_response = (math_correct_answer == math_response)
+  ) %&gt;% 
+  group_by(subject) %&gt;% 
+  summarize(
+    total_question = n(),
+    correct_question = sum(correct_response), 
+    percent_correct = correct_question / total_question
+  )</code></pre>
 </div>
-<div id="exclusion-criteria" class="section level2">
-<h2>exclusion criteria</h2>
+<div id="participant-level-exclusion" class="section level2">
+<h2>participant level exclusion</h2>
+<pre class="r"><code># flat rt participant 
+flat_rt_sbj &lt;- df.processed %&gt;% 
+  group_by(subject) %&gt;% 
+  summarise(sd = sd(log(rt))) %&gt;% 
+  filter(sd &lt; 0.15) %&gt;% 
+  pull(subject)
+
+# attention check participant 
+attention_check_sbj &lt;- df.attention_check %&gt;% 
+  filter(percent_correct &lt; 0.8) %&gt;% 
+  pull(subject)
+
+# similarity rating 
+similarity_sbj &lt;- df.similarity %&gt;% 
+  count(subject, rating) %&gt;% 
+  filter(n &gt; 20 * 0.8) %&gt;%  # twenty trials, 80% identical rating 
+  pull(subject)  
+
+#similarity_sbj
+
+complexity_sbj &lt;- df.complexity %&gt;% 
+  count(subject, rating) %&gt;% 
+  filter(n &gt; 20 * 0.8) %&gt;%  # twenty trials, 80% identical rating 
+  pull(subject)
+
+
+
+exlude_participant &lt;- unique(c(flat_rt_sbj, 
+                               similarity_sbj, 
+                               complexity_sbj, 
+                               attention_check_sbj))
+
+
+df.rt_trimmed &lt;- df.processed %&gt;% filter(!(subject %in% exlude_participant))
+#df.pref_trimmed &lt;- df.pref %&gt;% filter(!(subject %in% exlude_participant))
+df.complexity_trimmed &lt;- df.complexity %&gt;% filter(!(subject %in% exlude_participant))
+df.similarity_trimmed &lt;- df.similarity %&gt;% filter(!(subject %in% exlude_participant))
+df.demog_trimmmed &lt;- df.demog %&gt;% filter(!(subject %in% exlude_participant))</code></pre>
+</div>
+<div id="trial-level-exclusion" class="section level2">
+<h2>trial level exclusion</h2>
+<pre class="r"><code>rt_summary &lt;- df.rt_trimmed %&gt;% 
+  summarise(
+    median = median(log(rt)),
+    mad = mad(log(rt)), 
+    upper = median + 3 * mad, 
+    lower = median - 3 * mad)
+  
+df.rt_trimmed &lt;- df.rt_trimmed %&gt;% 
+  filter(!(log(rt) &gt; rt_summary$upper | log(rt) &lt; rt_summary$lower))</code></pre>
+</div>
+<div id="writeout-trimmed-data" class="section level2">
+<h2>writeout trimmed data</h2>
+<pre class="r"><code>write_csv(df.rt_trimmed, rt_path)
+#write_csv(df.pref_trimmed, here(&#39;data/processed_data/trimmed_prefdata.csv&#39;))
+write_csv(df.demog_trimmmed, demog_path)
+write_csv(df.similarity_trimmed, similarity_path)
+write_csv(df.complexity_trimmed, complexity_path)</code></pre>
 </div>
 </div>
 
@@ -1721,7 +1936,7 @@ $(document).ready(function ()  {
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
       },
       ignoreSelector: ".toc-ignore",
       scrollTo: 0

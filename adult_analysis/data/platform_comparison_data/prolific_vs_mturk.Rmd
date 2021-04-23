@@ -1,0 +1,173 @@
+---
+title: "platform_comparison"
+author: "anjie"
+date: "4/23/2021"
+output: html_document
+---
+
+
+```{r}
+library(tidyverse)
+library(here)
+
+m_rt <- read_csv(here("data/platform_comparison_data/mTurk/processed_data/trimmed_RTdata.csv")) %>% mutate(platform = "mTurk")
+m_demog <- read_csv(here("data/platform_comparison_data/mTurk/processed_data/trimmed_demogdata.csv")) %>% mutate(platform = "mTurk")
+m_complexity <- read_csv(here("data/platform_comparison_data/mTurk/processed_data/trimmed_complexitydata.csv")) %>% mutate(platform = "mTurk")
+m_similarity <- read_csv(here("data/platform_comparison_data/mTurk/processed_data/trimmed_similaritydata.csv")) %>% mutate(platform = "mTurk")
+
+p_rt <- read_csv(here("data/platform_comparison_data/prolific/processed_data/trimmed_RTdata.csv")) %>% mutate(platform = "prolific")
+p_demog <- read_csv(here("data/platform_comparison_data/prolific/processed_data/trimmed_demogdata.csv")) %>% mutate(platform = "prolific")
+p_complexity <- read_csv(here("data/platform_comparison_data/prolific/processed_data/trimmed_complexitydata.csv")) %>% mutate(platform = "prolific")
+p_similarity <- read_csv(here("data/platform_comparison_data/prolific/processed_data/trimmed_similaritydata.csv")) %>% mutate(platform = "prolific")
+```
+
+```{r}
+rt <- bind_rows(m_rt, p_rt) %>% 
+  mutate(looking_time = case_when(
+    exposure_type == "forced_short" & trial_number == 1 ~ 1000, 
+    exposure_type == "forced_long" & trial_number == 1 ~ 10000, 
+    TRUE ~ 500 + rt
+  ))
+demog <- bind_rows(m_demog, p_demog)
+complexity <- bind_rows(m_complexity, p_complexity)
+similarity <- bind_rows(m_similarity, p_similarity)
+```
+
+# basic descriptive 
+```{r}
+rt %>% 
+  group_by(platform) %>% 
+  distinct(subject, .keep_all = TRUE) %>% 
+  count()
+```
+```{r}
+demog %>% 
+  ggplot(aes(x = age, fill = platform)) + 
+  geom_density(alpha = .5)
+```
+
+
+
+```{r}
+rt %>% 
+   ggplot(aes(x = rt, fill = platform)) + 
+  geom_density(alpha = .3) + 
+  scale_x_log10() + 
+  facet_wrap(~block_type) + 
+  xlab("rt(log)") + 
+  labs(title = "reaction time" )
+
+rt %>% 
+   ggplot(aes(x = looking_time, fill = platform)) + 
+  geom_density(alpha = .3) + 
+  scale_x_log10() + 
+  facet_wrap(~block_type) + 
+  xlab("looking time(log)") + 
+  labs(title = "looking time")
+
+rt %>% 
+  filter(exposure_type == "self_paced") %>% 
+   ggplot(aes(x = looking_time, fill = platform)) + 
+  geom_density(alpha = .3) + 
+  scale_x_log10() + 
+  facet_wrap(~block_type) + 
+  xlab("looking time(log)") + 
+  labs(title = "looking time at the self-paced block only")
+```
+
+```{r}
+rt %>% 
+  filter(exposure_type == "self_paced") %>% 
+  filter(trial_number == 1) %>% 
+  ggplot(aes(x = block_number, 
+             y = looking_time, 
+             color = platform)) + 
+  stat_summary(position = position_dodge(width = 0.1))  + 
+  stat_summary(geom = "line") + 
+  xlab("Block") + 
+  ylab("Looking time") + 
+  labs(title = "Looking time at self-paced blocks at first self-paced trial")
+  #facet_wrap(~exposure_type)
+```
+
+```{r}
+ggplot(rt, 
+       aes(x=trial_number, y=rt, colour=item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  facet_wrap(~platform) +
+  langcog::scale_color_solarized(name = "Item Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("log RT (ms)") + 
+  xlab("Trial Number") + 
+  labs(title = "RT change")
+
+ggplot(rt, 
+       aes(x=trial_number, y=log(rt), colour=item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  facet_wrap(~platform) +
+  langcog::scale_color_solarized(name = "Item Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("log RT (ms)") + 
+  xlab("Trial Number") + 
+  labs(title = "RT change log")
+  
+```
+
+```{r}
+ggplot(rt, 
+       aes(x=trial_number, y=looking_time, colour=item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  #facet_wrap(~platform) +
+  facet_grid(exposure_type ~ platform) + 
+  langcog::scale_color_solarized(name = "Item Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("looking time (ms)") + 
+  xlab("Trial Number") + 
+  labs(title = "Looking time change (first trial forced)")
+
+ggplot(rt, 
+       aes(x=trial_number, y=log(looking_time), colour=item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  #facet_wrap(~platform) +
+  facet_grid(exposure_type ~ platform) + 
+  langcog::scale_color_solarized(name = "Item Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("log looking time (ms)") + 
+  xlab("Trial Number") + 
+  labs(title = "Log looking time change")
+```
+
+Zoom in on the first trial and the second trial 
+```{r}
+ggplot(rt %>% filter(trial_number %in% c(1,2)), 
+       aes(x=as.factor(trial_number), y=looking_time, colour=exposure_type, shape = item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  facet_grid(exposure_type~platform)+
+  langcog::scale_color_solarized(name = "Item Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("Looking time (ms)") + 
+  xlab("Trial Number") 
+```
+
+across block? 
+```{r}
+ggplot(rt %>% mutate(block_number = block_number + 1),
+       aes(x=as.factor(block_number), y=looking_time, colour=trial_complexity)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) +
+  facet_grid(~platform)+
+  langcog::scale_color_solarized(name = "Trial Complexity") + 
+  theme(legend.position = "bottom") + 
+  ylab("Looking time (ms)") + 
+  xlab("Block Number") 
+```
+

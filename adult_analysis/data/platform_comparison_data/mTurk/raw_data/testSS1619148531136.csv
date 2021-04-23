@@ -1,0 +1,7 @@
+"view_history","rt","trial_type","trial_index","time_elapsed","internal_node_id","subject","stimulus_type","trial_stimulus","key_press","minimum_viewing_duration","trial_looking_time","block_deviant","block_background","exposure_type"
+"[{""page_index"":0,""viewing_time"":9462}]","9463","instructions","0","9467","0.0-0.0","SS1619148531136","","","","","","","",""
+"[{""page_index"":0,""viewing_time"":20556},{""page_index"":1,""viewing_time"":5884}]","26440","instructions","1","37978","0.0-1.0","SS1619148531136","instructions","","","","","","",""
+"","2841","sequential-stimulus-presentation-old","2","41329","0.0-2.0","SS1619148531136","","","40","500","3341","null","null","self_paced"
+"","879","sequential-stimulus-presentation-old","3","42716","0.0-3.0","SS1619148531136","","","40","500","1379","null","null","self_paced"
+"[{""page_index"":0,""viewing_time"":2542}]","2542","instructions","4","45260","0.0-4.0","SS1619148531136","instructions","","","","","","",""
+"","794","sequential-stimulus-presentation-old","5","56064","0.0-5.0","SS1619148531136","","","40","500","1294","null","null","forced_long"

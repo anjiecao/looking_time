@@ -1,0 +1,1284 @@
+subject,block_number,block_type,trial_number,item_type,trial_type,trial_complexity,item_id,rt,exposure_type,half,block_deviant_number,trial_type_index,first_dev_position,second_dev_position
+SS1619125619115,0,simple_dissimilar,1,background,background,simple,simple_19_A,145352.84999999567,self_paced,first half,1,background,4,NA
+SS1619125619115,0,simple_dissimilar,2,background,background,simple,simple_19_A,17853.040000016335,self_paced,first half,1,background,4,NA
+SS1619125619115,0,simple_dissimilar,3,background,background,simple,simple_19_A,14590.720000007423,self_paced,first half,1,background,4,NA
+SS1619125619115,0,simple_dissimilar,4,dissimilar deviant,deviant,simple,simple_02_A,93362.24499999662,self_paced,first half,1,first_deviant,4,NA
+SS1619125619115,0,simple_dissimilar,5,background,background,simple,simple_19_A,1703.0650000087917,self_paced,first half,1,background,4,NA
+SS1619125619115,1,complex_dissimilar,1,background,background,complex,complex_13_A,7485.4599999962375,self_paced,first half,0,background,NA,NA
+SS1619125619115,1,complex_dissimilar,2,background,background,complex,complex_13_A,7349.244999990333,self_paced,first half,0,background,NA,NA
+SS1619125619115,1,complex_dissimilar,3,background,background,complex,complex_13_A,3078.110000002198,self_paced,first half,0,background,NA,NA
+SS1619125619115,1,complex_dissimilar,4,background,background,complex,complex_13_A,1804.119999986142,self_paced,first half,0,background,NA,NA
+SS1619125619115,1,complex_dissimilar,5,background,background,complex,complex_13_A,1339.3050000013318,self_paced,first half,0,background,NA,NA
+SS1619125619115,1,complex_dissimilar,6,background,background,complex,complex_13_A,2322.2100000130013,self_paced,first half,0,background,NA,NA
+SS1619125619115,2,simple_dissimilar,1,background,background,simple,simple_03_A,1176.1800000094809,forced_short,first half,1,background,5,NA
+SS1619125619115,2,simple_dissimilar,2,background,background,simple,simple_03_A,5641.229999979259,forced_short,first half,1,background,5,NA
+SS1619125619115,2,simple_dissimilar,3,background,background,simple,simple_03_A,3429.280000011204,forced_short,first half,1,background,5,NA
+SS1619125619115,2,simple_dissimilar,4,background,background,simple,simple_03_A,5551.60999999498,forced_short,first half,1,background,5,NA
+SS1619125619115,2,simple_dissimilar,5,dissimilar deviant,deviant,simple,simple_15_A,4613.305000006221,forced_short,first half,1,first_deviant,5,NA
+SS1619125619115,2,simple_dissimilar,6,background,background,simple,simple_03_A,3877.2299999836832,forced_short,first half,1,background,5,NA
+SS1619125619115,3,complex_dissimilar,1,background,background,complex,complex_05_A,2307.3999999905936,self_paced,first half,2,background,5,6
+SS1619125619115,3,complex_dissimilar,2,background,background,complex,complex_05_A,965.2850000129547,self_paced,first half,2,background,5,6
+SS1619125619115,3,complex_dissimilar,3,background,background,complex,complex_05_A,1885.599999979604,self_paced,first half,2,background,5,6
+SS1619125619115,3,complex_dissimilar,4,background,background,complex,complex_05_A,1887.3099999909755,self_paced,first half,2,background,5,6
+SS1619125619115,3,complex_dissimilar,5,dissimilar deviant,deviant,complex,complex_15_A,4306.814999989001,self_paced,first half,2,first_deviant,5,6
+SS1619125619115,3,complex_dissimilar,6,dissimilar deviant,deviant,complex,complex_15_A,2279.260000010254,self_paced,first half,2,second_deviant,5,6
+SS1619125619115,4,complex_dissimilar,1,background,background,complex,complex_14_A,1094.1949999833014,forced_long,first half,1,background,5,NA
+SS1619125619115,4,complex_dissimilar,2,background,background,complex,complex_14_A,510.3999999992084,forced_long,first half,1,background,5,NA
+SS1619125619115,4,complex_dissimilar,3,background,background,complex,complex_14_A,1217.239999998128,forced_long,first half,1,background,5,NA
+SS1619125619115,4,complex_dissimilar,4,background,background,complex,complex_14_A,3447.3349999752827,forced_long,first half,1,background,5,NA
+SS1619125619115,4,complex_dissimilar,5,dissimilar deviant,deviant,complex,complex_03_A,2589.46499999729,forced_long,first half,1,first_deviant,5,NA
+SS1619125619115,5,complex_dissimilar,1,background,background,complex,complex_08_A,858.3100000105333,forced_short,first half,0,background,NA,NA
+SS1619125619115,5,complex_dissimilar,2,background,background,complex,complex_08_A,776.4749999914784,forced_short,first half,0,background,NA,NA
+SS1619125619115,5,complex_dissimilar,3,background,background,complex,complex_08_A,2137.3200000089128,forced_short,first half,0,background,NA,NA
+SS1619125619115,5,complex_dissimilar,4,background,background,complex,complex_08_A,826.2999999860767,forced_short,first half,0,background,NA,NA
+SS1619125619115,5,complex_dissimilar,5,background,background,complex,complex_08_A,1120.329999976093,forced_short,first half,0,background,NA,NA
+SS1619125619115,5,complex_dissimilar,6,background,background,complex,complex_08_A,986.479999992298,forced_short,first half,0,background,NA,NA
+SS1619125619115,6,simple_dissimilar,1,background,background,simple,simple_16_A,700.459999992745,forced_long,second half,0,background,NA,NA
+SS1619125619115,6,simple_dissimilar,2,background,background,simple,simple_16_A,660.3749999776483,forced_long,second half,0,background,NA,NA
+SS1619125619115,6,simple_dissimilar,3,background,background,simple,simple_16_A,1286.5850000234786,forced_long,second half,0,background,NA,NA
+SS1619125619115,6,simple_dissimilar,4,background,background,simple,simple_16_A,851.5349999943282,forced_long,second half,0,background,NA,NA
+SS1619125619115,6,simple_dissimilar,5,background,background,simple,simple_16_A,622.6150000002235,forced_long,second half,0,background,NA,NA
+SS1619125619115,6,simple_dissimilar,6,background,background,simple,simple_16_A,1120.360000000801,forced_long,second half,0,background,NA,NA
+SS1619125619115,7,simple_dissimilar,1,background,background,simple,simple_05_A,366.5800000017043,forced_long,second half,0,background,NA,NA
+SS1619125619115,7,simple_dissimilar,2,background,background,simple,simple_05_A,323.56499999877997,forced_long,second half,0,background,NA,NA
+SS1619125619115,7,simple_dissimilar,3,background,background,simple,simple_05_A,1642.3899999936111,forced_long,second half,0,background,NA,NA
+SS1619125619115,7,simple_dissimilar,4,background,background,simple,simple_05_A,1482.2500000009313,forced_long,second half,0,background,NA,NA
+SS1619125619115,8,simple_dissimilar,1,background,background,simple,simple_04_A,981.6100000170991,forced_short,second half,0,background,NA,NA
+SS1619125619115,8,simple_dissimilar,2,background,background,simple,simple_04_A,221.42000001622364,forced_short,second half,0,background,NA,NA
+SS1619125619115,8,simple_dissimilar,3,background,background,simple,simple_04_A,757.4150000000373,forced_short,second half,0,background,NA,NA
+SS1619125619115,8,simple_dissimilar,4,background,background,simple,simple_04_A,1043.504999979632,forced_short,second half,0,background,NA,NA
+SS1619125619115,8,simple_dissimilar,5,background,background,simple,simple_04_A,906.440000020666,forced_short,second half,0,background,NA,NA
+SS1619125619115,8,simple_dissimilar,6,background,background,simple,simple_04_A,1151.6699999920093,forced_short,second half,0,background,NA,NA
+SS1619125619115,9,complex_dissimilar,1,background,background,complex,complex_18_A,741.5299999993294,forced_short,second half,2,background,2,5
+SS1619125619115,9,complex_dissimilar,2,dissimilar deviant,deviant,complex,complex_16_A,1296.5550000080839,forced_short,second half,2,first_deviant,2,5
+SS1619125619115,9,complex_dissimilar,3,background,background,complex,complex_18_A,3695.7650000113063,forced_short,second half,2,background,2,5
+SS1619125619115,9,complex_dissimilar,4,background,background,complex,complex_18_A,533.5100000083912,forced_short,second half,2,background,2,5
+SS1619125619115,9,complex_dissimilar,5,dissimilar deviant,deviant,complex,complex_16_A,3231.520000001183,forced_short,second half,2,second_deviant,2,5
+SS1619125619115,10,complex_dissimilar,1,background,background,complex,complex_17_A,384.5750000036787,forced_long,second half,0,background,NA,NA
+SS1619125619115,10,complex_dissimilar,2,background,background,complex,complex_17_A,1045.4999999783468,forced_long,second half,0,background,NA,NA
+SS1619125619115,10,complex_dissimilar,3,background,background,complex,complex_17_A,780.4949999845121,forced_long,second half,0,background,NA,NA
+SS1619125619115,10,complex_dissimilar,4,background,background,complex,complex_17_A,1867.5349999975879,forced_long,second half,0,background,NA,NA
+SS1619125619115,11,simple_dissimilar,1,background,background,simple,simple_10_A,125.44000000343658,self_paced,second half,1,background,4,NA
+SS1619125619115,11,simple_dissimilar,2,background,background,simple,simple_10_A,52.59499998646788,self_paced,second half,1,background,4,NA
+SS1619125642562,0,complex_dissimilar,1,background,background,complex,complex_01_A,644,forced_long,first half,1,background,2,NA
+SS1619125642562,0,complex_dissimilar,2,dissimilar deviant,deviant,complex,complex_20_A,2412,forced_long,first half,1,first_deviant,2,NA
+SS1619125642562,0,complex_dissimilar,3,background,background,complex,complex_01_A,82,forced_long,first half,1,background,2,NA
+SS1619125642562,0,complex_dissimilar,4,background,background,complex,complex_01_A,9063,forced_long,first half,1,background,2,NA
+SS1619125642562,0,complex_dissimilar,5,background,background,complex,complex_01_A,173,forced_long,first half,1,background,2,NA
+SS1619125642562,1,complex_dissimilar,1,background,background,complex,complex_11_A,1146,self_paced,first half,2,background,4,6
+SS1619125642562,1,complex_dissimilar,2,background,background,complex,complex_11_A,213,self_paced,first half,2,background,4,6
+SS1619125642562,1,complex_dissimilar,3,background,background,complex,complex_11_A,342,self_paced,first half,2,background,4,6
+SS1619125642562,1,complex_dissimilar,4,dissimilar deviant,deviant,complex,complex_17_A,37,self_paced,first half,2,first_deviant,4,6
+SS1619125642562,1,complex_dissimilar,5,background,background,complex,complex_11_A,2597,self_paced,first half,2,background,4,6
+SS1619125642562,1,complex_dissimilar,6,dissimilar deviant,deviant,complex,complex_17_A,4448,self_paced,first half,2,second_deviant,4,6
+SS1619125642562,2,complex_dissimilar,1,background,background,complex,complex_06_A,1644,self_paced,first half,1,background,6,NA
+SS1619125642562,2,complex_dissimilar,2,background,background,complex,complex_06_A,22330,self_paced,first half,1,background,6,NA
+SS1619125642562,2,complex_dissimilar,3,background,background,complex,complex_06_A,14236,self_paced,first half,1,background,6,NA
+SS1619125642562,2,complex_dissimilar,4,background,background,complex,complex_06_A,8906,self_paced,first half,1,background,6,NA
+SS1619125642562,2,complex_dissimilar,5,background,background,complex,complex_06_A,1034,self_paced,first half,1,background,6,NA
+SS1619125642562,2,complex_dissimilar,6,dissimilar deviant,deviant,complex,complex_04_A,2790,self_paced,first half,1,first_deviant,6,NA
+SS1619125642562,3,simple_dissimilar,1,background,background,simple,simple_20_A,612,forced_long,first half,2,background,4,6
+SS1619125642562,3,simple_dissimilar,2,background,background,simple,simple_20_A,977,forced_long,first half,2,background,4,6
+SS1619125642562,3,simple_dissimilar,3,background,background,simple,simple_20_A,2336,forced_long,first half,2,background,4,6
+SS1619125642562,3,simple_dissimilar,4,dissimilar deviant,deviant,simple,simple_12_A,8884,forced_long,first half,2,first_deviant,4,6
+SS1619125642562,3,simple_dissimilar,5,background,background,simple,simple_20_A,6185,forced_long,first half,2,background,4,6
+SS1619125642562,3,simple_dissimilar,6,dissimilar deviant,deviant,simple,simple_12_A,5616,forced_long,first half,2,second_deviant,4,6
+SS1619125642562,4,simple_dissimilar,1,background,background,simple,simple_18_A,4477,self_paced,first half,0,background,NA,NA
+SS1619125642562,4,simple_dissimilar,2,background,background,simple,simple_18_A,378,self_paced,first half,0,background,NA,NA
+SS1619125642562,4,simple_dissimilar,3,background,background,simple,simple_18_A,5104,self_paced,first half,0,background,NA,NA
+SS1619125642562,4,simple_dissimilar,4,background,background,simple,simple_18_A,2457,self_paced,first half,0,background,NA,NA
+SS1619125642562,5,complex_dissimilar,1,background,background,complex,complex_13_A,13486,forced_long,first half,1,background,4,NA
+SS1619125642562,5,complex_dissimilar,2,background,background,complex,complex_13_A,25597,forced_long,first half,1,background,4,NA
+SS1619125642562,5,complex_dissimilar,3,background,background,complex,complex_13_A,3461,forced_long,first half,1,background,4,NA
+SS1619125642562,5,complex_dissimilar,4,dissimilar deviant,deviant,complex,complex_20_A,11532,forced_long,first half,1,first_deviant,4,NA
+SS1619125642562,5,complex_dissimilar,5,background,background,complex,complex_13_A,11107,forced_long,first half,1,background,4,NA
+SS1619125642562,6,complex_dissimilar,1,background,background,complex,complex_16_A,901,forced_short,second half,1,background,2,NA
+SS1619125642562,6,complex_dissimilar,2,dissimilar deviant,deviant,complex,complex_12_A,6125,forced_short,second half,1,first_deviant,2,NA
+SS1619125642562,6,complex_dissimilar,3,background,background,complex,complex_16_A,5985,forced_short,second half,1,background,2,NA
+SS1619125642562,6,complex_dissimilar,4,background,background,complex,complex_16_A,5644,forced_short,second half,1,background,2,NA
+SS1619125642562,6,complex_dissimilar,5,background,background,complex,complex_16_A,15609,forced_short,second half,1,background,2,NA
+SS1619125642562,6,complex_dissimilar,6,background,background,complex,complex_16_A,4262,forced_short,second half,1,background,2,NA
+SS1619125642562,7,simple_dissimilar,1,background,background,simple,simple_14_A,5957,forced_short,second half,2,background,2,5
+SS1619125642562,7,simple_dissimilar,2,dissimilar deviant,deviant,simple,simple_02_A,5087,forced_short,second half,2,first_deviant,2,5
+SS1619125642562,7,simple_dissimilar,3,background,background,simple,simple_14_A,14291,forced_short,second half,2,background,2,5
+SS1619125642562,7,simple_dissimilar,4,background,background,simple,simple_14_A,92,forced_short,second half,2,background,2,5
+SS1619125642562,7,simple_dissimilar,5,dissimilar deviant,deviant,simple,simple_02_A,712,forced_short,second half,2,second_deviant,2,5
+SS1619125642562,8,complex_dissimilar,1,background,background,complex,complex_14_A,8849,forced_short,second half,2,background,2,4
+SS1619125642562,8,complex_dissimilar,2,dissimilar deviant,deviant,complex,complex_19_A,562,forced_short,second half,2,first_deviant,2,4
+SS1619125642562,8,complex_dissimilar,3,background,background,complex,complex_14_A,185,forced_short,second half,2,background,2,4
+SS1619125642562,8,complex_dissimilar,4,dissimilar deviant,deviant,complex,complex_19_A,349,forced_short,second half,2,second_deviant,2,4
+SS1619125642562,9,simple_dissimilar,1,background,background,simple,simple_18_A,167,forced_long,second half,1,background,4,NA
+SS1619125642562,9,simple_dissimilar,2,background,background,simple,simple_18_A,508,forced_long,second half,1,background,4,NA
+SS1619125642562,9,simple_dissimilar,3,background,background,simple,simple_18_A,14972,forced_long,second half,1,background,4,NA
+SS1619125642562,9,simple_dissimilar,4,dissimilar deviant,deviant,simple,simple_01_A,50,forced_long,second half,1,first_deviant,4,NA
+SS1619125642562,9,simple_dissimilar,5,background,background,simple,simple_18_A,291,forced_long,second half,1,background,4,NA
+SS1619125642562,9,simple_dissimilar,6,background,background,simple,simple_18_A,507,forced_long,second half,1,background,4,NA
+SS1619125642562,10,simple_dissimilar,1,background,background,simple,simple_14_A,1510,self_paced,second half,0,background,NA,NA
+SS1619125642562,10,simple_dissimilar,2,background,background,simple,simple_14_A,2228,self_paced,second half,0,background,NA,NA
+SS1619125642562,10,simple_dissimilar,3,background,background,simple,simple_14_A,420,self_paced,second half,0,background,NA,NA
+SS1619125642562,10,simple_dissimilar,4,background,background,simple,simple_14_A,491,self_paced,second half,0,background,NA,NA
+SS1619125642562,11,simple_dissimilar,1,background,background,simple,simple_02_A,191,forced_short,second half,1,background,5,NA
+SS1619125642562,11,simple_dissimilar,2,background,background,simple,simple_02_A,116,forced_short,second half,1,background,5,NA
+SS1619125642562,11,simple_dissimilar,3,background,background,simple,simple_02_A,164,forced_short,second half,1,background,5,NA
+SS1619125642562,11,simple_dissimilar,4,background,background,simple,simple_02_A,637,forced_short,second half,1,background,5,NA
+SS1619125642562,11,simple_dissimilar,5,dissimilar deviant,deviant,simple,simple_15_A,382,forced_short,second half,1,first_deviant,5,NA
+SS1619204435390,0,simple_dissimilar,1,background,background,simple,simple_14_A,15147.870000102557,self_paced,first half,1,background,2,NA
+SS1619204435390,0,simple_dissimilar,2,dissimilar deviant,deviant,simple,simple_11_A,7806.8249999778345,self_paced,first half,1,first_deviant,2,NA
+SS1619204435390,0,simple_dissimilar,3,background,background,simple,simple_14_A,7204.899999895133,self_paced,first half,1,background,2,NA
+SS1619204435390,0,simple_dissimilar,4,background,background,simple,simple_14_A,9084.41499993205,self_paced,first half,1,background,2,NA
+SS1619204435390,0,simple_dissimilar,5,background,background,simple,simple_14_A,9191.170000005513,self_paced,first half,1,background,2,NA
+SS1619204435390,0,simple_dissimilar,6,background,background,simple,simple_14_A,5875.405000057071,self_paced,first half,1,background,2,NA
+SS1619204435390,1,simple_dissimilar,1,background,background,simple,simple_17_A,6381.120000034571,self_paced,first half,2,background,3,6
+SS1619204435390,1,simple_dissimilar,2,background,background,simple,simple_17_A,10237.490000086837,self_paced,first half,2,background,3,6
+SS1619204435390,1,simple_dissimilar,3,dissimilar deviant,deviant,simple,simple_10_A,6808.760000043549,self_paced,first half,2,first_deviant,3,6
+SS1619204435390,1,simple_dissimilar,4,background,background,simple,simple_17_A,7174.77499996312,self_paced,first half,2,background,3,6
+SS1619204435390,1,simple_dissimilar,5,background,background,simple,simple_17_A,6403.430000063963,self_paced,first half,2,background,3,6
+SS1619204435390,1,simple_dissimilar,6,dissimilar deviant,deviant,simple,simple_10_A,6625.755000044592,self_paced,first half,2,second_deviant,3,6
+SS1619204435390,2,simple_dissimilar,1,background,background,simple,simple_09_A,2831.2049999367446,forced_short,first half,1,background,3,NA
+SS1619204435390,2,simple_dissimilar,2,background,background,simple,simple_09_A,7778.284999891184,forced_short,first half,1,background,3,NA
+SS1619204435390,2,simple_dissimilar,3,dissimilar deviant,deviant,simple,simple_17_A,5591.259999899194,forced_short,first half,1,first_deviant,3,NA
+SS1619204435390,2,simple_dissimilar,4,background,background,simple,simple_09_A,6433.86999994982,forced_short,first half,1,background,3,NA
+SS1619204435390,2,simple_dissimilar,5,background,background,simple,simple_09_A,6221.740000066347,forced_short,first half,1,background,3,NA
+SS1619204435390,2,simple_dissimilar,6,background,background,simple,simple_09_A,6426.12000007648,forced_short,first half,1,background,3,NA
+SS1619204435390,3,simple_dissimilar,1,background,background,simple,simple_19_A,1018.7000000150874,forced_long,first half,1,background,4,NA
+SS1619204435390,3,simple_dissimilar,2,background,background,simple,simple_19_A,7811.199999996461,forced_long,first half,1,background,4,NA
+SS1619204435390,3,simple_dissimilar,3,background,background,simple,simple_19_A,7326.914999983273,forced_long,first half,1,background,4,NA
+SS1619204435390,3,simple_dissimilar,4,dissimilar deviant,deviant,simple,simple_01_A,7469.889999949373,forced_long,first half,1,first_deviant,4,NA
+SS1619204435390,4,simple_dissimilar,1,background,background,simple,simple_07_A,1472.1000000135973,forced_short,first half,2,background,2,3
+SS1619204435390,4,simple_dissimilar,2,dissimilar deviant,deviant,simple,simple_02_A,4126.954999985173,forced_short,first half,2,first_deviant,2,3
+SS1619204435390,4,simple_dissimilar,3,dissimilar deviant,deviant,simple,simple_02_A,6079.165000002831,forced_short,first half,2,second_deviant,2,3
+SS1619204435390,4,simple_dissimilar,4,background,background,simple,simple_07_A,4105.03500001505,forced_short,first half,2,background,2,3
+SS1619204435390,4,simple_dissimilar,5,background,background,simple,simple_07_A,4545.925000100397,forced_short,first half,2,background,2,3
+SS1619204435390,4,simple_dissimilar,6,background,background,simple,simple_07_A,5434.750000014901,forced_short,first half,2,background,2,3
+SS1619204435390,5,complex_dissimilar,1,background,background,complex,complex_14_A,645.479999948293,forced_long,first half,0,background,NA,NA
+SS1619204435390,5,complex_dissimilar,2,background,background,complex,complex_14_A,8873.13500000164,forced_long,first half,0,background,NA,NA
+SS1619204435390,5,complex_dissimilar,3,background,background,complex,complex_14_A,6164.599999901839,forced_long,first half,0,background,NA,NA
+SS1619204435390,5,complex_dissimilar,4,background,background,complex,complex_14_A,5775.739999953657,forced_long,first half,0,background,NA,NA
+SS1619204435390,5,complex_dissimilar,5,background,background,complex,complex_14_A,9269.195000058971,forced_long,first half,0,background,NA,NA
+SS1619204435390,6,complex_dissimilar,1,background,background,complex,complex_19_A,737.6050000311807,forced_short,second half,2,background,5,6
+SS1619204435390,6,complex_dissimilar,2,background,background,complex,complex_19_A,3409.8249999806285,forced_short,second half,2,background,5,6
+SS1619204435390,6,complex_dissimilar,3,background,background,complex,complex_19_A,9592.289999942295,forced_short,second half,2,background,5,6
+SS1619204435390,6,complex_dissimilar,4,background,background,complex,complex_19_A,4748.400000040419,forced_short,second half,2,background,5,6
+SS1619204435390,6,complex_dissimilar,5,dissimilar deviant,deviant,complex,complex_06_A,6356.870000017807,forced_short,second half,2,first_deviant,5,6
+SS1619204435390,6,complex_dissimilar,6,dissimilar deviant,deviant,complex,complex_06_A,2826.545000076294,forced_short,second half,2,second_deviant,5,6
+SS1619204435390,7,complex_dissimilar,1,background,background,complex,complex_03_A,755.3400000324473,forced_long,second half,2,background,4,6
+SS1619204435390,7,complex_dissimilar,2,background,background,complex,complex_03_A,6104.799999971874,forced_long,second half,2,background,4,6
+SS1619204435390,7,complex_dissimilar,3,background,background,complex,complex_03_A,3326.420000055805,forced_long,second half,2,background,4,6
+SS1619204435390,7,complex_dissimilar,4,dissimilar deviant,deviant,complex,complex_01_A,4301.1549999937415,forced_long,second half,2,first_deviant,4,6
+SS1619204435390,7,complex_dissimilar,5,background,background,complex,complex_03_A,4026.465000002645,forced_long,second half,2,background,4,6
+SS1619204435390,7,complex_dissimilar,6,dissimilar deviant,deviant,complex,complex_01_A,8702.370000071824,forced_long,second half,2,second_deviant,4,6
+SS1619204435390,8,complex_dissimilar,1,background,background,complex,complex_12_A,5018.135000020266,self_paced,second half,0,background,NA,NA
+SS1619204435390,8,complex_dissimilar,2,background,background,complex,complex_12_A,4422.724999953061,self_paced,second half,0,background,NA,NA
+SS1619204435390,8,complex_dissimilar,3,background,background,complex,complex_12_A,5006.885000038892,self_paced,second half,0,background,NA,NA
+SS1619204435390,8,complex_dissimilar,4,background,background,complex,complex_12_A,4447.825000039302,self_paced,second half,0,background,NA,NA
+SS1619204435390,8,complex_dissimilar,5,background,background,complex,complex_12_A,4969.6299999486655,self_paced,second half,0,background,NA,NA
+SS1619204435390,9,complex_dissimilar,1,background,background,complex,complex_19_A,1500.884999986738,forced_short,second half,0,background,NA,NA
+SS1619204435390,9,complex_dissimilar,2,background,background,complex,complex_19_A,3708.6850000778213,forced_short,second half,0,background,NA,NA
+SS1619204435390,9,complex_dissimilar,3,background,background,complex,complex_19_A,6499.225000035949,forced_short,second half,0,background,NA,NA
+SS1619204435390,9,complex_dissimilar,4,background,background,complex,complex_19_A,5742.8550000768155,forced_short,second half,0,background,NA,NA
+SS1619204435390,9,complex_dissimilar,5,background,background,complex,complex_19_A,7470.00999993179,forced_short,second half,0,background,NA,NA
+SS1619204435390,10,complex_dissimilar,1,background,background,complex,complex_04_A,6674.014999996871,self_paced,second half,1,background,3,NA
+SS1619204435390,10,complex_dissimilar,2,background,background,complex,complex_04_A,3896.4299999643117,self_paced,second half,1,background,3,NA
+SS1619204435390,10,complex_dissimilar,3,dissimilar deviant,deviant,complex,complex_03_A,12320.149999926798,self_paced,second half,1,first_deviant,3,NA
+SS1619204435390,10,complex_dissimilar,4,background,background,complex,complex_04_A,4458.159999921918,self_paced,second half,1,background,3,NA
+SS1619204435390,10,complex_dissimilar,5,background,background,complex,complex_04_A,3307.574999984354,self_paced,second half,1,background,3,NA
+SS1619204435390,11,simple_dissimilar,1,background,background,simple,simple_20_A,4129.3050000676885,forced_long,second half,1,background,3,NA
+SS1619204435390,11,simple_dissimilar,2,background,background,simple,simple_20_A,9025.604999973439,forced_long,second half,1,background,3,NA
+SS1619204435390,11,simple_dissimilar,3,dissimilar deviant,deviant,simple,simple_02_A,5770.9250000771135,forced_long,second half,1,first_deviant,3,NA
+SS1619204435390,11,simple_dissimilar,4,background,background,simple,simple_20_A,3733.3850000286475,forced_long,second half,1,background,3,NA
+SS1619204435390,11,simple_dissimilar,5,background,background,simple,simple_20_A,3002.059999969788,forced_long,second half,1,background,3,NA
+SS1619204697535,0,complex_dissimilar,1,background,background,complex,complex_09_A,38974.43999996176,self_paced,first half,2,background,4,5
+SS1619204697535,0,complex_dissimilar,2,background,background,complex,complex_09_A,24049.34999998659,self_paced,first half,2,background,4,5
+SS1619204697535,0,complex_dissimilar,3,background,background,complex,complex_09_A,40259.39500000095,self_paced,first half,2,background,4,5
+SS1619204697535,0,complex_dissimilar,4,dissimilar deviant,deviant,complex,complex_16_A,36044.57500000717,self_paced,first half,2,first_deviant,4,5
+SS1619204697535,0,complex_dissimilar,5,dissimilar deviant,deviant,complex,complex_16_A,21560.91000000015,self_paced,first half,2,second_deviant,4,5
+SS1619204697535,1,simple_dissimilar,1,background,background,simple,simple_13_A,32470.06500000134,self_paced,first half,1,background,5,NA
+SS1619204697535,1,simple_dissimilar,2,background,background,simple,simple_13_A,37900.42000001995,self_paced,first half,1,background,5,NA
+SS1619204697535,1,simple_dissimilar,3,background,background,simple,simple_13_A,25517.595000041183,self_paced,first half,1,background,5,NA
+SS1619204697535,1,simple_dissimilar,4,background,background,simple,simple_13_A,24227.150000049733,self_paced,first half,1,background,5,NA
+SS1619204697535,1,simple_dissimilar,5,dissimilar deviant,deviant,simple,simple_06_A,26503.425000002608,self_paced,first half,1,first_deviant,5,NA
+SS1619204697535,2,simple_dissimilar,1,background,background,simple,simple_02_A,1196.479999984149,forced_short,first half,1,background,5,NA
+SS1619204697535,2,simple_dissimilar,2,background,background,simple,simple_02_A,28432.79499997152,forced_short,first half,1,background,5,NA
+SS1619204697535,2,simple_dissimilar,3,background,background,simple,simple_02_A,14510.710000002291,forced_short,first half,1,background,5,NA
+SS1619204697535,2,simple_dissimilar,4,background,background,simple,simple_02_A,15685.639999981504,forced_short,first half,1,background,5,NA
+SS1619204697535,2,simple_dissimilar,5,dissimilar deviant,deviant,simple,simple_11_A,10460.744999989402,forced_short,first half,1,first_deviant,5,NA
+SS1619204697535,2,simple_dissimilar,6,background,background,simple,simple_02_A,17525.89500002796,forced_short,first half,1,background,5,NA
+SS1619204697535,3,simple_dissimilar,1,background,background,simple,simple_18_A,674.8749999678694,forced_long,first half,2,background,2,4
+SS1619204697535,3,simple_dissimilar,2,dissimilar deviant,deviant,simple,simple_15_A,40896.44500002032,forced_long,first half,2,first_deviant,2,4
+SS1619204697535,3,simple_dissimilar,3,background,background,simple,simple_18_A,28549.170000012964,forced_long,first half,2,background,2,4
+SS1619204697535,3,simple_dissimilar,4,dissimilar deviant,deviant,simple,simple_15_A,19204.385000048205,forced_long,first half,2,second_deviant,2,4
+SS1619204697535,3,simple_dissimilar,5,background,background,simple,simple_18_A,25846.66500001913,forced_long,first half,2,background,2,4
+SS1619204697535,4,simple_dissimilar,1,background,background,simple,simple_07_A,37756.825000047684,self_paced,first half,2,background,2,3
+SS1619204697535,4,simple_dissimilar,2,dissimilar deviant,deviant,simple,simple_03_A,26675.835000001825,self_paced,first half,2,first_deviant,2,3
+SS1619204697535,4,simple_dissimilar,3,dissimilar deviant,deviant,simple,simple_03_A,23323.749999981374,self_paced,first half,2,second_deviant,2,3
+SS1619204697535,4,simple_dissimilar,4,background,background,simple,simple_07_A,23144.224999996368,self_paced,first half,2,background,2,3
+SS1619204697535,5,complex_dissimilar,1,background,background,complex,complex_07_A,2815.9749999758787,forced_long,first half,2,background,2,4
+SS1619204697535,5,complex_dissimilar,2,dissimilar deviant,deviant,complex,complex_18_A,49550.43000000296,forced_long,first half,2,first_deviant,2,4
+SS1619204697535,5,complex_dissimilar,3,background,background,complex,complex_07_A,47320.56999998167,forced_long,first half,2,background,2,4
+SS1619204697535,5,complex_dissimilar,4,dissimilar deviant,deviant,complex,complex_18_A,95008.67000001017,forced_long,first half,2,second_deviant,2,4
+SS1619204697535,6,complex_dissimilar,1,background,background,complex,complex_04_A,35308.164999994915,self_paced,second half,1,background,2,NA
+SS1619204697535,6,complex_dissimilar,2,dissimilar deviant,deviant,complex,complex_17_A,23149.700000009034,self_paced,second half,1,first_deviant,2,NA
+SS1619204697535,6,complex_dissimilar,3,background,background,complex,complex_04_A,15323.784999956843,self_paced,second half,1,background,2,NA
+SS1619204697535,6,complex_dissimilar,4,background,background,complex,complex_04_A,23444.344999967143,self_paced,second half,1,background,2,NA
+SS1619204697535,7,simple_dissimilar,1,background,background,simple,simple_14_A,2343.330000003334,forced_long,second half,2,background,2,5
+SS1619204697535,7,simple_dissimilar,2,dissimilar deviant,deviant,simple,simple_05_A,25844.845000014175,forced_long,second half,2,first_deviant,2,5
+SS1619204697535,7,simple_dissimilar,3,background,background,simple,simple_14_A,30098.67000003578,forced_long,second half,2,background,2,5
+SS1619204697535,7,simple_dissimilar,4,background,background,simple,simple_14_A,25702.289999986533,forced_long,second half,2,background,2,5
+SS1619204697535,7,simple_dissimilar,5,dissimilar deviant,deviant,simple,simple_05_A,26870.624999981374,forced_long,second half,2,second_deviant,2,5
+SS1619204697535,8,complex_dissimilar,1,background,background,complex,complex_15_A,530.5799999623559,forced_long,second half,2,background,4,5
+SS1619204697535,8,complex_dissimilar,2,background,background,complex,complex_15_A,29937.944999954198,forced_long,second half,2,background,4,5
+SS1619204697535,8,complex_dissimilar,3,background,background,complex,complex_15_A,20332.159999990836,forced_long,second half,2,background,4,5
+SS1619204697535,8,complex_dissimilar,4,dissimilar deviant,deviant,complex,complex_01_A,25951.639999984764,forced_long,second half,2,first_deviant,4,5
+SS1619204697535,8,complex_dissimilar,5,dissimilar deviant,deviant,complex,complex_01_A,19653.3000000054,forced_long,second half,2,second_deviant,4,5
+SS1619204697535,9,complex_dissimilar,1,background,background,complex,complex_09_A,711.4600000204518,forced_short,second half,2,background,3,4
+SS1619204697535,9,complex_dissimilar,2,background,background,complex,complex_09_A,28733.110000030138,forced_short,second half,2,background,3,4
+SS1619204697535,9,complex_dissimilar,3,dissimilar deviant,deviant,complex,complex_14_A,11233.600000035949,forced_short,second half,2,first_deviant,3,4
+SS1619204697535,9,complex_dissimilar,4,dissimilar deviant,deviant,complex,complex_14_A,16764.039999980014,forced_short,second half,2,second_deviant,3,4
+SS1619204697535,10,simple_dissimilar,1,background,background,simple,simple_08_A,603.8850000477396,forced_short,second half,1,background,6,NA
+SS1619204697535,10,simple_dissimilar,2,background,background,simple,simple_08_A,16474.22999999253,forced_short,second half,1,background,6,NA
+SS1619204697535,10,simple_dissimilar,3,background,background,simple,simple_08_A,14224.619999993593,forced_short,second half,1,background,6,NA
+SS1619204697535,10,simple_dissimilar,4,background,background,simple,simple_08_A,12313.629999989644,forced_short,second half,1,background,6,NA
+SS1619204697535,10,simple_dissimilar,5,background,background,simple,simple_08_A,18352.39499999443,forced_short,second half,1,background,6,NA
+SS1619204697535,10,simple_dissimilar,6,dissimilar deviant,deviant,simple,simple_18_A,8709.210000000894,forced_short,second half,1,first_deviant,6,NA
+SS1619204697535,11,complex_dissimilar,1,background,background,complex,complex_17_A,722.524999990128,forced_short,second half,2,background,5,6
+SS1619204697535,11,complex_dissimilar,2,background,background,complex,complex_17_A,11717.260000004899,forced_short,second half,2,background,5,6
+SS1619204697535,11,complex_dissimilar,3,background,background,complex,complex_17_A,15237.535000022035,forced_short,second half,2,background,5,6
+SS1619204697535,11,complex_dissimilar,4,background,background,complex,complex_17_A,17473.31500001019,forced_short,second half,2,background,5,6
+SS1619204697535,11,complex_dissimilar,5,dissimilar deviant,deviant,complex,complex_04_A,13204.769999952987,forced_short,second half,2,first_deviant,5,6
+SS1619204697535,11,complex_dissimilar,6,dissimilar deviant,deviant,complex,complex_04_A,18295.599999953993,forced_short,second half,2,second_deviant,5,6
+SS1619204991008,0,complex_dissimilar,1,background,background,complex,complex_15_A,799.1799999999785,forced_long,first half,2,background,4,5
+SS1619204991008,0,complex_dissimilar,2,background,background,complex,complex_15_A,19711.749999998603,forced_long,first half,2,background,4,5
+SS1619204991008,0,complex_dissimilar,3,background,background,complex,complex_15_A,3153.409999998985,forced_long,first half,2,background,4,5
+SS1619204991008,0,complex_dissimilar,4,dissimilar deviant,deviant,complex,complex_14_A,5822.079999999929,forced_long,first half,2,first_deviant,4,5
+SS1619204991008,0,complex_dissimilar,5,dissimilar deviant,deviant,complex,complex_14_A,2412.420000000566,forced_long,first half,2,second_deviant,4,5
+SS1619204991008,0,complex_dissimilar,6,background,background,complex,complex_15_A,2638.590000000462,forced_long,first half,2,background,4,5
+SS1619204991008,1,simple_dissimilar,1,background,background,simple,simple_15_A,2719.7699999996985,self_paced,first half,1,background,5,NA
+SS1619204991008,1,simple_dissimilar,2,background,background,simple,simple_15_A,3705.5749999999534,self_paced,first half,1,background,5,NA
+SS1619204991008,1,simple_dissimilar,3,background,background,simple,simple_15_A,1021.7300000003888,self_paced,first half,1,background,5,NA
+SS1619204991008,1,simple_dissimilar,4,background,background,simple,simple_15_A,3857.9950000003155,self_paced,first half,1,background,5,NA
+SS1619204991008,1,simple_dissimilar,5,dissimilar deviant,deviant,simple,simple_10_A,5841.940000000235,self_paced,first half,1,first_deviant,5,NA
+SS1619204991008,2,simple_dissimilar,1,background,background,simple,simple_12_A,4334.719999998924,self_paced,first half,1,background,5,NA
+SS1619204991008,2,simple_dissimilar,2,background,background,simple,simple_12_A,2464.825000000914,self_paced,first half,1,background,5,NA
+SS1619204991008,2,simple_dissimilar,3,background,background,simple,simple_12_A,2588.980000000447,self_paced,first half,1,background,5,NA
+SS1619204991008,2,simple_dissimilar,4,background,background,simple,simple_12_A,307.0049999987532,self_paced,first half,1,background,5,NA
+SS1619204991008,2,simple_dissimilar,5,dissimilar deviant,deviant,simple,simple_05_A,387.91499999933876,self_paced,first half,1,first_deviant,5,NA
+SS1619204991008,3,simple_dissimilar,1,background,background,simple,simple_13_A,5415.934999999066,forced_short,first half,1,background,4,NA
+SS1619204991008,3,simple_dissimilar,2,background,background,simple,simple_13_A,3025.360000001441,forced_short,first half,1,background,4,NA
+SS1619204991008,3,simple_dissimilar,3,background,background,simple,simple_13_A,748.8400000002002,forced_short,first half,1,background,4,NA
+SS1619204991008,3,simple_dissimilar,4,dissimilar deviant,deviant,simple,simple_14_A,3346.824999998702,forced_short,first half,1,first_deviant,4,NA
+SS1619204991008,3,simple_dissimilar,5,background,background,simple,simple_13_A,2713.595000001078,forced_short,first half,1,background,4,NA
+SS1619204991008,3,simple_dissimilar,6,background,background,simple,simple_13_A,4156.97499999986,forced_short,first half,1,background,4,NA
+SS1619204991008,4,simple_dissimilar,1,background,background,simple,simple_16_A,18017.929999999993,forced_short,first half,0,background,NA,NA
+SS1619204991008,4,simple_dissimilar,2,background,background,simple,simple_16_A,3066.4099999994505,forced_short,first half,0,background,NA,NA
+SS1619204991008,4,simple_dissimilar,3,background,background,simple,simple_16_A,3124.239999999176,forced_short,first half,0,background,NA,NA
+SS1619204991008,4,simple_dissimilar,4,background,background,simple,simple_16_A,764.909999999858,forced_short,first half,0,background,NA,NA
+SS1619204991008,4,simple_dissimilar,5,background,background,simple,simple_16_A,2175.670000000566,forced_short,first half,0,background,NA,NA
+SS1619204991008,4,simple_dissimilar,6,background,background,simple,simple_16_A,2175.699999999837,forced_short,first half,0,background,NA,NA
+SS1619204991008,5,complex_dissimilar,1,background,background,complex,complex_17_A,710.914999999688,forced_long,first half,2,background,2,4
+SS1619204991008,5,complex_dissimilar,2,dissimilar deviant,deviant,complex,complex_07_A,3795.9150000006193,forced_long,first half,2,first_deviant,2,4
+SS1619204991008,5,complex_dissimilar,3,background,background,complex,complex_17_A,4170.009999999835,forced_long,first half,2,background,2,4
+SS1619204991008,5,complex_dissimilar,4,dissimilar deviant,deviant,complex,complex_07_A,1127.1099999994622,forced_long,first half,2,second_deviant,2,4
+SS1619204991008,6,simple_dissimilar,1,background,background,simple,simple_04_A,958.1099999995786,forced_long,second half,1,background,3,NA
+SS1619204991008,6,simple_dissimilar,2,background,background,simple,simple_04_A,2437.930000000051,forced_long,second half,1,background,3,NA
+SS1619204991008,6,simple_dissimilar,3,dissimilar deviant,deviant,simple,simple_05_A,2587.3599999995786,forced_long,second half,1,first_deviant,3,NA
+SS1619204991008,6,simple_dissimilar,4,background,background,simple,simple_04_A,496.11000000004424,forced_long,second half,1,background,3,NA
+SS1619204991008,7,complex_dissimilar,1,background,background,complex,complex_09_A,1596.8499999998603,self_paced,second half,0,background,NA,NA
+SS1619204991008,7,complex_dissimilar,2,background,background,complex,complex_09_A,1520.7599999994272,self_paced,second half,0,background,NA,NA
+SS1619204991008,7,complex_dissimilar,3,background,background,complex,complex_09_A,1316.559999999241,self_paced,second half,0,background,NA,NA
+SS1619204991008,7,complex_dissimilar,4,background,background,complex,complex_09_A,1294.7499999990687,self_paced,second half,0,background,NA,NA
+SS1619204991008,8,simple_dissimilar,1,background,background,simple,simple_07_A,2189.3700000000536,forced_long,second half,0,background,NA,NA
+SS1619204991008,8,simple_dissimilar,2,background,background,simple,simple_07_A,6739.84500000003,forced_long,second half,0,background,NA,NA
+SS1619204991008,8,simple_dissimilar,3,background,background,simple,simple_07_A,567.6800000001676,forced_long,second half,0,background,NA,NA
+SS1619204991008,8,simple_dissimilar,4,background,background,simple,simple_07_A,50119.91999999917,forced_long,second half,0,background,NA,NA
+SS1619204991008,8,simple_dissimilar,5,background,background,simple,simple_07_A,537.2399999996414,forced_long,second half,0,background,NA,NA
+SS1619204991008,9,complex_dissimilar,1,background,background,complex,complex_20_A,494.41499999922235,self_paced,second half,0,background,NA,NA
+SS1619204991008,9,complex_dissimilar,2,background,background,complex,complex_20_A,2003.0899999983376,self_paced,second half,0,background,NA,NA
+SS1619204991008,9,complex_dissimilar,3,background,background,complex,complex_20_A,341.2949999983539,self_paced,second half,0,background,NA,NA
+SS1619204991008,9,complex_dissimilar,4,background,background,complex,complex_20_A,916.6999999997788,self_paced,second half,0,background,NA,NA
+SS1619204991008,10,complex_dissimilar,1,background,background,complex,complex_14_A,4088.5600000001723,forced_short,second half,2,background,3,5
+SS1619204991008,10,complex_dissimilar,2,background,background,complex,complex_14_A,735.2800000007846,forced_short,second half,2,background,3,5
+SS1619204991008,10,complex_dissimilar,3,dissimilar deviant,deviant,complex,complex_04_A,1602.9899999994086,forced_short,second half,2,first_deviant,3,5
+SS1619204991008,10,complex_dissimilar,4,background,background,complex,complex_14_A,1308.829999999958,forced_short,second half,2,background,3,5
+SS1619204991008,10,complex_dissimilar,5,dissimilar deviant,deviant,complex,complex_04_A,621.9849999998114,forced_short,second half,2,second_deviant,3,5
+SS1619204991008,11,complex_dissimilar,1,background,background,complex,complex_01_A,2606.975000000559,forced_short,second half,1,background,3,NA
+SS1619204991008,11,complex_dissimilar,2,background,background,complex,complex_01_A,1443.859999999404,forced_short,second half,1,background,3,NA
+SS1619204991008,11,complex_dissimilar,3,dissimilar deviant,deviant,complex,complex_11_A,1567.2549999999464,forced_short,second half,1,first_deviant,3,NA
+SS1619204991008,11,complex_dissimilar,4,background,background,complex,complex_01_A,1079.9999999999418,forced_short,second half,1,background,3,NA
+SS1619204991008,11,complex_dissimilar,5,background,background,complex,complex_01_A,1113.245000000461,forced_short,second half,1,background,3,NA
+SS1619204991008,11,complex_dissimilar,6,background,background,complex,complex_01_A,1191.909999999567,forced_short,second half,1,background,3,NA
+SS1619205050011,0,complex_dissimilar,1,background,background,complex,complex_03_A,14243.060000007972,self_paced,first half,0,background,NA,NA
+SS1619205050011,0,complex_dissimilar,2,background,background,complex,complex_03_A,7049.354999966454,self_paced,first half,0,background,NA,NA
+SS1619205050011,0,complex_dissimilar,3,background,background,complex,complex_03_A,7341.114999959245,self_paced,first half,0,background,NA,NA
+SS1619205050011,0,complex_dissimilar,4,background,background,complex,complex_03_A,5547.855000011623,self_paced,first half,0,background,NA,NA
+SS1619205050011,0,complex_dissimilar,5,background,background,complex,complex_03_A,5271.674999967217,self_paced,first half,0,background,NA,NA
+SS1619205050011,0,complex_dissimilar,6,background,background,complex,complex_03_A,6361.5249999566,self_paced,first half,0,background,NA,NA
+SS1619205050011,1,complex_dissimilar,1,background,background,complex,complex_11_A,827.6599999517202,forced_long,first half,2,background,2,4
+SS1619205050011,1,complex_dissimilar,2,dissimilar deviant,deviant,complex,complex_17_A,4624.710000003688,forced_long,first half,2,first_deviant,2,4
+SS1619205050011,1,complex_dissimilar,3,background,background,complex,complex_11_A,5199.070000031497,forced_long,first half,2,background,2,4
+SS1619205050011,1,complex_dissimilar,4,dissimilar deviant,deviant,complex,complex_17_A,2660.3400000021793,forced_long,first half,2,second_deviant,2,4
+SS1619205050011,2,simple_dissimilar,1,background,background,simple,simple_20_A,578.6499999812804,forced_long,first half,2,background,3,6
+SS1619205050011,2,simple_dissimilar,2,background,background,simple,simple_20_A,5495.404999994207,forced_long,first half,2,background,3,6
+SS1619205050011,2,simple_dissimilar,3,dissimilar deviant,deviant,simple,simple_14_A,3541.239999991376,forced_long,first half,2,first_deviant,3,6
+SS1619205050011,2,simple_dissimilar,4,background,background,simple,simple_20_A,3881.3500000396743,forced_long,first half,2,background,3,6
+SS1619205050011,2,simple_dissimilar,5,background,background,simple,simple_20_A,1986.2949999514967,forced_long,first half,2,background,3,6
+SS1619205050011,2,simple_dissimilar,6,dissimilar deviant,deviant,simple,simple_14_A,1803.5650000092573,forced_long,first half,2,second_deviant,3,6
+SS1619205050011,3,complex_dissimilar,1,background,background,complex,complex_14_A,933.6650000186637,forced_long,first half,1,background,3,NA
+SS1619205050011,3,complex_dissimilar,2,background,background,complex,complex_14_A,3721.9800000311807,forced_long,first half,1,background,3,NA
+SS1619205050011,3,complex_dissimilar,3,dissimilar deviant,deviant,complex,complex_15_A,2961.1949999816716,forced_long,first half,1,first_deviant,3,NA
+SS1619205050011,3,complex_dissimilar,4,background,background,complex,complex_14_A,4681.639999966137,forced_long,first half,1,background,3,NA
+SS1619205050011,3,complex_dissimilar,5,background,background,complex,complex_14_A,3227.5550000485964,forced_long,first half,1,background,3,NA
+SS1619205050011,4,complex_dissimilar,1,background,background,complex,complex_20_A,1169.5249999756925,forced_short,first half,2,background,2,3
+SS1619205050011,4,complex_dissimilar,2,dissimilar deviant,deviant,complex,complex_10_A,3790.1899999706075,forced_short,first half,2,first_deviant,2,3
+SS1619205050011,4,complex_dissimilar,3,dissimilar deviant,deviant,complex,complex_10_A,2381.0349999694154,forced_short,first half,2,second_deviant,2,3
+SS1619205050011,4,complex_dissimilar,4,background,background,complex,complex_20_A,2486.6449999972247,forced_short,first half,2,background,2,3
+SS1619205050011,4,complex_dissimilar,5,background,background,complex,complex_20_A,2545.604999992065,forced_short,first half,2,background,2,3
+SS1619205050011,5,simple_dissimilar,1,background,background,simple,simple_13_A,3454.3899999698624,self_paced,first half,0,background,NA,NA
+SS1619205050011,5,simple_dissimilar,2,background,background,simple,simple_13_A,1103.6500000045635,self_paced,first half,0,background,NA,NA
+SS1619205050011,5,simple_dissimilar,3,background,background,simple,simple_13_A,293.95999998087063,self_paced,first half,0,background,NA,NA
+SS1619205050011,5,simple_dissimilar,4,background,background,simple,simple_13_A,2769.5950000197627,self_paced,first half,0,background,NA,NA
+SS1619205050011,5,simple_dissimilar,5,background,background,simple,simple_13_A,1743.86000004597,self_paced,first half,0,background,NA,NA
+SS1619205050011,5,simple_dissimilar,6,background,background,simple,simple_13_A,2780.6299999938346,self_paced,first half,0,background,NA,NA
+SS1619205050011,6,simple_dissimilar,1,background,background,simple,simple_20_A,883.7199999834411,forced_short,second half,1,background,3,NA
+SS1619205050011,6,simple_dissimilar,2,background,background,simple,simple_20_A,2686.0950000118464,forced_short,second half,1,background,3,NA
+SS1619205050011,6,simple_dissimilar,3,dissimilar deviant,deviant,simple,simple_03_A,3756.8800000008196,forced_short,second half,1,first_deviant,3,NA
+SS1619205050011,6,simple_dissimilar,4,background,background,simple,simple_20_A,1324.6499999659136,forced_short,second half,1,background,3,NA
+SS1619205050011,7,simple_dissimilar,1,background,background,simple,simple_05_A,899.5250000152737,forced_long,second half,1,background,4,NA
+SS1619205050011,7,simple_dissimilar,2,background,background,simple,simple_05_A,3029.645000002347,forced_long,second half,1,background,4,NA
+SS1619205050011,7,simple_dissimilar,3,background,background,simple,simple_05_A,2425.7800000486895,forced_long,second half,1,background,4,NA
+SS1619205050011,7,simple_dissimilar,4,dissimilar deviant,deviant,simple,simple_14_A,2864.820000017062,forced_long,second half,1,first_deviant,4,NA
+SS1619205050011,7,simple_dissimilar,5,background,background,simple,simple_05_A,912.6950000063516,forced_long,second half,1,background,4,NA
+SS1619205050011,7,simple_dissimilar,6,background,background,simple,simple_05_A,2516.554999980144,forced_long,second half,1,background,4,NA
+SS1619205050011,8,complex_dissimilar,1,background,background,complex,complex_01_A,833.3249999559484,forced_short,second half,0,background,NA,NA
+SS1619205050011,8,complex_dissimilar,2,background,background,complex,complex_01_A,5013.5799999698065,forced_short,second half,0,background,NA,NA
+SS1619205050011,8,complex_dissimilar,3,background,background,complex,complex_01_A,2440.1200000429526,forced_short,second half,0,background,NA,NA
+SS1619205050011,8,complex_dissimilar,4,background,background,complex,complex_01_A,4299.829999974463,forced_short,second half,0,background,NA,NA
+SS1619205050011,8,complex_dissimilar,5,background,background,complex,complex_01_A,1831.5399999846704,forced_short,second half,0,background,NA,NA
+SS1619205050011,9,simple_dissimilar,1,background,background,simple,simple_18_A,729.7149999649264,forced_short,second half,1,background,4,NA
+SS1619205050011,9,simple_dissimilar,2,background,background,simple,simple_18_A,3794.285000010859,forced_short,second half,1,background,4,NA
+SS1619205050011,9,simple_dissimilar,3,background,background,simple,simple_18_A,3113.435000006575,forced_short,second half,1,background,4,NA
+SS1619205050011,9,simple_dissimilar,4,dissimilar deviant,deviant,simple,simple_17_A,4321.755000040866,forced_short,second half,1,first_deviant,4,NA
+SS1619205050011,9,simple_dissimilar,5,background,background,simple,simple_18_A,1606.5550000057556,forced_short,second half,1,background,4,NA
+SS1619205050011,9,simple_dissimilar,6,background,background,simple,simple_18_A,1995.4900000011548,forced_short,second half,1,background,4,NA
+SS1619205050011,10,simple_dissimilar,1,background,background,simple,simple_12_A,5847.08999999566,self_paced,second half,1,background,5,NA
+SS1619205050011,10,simple_dissimilar,2,background,background,simple,simple_12_A,3162.2150000184774,self_paced,second half,1,background,5,NA
+SS1619205050011,10,simple_dissimilar,3,background,background,simple,simple_12_A,939.0849999617785,self_paced,second half,1,background,5,NA
+SS1619205050011,10,simple_dissimilar,4,background,background,simple,simple_12_A,1219.6800000383519,self_paced,second half,1,background,5,NA
+SS1619205050011,10,simple_dissimilar,5,dissimilar deviant,deviant,simple,simple_16_A,3663.890000025276,self_paced,second half,1,first_deviant,5,NA
+SS1619205050011,11,complex_dissimilar,1,background,background,complex,complex_07_A,12539.690000005066,self_paced,second half,0,background,NA,NA
+SS1619205050011,11,complex_dissimilar,2,background,background,complex,complex_07_A,3469.630000006873,self_paced,second half,0,background,NA,NA
+SS1619205050011,11,complex_dissimilar,3,background,background,complex,complex_07_A,3971.5500000165775,self_paced,second half,0,background,NA,NA
+SS1619205050011,11,complex_dissimilar,4,background,background,complex,complex_07_A,2974.6850000228733,self_paced,second half,0,background,NA,NA
+SS1619205050011,11,complex_dissimilar,5,background,background,complex,complex_07_A,1788.410000037402,self_paced,second half,0,background,NA,NA
+SS1619205130204,0,simple_dissimilar,1,background,background,simple,simple_03_A,451.5499999979511,forced_long,first half,0,background,NA,NA
+SS1619205130204,0,simple_dissimilar,2,background,background,simple,simple_03_A,98167.55000001285,forced_long,first half,0,background,NA,NA
+SS1619205130204,0,simple_dissimilar,3,background,background,simple,simple_03_A,44673.10000001453,forced_long,first half,0,background,NA,NA
+SS1619205130204,0,simple_dissimilar,4,background,background,simple,simple_03_A,1442.8450000705197,forced_long,first half,0,background,NA,NA
+SS1619205130204,0,simple_dissimilar,5,background,background,simple,simple_03_A,516.9349999632686,forced_long,first half,0,background,NA,NA
+SS1619205130204,1,complex_dissimilar,1,background,background,complex,complex_19_A,539.0149999875575,self_paced,first half,2,background,2,3
+SS1619205130204,1,complex_dissimilar,2,dissimilar deviant,deviant,complex,complex_13_A,373.1599999591708,self_paced,first half,2,first_deviant,2,3
+SS1619205130204,1,complex_dissimilar,4,background,background,complex,complex_19_A,390.00999997369945,self_paced,first half,2,background,2,3
+SS1619205130204,1,complex_dissimilar,5,background,background,complex,complex_19_A,95.2749999705702,self_paced,first half,2,background,2,3
+SS1619205130204,2,simple_dissimilar,1,background,background,simple,simple_02_A,382.93500000145286,self_paced,first half,0,background,NA,NA
+SS1619205130204,2,simple_dissimilar,2,background,background,simple,simple_02_A,65.18000003416091,self_paced,first half,0,background,NA,NA
+SS1619205130204,3,simple_dissimilar,1,background,background,simple,simple_11_A,958.8650000514463,forced_short,first half,2,background,3,4
+SS1619205130204,3,simple_dissimilar,2,background,background,simple,simple_11_A,1155.9300000080839,forced_short,first half,2,background,3,4
+SS1619205130204,3,simple_dissimilar,3,dissimilar deviant,deviant,simple,simple_04_A,152.91499998420477,forced_short,first half,2,first_deviant,3,4
+SS1619205130204,3,simple_dissimilar,4,dissimilar deviant,deviant,simple,simple_04_A,86.80499996989965,forced_short,first half,2,second_deviant,3,4
+SS1619205130204,3,simple_dissimilar,5,background,background,simple,simple_11_A,42.610000004060566,forced_short,first half,2,background,3,4
+SS1619205130204,4,complex_dissimilar,1,background,background,complex,complex_20_A,633.7599999969825,forced_short,first half,0,background,NA,NA
+SS1619205130204,4,complex_dissimilar,2,background,background,complex,complex_20_A,202.2049999795854,forced_short,first half,0,background,NA,NA
+SS1619205130204,4,complex_dissimilar,3,background,background,complex,complex_20_A,122.07000004127622,forced_short,first half,0,background,NA,NA
+SS1619205130204,4,complex_dissimilar,4,background,background,complex,complex_20_A,71.7949999962002,forced_short,first half,0,background,NA,NA
+SS1619205130204,5,complex_dissimilar,1,background,background,complex,complex_13_A,120.89999997988343,forced_long,first half,0,background,NA,NA
+SS1619205130204,5,complex_dissimilar,2,background,background,complex,complex_13_A,284.9500000011176,forced_long,first half,0,background,NA,NA
+SS1619205130204,5,complex_dissimilar,3,background,background,complex,complex_13_A,105.14499992132187,forced_long,first half,0,background,NA,NA
+SS1619205130204,5,complex_dissimilar,4,background,background,complex,complex_13_A,26751.444999943487,forced_long,first half,0,background,NA,NA
+SS1619205130204,5,complex_dissimilar,5,background,background,complex,complex_13_A,1543.98499999661,forced_long,first half,0,background,NA,NA
+SS1619205130204,5,complex_dissimilar,6,background,background,complex,complex_13_A,1517.1400000108406,forced_long,first half,0,background,NA,NA
+SS1619205130204,6,complex_dissimilar,1,background,background,complex,complex_16_A,707.935000071302,forced_short,second half,1,background,2,NA
+SS1619205130204,6,complex_dissimilar,2,dissimilar deviant,deviant,complex,complex_09_A,777.1299999440089,forced_short,second half,1,first_deviant,2,NA
+SS1619205130204,6,complex_dissimilar,3,background,background,complex,complex_16_A,697.9999999748543,forced_short,second half,1,background,2,NA
+SS1619205130204,6,complex_dissimilar,4,background,background,complex,complex_16_A,314.11999999545515,forced_short,second half,1,background,2,NA
+SS1619205130204,7,simple_dissimilar,1,background,background,simple,simple_01_A,1598.2350000413135,self_paced,second half,0,background,NA,NA
+SS1619205130204,7,simple_dissimilar,2,background,background,simple,simple_01_A,527.2950000362471,self_paced,second half,0,background,NA,NA
+SS1619205130204,7,simple_dissimilar,4,background,background,simple,simple_01_A,301.8750000046566,self_paced,second half,0,background,NA,NA
+SS1619205130204,8,simple_dissimilar,1,background,background,simple,simple_14_A,3260.3899999521673,forced_long,second half,2,background,5,6
+SS1619205130204,8,simple_dissimilar,2,background,background,simple,simple_14_A,612.3399999924004,forced_long,second half,2,background,5,6
+SS1619205130204,8,simple_dissimilar,3,background,background,simple,simple_14_A,354.84000004362315,forced_long,second half,2,background,5,6
+SS1619205130204,8,simple_dissimilar,5,dissimilar deviant,deviant,simple,simple_01_A,178.13999997451901,forced_long,second half,2,first_deviant,5,6
+SS1619205130204,8,simple_dissimilar,6,dissimilar deviant,deviant,simple,simple_01_A,115.1600000448525,forced_long,second half,2,second_deviant,5,6
+SS1619205130204,9,complex_dissimilar,1,background,background,complex,complex_09_A,567.1449999790639,self_paced,second half,0,background,NA,NA
+SS1619205130204,9,complex_dissimilar,2,background,background,complex,complex_09_A,362.36000002827495,self_paced,second half,0,background,NA,NA
+SS1619205130204,9,complex_dissimilar,3,background,background,complex,complex_09_A,103.08999998960644,self_paced,second half,0,background,NA,NA
+SS1619205130204,9,complex_dissimilar,4,background,background,complex,complex_09_A,246.74500001128763,self_paced,second half,0,background,NA,NA
+SS1619205130204,10,complex_dissimilar,1,background,background,complex,complex_20_A,233.87999995611608,forced_long,second half,1,background,4,NA
+SS1619205130204,10,complex_dissimilar,3,background,background,complex,complex_20_A,169.15000008884817,forced_long,second half,1,background,4,NA
+SS1619205130204,10,complex_dissimilar,4,dissimilar deviant,deviant,complex,complex_18_A,329.08499997574836,forced_long,second half,1,first_deviant,4,NA
+SS1619205130204,11,simple_dissimilar,1,background,background,simple,simple_17_A,14437.97500000801,forced_short,second half,0,background,NA,NA
+SS1619205130204,11,simple_dissimilar,2,background,background,simple,simple_17_A,578.6599999992177,forced_short,second half,0,background,NA,NA
+SS1619205130204,11,simple_dissimilar,3,background,background,simple,simple_17_A,705.0600000657141,forced_short,second half,0,background,NA,NA
+SS1619205130204,11,simple_dissimilar,4,background,background,simple,simple_17_A,109.27999997511506,forced_short,second half,0,background,NA,NA
+SS1619205247663,0,complex_dissimilar,1,background,background,complex,complex_19_A,2566.0949999000877,forced_short,first half,1,background,6,NA
+SS1619205247663,0,complex_dissimilar,2,background,background,complex,complex_19_A,45675.504999933764,forced_short,first half,1,background,6,NA
+SS1619205247663,0,complex_dissimilar,3,background,background,complex,complex_19_A,4185.840000049211,forced_short,first half,1,background,6,NA
+SS1619205247663,0,complex_dissimilar,4,background,background,complex,complex_19_A,25984.76500005927,forced_short,first half,1,background,6,NA
+SS1619205247663,0,complex_dissimilar,5,background,background,complex,complex_19_A,41552.454999880865,forced_short,first half,1,background,6,NA
+SS1619205247663,0,complex_dissimilar,6,dissimilar deviant,deviant,complex,complex_11_A,14703.170000109822,forced_short,first half,1,first_deviant,6,NA
+SS1619205247663,1,simple_dissimilar,1,background,background,simple,simple_20_A,3692.4650000873953,forced_long,first half,1,background,3,NA
+SS1619205247663,1,simple_dissimilar,2,background,background,simple,simple_20_A,1734.815000090748,forced_long,first half,1,background,3,NA
+SS1619205247663,1,simple_dissimilar,3,dissimilar deviant,deviant,simple,simple_03_A,9670.894999988377,forced_long,first half,1,first_deviant,3,NA
+SS1619205247663,1,simple_dissimilar,4,background,background,simple,simple_20_A,6658.814999973401,forced_long,first half,1,background,3,NA
+SS1619205247663,1,simple_dissimilar,5,background,background,simple,simple_20_A,7203.824999975041,forced_long,first half,1,background,3,NA
+SS1619205247663,2,complex_dissimilar,1,background,background,complex,complex_12_A,22928.749999962747,self_paced,first half,0,background,NA,NA
+SS1619205247663,2,complex_dissimilar,2,background,background,complex,complex_12_A,16293.559999903664,self_paced,first half,0,background,NA,NA
+SS1619205247663,2,complex_dissimilar,3,background,background,complex,complex_12_A,5252.915000077337,self_paced,first half,0,background,NA,NA
+SS1619205247663,2,complex_dissimilar,4,background,background,complex,complex_12_A,24571.950000012293,self_paced,first half,0,background,NA,NA
+SS1619205247663,2,complex_dissimilar,5,background,background,complex,complex_12_A,24151.52999991551,self_paced,first half,0,background,NA,NA
+SS1619205247663,2,complex_dissimilar,6,background,background,complex,complex_12_A,4509.880000026897,self_paced,first half,0,background,NA,NA
+SS1619205247663,3,complex_dissimilar,1,background,background,complex,complex_05_A,1124.3499999400228,forced_short,first half,0,background,NA,NA
+SS1619205247663,3,complex_dissimilar,2,background,background,complex,complex_05_A,21419.364999979734,forced_short,first half,0,background,NA,NA
+SS1619205247663,3,complex_dissimilar,3,background,background,complex,complex_05_A,6747.864999808371,forced_short,first half,0,background,NA,NA
+SS1619205247663,3,complex_dissimilar,4,background,background,complex,complex_05_A,1625.9550000540912,forced_short,first half,0,background,NA,NA
+SS1619205247663,4,simple_dissimilar,1,background,background,simple,simple_11_A,10908.300000010058,self_paced,first half,0,background,NA,NA
+SS1619205247663,4,simple_dissimilar,2,background,background,simple,simple_11_A,1560.6299999635667,self_paced,first half,0,background,NA,NA
+SS1619205247663,4,simple_dissimilar,3,background,background,simple,simple_11_A,2858.334999997169,self_paced,first half,0,background,NA,NA
+SS1619205247663,4,simple_dissimilar,4,background,background,simple,simple_11_A,52606.34000017308,self_paced,first half,0,background,NA,NA
+SS1619205247663,4,simple_dissimilar,5,background,background,simple,simple_11_A,2331.5150002017617,self_paced,first half,0,background,NA,NA
+SS1619205247663,5,simple_dissimilar,1,background,background,simple,simple_04_A,3463.960000080988,forced_short,first half,1,background,4,NA
+SS1619205247663,5,simple_dissimilar,2,background,background,simple,simple_04_A,6781.554999994114,forced_short,first half,1,background,4,NA
+SS1619205247663,5,simple_dissimilar,3,background,background,simple,simple_04_A,20164.074999978766,forced_short,first half,1,background,4,NA
+SS1619205247663,5,simple_dissimilar,4,dissimilar deviant,deviant,simple,simple_08_A,31270.100000081584,forced_short,first half,1,first_deviant,4,NA
+SS1619205247663,6,simple_dissimilar,1,background,background,simple,simple_06_A,850.3849999979138,forced_short,second half,2,background,3,5
+SS1619205247663,6,simple_dissimilar,2,background,background,simple,simple_06_A,67340.47499997541,forced_short,second half,2,background,3,5
+SS1619205247663,6,simple_dissimilar,3,dissimilar deviant,deviant,simple,simple_12_A,25994.405000004917,forced_short,second half,2,first_deviant,3,5
+SS1619205247663,6,simple_dissimilar,4,background,background,simple,simple_06_A,2521.9650000799447,forced_short,second half,2,background,3,5
+SS1619205247663,6,simple_dissimilar,5,dissimilar deviant,deviant,simple,simple_12_A,13801.380000077188,forced_short,second half,2,second_deviant,3,5
+SS1619205247663,7,simple_dissimilar,1,background,background,simple,simple_12_A,23647.054999833927,forced_long,second half,1,background,4,NA
+SS1619205247663,7,simple_dissimilar,2,background,background,simple,simple_12_A,45903.425000142306,forced_long,second half,1,background,4,NA
+SS1619205247663,7,simple_dissimilar,3,background,background,simple,simple_12_A,31125,forced_long,second half,1,background,4,NA
+SS1619205247663,7,simple_dissimilar,4,dissimilar deviant,deviant,simple,simple_06_A,7790.189999854192,forced_long,second half,1,first_deviant,4,NA
+SS1619205247663,8,simple_dissimilar,1,background,background,simple,simple_17_A,1745.589999947697,self_paced,second half,0,background,NA,NA
+SS1619205247663,8,simple_dissimilar,2,background,background,simple,simple_17_A,5324.809999903664,self_paced,second half,0,background,NA,NA
+SS1619205247663,8,simple_dissimilar,3,background,background,simple,simple_17_A,15320.309999864548,self_paced,second half,0,background,NA,NA
+SS1619205247663,8,simple_dissimilar,4,background,background,simple,simple_17_A,36973.415000131354,self_paced,second half,0,background,NA,NA
+SS1619205247663,9,complex_dissimilar,1,background,background,complex,complex_02_A,10125.729999970645,self_paced,second half,2,background,4,6
+SS1619205247663,9,complex_dissimilar,2,background,background,complex,complex_02_A,14815.995000069961,self_paced,second half,2,background,4,6
+SS1619205247663,9,complex_dissimilar,3,background,background,complex,complex_02_A,13879.415000090376,self_paced,second half,2,background,4,6
+SS1619205247663,9,complex_dissimilar,4,dissimilar deviant,deviant,complex,complex_14_A,14588.514999952167,self_paced,second half,2,first_deviant,4,6
+SS1619205247663,9,complex_dissimilar,5,background,background,complex,complex_02_A,8341.809999896213,self_paced,second half,2,background,4,6
+SS1619205247663,9,complex_dissimilar,6,dissimilar deviant,deviant,complex,complex_14_A,23539.99499999918,self_paced,second half,2,second_deviant,4,6
+SS1619205247663,10,complex_dissimilar,1,background,background,complex,complex_06_A,3428.940000012517,forced_long,second half,2,background,3,6
+SS1619205247663,10,complex_dissimilar,2,background,background,complex,complex_06_A,12585.234999889508,forced_long,second half,2,background,3,6
+SS1619205247663,10,complex_dissimilar,3,dissimilar deviant,deviant,complex,complex_04_A,14200.639999937266,forced_long,second half,2,first_deviant,3,6
+SS1619205247663,10,complex_dissimilar,4,background,background,complex,complex_06_A,14628.580000018701,forced_long,second half,2,background,3,6
+SS1619205247663,10,complex_dissimilar,5,background,background,complex,complex_06_A,11490.299999946728,forced_long,second half,2,background,3,6
+SS1619205247663,10,complex_dissimilar,6,dissimilar deviant,deviant,complex,complex_04_A,17563.62000014633,forced_long,second half,2,second_deviant,3,6
+SS1619205247663,11,complex_dissimilar,1,background,background,complex,complex_13_A,3128.7000000011176,forced_long,second half,1,background,4,NA
+SS1619205247663,11,complex_dissimilar,2,background,background,complex,complex_13_A,1010.5050001293421,forced_long,second half,1,background,4,NA
+SS1619205247663,11,complex_dissimilar,3,background,background,complex,complex_13_A,379.79000015184283,forced_long,second half,1,background,4,NA
+SS1619205247663,11,complex_dissimilar,4,dissimilar deviant,deviant,complex,complex_15_A,15671.945000067353,forced_long,second half,1,first_deviant,4,NA
+SS1619205247663,11,complex_dissimilar,5,background,background,complex,complex_13_A,746.4449999388307,forced_long,second half,1,background,4,NA
+SS1619205373323,0,complex_dissimilar,1,background,background,complex,complex_12_A,7953.3749999827705,self_paced,first half,1,background,4,NA
+SS1619205373323,0,complex_dissimilar,2,background,background,complex,complex_12_A,11885.580000001937,self_paced,first half,1,background,4,NA
+SS1619205373323,0,complex_dissimilar,3,background,background,complex,complex_12_A,8665.259999979753,self_paced,first half,1,background,4,NA
+SS1619205373323,0,complex_dissimilar,4,dissimilar deviant,deviant,complex,complex_05_A,4941.01499998942,self_paced,first half,1,first_deviant,4,NA
+SS1619205373323,1,simple_dissimilar,1,background,background,simple,simple_13_A,6380.000000004657,self_paced,first half,1,background,6,NA
+SS1619205373323,1,simple_dissimilar,2,background,background,simple,simple_13_A,3034.0199999627657,self_paced,first half,1,background,6,NA
+SS1619205373323,1,simple_dissimilar,3,background,background,simple,simple_13_A,238.81500004790723,self_paced,first half,1,background,6,NA
+SS1619205373323,1,simple_dissimilar,4,background,background,simple,simple_13_A,5693.2249999954365,self_paced,first half,1,background,6,NA
+SS1619205373323,1,simple_dissimilar,5,background,background,simple,simple_13_A,2931.27000000095,self_paced,first half,1,background,6,NA
+SS1619205373323,1,simple_dissimilar,6,dissimilar deviant,deviant,simple,simple_02_A,2606.8450000020675,self_paced,first half,1,first_deviant,6,NA
+SS1619205373323,2,complex_dissimilar,1,background,background,complex,complex_13_A,5301.595000026282,forced_long,first half,0,background,NA,NA
+SS1619205373323,2,complex_dissimilar,2,background,background,complex,complex_13_A,5136.774999962654,forced_long,first half,0,background,NA,NA
+SS1619205373323,2,complex_dissimilar,3,background,background,complex,complex_13_A,2660.9849999658763,forced_long,first half,0,background,NA,NA
+SS1619205373323,2,complex_dissimilar,4,background,background,complex,complex_13_A,3894.879999978002,forced_long,first half,0,background,NA,NA
+SS1619205373323,2,complex_dissimilar,5,background,background,complex,complex_13_A,3547.489999968093,forced_long,first half,0,background,NA,NA
+SS1619205373323,2,complex_dissimilar,6,background,background,complex,complex_13_A,5870.349999982864,forced_long,first half,0,background,NA,NA
+SS1619205373323,3,simple_dissimilar,1,background,background,simple,simple_10_A,692.7900000009686,forced_long,first half,1,background,3,NA
+SS1619205373323,3,simple_dissimilar,2,background,background,simple,simple_10_A,427.2650000057183,forced_long,first half,1,background,3,NA
+SS1619205373323,3,simple_dissimilar,3,dissimilar deviant,deviant,simple,simple_01_A,209.62999999755993,forced_long,first half,1,first_deviant,3,NA
+SS1619205373323,3,simple_dissimilar,4,background,background,simple,simple_10_A,1681.7799999844283,forced_long,first half,1,background,3,NA
+SS1619205373323,4,complex_dissimilar,1,background,background,complex,complex_05_A,1159.0749999741092,forced_short,first half,0,background,NA,NA
+SS1619205373323,4,complex_dissimilar,2,background,background,complex,complex_05_A,597.7699999930337,forced_short,first half,0,background,NA,NA
+SS1619205373323,4,complex_dissimilar,3,background,background,complex,complex_05_A,3870.1100000180304,forced_short,first half,0,background,NA,NA
+SS1619205373323,4,complex_dissimilar,4,background,background,complex,complex_05_A,2326.3499999884516,forced_short,first half,0,background,NA,NA
+SS1619205373323,4,complex_dissimilar,5,background,background,complex,complex_05_A,750.5649999948218,forced_short,first half,0,background,NA,NA
+SS1619205373323,4,complex_dissimilar,6,background,background,complex,complex_05_A,569.0449999528937,forced_short,first half,0,background,NA,NA
+SS1619205373323,5,simple_dissimilar,1,background,background,simple,simple_07_A,2803.7699999986216,forced_short,first half,0,background,NA,NA
+SS1619205373323,5,simple_dissimilar,2,background,background,simple,simple_07_A,3900.0450000166893,forced_short,first half,0,background,NA,NA
+SS1619205373323,5,simple_dissimilar,3,background,background,simple,simple_07_A,3715.089999954216,forced_short,first half,0,background,NA,NA
+SS1619205373323,5,simple_dissimilar,4,background,background,simple,simple_07_A,1076.3650000444613,forced_short,first half,0,background,NA,NA
+SS1619205373323,5,simple_dissimilar,5,background,background,simple,simple_07_A,422.4050000193529,forced_short,first half,0,background,NA,NA
+SS1619205373323,6,simple_dissimilar,2,dissimilar deviant,deviant,simple,simple_09_A,323.26500001363456,self_paced,second half,2,first_deviant,2,6
+SS1619205373323,6,simple_dissimilar,3,background,background,simple,simple_16_A,655.8599999989383,self_paced,second half,2,background,2,6
+SS1619205373323,6,simple_dissimilar,4,background,background,simple,simple_16_A,905.3100000019185,self_paced,second half,2,background,2,6
+SS1619205373323,6,simple_dissimilar,5,background,background,simple,simple_16_A,1431.9649999961257,self_paced,second half,2,background,2,6
+SS1619205373323,6,simple_dissimilar,6,dissimilar deviant,deviant,simple,simple_09_A,665.9300000173971,self_paced,second half,2,second_deviant,2,6
+SS1619205373323,7,simple_dissimilar,1,background,background,simple,simple_14_A,3888.5599999921396,forced_short,second half,2,background,3,4
+SS1619205373323,7,simple_dissimilar,2,background,background,simple,simple_14_A,447.6600000052713,forced_short,second half,2,background,3,4
+SS1619205373323,7,simple_dissimilar,3,dissimilar deviant,deviant,simple,simple_09_A,1048.685000045225,forced_short,second half,2,first_deviant,3,4
+SS1619205373323,7,simple_dissimilar,4,dissimilar deviant,deviant,simple,simple_09_A,377.7400000253692,forced_short,second half,2,second_deviant,3,4
+SS1619205373323,7,simple_dissimilar,5,background,background,simple,simple_14_A,422.28500003693625,forced_short,second half,2,background,3,4
+SS1619205373323,8,complex_dissimilar,1,background,background,complex,complex_16_A,3664.7349999984726,self_paced,second half,2,background,2,5
+SS1619205373323,8,complex_dissimilar,2,dissimilar deviant,deviant,complex,complex_02_A,2177.720000036061,self_paced,second half,2,first_deviant,2,5
+SS1619205373323,8,complex_dissimilar,3,background,background,complex,complex_16_A,374.9050000333227,self_paced,second half,2,background,2,5
+SS1619205373323,8,complex_dissimilar,4,background,background,complex,complex_16_A,413.8950000051409,self_paced,second half,2,background,2,5
+SS1619205373323,8,complex_dissimilar,5,dissimilar deviant,deviant,complex,complex_02_A,374.32499998249114,self_paced,second half,2,second_deviant,2,5
+SS1619205373323,9,simple_dissimilar,1,background,background,simple,simple_20_A,105.11500004213303,forced_long,second half,1,background,3,NA
+SS1619205373323,9,simple_dissimilar,2,background,background,simple,simple_20_A,998.7899999832734,forced_long,second half,1,background,3,NA
+SS1619205373323,9,simple_dissimilar,3,dissimilar deviant,deviant,simple,simple_11_A,133.09999997727573,forced_long,second half,1,first_deviant,3,NA
+SS1619205373323,9,simple_dissimilar,4,background,background,simple,simple_20_A,377.93499999679625,forced_long,second half,1,background,3,NA
+SS1619205373323,9,simple_dissimilar,5,background,background,simple,simple_20_A,49.73500000778586,forced_long,second half,1,background,3,NA
+SS1619205373323,10,complex_dissimilar,1,background,background,complex,complex_11_A,3175.7399999769405,forced_long,second half,0,background,NA,NA
+SS1619205373323,10,complex_dissimilar,2,background,background,complex,complex_11_A,294.38500001560897,forced_long,second half,0,background,NA,NA
+SS1619205373323,10,complex_dissimilar,3,background,background,complex,complex_11_A,586.0699999611825,forced_long,second half,0,background,NA,NA
+SS1619205373323,10,complex_dissimilar,4,background,background,complex,complex_11_A,276.9749999861233,forced_long,second half,0,background,NA,NA
+SS1619205373323,10,complex_dissimilar,5,background,background,complex,complex_11_A,496.5100000263192,forced_long,second half,0,background,NA,NA
+SS1619205373323,10,complex_dissimilar,6,background,background,complex,complex_11_A,188.23500000871718,forced_long,second half,0,background,NA,NA
+SS1619205373323,11,complex_dissimilar,1,background,background,complex,complex_11_A,21433.78500000108,forced_short,second half,2,background,2,4
+SS1619205373323,11,complex_dissimilar,2,dissimilar deviant,deviant,complex,complex_14_A,807.219999958761,forced_short,second half,2,first_deviant,2,4
+SS1619205373323,11,complex_dissimilar,3,background,background,complex,complex_11_A,174.59499998949468,forced_short,second half,2,background,2,4
+SS1619205373323,11,complex_dissimilar,4,dissimilar deviant,deviant,complex,complex_14_A,39.114999992307276,forced_short,second half,2,second_deviant,2,4
+SS1619205373323,11,complex_dissimilar,5,background,background,complex,complex_11_A,314.1850000247359,forced_short,second half,2,background,2,4
+SS1619205402694,0,complex_dissimilar,1,background,background,complex,complex_09_A,591.1450000003388,forced_long,first half,0,background,NA,NA
+SS1619205402694,0,complex_dissimilar,2,background,background,complex,complex_09_A,35980.30999999901,forced_long,first half,0,background,NA,NA
+SS1619205402694,0,complex_dissimilar,3,background,background,complex,complex_09_A,16713.52499999921,forced_long,first half,0,background,NA,NA
+SS1619205402694,0,complex_dissimilar,4,background,background,complex,complex_09_A,7490.805000001274,forced_long,first half,0,background,NA,NA
+SS1619205402694,1,complex_dissimilar,1,background,background,complex,complex_07_A,20862.65499999898,self_paced,first half,2,background,2,6
+SS1619205402694,1,complex_dissimilar,2,dissimilar deviant,deviant,complex,complex_17_A,9365.979999998643,self_paced,first half,2,first_deviant,2,6
+SS1619205402694,1,complex_dissimilar,3,background,background,complex,complex_07_A,2780.3199999998324,self_paced,first half,2,background,2,6
+SS1619205402694,1,complex_dissimilar,4,background,background,complex,complex_07_A,3808.3700000006356,self_paced,first half,2,background,2,6
+SS1619205402694,1,complex_dissimilar,5,background,background,complex,complex_07_A,2013.119999999646,self_paced,first half,2,background,2,6
+SS1619205402694,1,complex_dissimilar,6,dissimilar deviant,deviant,complex,complex_17_A,5514.295000000857,self_paced,first half,2,second_deviant,2,6
+SS1619205402694,2,simple_dissimilar,1,background,background,simple,simple_06_A,1197.4399999999441,forced_short,first half,0,background,NA,NA
+SS1619205402694,2,simple_dissimilar,2,background,background,simple,simple_06_A,6018.495000000228,forced_short,first half,0,background,NA,NA
+SS1619205402694,2,simple_dissimilar,3,background,background,simple,simple_06_A,4876.809999999765,forced_short,first half,0,background,NA,NA
+SS1619205402694,2,simple_dissimilar,4,background,background,simple,simple_06_A,3665.4600000001374,forced_short,first half,0,background,NA,NA
+SS1619205402694,2,simple_dissimilar,5,background,background,simple,simple_06_A,4827.160000000731,forced_short,first half,0,background,NA,NA
+SS1619205402694,2,simple_dissimilar,6,background,background,simple,simple_06_A,3467.179999999702,forced_short,first half,0,background,NA,NA
+SS1619205402694,3,complex_dissimilar,1,background,background,complex,complex_18_A,886.8949999996694,forced_short,first half,2,background,2,5
+SS1619205402694,3,complex_dissimilar,2,dissimilar deviant,deviant,complex,complex_08_A,3950.890000000072,forced_short,first half,2,first_deviant,2,5
+SS1619205402694,3,complex_dissimilar,3,background,background,complex,complex_18_A,3798.104999999865,forced_short,first half,2,background,2,5
+SS1619205402694,3,complex_dissimilar,4,background,background,complex,complex_18_A,2423.0999999999767,forced_short,first half,2,background,2,5
+SS1619205402694,3,complex_dissimilar,5,dissimilar deviant,deviant,complex,complex_08_A,3924.949999998731,forced_short,first half,2,second_deviant,2,5
+SS1619205402694,3,complex_dissimilar,6,background,background,complex,complex_18_A,3392.3050000012154,forced_short,first half,2,background,2,5
+SS1619205402694,4,complex_dissimilar,1,background,background,complex,complex_13_A,1127.3049999999348,forced_short,first half,1,background,6,NA
+SS1619205402694,4,complex_dissimilar,2,background,background,complex,complex_13_A,5453.0699999995995,forced_short,first half,1,background,6,NA
+SS1619205402694,4,complex_dissimilar,3,background,background,complex,complex_13_A,1536.5000000001746,forced_short,first half,1,background,6,NA
+SS1619205402694,4,complex_dissimilar,4,background,background,complex,complex_13_A,2004.8900000001886,forced_short,first half,1,background,6,NA
+SS1619205402694,4,complex_dissimilar,5,background,background,complex,complex_13_A,1543.2249999994528,forced_short,first half,1,background,6,NA
+SS1619205402694,4,complex_dissimilar,6,dissimilar deviant,deviant,complex,complex_19_A,3271.570000000822,forced_short,first half,1,first_deviant,6,NA
+SS1619205402694,5,complex_dissimilar,1,background,background,complex,complex_12_A,3537.3450000006123,self_paced,first half,0,background,NA,NA
+SS1619205402694,5,complex_dissimilar,2,background,background,complex,complex_12_A,4309.304999998887,self_paced,first half,0,background,NA,NA
+SS1619205402694,5,complex_dissimilar,3,background,background,complex,complex_12_A,4376.874999999942,self_paced,first half,0,background,NA,NA
+SS1619205402694,5,complex_dissimilar,4,background,background,complex,complex_12_A,3005.554999999702,self_paced,first half,0,background,NA,NA
+SS1619205402694,5,complex_dissimilar,5,background,background,complex,complex_12_A,3467.744999999937,self_paced,first half,0,background,NA,NA
+SS1619205402694,5,complex_dissimilar,6,background,background,complex,complex_12_A,2814.629999998957,self_paced,first half,0,background,NA,NA
+SS1619205402694,6,simple_dissimilar,1,background,background,simple,simple_08_A,75.63499999925261,forced_long,second half,0,background,NA,NA
+SS1619205402694,6,simple_dissimilar,2,background,background,simple,simple_08_A,2757.315000000759,forced_long,second half,0,background,NA,NA
+SS1619205402694,6,simple_dissimilar,3,background,background,simple,simple_08_A,1508.9099999986938,forced_long,second half,0,background,NA,NA
+SS1619205402694,6,simple_dissimilar,4,background,background,simple,simple_08_A,1705.4900000002235,forced_long,second half,0,background,NA,NA
+SS1619205402694,6,simple_dissimilar,5,background,background,simple,simple_08_A,2042.6299999998882,forced_long,second half,0,background,NA,NA
+SS1619205402694,7,simple_dissimilar,1,background,background,simple,simple_13_A,5316.34000000119,self_paced,second half,0,background,NA,NA
+SS1619205402694,7,simple_dissimilar,2,background,background,simple,simple_13_A,3223.944999999716,self_paced,second half,0,background,NA,NA
+SS1619205402694,7,simple_dissimilar,3,background,background,simple,simple_13_A,1936.6600000011967,self_paced,second half,0,background,NA,NA
+SS1619205402694,7,simple_dissimilar,4,background,background,simple,simple_13_A,2095.269999999786,self_paced,second half,0,background,NA,NA
+SS1619205402694,7,simple_dissimilar,5,background,background,simple,simple_13_A,3264.4299999992363,self_paced,second half,0,background,NA,NA
+SS1619205402694,7,simple_dissimilar,6,background,background,simple,simple_13_A,3544.570000000007,self_paced,second half,0,background,NA,NA
+SS1619205402694,8,complex_dissimilar,1,background,background,complex,complex_20_A,2777.825000001001,forced_long,second half,0,background,NA,NA
+SS1619205402694,8,complex_dissimilar,2,background,background,complex,complex_20_A,2533.595000000787,forced_long,second half,0,background,NA,NA
+SS1619205402694,8,complex_dissimilar,3,background,background,complex,complex_20_A,3081.084999999788,forced_long,second half,0,background,NA,NA
+SS1619205402694,8,complex_dissimilar,4,background,background,complex,complex_20_A,2900.535000000673,forced_long,second half,0,background,NA,NA
+SS1619205402694,9,simple_dissimilar,1,background,background,simple,simple_11_A,2612.9199999995762,forced_short,second half,1,background,4,NA
+SS1619205402694,9,simple_dissimilar,2,background,background,simple,simple_11_A,2770.6799999995856,forced_short,second half,1,background,4,NA
+SS1619205402694,9,simple_dissimilar,3,background,background,simple,simple_11_A,2451.960000000312,forced_short,second half,1,background,4,NA
+SS1619205402694,9,simple_dissimilar,4,dissimilar deviant,deviant,simple,simple_19_A,4937.770000000368,forced_short,second half,1,first_deviant,4,NA
+SS1619205402694,9,simple_dissimilar,5,background,background,simple,simple_11_A,2728.375000000582,forced_short,second half,1,background,4,NA
+SS1619205402694,9,simple_dissimilar,6,background,background,simple,simple_11_A,3510.504999998375,forced_short,second half,1,background,4,NA
+SS1619205402694,10,simple_dissimilar,1,background,background,simple,simple_07_A,5289.014999998501,self_paced,second half,0,background,NA,NA
+SS1619205402694,10,simple_dissimilar,2,background,background,simple,simple_07_A,1781.6549999988638,self_paced,second half,0,background,NA,NA
+SS1619205402694,10,simple_dissimilar,3,background,background,simple,simple_07_A,1030.2049999991432,self_paced,second half,0,background,NA,NA
+SS1619205402694,10,simple_dissimilar,4,background,background,simple,simple_07_A,702.5350000003818,self_paced,second half,0,background,NA,NA
+SS1619205402694,10,simple_dissimilar,5,background,background,simple,simple_07_A,673.3449999992736,self_paced,second half,0,background,NA,NA
+SS1619205402694,10,simple_dissimilar,6,background,background,simple,simple_07_A,748.695000000298,self_paced,second half,0,background,NA,NA
+SS1619205402694,11,simple_dissimilar,1,background,background,simple,simple_03_A,1067.3050000004005,forced_long,second half,0,background,NA,NA
+SS1619205402694,11,simple_dissimilar,2,background,background,simple,simple_03_A,1179.294999999809,forced_long,second half,0,background,NA,NA
+SS1619205402694,11,simple_dissimilar,3,background,background,simple,simple_03_A,510.30999999970663,forced_long,second half,0,background,NA,NA
+SS1619205402694,11,simple_dissimilar,4,background,background,simple,simple_03_A,1434.699999999837,forced_long,second half,0,background,NA,NA
+SS1619205402694,11,simple_dissimilar,5,background,background,simple,simple_03_A,3026.5799999997253,forced_long,second half,0,background,NA,NA
+SS1619205402694,11,simple_dissimilar,6,background,background,simple,simple_03_A,2828.1599999991013,forced_long,second half,0,background,NA,NA
+SS1619205453890,0,simple_dissimilar,1,background,background,simple,simple_03_A,3151.510000001508,forced_short,first half,0,background,NA,NA
+SS1619205453890,0,simple_dissimilar,2,background,background,simple,simple_03_A,6156.245000000126,forced_short,first half,0,background,NA,NA
+SS1619205453890,0,simple_dissimilar,3,background,background,simple,simple_03_A,2367.0449999990524,forced_short,first half,0,background,NA,NA
+SS1619205453890,0,simple_dissimilar,4,background,background,simple,simple_03_A,1329.5150000012654,forced_short,first half,0,background,NA,NA
+SS1619205453890,0,simple_dissimilar,5,background,background,simple,simple_03_A,3912.650000000227,forced_short,first half,0,background,NA,NA
+SS1619205453890,0,simple_dissimilar,6,background,background,simple,simple_03_A,807.3850000000675,forced_short,first half,0,background,NA,NA
+SS1619205453890,1,complex_dissimilar,1,background,background,complex,complex_05_A,1833.3800000000629,forced_long,first half,0,background,NA,NA
+SS1619205453890,1,complex_dissimilar,2,background,background,complex,complex_05_A,1025.1899999984598,forced_long,first half,0,background,NA,NA
+SS1619205453890,1,complex_dissimilar,3,background,background,complex,complex_05_A,666.4000000000815,forced_long,first half,0,background,NA,NA
+SS1619205453890,1,complex_dissimilar,4,background,background,complex,complex_05_A,1177.0149999992864,forced_long,first half,0,background,NA,NA
+SS1619205453890,1,complex_dissimilar,5,background,background,complex,complex_05_A,372.8150000006135,forced_long,first half,0,background,NA,NA
+SS1619205453890,2,simple_dissimilar,1,background,background,simple,simple_14_A,3353.2749999994994,forced_long,first half,0,background,NA,NA
+SS1619205453890,2,simple_dissimilar,2,background,background,simple,simple_14_A,3318.5000000012224,forced_long,first half,0,background,NA,NA
+SS1619205453890,2,simple_dissimilar,3,background,background,simple,simple_14_A,4930.505000000267,forced_long,first half,0,background,NA,NA
+SS1619205453890,2,simple_dissimilar,4,background,background,simple,simple_14_A,3484.579999998474,forced_long,first half,0,background,NA,NA
+SS1619205453890,2,simple_dissimilar,5,background,background,simple,simple_14_A,2274.9000000003434,forced_long,first half,0,background,NA,NA
+SS1619205453890,2,simple_dissimilar,6,background,background,simple,simple_14_A,28521.985000001237,forced_long,first half,0,background,NA,NA
+SS1619205453890,3,simple_dissimilar,1,background,background,simple,simple_13_A,2157.0449999999255,forced_short,first half,2,background,3,4
+SS1619205453890,3,simple_dissimilar,2,background,background,simple,simple_13_A,1932.039999999688,forced_short,first half,2,background,3,4
+SS1619205453890,3,simple_dissimilar,3,dissimilar deviant,deviant,simple,simple_02_A,2702.4549999987357,forced_short,first half,2,first_deviant,3,4
+SS1619205453890,3,simple_dissimilar,4,dissimilar deviant,deviant,simple,simple_02_A,825.8699999987439,forced_short,first half,2,second_deviant,3,4
+SS1619205453890,3,simple_dissimilar,5,background,background,simple,simple_13_A,453.48999999987427,forced_short,first half,2,background,3,4
+SS1619205453890,3,simple_dissimilar,6,background,background,simple,simple_13_A,902.514999999752,forced_short,first half,2,background,3,4
+SS1619205453890,4,simple_dissimilar,1,background,background,simple,simple_20_A,1735.1699999999255,forced_long,first half,0,background,NA,NA
+SS1619205453890,4,simple_dissimilar,2,background,background,simple,simple_20_A,13187.239999999292,forced_long,first half,0,background,NA,NA
+SS1619205453890,4,simple_dissimilar,3,background,background,simple,simple_20_A,5330.905000000726,forced_long,first half,0,background,NA,NA
+SS1619205453890,4,simple_dissimilar,4,background,background,simple,simple_20_A,104.09999999869615,forced_long,first half,0,background,NA,NA
+SS1619205453890,5,complex_dissimilar,1,background,background,complex,complex_18_A,8905.98000000132,forced_long,first half,2,background,3,4
+SS1619205453890,5,complex_dissimilar,2,background,background,complex,complex_18_A,11209.335000001418,forced_long,first half,2,background,3,4
+SS1619205453890,5,complex_dissimilar,3,dissimilar deviant,deviant,complex,complex_12_A,3911.995000000403,forced_long,first half,2,first_deviant,3,4
+SS1619205453890,5,complex_dissimilar,4,dissimilar deviant,deviant,complex,complex_12_A,1101.0049999986659,forced_long,first half,2,second_deviant,3,4
+SS1619205453890,6,complex_dissimilar,1,background,background,complex,complex_02_A,1543.2000000000698,self_paced,second half,0,background,NA,NA
+SS1619205453890,6,complex_dissimilar,2,background,background,complex,complex_02_A,2250.519999999611,self_paced,second half,0,background,NA,NA
+SS1619205453890,6,complex_dissimilar,3,background,background,complex,complex_02_A,1946.9850000004517,self_paced,second half,0,background,NA,NA
+SS1619205453890,6,complex_dissimilar,4,background,background,complex,complex_02_A,6365.349999999977,self_paced,second half,0,background,NA,NA
+SS1619205453890,6,complex_dissimilar,5,background,background,complex,complex_02_A,7912.135000000533,self_paced,second half,0,background,NA,NA
+SS1619205453890,6,complex_dissimilar,6,background,background,complex,complex_02_A,4942.3850000003,self_paced,second half,0,background,NA,NA
+SS1619205453890,7,simple_dissimilar,1,background,background,simple,simple_16_A,8770.920000000857,self_paced,second half,0,background,NA,NA
+SS1619205453890,7,simple_dissimilar,2,background,background,simple,simple_16_A,689.3600000002771,self_paced,second half,0,background,NA,NA
+SS1619205453890,7,simple_dissimilar,3,background,background,simple,simple_16_A,409.88500000094064,self_paced,second half,0,background,NA,NA
+SS1619205453890,7,simple_dissimilar,4,background,background,simple,simple_16_A,266.37999999907333,self_paced,second half,0,background,NA,NA
+SS1619205453890,8,complex_dissimilar,1,background,background,complex,complex_17_A,2781.0850000004866,forced_short,second half,2,background,4,5
+SS1619205453890,8,complex_dissimilar,2,background,background,complex,complex_17_A,1350.7000000008848,forced_short,second half,2,background,4,5
+SS1619205453890,8,complex_dissimilar,3,background,background,complex,complex_17_A,1035.4299999999348,forced_short,second half,2,background,4,5
+SS1619205453890,8,complex_dissimilar,4,dissimilar deviant,deviant,complex,complex_19_A,771.17499999987194,forced_short,second half,2,first_deviant,4,5
+SS1619205453890,8,complex_dissimilar,5,dissimilar deviant,deviant,complex,complex_19_A,378.03499999974156,forced_short,second half,2,second_deviant,4,5
+SS1619205453890,8,complex_dissimilar,6,background,background,complex,complex_17_A,439.73999999975786,forced_short,second half,2,background,4,5
+SS1619205453890,9,complex_dissimilar,1,background,background,complex,complex_17_A,8779.964999999735,forced_short,second half,1,background,5,NA
+SS1619205453890,9,complex_dissimilar,2,background,background,complex,complex_17_A,1157.0600000013947,forced_short,second half,1,background,5,NA
+SS1619205453890,9,complex_dissimilar,3,background,background,complex,complex_17_A,128.10499999974854,forced_short,second half,1,background,5,NA
+SS1619205453890,9,complex_dissimilar,4,background,background,complex,complex_17_A,119.61999999947147,forced_short,second half,1,background,5,NA
+SS1619205453890,9,complex_dissimilar,5,dissimilar deviant,deviant,complex,complex_18_A,416.0350000002072,forced_short,second half,1,first_deviant,5,NA
+SS1619205453890,10,complex_dissimilar,1,background,background,complex,complex_14_A,45.109999999112915,self_paced,second half,1,background,4,NA
+SS1619205453890,10,complex_dissimilar,3,background,background,complex,complex_14_A,343.37999999837484,self_paced,second half,1,background,4,NA
+SS1619205453890,10,complex_dissimilar,4,dissimilar deviant,deviant,complex,complex_16_A,1916.630000001518,self_paced,second half,1,first_deviant,4,NA
+SS1619205453890,10,complex_dissimilar,6,background,background,complex,complex_14_A,1345.6849999983679,self_paced,second half,1,background,4,NA
+SS1619205453890,11,simple_dissimilar,1,background,background,simple,simple_14_A,4554.685000000987,self_paced,second half,1,background,4,NA
+SS1619205453890,11,simple_dissimilar,2,background,background,simple,simple_14_A,1895.8800000000047,self_paced,second half,1,background,4,NA
+SS1619205453890,11,simple_dissimilar,3,background,background,simple,simple_14_A,1058.3400000014226,self_paced,second half,1,background,4,NA
+SS1619205453890,11,simple_dissimilar,4,dissimilar deviant,deviant,simple,simple_08_A,2172.134999998845,self_paced,second half,1,first_deviant,4,NA
+SS1619205453897,0,simple_dissimilar,1,background,background,simple,simple_07_A,578.7799999961862,self_paced,first half,1,background,4,NA
+SS1619205453897,0,simple_dissimilar,2,background,background,simple,simple_07_A,210.85000000311993,self_paced,first half,1,background,4,NA
+SS1619205453897,0,simple_dissimilar,3,background,background,simple,simple_07_A,627.9799999974784,self_paced,first half,1,background,4,NA
+SS1619205453897,1,simple_dissimilar,1,background,background,simple,simple_18_A,950.619999995979,forced_short,first half,2,background,3,6
+SS1619205453897,1,simple_dissimilar,2,background,background,simple,simple_18_A,682.9649999999674,forced_short,first half,2,background,3,6
+SS1619205453897,1,simple_dissimilar,3,dissimilar deviant,deviant,simple,simple_06_A,165.17999999632593,forced_short,first half,2,first_deviant,3,6
+SS1619205453897,1,simple_dissimilar,5,background,background,simple,simple_18_A,4051.9750000021304,forced_short,first half,2,background,3,6
+SS1619205453897,1,simple_dissimilar,6,dissimilar deviant,deviant,simple,simple_06_A,102.85499999736203,forced_short,first half,2,second_deviant,3,6
+SS1619205453897,2,simple_dissimilar,1,background,background,simple,simple_07_A,326.53999999456573,self_paced,first half,2,background,3,4
+SS1619205453897,2,simple_dissimilar,2,background,background,simple,simple_07_A,392.8599999999278,self_paced,first half,2,background,3,4
+SS1619205453897,2,simple_dissimilar,3,dissimilar deviant,deviant,simple,simple_02_A,383.52499999746215,self_paced,first half,2,first_deviant,3,4
+SS1619205453897,2,simple_dissimilar,4,dissimilar deviant,deviant,simple,simple_02_A,269.56000000063796,self_paced,first half,2,second_deviant,3,4
+SS1619205453897,2,simple_dissimilar,5,background,background,simple,simple_07_A,492.10499999753665,self_paced,first half,2,background,3,4
+SS1619205453897,2,simple_dissimilar,6,background,background,simple,simple_07_A,338.0800000013551,self_paced,first half,2,background,3,4
+SS1619205453897,3,complex_dissimilar,1,background,background,complex,complex_19_A,320.6449999997858,forced_short,first half,0,background,NA,NA
+SS1619205453897,3,complex_dissimilar,2,background,background,complex,complex_19_A,721.5700000015204,forced_short,first half,0,background,NA,NA
+SS1619205453897,3,complex_dissimilar,3,background,background,complex,complex_19_A,432.18999999953667,forced_short,first half,0,background,NA,NA
+SS1619205453897,3,complex_dissimilar,4,background,background,complex,complex_19_A,343.1549999950221,forced_short,first half,0,background,NA,NA
+SS1619205453897,3,complex_dissimilar,5,background,background,complex,complex_19_A,509.21000000380445,forced_short,first half,0,background,NA,NA
+SS1619205453897,4,simple_dissimilar,1,background,background,simple,simple_11_A,160.42000000015832,forced_long,first half,2,background,5,6
+SS1619205453897,4,simple_dissimilar,2,background,background,simple,simple_11_A,387.78000000456814,forced_long,first half,2,background,5,6
+SS1619205453897,4,simple_dissimilar,3,background,background,simple,simple_11_A,379.0249999947264,forced_long,first half,2,background,5,6
+SS1619205453897,4,simple_dissimilar,4,background,background,simple,simple_11_A,315.2699999991455,forced_long,first half,2,background,5,6
+SS1619205453897,4,simple_dissimilar,5,dissimilar deviant,deviant,simple,simple_15_A,638.4649999963585,forced_long,first half,2,first_deviant,5,6
+SS1619205453897,4,simple_dissimilar,6,dissimilar deviant,deviant,simple,simple_15_A,351.3149999998859,forced_long,first half,2,second_deviant,5,6
+SS1619205453897,5,simple_dissimilar,1,background,background,simple,simple_11_A,4275.759999996808,forced_short,first half,2,background,2,5
+SS1619205453897,5,simple_dissimilar,2,dissimilar deviant,deviant,simple,simple_16_A,534.4750000003842,forced_short,first half,2,first_deviant,2,5
+SS1619205453897,5,simple_dissimilar,4,background,background,simple,simple_11_A,680.8799999998882,forced_short,first half,2,background,2,5
+SS1619205453897,5,simple_dissimilar,5,dissimilar deviant,deviant,simple,simple_16_A,163.2099999987986,forced_short,first half,2,second_deviant,2,5
+SS1619205453897,6,complex_dissimilar,1,background,background,complex,complex_10_A,921.0850000017672,forced_short,second half,1,background,3,NA
+SS1619205453897,6,complex_dissimilar,2,background,background,complex,complex_10_A,166.3849999968079,forced_short,second half,1,background,3,NA
+SS1619205453897,6,complex_dissimilar,3,dissimilar deviant,deviant,complex,complex_14_A,606.8449999947916,forced_short,second half,1,first_deviant,3,NA
+SS1619205453897,6,complex_dissimilar,5,background,background,complex,complex_10_A,50.90999999811174,forced_short,second half,1,background,3,NA
+SS1619205453897,7,complex_dissimilar,1,background,background,complex,complex_18_A,149.5599999980186,self_paced,second half,1,background,5,NA
+SS1619205453897,7,complex_dissimilar,3,background,background,complex,complex_18_A,592.1050000033574,self_paced,second half,1,background,5,NA
+SS1619205453897,7,complex_dissimilar,5,dissimilar deviant,deviant,complex,complex_06_A,460.30000000610016,self_paced,second half,1,first_deviant,5,NA
+SS1619205453897,8,complex_dissimilar,1,background,background,complex,complex_11_A,4541.860000004817,forced_long,second half,1,background,2,NA
+SS1619205453897,8,complex_dissimilar,2,dissimilar deviant,deviant,complex,complex_05_A,199.86999999673571,forced_long,second half,1,first_deviant,2,NA
+SS1619205453897,8,complex_dissimilar,3,background,background,complex,complex_11_A,333.55000000301516,forced_long,second half,1,background,2,NA
+SS1619205453897,8,complex_dissimilar,4,background,background,complex,complex_11_A,100.29500000382541,forced_long,second half,1,background,2,NA
+SS1619205453897,8,complex_dissimilar,5,background,background,complex,complex_11_A,168.50500000145985,forced_long,second half,1,background,2,NA
+SS1619205453897,9,simple_dissimilar,1,background,background,simple,simple_20_A,5231.265000002168,forced_long,second half,2,background,4,5
+SS1619205453897,9,simple_dissimilar,2,background,background,simple,simple_20_A,204.21999999962281,forced_long,second half,2,background,4,5
+SS1619205453897,9,simple_dissimilar,3,background,background,simple,simple_20_A,413.2099999987986,forced_long,second half,2,background,4,5
+SS1619205453897,9,simple_dissimilar,4,dissimilar deviant,deviant,simple,simple_16_A,106.51500000676606,forced_long,second half,2,first_deviant,4,5
+SS1619205453897,9,simple_dissimilar,5,dissimilar deviant,deviant,simple,simple_16_A,139.50499999918975,forced_long,second half,2,second_deviant,4,5
+SS1619205453897,10,complex_dissimilar,1,background,background,complex,complex_18_A,641.7050000018207,self_paced,second half,1,background,6,NA
+SS1619205453897,10,complex_dissimilar,2,background,background,complex,complex_18_A,51.97000000043772,self_paced,second half,1,background,6,NA
+SS1619205453897,10,complex_dissimilar,3,background,background,complex,complex_18_A,421.44000000553206,self_paced,second half,1,background,6,NA
+SS1619205453897,10,complex_dissimilar,4,background,background,complex,complex_18_A,50.004999997327104,self_paced,second half,1,background,6,NA
+SS1619205453897,10,complex_dissimilar,5,background,background,complex,complex_18_A,423.9400000005844,self_paced,second half,1,background,6,NA
+SS1619205453897,10,complex_dissimilar,6,dissimilar deviant,deviant,complex,complex_06_A,346.40500000386965,self_paced,second half,1,first_deviant,6,NA
+SS1619205453897,11,complex_dissimilar,1,background,background,complex,complex_15_A,5005.95500000054,forced_long,second half,0,background,NA,NA
+SS1619205453897,11,complex_dissimilar,2,background,background,complex,complex_15_A,130.67999999475433,forced_long,second half,0,background,NA,NA
+SS1619205453897,11,complex_dissimilar,3,background,background,complex,complex_15_A,516.8750000011642,forced_long,second half,0,background,NA,NA
+SS1619205453897,11,complex_dissimilar,4,background,background,complex,complex_15_A,76.97000000189291,forced_long,second half,0,background,NA,NA
+SS1619205453897,11,complex_dissimilar,5,background,background,complex,complex_15_A,94.03000000020256,forced_long,second half,0,background,NA,NA
+SS1619205453897,11,complex_dissimilar,6,background,background,complex,complex_15_A,126.7599999991944,forced_long,second half,0,background,NA,NA
+SS1619205504013,0,complex_dissimilar,1,background,background,complex,complex_07_A,2609.425000147894,forced_short,first half,0,background,NA,NA
+SS1619205504013,0,complex_dissimilar,2,background,background,complex,complex_07_A,41937.785000074655,forced_short,first half,0,background,NA,NA
+SS1619205504013,0,complex_dissimilar,3,background,background,complex,complex_07_A,41482.31999995187,forced_short,first half,0,background,NA,NA
+SS1619205504013,0,complex_dissimilar,4,background,background,complex,complex_07_A,25538.500000024214,forced_short,first half,0,background,NA,NA
+SS1619205504013,0,complex_dissimilar,5,background,background,complex,complex_07_A,55923.48500015214,forced_short,first half,0,background,NA,NA
+SS1619205504013,0,complex_dissimilar,6,background,background,complex,complex_07_A,19146.750000072643,forced_short,first half,0,background,NA,NA
+SS1619205504013,1,simple_dissimilar,1,background,background,simple,simple_16_A,2598.045000107959,forced_long,first half,1,background,4,NA
+SS1619205504013,1,simple_dissimilar,2,background,background,simple,simple_16_A,35513.21500004269,forced_long,first half,1,background,4,NA
+SS1619205504013,1,simple_dissimilar,3,background,background,simple,simple_16_A,21395.735000027344,forced_long,first half,1,background,4,NA
+SS1619205504013,1,simple_dissimilar,4,dissimilar deviant,deviant,simple,simple_12_A,30256.22499990277,forced_long,first half,1,first_deviant,4,NA
+SS1619205504013,1,simple_dissimilar,5,background,background,simple,simple_16_A,25750.914999982342,forced_long,first half,1,background,4,NA
+SS1619205504013,2,complex_dissimilar,1,background,background,complex,complex_17_A,29118.49999986589,self_paced,first half,1,background,4,NA
+SS1619205504013,2,complex_dissimilar,2,background,background,complex,complex_17_A,13317.710000090301,self_paced,first half,1,background,4,NA
+SS1619205504013,2,complex_dissimilar,3,background,background,complex,complex_17_A,16700.29000006616,self_paced,first half,1,background,4,NA
+SS1619205504013,2,complex_dissimilar,4,dissimilar deviant,deviant,complex,complex_12_A,17570.644999854267,self_paced,first half,1,first_deviant,4,NA
+SS1619205504013,2,complex_dissimilar,5,background,background,complex,complex_17_A,34185.9800000675,self_paced,first half,1,background,4,NA
+SS1619205504013,2,complex_dissimilar,6,background,background,complex,complex_17_A,38026.770000113174,self_paced,first half,1,background,4,NA
+SS1619205504013,3,simple_dissimilar,1,background,background,simple,simple_01_A,1011.6850000340492,forced_short,first half,2,background,3,6
+SS1619205504013,3,simple_dissimilar,2,background,background,simple,simple_01_A,15779.080000007525,forced_short,first half,2,background,3,6
+SS1619205504013,3,simple_dissimilar,3,dissimilar deviant,deviant,simple,simple_09_A,15478.640000103042,forced_short,first half,2,first_deviant,3,6
+SS1619205504013,3,simple_dissimilar,4,background,background,simple,simple_01_A,11242.3350000754,forced_short,first half,2,background,3,6
+SS1619205504013,3,simple_dissimilar,5,background,background,simple,simple_01_A,13616.08500010334,forced_short,first half,2,background,3,6
+SS1619205504013,3,simple_dissimilar,6,dissimilar deviant,deviant,simple,simple_09_A,15718.62499997951,forced_short,first half,2,second_deviant,3,6
+SS1619205504013,4,complex_dissimilar,1,background,background,complex,complex_03_A,1999.7449999209493,forced_short,first half,0,background,NA,NA
+SS1619205504013,4,complex_dissimilar,2,background,background,complex,complex_03_A,16621.474999934435,forced_short,first half,0,background,NA,NA
+SS1619205504013,4,complex_dissimilar,3,background,background,complex,complex_03_A,12559.115000069141,forced_short,first half,0,background,NA,NA
+SS1619205504013,4,complex_dissimilar,4,background,background,complex,complex_03_A,24875.959999859333,forced_short,first half,0,background,NA,NA
+SS1619205504013,4,complex_dissimilar,5,background,background,complex,complex_03_A,22829.1400000453,forced_short,first half,0,background,NA,NA
+SS1619205504013,5,complex_dissimilar,1,background,background,complex,complex_17_A,2569.439999992028,forced_long,first half,0,background,NA,NA
+SS1619205504013,5,complex_dissimilar,2,background,background,complex,complex_17_A,58349.729999899864,forced_long,first half,0,background,NA,NA
+SS1619205504013,5,complex_dissimilar,3,background,background,complex,complex_17_A,14898.449999978766,forced_long,first half,0,background,NA,NA
+SS1619205504013,5,complex_dissimilar,4,background,background,complex,complex_17_A,24050.09499983862,forced_long,first half,0,background,NA,NA
+SS1619205504013,5,complex_dissimilar,5,background,background,complex,complex_17_A,34846.30499989726,forced_long,first half,0,background,NA,NA
+SS1619205504013,5,complex_dissimilar,6,background,background,complex,complex_17_A,41701.49999996647,forced_long,first half,0,background,NA,NA
+SS1619205504013,6,simple_dissimilar,1,background,background,simple,simple_20_A,6183.685000054538,forced_long,second half,1,background,2,NA
+SS1619205504013,6,simple_dissimilar,2,dissimilar deviant,deviant,simple,simple_03_A,15179.974999977276,forced_long,second half,1,first_deviant,2,NA
+SS1619205504013,6,simple_dissimilar,3,background,background,simple,simple_20_A,28626.199999824166,forced_long,second half,1,background,2,NA
+SS1619205504013,6,simple_dissimilar,4,background,background,simple,simple_20_A,36446.62000006065,forced_long,second half,1,background,2,NA
+SS1619205504013,6,simple_dissimilar,5,background,background,simple,simple_20_A,14610.355000011623,forced_long,second half,1,background,2,NA
+SS1619205504013,6,simple_dissimilar,6,background,background,simple,simple_20_A,26791.674999985844,forced_long,second half,1,background,2,NA
+SS1619205504013,7,simple_dissimilar,1,background,background,simple,simple_08_A,10755.540000041947,self_paced,second half,2,background,2,4
+SS1619205504013,7,simple_dissimilar,2,dissimilar deviant,deviant,simple,simple_06_A,10711.829999927431,self_paced,second half,2,first_deviant,2,4
+SS1619205504013,7,simple_dissimilar,3,background,background,simple,simple_08_A,15851.664999965578,self_paced,second half,2,background,2,4
+SS1619205504013,7,simple_dissimilar,4,dissimilar deviant,deviant,simple,simple_06_A,20779.42500007339,self_paced,second half,2,second_deviant,2,4
+SS1619205504013,7,simple_dissimilar,5,background,background,simple,simple_08_A,15057.869999902323,self_paced,second half,2,background,2,4
+SS1619205504013,7,simple_dissimilar,6,background,background,simple,simple_08_A,34248.314999975264,self_paced,second half,2,background,2,4
+SS1619205504013,8,complex_dissimilar,1,background,background,complex,complex_01_A,21163.734999950975,self_paced,second half,1,background,6,NA
+SS1619205504013,8,complex_dissimilar,2,background,background,complex,complex_01_A,12695.199999958277,self_paced,second half,1,background,6,NA
+SS1619205504013,8,complex_dissimilar,3,background,background,complex,complex_01_A,25029.245000099763,self_paced,second half,1,background,6,NA
+SS1619205504013,8,complex_dissimilar,4,background,background,complex,complex_01_A,17118.250000057742,self_paced,second half,1,background,6,NA
+SS1619205504013,8,complex_dissimilar,5,background,background,complex,complex_01_A,19846.494999947026,self_paced,second half,1,background,6,NA
+SS1619205504013,8,complex_dissimilar,6,dissimilar deviant,deviant,complex,complex_18_A,24399.549999972805,self_paced,second half,1,first_deviant,6,NA
+SS1619205504013,9,simple_dissimilar,1,background,background,simple,simple_17_A,29608.895000070333,self_paced,second half,0,background,NA,NA
+SS1619205504013,9,simple_dissimilar,2,background,background,simple,simple_17_A,10075.545000145212,self_paced,second half,0,background,NA,NA
+SS1619205504013,9,simple_dissimilar,3,background,background,simple,simple_17_A,3103.0500000342727,self_paced,second half,0,background,NA,NA
+SS1619205504013,9,simple_dissimilar,4,background,background,simple,simple_17_A,8075.685000047088,self_paced,second half,0,background,NA,NA
+SS1619205504013,9,simple_dissimilar,5,background,background,simple,simple_17_A,10444.835000205785,self_paced,second half,0,background,NA,NA
+SS1619205504013,10,simple_dissimilar,1,background,background,simple,simple_02_A,1125.389999942854,forced_short,second half,1,background,6,NA
+SS1619205504013,10,simple_dissimilar,2,background,background,simple,simple_02_A,5646.135000046343,forced_short,second half,1,background,6,NA
+SS1619205504013,10,simple_dissimilar,3,background,background,simple,simple_02_A,6105.070000048727,forced_short,second half,1,background,6,NA
+SS1619205504013,10,simple_dissimilar,4,background,background,simple,simple_02_A,6934.194999979809,forced_short,second half,1,background,6,NA
+SS1619205504013,10,simple_dissimilar,5,background,background,simple,simple_02_A,8549.739999929443,forced_short,second half,1,background,6,NA
+SS1619205504013,10,simple_dissimilar,6,dissimilar deviant,deviant,simple,simple_04_A,18410.304999910295,forced_short,second half,1,first_deviant,6,NA
+SS1619205504013,11,complex_dissimilar,1,background,background,complex,complex_10_A,7624.900000169873,forced_long,second half,2,background,2,4
+SS1619205504013,11,complex_dissimilar,2,dissimilar deviant,deviant,complex,complex_08_A,10492.0399999246,forced_long,second half,2,first_deviant,2,4
+SS1619205504013,11,complex_dissimilar,3,background,background,complex,complex_10_A,6563.545000040904,forced_long,second half,2,background,2,4
+SS1619205504013,11,complex_dissimilar,4,dissimilar deviant,deviant,complex,complex_08_A,17048.919999971986,forced_long,second half,2,second_deviant,2,4
+SS1619205504013,11,complex_dissimilar,5,background,background,complex,complex_10_A,17208.074999973178,forced_long,second half,2,background,2,4
+SS1619205530598,0,complex_dissimilar,1,background,background,complex,complex_19_A,7170.614999951795,self_paced,first half,1,background,6,NA
+SS1619205530598,0,complex_dissimilar,2,background,background,complex,complex_19_A,6790.625000023283,self_paced,first half,1,background,6,NA
+SS1619205530598,0,complex_dissimilar,3,background,background,complex,complex_19_A,7184.149999986403,self_paced,first half,1,background,6,NA
+SS1619205530598,0,complex_dissimilar,4,background,background,complex,complex_19_A,6745.365000097081,self_paced,first half,1,background,6,NA
+SS1619205530598,0,complex_dissimilar,5,background,background,complex,complex_19_A,7154.9449999583885,self_paced,first half,1,background,6,NA
+SS1619205530598,0,complex_dissimilar,6,dissimilar deviant,deviant,complex,complex_10_A,10517.095000017434,self_paced,first half,1,first_deviant,6,NA
+SS1619205530598,1,simple_dissimilar,1,background,background,simple,simple_19_A,2200.5999999819323,forced_short,first half,2,background,2,3
+SS1619205530598,1,simple_dissimilar,2,dissimilar deviant,deviant,simple,simple_04_A,8130.899999989197,forced_short,first half,2,first_deviant,2,3
+SS1619205530598,1,simple_dissimilar,3,dissimilar deviant,deviant,simple,simple_04_A,7135.160000063479,forced_short,first half,2,second_deviant,2,3
+SS1619205530598,1,simple_dissimilar,4,background,background,simple,simple_19_A,9399.744999944232,forced_short,first half,2,background,2,3
+SS1619205530598,2,complex_dissimilar,1,background,background,complex,complex_11_A,3392.9699999280274,forced_long,first half,2,background,3,5
+SS1619205530598,2,complex_dissimilar,2,background,background,complex,complex_11_A,10540.180000010878,forced_long,first half,2,background,3,5
+SS1619205530598,2,complex_dissimilar,3,dissimilar deviant,deviant,complex,complex_16_A,21436.370000010356,forced_long,first half,2,first_deviant,3,5
+SS1619205530598,2,complex_dissimilar,4,background,background,complex,complex_11_A,7327.099999994971,forced_long,first half,2,background,3,5
+SS1619205530598,2,complex_dissimilar,5,dissimilar deviant,deviant,complex,complex_16_A,9914.705000002868,forced_long,first half,2,second_deviant,3,5
+SS1619205530598,3,simple_dissimilar,1,background,background,simple,simple_09_A,12860.325000016019,self_paced,first half,2,background,2,5
+SS1619205530598,3,simple_dissimilar,2,dissimilar deviant,deviant,simple,simple_19_A,12966.549999895506,self_paced,first half,2,first_deviant,2,5
+SS1619205530598,3,simple_dissimilar,3,background,background,simple,simple_09_A,9201.965000014752,self_paced,first half,2,background,2,5
+SS1619205530598,3,simple_dissimilar,4,background,background,simple,simple_09_A,5867.295000003651,self_paced,first half,2,background,2,5
+SS1619205530598,3,simple_dissimilar,5,dissimilar deviant,deviant,simple,simple_19_A,3984.8950000014156,self_paced,first half,2,second_deviant,2,5
+SS1619205530598,4,complex_dissimilar,1,background,background,complex,complex_07_A,2763.35999998264,forced_short,first half,1,background,5,NA
+SS1619205530598,4,complex_dissimilar,2,background,background,complex,complex_07_A,8866.124999942258,forced_short,first half,1,background,5,NA
+SS1619205530598,4,complex_dissimilar,3,background,background,complex,complex_07_A,20752.694999915548,forced_short,first half,1,background,5,NA
+SS1619205530598,4,complex_dissimilar,4,background,background,complex,complex_07_A,21136.364999925718,forced_short,first half,1,background,5,NA
+SS1619205530598,4,complex_dissimilar,5,dissimilar deviant,deviant,complex,complex_03_A,8675.46499997843,forced_short,first half,1,first_deviant,5,NA
+SS1619205530598,5,simple_dissimilar,1,background,background,simple,simple_07_A,1948.340000002645,forced_short,first half,1,background,4,NA
+SS1619205530598,5,simple_dissimilar,2,background,background,simple,simple_07_A,4086.9600001024082,forced_short,first half,1,background,4,NA
+SS1619205530598,5,simple_dissimilar,3,background,background,simple,simple_07_A,2293.904999969527,forced_short,first half,1,background,4,NA
+SS1619205530598,5,simple_dissimilar,4,dissimilar deviant,deviant,simple,simple_13_A,5574.505000025965,forced_short,first half,1,first_deviant,4,NA
+SS1619205530598,6,complex_dissimilar,1,background,background,complex,complex_14_A,1821.8900000210851,forced_long,second half,0,background,NA,NA
+SS1619205530598,6,complex_dissimilar,2,background,background,complex,complex_14_A,2982.810000074096,forced_long,second half,0,background,NA,NA
+SS1619205530598,6,complex_dissimilar,3,background,background,complex,complex_14_A,3905.4500000784174,forced_long,second half,0,background,NA,NA
+SS1619205530598,6,complex_dissimilar,4,background,background,complex,complex_14_A,3237.005000002682,forced_long,second half,0,background,NA,NA
+SS1619205530598,7,complex_dissimilar,1,background,background,complex,complex_16_A,1332.2400000179186,forced_short,second half,0,background,NA,NA
+SS1619205530598,7,complex_dissimilar,2,background,background,complex,complex_16_A,4834.524999954738,forced_short,second half,0,background,NA,NA
+SS1619205530598,7,complex_dissimilar,3,background,background,complex,complex_16_A,2727.0750000607222,forced_short,second half,0,background,NA,NA
+SS1619205530598,7,complex_dissimilar,4,background,background,complex,complex_16_A,3620.8450000267476,forced_short,second half,0,background,NA,NA
+SS1619205530598,7,complex_dissimilar,5,background,background,complex,complex_16_A,2707.3050000471994,forced_short,second half,0,background,NA,NA
+SS1619205530598,8,complex_dissimilar,1,background,background,complex,complex_05_A,5245.66000001505,self_paced,second half,2,background,2,5
+SS1619205530598,8,complex_dissimilar,2,dissimilar deviant,deviant,complex,complex_18_A,5793.90000004787,self_paced,second half,2,first_deviant,2,5
+SS1619205530598,8,complex_dissimilar,3,background,background,complex,complex_05_A,925.1299999887124,self_paced,second half,2,background,2,5
+SS1619205530598,8,complex_dissimilar,4,background,background,complex,complex_05_A,1218.5349999926984,self_paced,second half,2,background,2,5
+SS1619205530598,8,complex_dissimilar,5,dissimilar deviant,deviant,complex,complex_18_A,2813.3399999933317,self_paced,second half,2,second_deviant,2,5
+SS1619205530598,9,simple_dissimilar,1,background,background,simple,simple_05_A,600.0650000059977,self_paced,second half,2,background,2,3
+SS1619205530598,9,simple_dissimilar,2,dissimilar deviant,deviant,simple,simple_03_A,1743.2300000218675,self_paced,second half,2,first_deviant,2,3
+SS1619205530598,9,simple_dissimilar,3,dissimilar deviant,deviant,simple,simple_03_A,4389.775000046939,self_paced,second half,2,second_deviant,2,3
+SS1619205530598,9,simple_dissimilar,4,background,background,simple,simple_05_A,3315.8400000538677,self_paced,second half,2,background,2,3
+SS1619205530598,9,simple_dissimilar,5,background,background,simple,simple_05_A,4348.814999917522,self_paced,second half,2,background,2,3
+SS1619205530598,10,simple_dissimilar,1,background,background,simple,simple_11_A,2746.984999976121,forced_long,second half,1,background,4,NA
+SS1619205530598,10,simple_dissimilar,2,background,background,simple,simple_11_A,1974.88999995403,forced_long,second half,1,background,4,NA
+SS1619205530598,10,simple_dissimilar,3,background,background,simple,simple_11_A,1258.1500000087544,forced_long,second half,1,background,4,NA
+SS1619205530598,10,simple_dissimilar,4,dissimilar deviant,deviant,simple,simple_16_A,2971.8400000128895,forced_long,second half,1,first_deviant,4,NA
+SS1619205530598,11,simple_dissimilar,1,background,background,simple,simple_17_A,223.06999994907528,forced_long,second half,0,background,NA,NA
+SS1619205530598,11,simple_dissimilar,2,background,background,simple,simple_17_A,3083.9500000001863,forced_long,second half,0,background,NA,NA
+SS1619205530598,11,simple_dissimilar,3,background,background,simple,simple_17_A,2378.150000004098,forced_long,second half,0,background,NA,NA
+SS1619205530598,11,simple_dissimilar,4,background,background,simple,simple_17_A,1871.9699999783188,forced_long,second half,0,background,NA,NA
+SS1619205544508,0,complex_dissimilar,1,background,background,complex,complex_14_A,7627.885000001697,self_paced,first half,0,background,NA,NA
+SS1619205544508,0,complex_dissimilar,2,background,background,complex,complex_14_A,17767.050000000367,self_paced,first half,0,background,NA,NA
+SS1619205544508,0,complex_dissimilar,3,background,background,complex,complex_14_A,1758.1150000005146,self_paced,first half,0,background,NA,NA
+SS1619205544508,0,complex_dissimilar,4,background,background,complex,complex_14_A,17967.614999999554,self_paced,first half,0,background,NA,NA
+SS1619205544508,0,complex_dissimilar,5,background,background,complex,complex_14_A,9568.865000001097,self_paced,first half,0,background,NA,NA
+SS1619205544508,1,complex_dissimilar,1,background,background,complex,complex_20_A,10364.73999999906,self_paced,first half,2,background,2,6
+SS1619205544508,1,complex_dissimilar,2,dissimilar deviant,deviant,complex,complex_13_A,7429.5600000005215,self_paced,first half,2,first_deviant,2,6
+SS1619205544508,1,complex_dissimilar,3,background,background,complex,complex_20_A,7039.615000001504,self_paced,first half,2,background,2,6
+SS1619205544508,1,complex_dissimilar,4,background,background,complex,complex_20_A,3339.8100000012782,self_paced,first half,2,background,2,6
+SS1619205544508,1,complex_dissimilar,5,background,background,complex,complex_20_A,4124.644999999873,self_paced,first half,2,background,2,6
+SS1619205544508,1,complex_dissimilar,6,dissimilar deviant,deviant,complex,complex_13_A,7216.060000000667,self_paced,first half,2,second_deviant,2,6
+SS1619205544508,2,simple_dissimilar,1,background,background,simple,simple_07_A,2765.2700000017066,forced_short,first half,2,background,3,5
+SS1619205544508,2,simple_dissimilar,2,background,background,simple,simple_07_A,4111.955000000307,forced_short,first half,2,background,3,5
+SS1619205544508,2,simple_dissimilar,3,dissimilar deviant,deviant,simple,simple_17_A,3259.679999999207,forced_short,first half,2,first_deviant,3,5
+SS1619205544508,2,simple_dissimilar,4,background,background,simple,simple_07_A,3553.1549999996205,forced_short,first half,2,background,3,5
+SS1619205544508,2,simple_dissimilar,5,dissimilar deviant,deviant,simple,simple_17_A,3204.1399999998393,forced_short,first half,2,second_deviant,3,5
+SS1619205544508,2,simple_dissimilar,6,background,background,simple,simple_07_A,4871.365000000864,forced_short,first half,2,background,3,5
+SS1619205544508,3,complex_dissimilar,1,background,background,complex,complex_12_A,576.8049999988289,forced_long,first half,1,background,4,NA
+SS1619205544508,3,complex_dissimilar,2,background,background,complex,complex_12_A,10759.405000000726,forced_long,first half,1,background,4,NA
+SS1619205544508,3,complex_dissimilar,3,background,background,complex,complex_12_A,6335.759999999951,forced_long,first half,1,background,4,NA
+SS1619205544508,3,complex_dissimilar,4,dissimilar deviant,deviant,complex,complex_11_A,6916.8749999990105,forced_long,first half,1,first_deviant,4,NA
+SS1619205544508,3,complex_dissimilar,5,background,background,complex,complex_12_A,4719.744999998482,forced_long,first half,1,background,4,NA
+SS1619205544508,4,complex_dissimilar,1,background,background,complex,complex_14_A,4572.290000000037,forced_short,first half,0,background,NA,NA
+SS1619205544508,4,complex_dissimilar,2,background,background,complex,complex_14_A,2810.820000000589,forced_short,first half,0,background,NA,NA
+SS1619205544508,4,complex_dissimilar,3,background,background,complex,complex_14_A,3562.7100000001374,forced_short,first half,0,background,NA,NA
+SS1619205544508,4,complex_dissimilar,4,background,background,complex,complex_14_A,3298.930000000808,forced_short,first half,0,background,NA,NA
+SS1619205544508,4,complex_dissimilar,5,background,background,complex,complex_14_A,3597.8199999990175,forced_short,first half,0,background,NA,NA
+SS1619205544508,4,complex_dissimilar,6,background,background,complex,complex_14_A,3284.090000001015,forced_short,first half,0,background,NA,NA
+SS1619205544508,5,complex_dissimilar,1,background,background,complex,complex_15_A,3283.7350000009174,forced_long,first half,0,background,NA,NA
+SS1619205544508,5,complex_dissimilar,2,background,background,complex,complex_15_A,6259.995000000345,forced_long,first half,0,background,NA,NA
+SS1619205544508,5,complex_dissimilar,3,background,background,complex,complex_15_A,5174.2100000010105,forced_long,first half,0,background,NA,NA
+SS1619205544508,5,complex_dissimilar,4,background,background,complex,complex_15_A,4183.680000000051,forced_long,first half,0,background,NA,NA
+SS1619205544508,6,simple_dissimilar,1,background,background,simple,simple_01_A,1689.6450000003679,self_paced,second half,0,background,NA,NA
+SS1619205544508,6,simple_dissimilar,2,background,background,simple,simple_01_A,2002.6800000014482,self_paced,second half,0,background,NA,NA
+SS1619205544508,6,simple_dissimilar,3,background,background,simple,simple_01_A,2088.644999999786,self_paced,second half,0,background,NA,NA
+SS1619205544508,6,simple_dissimilar,4,background,background,simple,simple_01_A,4211.240000000573,self_paced,second half,0,background,NA,NA
+SS1619205544508,6,simple_dissimilar,5,background,background,simple,simple_01_A,6173.349999999104,self_paced,second half,0,background,NA,NA
+SS1619205544508,6,simple_dissimilar,6,background,background,simple,simple_01_A,3807.415000001143,self_paced,second half,0,background,NA,NA
+SS1619205544508,7,complex_dissimilar,1,background,background,complex,complex_04_A,17901.619999998773,forced_short,second half,2,background,4,5
+SS1619205544508,7,complex_dissimilar,2,background,background,complex,complex_04_A,2894.360000000219,forced_short,second half,2,background,4,5
+SS1619205544508,7,complex_dissimilar,3,background,background,complex,complex_04_A,1106.374999999418,forced_short,second half,2,background,4,5
+SS1619205544508,7,complex_dissimilar,4,dissimilar deviant,deviant,complex,complex_06_A,2243.984999999171,forced_short,second half,2,first_deviant,4,5
+SS1619205544508,7,complex_dissimilar,5,dissimilar deviant,deviant,complex,complex_06_A,1392.165000001085,forced_short,second half,2,second_deviant,4,5
+SS1619205544508,8,simple_dissimilar,1,background,background,simple,simple_10_A,10489.240000000806,forced_short,second half,1,background,3,NA
+SS1619205544508,8,simple_dissimilar,2,background,background,simple,simple_10_A,6266.315000000759,forced_short,second half,1,background,3,NA
+SS1619205544508,8,simple_dissimilar,3,dissimilar deviant,deviant,simple,simple_05_A,4576.844999999565,forced_short,second half,1,first_deviant,3,NA
+SS1619205544508,8,simple_dissimilar,4,background,background,simple,simple_10_A,3344.4550000003655,forced_short,second half,1,background,3,NA
+SS1619205544508,9,simple_dissimilar,1,background,background,simple,simple_09_A,1646.445000000298,self_paced,second half,2,background,5,6
+SS1619205544508,9,simple_dissimilar,2,background,background,simple,simple_09_A,2184.670000000566,self_paced,second half,2,background,5,6
+SS1619205544508,9,simple_dissimilar,3,background,background,simple,simple_09_A,2300.839999999851,self_paced,second half,2,background,5,6
+SS1619205544508,9,simple_dissimilar,4,background,background,simple,simple_09_A,2838.9599999990896,self_paced,second half,2,background,5,6
+SS1619205544508,9,simple_dissimilar,5,dissimilar deviant,deviant,simple,simple_19_A,3882.055000000051,self_paced,second half,2,first_deviant,5,6
+SS1619205544508,9,simple_dissimilar,6,dissimilar deviant,deviant,simple,simple_19_A,2656.659999998752,self_paced,second half,2,second_deviant,5,6
+SS1619205544508,10,simple_dissimilar,1,background,background,simple,simple_13_A,3152.465000001015,forced_long,second half,1,background,4,NA
+SS1619205544508,10,simple_dissimilar,2,background,background,simple,simple_13_A,6471.230000001029,forced_long,second half,1,background,4,NA
+SS1619205544508,10,simple_dissimilar,3,background,background,simple,simple_13_A,982.015000001411,forced_long,second half,1,background,4,NA
+SS1619205544508,10,simple_dissimilar,4,dissimilar deviant,deviant,simple,simple_10_A,481.7600000005914,forced_long,second half,1,first_deviant,4,NA
+SS1619205544508,10,simple_dissimilar,5,background,background,simple,simple_13_A,145.81999999971595,forced_long,second half,1,background,4,NA
+SS1619205544508,11,simple_dissimilar,1,background,background,simple,simple_18_A,980.8749999993015,forced_long,second half,1,background,5,NA
+SS1619205544508,11,simple_dissimilar,2,background,background,simple,simple_18_A,500.86000000010245,forced_long,second half,1,background,5,NA
+SS1619205544508,11,simple_dissimilar,3,background,background,simple,simple_18_A,1636.500000000582,forced_long,second half,1,background,5,NA
+SS1619205544508,11,simple_dissimilar,4,background,background,simple,simple_18_A,2839.605000001029,forced_long,second half,1,background,5,NA
+SS1619205544508,11,simple_dissimilar,5,dissimilar deviant,deviant,simple,simple_13_A,3052.220000001369,forced_long,second half,1,first_deviant,5,NA
+SS1619205567965,0,simple_dissimilar,1,background,background,simple,simple_02_A,8279.06499999878,self_paced,first half,0,background,NA,NA
+SS1619205567965,0,simple_dissimilar,2,background,background,simple,simple_02_A,14633.780000000144,self_paced,first half,0,background,NA,NA
+SS1619205567965,0,simple_dissimilar,3,background,background,simple,simple_02_A,17516.924999999872,self_paced,first half,0,background,NA,NA
+SS1619205567965,0,simple_dissimilar,4,background,background,simple,simple_02_A,12708.739999998244,self_paced,first half,0,background,NA,NA
+SS1619205567965,1,simple_dissimilar,1,background,background,simple,simple_07_A,2855.8699999994133,forced_long,first half,0,background,NA,NA
+SS1619205567965,1,simple_dissimilar,2,background,background,simple,simple_07_A,9897.95999999845,forced_long,first half,0,background,NA,NA
+SS1619205567965,1,simple_dissimilar,3,background,background,simple,simple_07_A,9635.460000001302,forced_long,first half,0,background,NA,NA
+SS1619205567965,1,simple_dissimilar,5,background,background,simple,simple_07_A,3979.8200000004144,forced_long,first half,0,background,NA,NA
+SS1619205567965,1,simple_dissimilar,6,background,background,simple,simple_07_A,31094.639999999315,forced_long,first half,0,background,NA,NA
+SS1619205567965,2,complex_dissimilar,1,background,background,complex,complex_01_A,7154.6500000003725,self_paced,first half,1,background,3,NA
+SS1619205567965,2,complex_dissimilar,2,background,background,complex,complex_01_A,5527.545000000799,self_paced,first half,1,background,3,NA
+SS1619205567965,2,complex_dissimilar,3,dissimilar deviant,deviant,complex,complex_15_A,5007.83500000037,self_paced,first half,1,first_deviant,3,NA
+SS1619205567965,2,complex_dissimilar,4,background,background,complex,complex_01_A,5418.229999999283,self_paced,first half,1,background,3,NA
+SS1619205567965,2,complex_dissimilar,5,background,background,complex,complex_01_A,9201.225000000675,self_paced,first half,1,background,3,NA
+SS1619205567965,3,complex_dissimilar,1,background,background,complex,complex_09_A,1329.0849999976344,forced_long,first half,0,background,NA,NA
+SS1619205567965,3,complex_dissimilar,2,background,background,complex,complex_09_A,4398.379999998724,forced_long,first half,0,background,NA,NA
+SS1619205567965,3,complex_dissimilar,3,background,background,complex,complex_09_A,2151.545000000624,forced_long,first half,0,background,NA,NA
+SS1619205567965,3,complex_dissimilar,4,background,background,complex,complex_09_A,3471.0049999994226,forced_long,first half,0,background,NA,NA
+SS1619205567965,3,complex_dissimilar,5,background,background,complex,complex_09_A,3443.894999996701,forced_long,first half,0,background,NA,NA
+SS1619205567965,3,complex_dissimilar,6,background,background,complex,complex_09_A,2185.475000002072,forced_long,first half,0,background,NA,NA
+SS1619205567965,4,simple_dissimilar,1,background,background,simple,simple_11_A,1879.1649999984656,forced_short,first half,2,background,4,6
+SS1619205567965,4,simple_dissimilar,2,background,background,simple,simple_11_A,2707.0349999994505,forced_short,first half,2,background,4,6
+SS1619205567965,4,simple_dissimilar,3,background,background,simple,simple_11_A,29062.685000000754,forced_short,first half,2,background,4,6
+SS1619205567965,4,simple_dissimilar,4,dissimilar deviant,deviant,simple,simple_18_A,1352.6050000000978,forced_short,first half,2,first_deviant,4,6
+SS1619205567965,4,simple_dissimilar,5,background,background,simple,simple_11_A,2243.995000000694,forced_short,first half,2,background,4,6
+SS1619205567965,4,simple_dissimilar,6,dissimilar deviant,deviant,simple,simple_18_A,1406.3500000011409,forced_short,first half,2,second_deviant,4,6
+SS1619205567965,5,complex_dissimilar,1,background,background,complex,complex_14_A,733.8149999994785,forced_short,first half,0,background,NA,NA
+SS1619205567965,5,complex_dissimilar,2,background,background,complex,complex_14_A,1386.0050000002375,forced_short,first half,0,background,NA,NA
+SS1619205567965,5,complex_dissimilar,3,background,background,complex,complex_14_A,2421.879999998142,forced_short,first half,0,background,NA,NA
+SS1619205567965,5,complex_dissimilar,4,background,background,complex,complex_14_A,1312.7700000003679,forced_short,first half,0,background,NA,NA
+SS1619205567965,5,complex_dissimilar,5,background,background,complex,complex_14_A,1311.4549999991432,forced_short,first half,0,background,NA,NA
+SS1619205567965,5,complex_dissimilar,6,background,background,complex,complex_14_A,725.5150000018766,forced_short,first half,0,background,NA,NA
+SS1619205567965,6,complex_dissimilar,1,background,background,complex,complex_04_A,3966.8449999990407,forced_long,second half,0,background,NA,NA
+SS1619205567965,6,complex_dissimilar,2,background,background,complex,complex_04_A,2558.019999996759,forced_long,second half,0,background,NA,NA
+SS1619205567965,6,complex_dissimilar,3,background,background,complex,complex_04_A,4479.605000000447,forced_long,second half,0,background,NA,NA
+SS1619205567965,6,complex_dissimilar,4,background,background,complex,complex_04_A,3173.464999999851,forced_long,second half,0,background,NA,NA
+SS1619205567965,6,complex_dissimilar,5,background,background,complex,complex_04_A,2047.2249999984633,forced_long,second half,0,background,NA,NA
+SS1619205567965,6,complex_dissimilar,6,background,background,complex,complex_04_A,3151.1150000005728,forced_long,second half,0,background,NA,NA
+SS1619205567965,7,simple_dissimilar,1,background,background,simple,simple_07_A,172.06000000075437,self_paced,second half,0,background,NA,NA
+SS1619205567965,7,simple_dissimilar,2,background,background,simple,simple_07_A,4966.394999999437,self_paced,second half,0,background,NA,NA
+SS1619205567965,7,simple_dissimilar,3,background,background,simple,simple_07_A,1115.4150000001537,self_paced,second half,0,background,NA,NA
+SS1619205567965,7,simple_dissimilar,4,background,background,simple,simple_07_A,2612.329999999958,self_paced,second half,0,background,NA,NA
+SS1619205567965,8,complex_dissimilar,1,background,background,complex,complex_19_A,2267.429999999935,self_paced,second half,1,background,3,NA
+SS1619205567965,8,complex_dissimilar,2,background,background,complex,complex_19_A,2201.6399999993155,self_paced,second half,1,background,3,NA
+SS1619205567965,8,complex_dissimilar,3,dissimilar deviant,deviant,complex,complex_18_A,1927.5799999996088,self_paced,second half,1,first_deviant,3,NA
+SS1619205567965,8,complex_dissimilar,4,background,background,complex,complex_19_A,2575.410000001313,self_paced,second half,1,background,3,NA
+SS1619205567965,9,complex_dissimilar,1,background,background,complex,complex_16_A,966.1699999996927,forced_short,second half,1,background,3,NA
+SS1619205567965,9,complex_dissimilar,2,background,background,complex,complex_16_A,1679.674999999348,forced_short,second half,1,background,3,NA
+SS1619205567965,9,complex_dissimilar,3,dissimilar deviant,deviant,complex,complex_09_A,1164.369999998482,forced_short,second half,1,first_deviant,3,NA
+SS1619205567965,9,complex_dissimilar,4,background,background,complex,complex_16_A,937.6249999987194,forced_short,second half,1,background,3,NA
+SS1619205567965,10,simple_dissimilar,1,background,background,simple,simple_13_A,8800.5200000006,forced_short,second half,2,background,3,6
+SS1619205567965,10,simple_dissimilar,2,background,background,simple,simple_13_A,74691.48500000301,forced_short,second half,2,background,3,6
+SS1619205567965,10,simple_dissimilar,3,dissimilar deviant,deviant,simple,simple_08_A,2508.805000001332,forced_short,second half,2,first_deviant,3,6
+SS1619205567965,10,simple_dissimilar,4,background,background,simple,simple_13_A,541.3750000006985,forced_short,second half,2,background,3,6
+SS1619205567965,10,simple_dissimilar,5,background,background,simple,simple_13_A,3310.344999997993,forced_short,second half,2,background,3,6
+SS1619205567965,10,simple_dissimilar,6,dissimilar deviant,deviant,simple,simple_08_A,2491.4499999977415,forced_short,second half,2,second_deviant,3,6
+SS1619205567965,11,simple_dissimilar,1,background,background,simple,simple_01_A,831.6249999989523,forced_long,second half,2,background,3,5
+SS1619205567965,11,simple_dissimilar,2,background,background,simple,simple_01_A,7668.209999999846,forced_long,second half,2,background,3,5
+SS1619205567965,11,simple_dissimilar,3,dissimilar deviant,deviant,simple,simple_10_A,3368.6950000009965,forced_long,second half,2,first_deviant,3,5
+SS1619205567965,11,simple_dissimilar,4,background,background,simple,simple_01_A,3993.999999998836,forced_long,second half,2,background,3,5
+SS1619205567965,11,simple_dissimilar,5,dissimilar deviant,deviant,simple,simple_10_A,1470.4350000029663,forced_long,second half,2,second_deviant,3,5
+SS1619205567965,11,simple_dissimilar,6,background,background,simple,simple_01_A,7139.729999998934,forced_long,second half,2,background,3,5
+SS1619205742558,0,simple_dissimilar,1,background,background,simple,simple_15_A,7707.449999999895,self_paced,first half,0,background,NA,NA
+SS1619205742558,0,simple_dissimilar,2,background,background,simple,simple_15_A,15912.994999999675,self_paced,first half,0,background,NA,NA
+SS1619205742558,0,simple_dissimilar,3,background,background,simple,simple_15_A,2292.844999999914,self_paced,first half,0,background,NA,NA
+SS1619205742558,0,simple_dissimilar,4,background,background,simple,simple_15_A,232.46000000016647,self_paced,first half,0,background,NA,NA
+SS1619205742558,1,complex_dissimilar,1,background,background,complex,complex_12_A,2662.1500000001106,self_paced,first half,0,background,NA,NA
+SS1619205742558,1,complex_dissimilar,2,background,background,complex,complex_12_A,372.18000000028405,self_paced,first half,0,background,NA,NA
+SS1619205742558,1,complex_dissimilar,3,background,background,complex,complex_12_A,2107.6899999997986,self_paced,first half,0,background,NA,NA
+SS1619205742558,1,complex_dissimilar,4,background,background,complex,complex_12_A,17315.090000000084,self_paced,first half,0,background,NA,NA
+SS1619205742558,1,complex_dissimilar,5,background,background,complex,complex_12_A,1569.9199999999255,self_paced,first half,0,background,NA,NA
+SS1619205742558,2,simple_dissimilar,1,background,background,simple,simple_18_A,692.6750000002212,forced_short,first half,2,background,4,5
+SS1619205742558,2,simple_dissimilar,2,background,background,simple,simple_18_A,72324.04500000027,forced_short,first half,2,background,4,5
+SS1619205742558,2,simple_dissimilar,3,background,background,simple,simple_18_A,87.2900000003865,forced_short,first half,2,background,4,5
+SS1619205742558,2,simple_dissimilar,4,dissimilar deviant,deviant,simple,simple_04_A,8088.144999999669,forced_short,first half,2,first_deviant,4,5
+SS1619205742558,2,simple_dissimilar,5,dissimilar deviant,deviant,simple,simple_04_A,6711.475000000093,forced_short,first half,2,second_deviant,4,5
+SS1619205742558,3,complex_dissimilar,1,background,background,complex,complex_11_A,4067.5000000001164,forced_long,first half,2,background,2,5
+SS1619205742558,3,complex_dissimilar,2,dissimilar deviant,deviant,complex,complex_15_A,17225.10000000056,forced_long,first half,2,first_deviant,2,5
+SS1619205742558,3,complex_dissimilar,3,background,background,complex,complex_11_A,6937.049999999523,forced_long,first half,2,background,2,5
+SS1619205742558,3,complex_dissimilar,4,background,background,complex,complex_11_A,7394.785000000382,forced_long,first half,2,background,2,5
+SS1619205742558,3,complex_dissimilar,5,dissimilar deviant,deviant,complex,complex_15_A,9953.93999999942,forced_long,first half,2,second_deviant,2,5
+SS1619205742558,4,complex_dissimilar,1,background,background,complex,complex_14_A,49.649999999965075,forced_long,first half,1,background,2,NA
+SS1619205742558,4,complex_dissimilar,2,dissimilar deviant,deviant,complex,complex_06_A,7558.044999999751,forced_long,first half,1,first_deviant,2,NA
+SS1619205742558,4,complex_dissimilar,3,background,background,complex,complex_14_A,5616.320000000123,forced_long,first half,1,background,2,NA
+SS1619205742558,4,complex_dissimilar,4,background,background,complex,complex_14_A,8407.520000000659,forced_long,first half,1,background,2,NA
+SS1619205742558,4,complex_dissimilar,5,background,background,complex,complex_14_A,8899.46999999939,forced_long,first half,1,background,2,NA
+SS1619205742558,5,complex_dissimilar,1,background,background,complex,complex_07_A,570.7249999995693,forced_short,first half,1,background,3,NA
+SS1619205742558,5,complex_dissimilar,2,background,background,complex,complex_07_A,18516.89500000066,forced_short,first half,1,background,3,NA
+SS1619205742558,5,complex_dissimilar,3,dissimilar deviant,deviant,complex,complex_19_A,13112.5200000006,forced_short,first half,1,first_deviant,3,NA
+SS1619205742558,5,complex_dissimilar,4,background,background,complex,complex_07_A,7041.750000000233,forced_short,first half,1,background,3,NA
+SS1619205742558,5,complex_dissimilar,5,background,background,complex,complex_07_A,8089.260000000708,forced_short,first half,1,background,3,NA
+SS1619205742558,5,complex_dissimilar,6,background,background,complex,complex_07_A,11209.319999999949,forced_short,first half,1,background,3,NA
+SS1619205742558,6,simple_dissimilar,1,background,background,simple,simple_10_A,5662.860000000335,self_paced,second half,0,background,NA,NA
+SS1619205742558,6,simple_dissimilar,2,background,background,simple,simple_10_A,7164.6599999994505,self_paced,second half,0,background,NA,NA
+SS1619205742558,6,simple_dissimilar,3,background,background,simple,simple_10_A,4434.180000000284,self_paced,second half,0,background,NA,NA
+SS1619205742558,6,simple_dissimilar,4,background,background,simple,simple_10_A,18807.170000000042,self_paced,second half,0,background,NA,NA
+SS1619205742558,6,simple_dissimilar,5,background,background,simple,simple_10_A,3087.1150000002235,self_paced,second half,0,background,NA,NA
+SS1619205742558,6,simple_dissimilar,6,background,background,simple,simple_10_A,7402.9700000000885,self_paced,second half,0,background,NA,NA
+SS1619205742558,7,simple_dissimilar,1,background,background,simple,simple_01_A,949.9050000004936,forced_long,second half,2,background,2,6
+SS1619205742558,7,simple_dissimilar,2,dissimilar deviant,deviant,simple,simple_05_A,30054.495000000228,forced_long,second half,2,first_deviant,2,6
+SS1619205742558,7,simple_dissimilar,3,background,background,simple,simple_01_A,7149.139999999548,forced_long,second half,2,background,2,6
+SS1619205742558,7,simple_dissimilar,4,background,background,simple,simple_01_A,5045.049999999697,forced_long,second half,2,background,2,6
+SS1619205742558,7,simple_dissimilar,5,background,background,simple,simple_01_A,4550.8300000000745,forced_long,second half,2,background,2,6
+SS1619205742558,7,simple_dissimilar,6,dissimilar deviant,deviant,simple,simple_05_A,4111.104999999981,forced_long,second half,2,second_deviant,2,6
+SS1619205742558,8,complex_dissimilar,1,background,background,complex,complex_15_A,822.1550000007264,forced_short,second half,2,background,4,6
+SS1619205742558,8,complex_dissimilar,2,background,background,complex,complex_15_A,3070.5550000001676,forced_short,second half,2,background,4,6
+SS1619205742558,8,complex_dissimilar,3,background,background,complex,complex_15_A,9046.739999999758,forced_short,second half,2,background,4,6
+SS1619205742558,8,complex_dissimilar,4,dissimilar deviant,deviant,complex,complex_20_A,5045.160000000615,forced_short,second half,2,first_deviant,4,6
+SS1619205742558,8,complex_dissimilar,5,background,background,complex,complex_15_A,38060.30500000005,forced_short,second half,2,background,4,6
+SS1619205742558,8,complex_dissimilar,6,dissimilar deviant,deviant,complex,complex_20_A,1957.845000000787,forced_short,second half,2,second_deviant,4,6
+SS1619205742558,9,simple_dissimilar,1,background,background,simple,simple_09_A,923.224999999511,forced_short,second half,1,background,6,NA
+SS1619205742558,9,simple_dissimilar,2,background,background,simple,simple_09_A,4942.134999999311,forced_short,second half,1,background,6,NA
+SS1619205742558,9,simple_dissimilar,3,background,background,simple,simple_09_A,4272.329999999725,forced_short,second half,1,background,6,NA
+SS1619205742558,9,simple_dissimilar,4,background,background,simple,simple_09_A,4894.0600000005215,forced_short,second half,1,background,6,NA
+SS1619205742558,9,simple_dissimilar,5,background,background,simple,simple_09_A,3471.300000000163,forced_short,second half,1,background,6,NA
+SS1619205742558,9,simple_dissimilar,6,dissimilar deviant,deviant,simple,simple_11_A,2738.825000000419,forced_short,second half,1,first_deviant,6,NA
+SS1619205742558,10,complex_dissimilar,1,background,background,complex,complex_16_A,5471.149999999325,self_paced,second half,0,background,NA,NA
+SS1619205742558,10,complex_dissimilar,2,background,background,complex,complex_16_A,5832.23499999987,self_paced,second half,0,background,NA,NA
+SS1619205742558,10,complex_dissimilar,3,background,background,complex,complex_16_A,4624.845000000321,self_paced,second half,0,background,NA,NA
+SS1619205742558,10,complex_dissimilar,4,background,background,complex,complex_16_A,5919.845000000321,self_paced,second half,0,background,NA,NA
+SS1619205742558,11,simple_dissimilar,1,background,background,simple,simple_14_A,522.769999999553,forced_long,second half,0,background,NA,NA
+SS1619205742558,11,simple_dissimilar,2,background,background,simple,simple_14_A,30599.095000000438,forced_long,second half,0,background,NA,NA
+SS1619205742558,11,simple_dissimilar,3,background,background,simple,simple_14_A,9322.180000000168,forced_long,second half,0,background,NA,NA
+SS1619205742558,11,simple_dissimilar,4,background,background,simple,simple_14_A,8825.60999999987,forced_long,second half,0,background,NA,NA
+SS1619205742558,11,simple_dissimilar,5,background,background,simple,simple_14_A,12025.329999999492,forced_long,second half,0,background,NA,NA
+SS1619205742558,11,simple_dissimilar,6,background,background,simple,simple_14_A,44535.56999999995,forced_long,second half,0,background,NA,NA
+SS1619205748764,0,complex_dissimilar,1,background,background,complex,complex_03_A,674,forced_long,first half,0,background,NA,NA
+SS1619205748764,0,complex_dissimilar,2,background,background,complex,complex_03_A,32632,forced_long,first half,0,background,NA,NA
+SS1619205748764,0,complex_dissimilar,3,background,background,complex,complex_03_A,31178,forced_long,first half,0,background,NA,NA
+SS1619205748764,0,complex_dissimilar,4,background,background,complex,complex_03_A,54505,forced_long,first half,0,background,NA,NA
+SS1619205748764,1,simple_dissimilar,1,background,background,simple,simple_06_A,926,forced_long,first half,1,background,4,NA
+SS1619205748764,1,simple_dissimilar,2,background,background,simple,simple_06_A,67890,forced_long,first half,1,background,4,NA
+SS1619205748764,1,simple_dissimilar,3,background,background,simple,simple_06_A,26250,forced_long,first half,1,background,4,NA
+SS1619205748764,1,simple_dissimilar,4,dissimilar deviant,deviant,simple,simple_01_A,27188,forced_long,first half,1,first_deviant,4,NA
+SS1619205748764,1,simple_dissimilar,5,background,background,simple,simple_06_A,12515,forced_long,first half,1,background,4,NA
+SS1619205748764,2,complex_dissimilar,1,background,background,complex,complex_10_A,12092,self_paced,first half,0,background,NA,NA
+SS1619205748764,2,complex_dissimilar,2,background,background,complex,complex_10_A,8794,self_paced,first half,0,background,NA,NA
+SS1619205748764,2,complex_dissimilar,3,background,background,complex,complex_10_A,6412,self_paced,first half,0,background,NA,NA
+SS1619205748764,2,complex_dissimilar,4,background,background,complex,complex_10_A,4560,self_paced,first half,0,background,NA,NA
+SS1619205748764,3,simple_dissimilar,1,background,background,simple,simple_20_A,1072,forced_short,first half,1,background,6,NA
+SS1619205748764,3,simple_dissimilar,2,background,background,simple,simple_20_A,5386,forced_short,first half,1,background,6,NA
+SS1619205748764,3,simple_dissimilar,3,background,background,simple,simple_20_A,5839,forced_short,first half,1,background,6,NA
+SS1619205748764,3,simple_dissimilar,4,background,background,simple,simple_20_A,3930,forced_short,first half,1,background,6,NA
+SS1619205748764,3,simple_dissimilar,5,background,background,simple,simple_20_A,4121,forced_short,first half,1,background,6,NA
+SS1619205748764,3,simple_dissimilar,6,dissimilar deviant,deviant,simple,simple_04_A,2847,forced_short,first half,1,first_deviant,6,NA
+SS1619205748764,4,simple_dissimilar,1,background,background,simple,simple_15_A,1193,self_paced,first half,1,background,6,NA
+SS1619205748764,4,simple_dissimilar,2,background,background,simple,simple_15_A,3735,self_paced,first half,1,background,6,NA
+SS1619205748764,4,simple_dissimilar,3,background,background,simple,simple_15_A,2780,self_paced,first half,1,background,6,NA
+SS1619205748764,4,simple_dissimilar,4,background,background,simple,simple_15_A,2921,self_paced,first half,1,background,6,NA
+SS1619205748764,4,simple_dissimilar,5,background,background,simple,simple_15_A,3761,self_paced,first half,1,background,6,NA
+SS1619205748764,4,simple_dissimilar,6,dissimilar deviant,deviant,simple,simple_01_A,2887,self_paced,first half,1,first_deviant,6,NA
+SS1619205748764,5,complex_dissimilar,1,background,background,complex,complex_19_A,2396,forced_long,first half,0,background,NA,NA
+SS1619205748764,5,complex_dissimilar,2,background,background,complex,complex_19_A,2789,forced_long,first half,0,background,NA,NA
+SS1619205748764,5,complex_dissimilar,3,background,background,complex,complex_19_A,3898,forced_long,first half,0,background,NA,NA
+SS1619205748764,5,complex_dissimilar,4,background,background,complex,complex_19_A,2794,forced_long,first half,0,background,NA,NA
+SS1619205748764,5,complex_dissimilar,5,background,background,complex,complex_19_A,3132,forced_long,first half,0,background,NA,NA
+SS1619205748764,6,complex_dissimilar,1,background,background,complex,complex_15_A,1012,forced_short,second half,1,background,6,NA
+SS1619205748764,6,complex_dissimilar,2,background,background,complex,complex_15_A,3436,forced_short,second half,1,background,6,NA
+SS1619205748764,6,complex_dissimilar,3,background,background,complex,complex_15_A,2807,forced_short,second half,1,background,6,NA
+SS1619205748764,6,complex_dissimilar,4,background,background,complex,complex_15_A,3118,forced_short,second half,1,background,6,NA
+SS1619205748764,6,complex_dissimilar,5,background,background,complex,complex_15_A,3750,forced_short,second half,1,background,6,NA
+SS1619205748764,6,complex_dissimilar,6,dissimilar deviant,deviant,complex,complex_11_A,1762,forced_short,second half,1,first_deviant,6,NA
+SS1619205748764,7,simple_dissimilar,1,background,background,simple,simple_17_A,1257,self_paced,second half,0,background,NA,NA
+SS1619205748764,7,simple_dissimilar,2,background,background,simple,simple_17_A,862,self_paced,second half,0,background,NA,NA
+SS1619205748764,7,simple_dissimilar,3,background,background,simple,simple_17_A,546,self_paced,second half,0,background,NA,NA
+SS1619205748764,7,simple_dissimilar,4,background,background,simple,simple_17_A,751,self_paced,second half,0,background,NA,NA
+SS1619205748764,7,simple_dissimilar,5,background,background,simple,simple_17_A,975,self_paced,second half,0,background,NA,NA
+SS1619205748764,7,simple_dissimilar,6,background,background,simple,simple_17_A,1262,self_paced,second half,0,background,NA,NA
+SS1619205748764,8,simple_dissimilar,1,background,background,simple,simple_12_A,716,forced_short,second half,2,background,5,6
+SS1619205748764,8,simple_dissimilar,2,background,background,simple,simple_12_A,1747,forced_short,second half,2,background,5,6
+SS1619205748764,8,simple_dissimilar,3,background,background,simple,simple_12_A,1567,forced_short,second half,2,background,5,6
+SS1619205748764,8,simple_dissimilar,4,background,background,simple,simple_12_A,886,forced_short,second half,2,background,5,6
+SS1619205748764,8,simple_dissimilar,5,dissimilar deviant,deviant,simple,simple_05_A,818,forced_short,second half,2,first_deviant,5,6
+SS1619205748764,8,simple_dissimilar,6,dissimilar deviant,deviant,simple,simple_05_A,1491,forced_short,second half,2,second_deviant,5,6
+SS1619205748764,9,simple_dissimilar,1,background,background,simple,simple_14_A,67,forced_long,second half,1,background,6,NA
+SS1619205748764,9,simple_dissimilar,2,background,background,simple,simple_14_A,949,forced_long,second half,1,background,6,NA
+SS1619205748764,9,simple_dissimilar,3,background,background,simple,simple_14_A,628,forced_long,second half,1,background,6,NA
+SS1619205748764,9,simple_dissimilar,4,background,background,simple,simple_14_A,673,forced_long,second half,1,background,6,NA
+SS1619205748764,9,simple_dissimilar,5,background,background,simple,simple_14_A,1073,forced_long,second half,1,background,6,NA
+SS1619205748764,9,simple_dissimilar,6,dissimilar deviant,deviant,simple,simple_06_A,1152,forced_long,second half,1,first_deviant,6,NA
+SS1619205748764,10,complex_dissimilar,1,background,background,complex,complex_02_A,873,forced_short,second half,2,background,2,4
+SS1619205748764,10,complex_dissimilar,2,dissimilar deviant,deviant,complex,complex_10_A,1404,forced_short,second half,2,first_deviant,2,4
+SS1619205748764,10,complex_dissimilar,3,background,background,complex,complex_02_A,259,forced_short,second half,2,background,2,4
+SS1619205748764,10,complex_dissimilar,4,dissimilar deviant,deviant,complex,complex_10_A,1269,forced_short,second half,2,second_deviant,2,4
+SS1619205748764,10,complex_dissimilar,5,background,background,complex,complex_02_A,844,forced_short,second half,2,background,2,4
+SS1619205748764,10,complex_dissimilar,6,background,background,complex,complex_02_A,2219,forced_short,second half,2,background,2,4
+SS1619205748764,11,complex_dissimilar,1,background,background,complex,complex_13_A,756,self_paced,second half,1,background,4,NA
+SS1619205748764,11,complex_dissimilar,2,background,background,complex,complex_13_A,1115,self_paced,second half,1,background,4,NA
+SS1619205748764,11,complex_dissimilar,3,background,background,complex,complex_13_A,1321,self_paced,second half,1,background,4,NA
+SS1619205748764,11,complex_dissimilar,4,dissimilar deviant,deviant,complex,complex_04_A,961,self_paced,second half,1,first_deviant,4,NA
+SS1619205748764,11,complex_dissimilar,5,background,background,complex,complex_13_A,749,self_paced,second half,1,background,4,NA
+SS1619205753092,0,simple_dissimilar,1,background,background,simple,simple_10_A,990.2299999994575,forced_long,first half,1,background,5,NA
+SS1619205753092,0,simple_dissimilar,2,background,background,simple,simple_10_A,2535.250000000815,forced_long,first half,1,background,5,NA
+SS1619205753092,0,simple_dissimilar,3,background,background,simple,simple_10_A,693.5149999990244,forced_long,first half,1,background,5,NA
+SS1619205753092,0,simple_dissimilar,4,background,background,simple,simple_10_A,1536.8099999995902,forced_long,first half,1,background,5,NA
+SS1619205753092,0,simple_dissimilar,5,dissimilar deviant,deviant,simple,simple_14_A,4471.875000001048,forced_long,first half,1,first_deviant,5,NA
+SS1619205753092,1,complex_dissimilar,1,background,background,complex,complex_07_A,3893.6750000011525,self_paced,first half,2,background,2,4
+SS1619205753092,1,complex_dissimilar,2,dissimilar deviant,deviant,complex,complex_09_A,2723.589999999618,self_paced,first half,2,first_deviant,2,4
+SS1619205753092,1,complex_dissimilar,3,background,background,complex,complex_07_A,4378.235000000102,self_paced,first half,2,background,2,4
+SS1619205753092,1,complex_dissimilar,4,dissimilar deviant,deviant,complex,complex_09_A,2360.0800000003655,self_paced,first half,2,second_deviant,2,4
+SS1619205753092,2,complex_dissimilar,1,background,background,complex,complex_04_A,1007.854999999865,forced_short,first half,1,background,2,NA
+SS1619205753092,2,complex_dissimilar,2,dissimilar deviant,deviant,complex,complex_09_A,585.199999999546,forced_short,first half,1,first_deviant,2,NA
+SS1619205753092,2,complex_dissimilar,3,background,background,complex,complex_04_A,1179.4449999997742,forced_short,first half,1,background,2,NA
+SS1619205753092,2,complex_dissimilar,4,background,background,complex,complex_04_A,517.4050000005518,forced_short,first half,1,background,2,NA
+SS1619205753092,3,simple_dissimilar,1,background,background,simple,simple_01_A,2425.0400000000955,forced_short,first half,2,background,4,5
+SS1619205753092,3,simple_dissimilar,2,background,background,simple,simple_01_A,739.8549999997485,forced_short,first half,2,background,4,5
+SS1619205753092,3,simple_dissimilar,3,background,background,simple,simple_01_A,2627.3849999997765,forced_short,first half,2,background,4,5
+SS1619205753092,3,simple_dissimilar,4,dissimilar deviant,deviant,simple,simple_06_A,2671.0700000003562,forced_short,first half,2,first_deviant,4,5
+SS1619205753092,3,simple_dissimilar,5,dissimilar deviant,deviant,simple,simple_06_A,483.06000000046333,forced_short,first half,2,second_deviant,4,5
+SS1619205753092,4,complex_dissimilar,1,background,background,complex,complex_13_A,523.2550000000629,self_paced,first half,1,background,6,NA
+SS1619205753092,4,complex_dissimilar,2,background,background,complex,complex_13_A,1058.7250000007916,self_paced,first half,1,background,6,NA
+SS1619205753092,4,complex_dissimilar,3,background,background,complex,complex_13_A,746.5599999995902,self_paced,first half,1,background,6,NA
+SS1619205753092,4,complex_dissimilar,4,background,background,complex,complex_13_A,221.1700000007404,self_paced,first half,1,background,6,NA
+SS1619205753092,4,complex_dissimilar,5,background,background,complex,complex_13_A,420.0099999998347,self_paced,first half,1,background,6,NA
+SS1619205753092,4,complex_dissimilar,6,dissimilar deviant,deviant,complex,complex_06_A,1483.4850000006263,self_paced,first half,1,first_deviant,6,NA
+SS1619205753092,5,simple_dissimilar,1,background,background,simple,simple_18_A,200.40499999956228,self_paced,first half,1,background,4,NA
+SS1619205753092,5,simple_dissimilar,2,background,background,simple,simple_18_A,106.4900000001071,self_paced,first half,1,background,4,NA
+SS1619205753092,5,simple_dissimilar,3,background,background,simple,simple_18_A,1156.1200000014505,self_paced,first half,1,background,4,NA
+SS1619205753092,5,simple_dissimilar,4,dissimilar deviant,deviant,simple,simple_05_A,1027.9499999996624,self_paced,first half,1,first_deviant,4,NA
+SS1619205753092,6,simple_dissimilar,1,background,background,simple,simple_16_A,4140.049999999988,forced_long,second half,0,background,NA,NA
+SS1619205753092,6,simple_dissimilar,2,background,background,simple,simple_16_A,260.10999999928754,forced_long,second half,0,background,NA,NA
+SS1619205753092,6,simple_dissimilar,3,background,background,simple,simple_16_A,10694.289999999455,forced_long,second half,0,background,NA,NA
+SS1619205753092,6,simple_dissimilar,4,background,background,simple,simple_16_A,118.73999999993248,forced_long,second half,0,background,NA,NA
+SS1619205753092,6,simple_dissimilar,5,background,background,simple,simple_16_A,813.0550000005751,forced_long,second half,0,background,NA,NA
+SS1619205753092,7,simple_dissimilar,1,background,background,simple,simple_08_A,4593.005000000645,self_paced,second half,0,background,NA,NA
+SS1619205753092,7,simple_dissimilar,2,background,background,simple,simple_08_A,107,self_paced,second half,0,background,NA,NA
+SS1619205753092,7,simple_dissimilar,3,background,background,simple,simple_08_A,6959.170000000042,self_paced,second half,0,background,NA,NA
+SS1619205753092,7,simple_dissimilar,4,background,background,simple,simple_08_A,233.83499999908963,self_paced,second half,0,background,NA,NA
+SS1619205753092,7,simple_dissimilar,5,background,background,simple,simple_08_A,543.5800000013551,self_paced,second half,0,background,NA,NA
+SS1619205753092,8,complex_dissimilar,1,background,background,complex,complex_18_A,1341.3350000010105,forced_short,second half,0,background,NA,NA
+SS1619205753092,8,complex_dissimilar,2,background,background,complex,complex_18_A,1670.0899999996182,forced_short,second half,0,background,NA,NA
+SS1619205753092,8,complex_dissimilar,3,background,background,complex,complex_18_A,288.07000000053085,forced_short,second half,0,background,NA,NA
+SS1619205753092,8,complex_dissimilar,4,background,background,complex,complex_18_A,359.5150000000722,forced_short,second half,0,background,NA,NA
+SS1619205753092,8,complex_dissimilar,5,background,background,complex,complex_18_A,1136.1000000015483,forced_short,second half,0,background,NA,NA
+SS1619205753092,9,complex_dissimilar,1,background,background,complex,complex_15_A,6910.8900000010035,forced_long,second half,0,background,NA,NA
+SS1619205753092,9,complex_dissimilar,2,background,background,complex,complex_15_A,184.2450000004028,forced_long,second half,0,background,NA,NA
+SS1619205753092,9,complex_dissimilar,3,background,background,complex,complex_15_A,62.82000000105472,forced_long,second half,0,background,NA,NA
+SS1619205753092,9,complex_dissimilar,4,background,background,complex,complex_15_A,1485.924999999057,forced_long,second half,0,background,NA,NA
+SS1619205753092,9,complex_dissimilar,5,background,background,complex,complex_15_A,587.7149999996764,forced_long,second half,0,background,NA,NA
+SS1619205753092,10,complex_dissimilar,1,background,background,complex,complex_02_A,1820.804999999411,forced_long,second half,2,background,4,6
+SS1619205753092,10,complex_dissimilar,2,background,background,complex,complex_02_A,110.53500000166241,forced_long,second half,2,background,4,6
+SS1619205753092,10,complex_dissimilar,3,background,background,complex,complex_02_A,1314.8350000010687,forced_long,second half,2,background,4,6
+SS1619205753092,10,complex_dissimilar,4,dissimilar deviant,deviant,complex,complex_05_A,195.35499999980675,forced_long,second half,2,first_deviant,4,6
+SS1619205753092,10,complex_dissimilar,5,background,background,complex,complex_02_A,448.3449999988661,forced_long,second half,2,background,4,6
+SS1619205753092,10,complex_dissimilar,6,dissimilar deviant,deviant,complex,complex_05_A,4845.744999998715,forced_long,second half,2,second_deviant,4,6
+SS1619205753092,11,simple_dissimilar,1,background,background,simple,simple_16_A,3053.1350000001257,forced_short,second half,0,background,NA,NA
+SS1619205753092,11,simple_dissimilar,3,background,background,simple,simple_16_A,48.08500000031199,forced_short,second half,0,background,NA,NA
+SS1619205753092,11,simple_dissimilar,4,background,background,simple,simple_16_A,5928.195000000414,forced_short,second half,0,background,NA,NA
+SS1619205753092,11,simple_dissimilar,5,background,background,simple,simple_16_A,8014.5150000007125,forced_short,second half,0,background,NA,NA
+SS1619205771711,0,simple_dissimilar,1,background,background,simple,simple_13_A,2542.690000000235,forced_short,first half,1,background,4,NA
+SS1619205771711,0,simple_dissimilar,2,background,background,simple,simple_13_A,2956.239999999525,forced_short,first half,1,background,4,NA
+SS1619205771711,0,simple_dissimilar,3,background,background,simple,simple_13_A,3315.135000000766,forced_short,first half,1,background,4,NA
+SS1619205771711,0,simple_dissimilar,4,dissimilar deviant,deviant,simple,simple_11_A,2186.085000001185,forced_short,first half,1,first_deviant,4,NA
+SS1619205771711,0,simple_dissimilar,5,background,background,simple,simple_13_A,1489.1700000007404,forced_short,first half,1,background,4,NA
+SS1619205771711,1,complex_dissimilar,1,background,background,complex,complex_10_A,6286.909999998868,forced_long,first half,0,background,NA,NA
+SS1619205771711,1,complex_dissimilar,2,background,background,complex,complex_10_A,1855.7049999998999,forced_long,first half,0,background,NA,NA
+SS1619205771711,1,complex_dissimilar,3,background,background,complex,complex_10_A,2503.125000001106,forced_long,first half,0,background,NA,NA
+SS1619205771711,1,complex_dissimilar,4,background,background,complex,complex_10_A,2550.55499999976,forced_long,first half,0,background,NA,NA
+SS1619205771711,2,complex_dissimilar,1,background,background,complex,complex_08_A,1277.0100000016391,forced_short,first half,1,background,4,NA
+SS1619205771711,2,complex_dissimilar,2,background,background,complex,complex_08_A,966.1649999998044,forced_short,first half,1,background,4,NA
+SS1619205771711,2,complex_dissimilar,3,background,background,complex,complex_08_A,962.7199999995646,forced_short,first half,1,background,4,NA
+SS1619205771711,2,complex_dissimilar,4,dissimilar deviant,deviant,complex,complex_14_A,1552.175000000745,forced_short,first half,1,first_deviant,4,NA
+SS1619205771711,2,complex_dissimilar,5,background,background,complex,complex_08_A,869.6650000001537,forced_short,first half,1,background,4,NA
+SS1619205771711,2,complex_dissimilar,6,background,background,complex,complex_08_A,296.32499999931315,forced_short,first half,1,background,4,NA
+SS1619205771711,3,simple_dissimilar,1,background,background,simple,simple_18_A,3198.285000000382,forced_long,first half,2,background,2,3
+SS1619205771711,3,simple_dissimilar,2,dissimilar deviant,deviant,simple,simple_05_A,435.8850000008242,forced_long,first half,2,first_deviant,2,3
+SS1619205771711,3,simple_dissimilar,3,dissimilar deviant,deviant,simple,simple_05_A,730.1550000011339,forced_long,first half,2,second_deviant,2,3
+SS1619205771711,3,simple_dissimilar,4,background,background,simple,simple_18_A,874.9299999999348,forced_long,first half,2,background,2,3
+SS1619205771711,4,simple_dissimilar,1,background,background,simple,simple_19_A,7434.830000000133,forced_long,first half,2,background,2,5
+SS1619205771711,4,simple_dissimilar,2,dissimilar deviant,deviant,simple,simple_06_A,1549.1600000004983,forced_long,first half,2,first_deviant,2,5
+SS1619205771711,4,simple_dissimilar,3,background,background,simple,simple_19_A,1056.6600000002072,forced_long,first half,2,background,2,5
+SS1619205771711,4,simple_dissimilar,4,background,background,simple,simple_19_A,531.6299999994808,forced_long,first half,2,background,2,5
+SS1619205771711,4,simple_dissimilar,5,dissimilar deviant,deviant,simple,simple_06_A,346.3250000004191,forced_long,first half,2,second_deviant,2,5
+SS1619205771711,4,simple_dissimilar,6,background,background,simple,simple_19_A,1365.4750000005006,forced_long,first half,2,background,2,5
+SS1619205771711,5,simple_dissimilar,1,background,background,simple,simple_20_A,590.7950000000419,self_paced,first half,0,background,NA,NA
+SS1619205771711,5,simple_dissimilar,2,background,background,simple,simple_20_A,413.92999999877065,self_paced,first half,0,background,NA,NA
+SS1619205771711,5,simple_dissimilar,3,background,background,simple,simple_20_A,968.9950000011013,self_paced,first half,0,background,NA,NA
+SS1619205771711,5,simple_dissimilar,4,background,background,simple,simple_20_A,815.6500000004307,self_paced,first half,0,background,NA,NA
+SS1619205771711,6,complex_dissimilar,1,background,background,complex,complex_13_A,886.4000000012456,forced_short,second half,2,background,3,5
+SS1619205771711,6,complex_dissimilar,2,background,background,complex,complex_13_A,1486.7500000000582,forced_short,second half,2,background,3,5
+SS1619205771711,6,complex_dissimilar,3,dissimilar deviant,deviant,complex,complex_18_A,1165.3500000010827,forced_short,second half,2,first_deviant,3,5
+SS1619205771711,6,complex_dissimilar,4,background,background,complex,complex_13_A,380.1699999985867,forced_short,second half,2,background,3,5
+SS1619205771711,6,complex_dissimilar,5,dissimilar deviant,deviant,complex,complex_18_A,1149.9899999998743,forced_short,second half,2,second_deviant,3,5
+SS1619205771711,6,complex_dissimilar,6,background,background,complex,complex_13_A,2371.950000000652,forced_short,second half,2,background,3,5
+SS1619205771711,7,complex_dissimilar,1,background,background,complex,complex_05_A,622.1849999983096,self_paced,second half,2,background,5,6
+SS1619205771711,7,complex_dissimilar,2,background,background,complex,complex_05_A,11091.19500000088,self_paced,second half,2,background,5,6
+SS1619205771711,7,complex_dissimilar,3,background,background,complex,complex_05_A,380.37499999883585,self_paced,second half,2,background,5,6
+SS1619205771711,7,complex_dissimilar,4,background,background,complex,complex_05_A,3825.329999999667,self_paced,second half,2,background,5,6
+SS1619205771711,7,complex_dissimilar,5,dissimilar deviant,deviant,complex,complex_19_A,553.8149999993038,self_paced,second half,2,first_deviant,5,6
+SS1619205771711,7,complex_dissimilar,6,dissimilar deviant,deviant,complex,complex_19_A,3179.8849999995437,self_paced,second half,2,second_deviant,5,6
+SS1619205771711,8,simple_dissimilar,1,background,background,simple,simple_06_A,23625.840000000608,self_paced,second half,1,background,4,NA
+SS1619205771711,8,simple_dissimilar,2,background,background,simple,simple_06_A,51.314999998838175,self_paced,second half,1,background,4,NA
+SS1619205771711,8,simple_dissimilar,4,dissimilar deviant,deviant,simple,simple_14_A,1449.0349999996834,self_paced,second half,1,first_deviant,4,NA
+SS1619205771711,9,simple_dissimilar,1,background,background,simple,simple_01_A,869.2499999997672,forced_short,second half,2,background,2,3
+SS1619205771711,9,simple_dissimilar,2,dissimilar deviant,deviant,simple,simple_05_A,1290.43499999895,forced_short,second half,2,first_deviant,2,3
+SS1619205771711,9,simple_dissimilar,3,dissimilar deviant,deviant,simple,simple_05_A,228.70499999955064,forced_short,second half,2,second_deviant,2,3
+SS1619205771711,9,simple_dissimilar,4,background,background,simple,simple_01_A,555.7850000004983,forced_short,second half,2,background,2,3
+SS1619205771711,9,simple_dissimilar,5,background,background,simple,simple_01_A,946.9300000000512,forced_short,second half,2,background,2,3
+SS1619205771711,10,complex_dissimilar,1,background,background,complex,complex_06_A,880.2799999993877,self_paced,second half,0,background,NA,NA
+SS1619205771711,10,complex_dissimilar,2,background,background,complex,complex_06_A,7676.059999999765,self_paced,second half,0,background,NA,NA
+SS1619205771711,10,complex_dissimilar,3,background,background,complex,complex_06_A,8155.704999999201,self_paced,second half,0,background,NA,NA
+SS1619205771711,10,complex_dissimilar,4,background,background,complex,complex_06_A,3124.7899999998626,self_paced,second half,0,background,NA,NA
+SS1619205771711,11,complex_dissimilar,1,background,background,complex,complex_06_A,229.21999999927357,forced_long,second half,0,background,NA,NA
+SS1619205771711,11,complex_dissimilar,2,background,background,complex,complex_06_A,824.3550000006799,forced_long,second half,0,background,NA,NA
+SS1619205771711,11,complex_dissimilar,3,background,background,complex,complex_06_A,2622.6350000015227,forced_long,second half,0,background,NA,NA
+SS1619205771711,11,complex_dissimilar,4,background,background,complex,complex_06_A,585.4349999990081,forced_long,second half,0,background,NA,NA
+SS1619205771711,11,complex_dissimilar,5,background,background,complex,complex_06_A,668.5400000005029,forced_long,second half,0,background,NA,NA
+SS1619205771711,11,complex_dissimilar,6,background,background,complex,complex_06_A,1157.9849999997532,forced_long,second half,0,background,NA,NA
+SS1619205955626,0,complex_dissimilar,1,background,background,complex,complex_18_A,3256.5900000045076,self_paced,first half,1,background,4,NA
+SS1619205955626,0,complex_dissimilar,2,background,background,complex,complex_18_A,6358.565000002272,self_paced,first half,1,background,4,NA
+SS1619205955626,0,complex_dissimilar,3,background,background,complex,complex_18_A,6042.055000005348,self_paced,first half,1,background,4,NA
+SS1619205955626,0,complex_dissimilar,4,dissimilar deviant,deviant,complex,complex_15_A,6080.774999994901,self_paced,first half,1,first_deviant,4,NA
+SS1619205955626,1,simple_dissimilar,1,background,background,simple,simple_01_A,5328.739999997197,self_paced,first half,2,background,2,5
+SS1619205955626,1,simple_dissimilar,2,dissimilar deviant,deviant,simple,simple_18_A,4021.469999999681,self_paced,first half,2,first_deviant,2,5
+SS1619205955626,1,simple_dissimilar,3,background,background,simple,simple_01_A,4027.2249999979977,self_paced,first half,2,background,2,5
+SS1619205955626,1,simple_dissimilar,4,background,background,simple,simple_01_A,1108.5000000020955,self_paced,first half,2,background,2,5
+SS1619205955626,1,simple_dissimilar,5,dissimilar deviant,deviant,simple,simple_18_A,1688.479999997071,self_paced,first half,2,second_deviant,2,5
+SS1619205955626,2,simple_dissimilar,1,background,background,simple,simple_12_A,3113.7549999984913,forced_long,first half,1,background,5,NA
+SS1619205955626,2,simple_dissimilar,2,background,background,simple,simple_12_A,1375.9900000004563,forced_long,first half,1,background,5,NA
+SS1619205955626,2,simple_dissimilar,3,background,background,simple,simple_12_A,3266.7750000036904,forced_long,first half,1,background,5,NA
+SS1619205955626,2,simple_dissimilar,4,background,background,simple,simple_12_A,5589.274999998452,forced_long,first half,1,background,5,NA
+SS1619205955626,2,simple_dissimilar,5,dissimilar deviant,deviant,simple,simple_10_A,3610.704999999143,forced_long,first half,1,first_deviant,5,NA
+SS1619205955626,3,simple_dissimilar,1,background,background,simple,simple_10_A,3717.464999994263,forced_short,first half,0,background,NA,NA
+SS1619205955626,3,simple_dissimilar,2,background,background,simple,simple_10_A,4537.605000004987,forced_short,first half,0,background,NA,NA
+SS1619205955626,3,simple_dissimilar,3,background,background,simple,simple_10_A,2005.1299999977346,forced_short,first half,0,background,NA,NA
+SS1619205955626,3,simple_dissimilar,4,background,background,simple,simple_10_A,647.7349999986473,forced_short,first half,0,background,NA,NA
+SS1619205955626,3,simple_dissimilar,5,background,background,simple,simple_10_A,2027.9049999953713,forced_short,first half,0,background,NA,NA
+SS1619205955626,3,simple_dissimilar,6,background,background,simple,simple_10_A,2538.300000000163,forced_short,first half,0,background,NA,NA
+SS1619205955626,4,simple_dissimilar,1,background,background,simple,simple_09_A,1394.5049999965704,self_paced,first half,2,background,2,3
+SS1619205955626,4,simple_dissimilar,2,dissimilar deviant,deviant,simple,simple_11_A,1582.6799999995274,self_paced,first half,2,first_deviant,2,3
+SS1619205955626,4,simple_dissimilar,3,dissimilar deviant,deviant,simple,simple_11_A,10669.060000000172,self_paced,first half,2,second_deviant,2,3
+SS1619205955626,4,simple_dissimilar,4,background,background,simple,simple_09_A,694.5850000047358,self_paced,first half,2,background,2,3
+SS1619205955626,4,simple_dissimilar,5,background,background,simple,simple_09_A,1499.7000000003027,self_paced,first half,2,background,2,3
+SS1619205955626,4,simple_dissimilar,6,background,background,simple,simple_09_A,46.24999999941792,self_paced,first half,2,background,2,3
+SS1619205955626,5,complex_dissimilar,1,background,background,complex,complex_13_A,3779.58000000217,forced_long,first half,0,background,NA,NA
+SS1619205955626,5,complex_dissimilar,2,background,background,complex,complex_13_A,781.795000002603,forced_long,first half,0,background,NA,NA
+SS1619205955626,5,complex_dissimilar,3,background,background,complex,complex_13_A,274.59499999531545,forced_long,first half,0,background,NA,NA
+SS1619205955626,5,complex_dissimilar,4,background,background,complex,complex_13_A,1082.734999996319,forced_long,first half,0,background,NA,NA
+SS1619205955626,6,complex_dissimilar,1,background,background,complex,complex_17_A,121.03999999817461,forced_long,second half,0,background,NA,NA
+SS1619205955626,6,complex_dissimilar,2,background,background,complex,complex_17_A,528.0399999974179,forced_long,second half,0,background,NA,NA
+SS1619205955626,6,complex_dissimilar,3,background,background,complex,complex_17_A,1166.5549999961513,forced_long,second half,0,background,NA,NA
+SS1619205955626,6,complex_dissimilar,4,background,background,complex,complex_17_A,537.5599999970291,forced_long,second half,0,background,NA,NA
+SS1619205955626,7,complex_dissimilar,1,background,background,complex,complex_19_A,1623.4299999996438,self_paced,second half,2,background,2,5
+SS1619205955626,7,complex_dissimilar,2,dissimilar deviant,deviant,complex,complex_01_A,275.64999999594875,self_paced,second half,2,first_deviant,2,5
+SS1619205955626,7,complex_dissimilar,3,background,background,complex,complex_19_A,1071.5549999949872,self_paced,second half,2,background,2,5
+SS1619205955626,7,complex_dissimilar,4,background,background,complex,complex_19_A,416.5849999990314,self_paced,second half,2,background,2,5
+SS1619205955626,7,complex_dissimilar,5,dissimilar deviant,deviant,complex,complex_01_A,319.55500000185566,self_paced,second half,2,second_deviant,2,5
+SS1619205955626,8,simple_dissimilar,1,background,background,simple,simple_08_A,1811.2200000032317,forced_short,second half,2,background,2,6
+SS1619205955626,8,simple_dissimilar,2,dissimilar deviant,deviant,simple,simple_19_A,3066.3750000021537,forced_short,second half,2,first_deviant,2,6
+SS1619205955626,8,simple_dissimilar,3,background,background,simple,simple_08_A,2963.165000001027,forced_short,second half,2,background,2,6
+SS1619205955626,8,simple_dissimilar,4,background,background,simple,simple_08_A,5178.814999999304,forced_short,second half,2,background,2,6
+SS1619205955626,8,simple_dissimilar,5,background,background,simple,simple_08_A,269.85500000591855,forced_short,second half,2,background,2,6
+SS1619205955626,8,simple_dissimilar,6,dissimilar deviant,deviant,simple,simple_19_A,3367.725000003702,forced_short,second half,2,second_deviant,2,6
+SS1619205955626,9,simple_dissimilar,1,background,background,simple,simple_09_A,11103.739999998652,forced_long,second half,1,background,3,NA
+SS1619205955626,9,simple_dissimilar,2,background,background,simple,simple_09_A,181.87500000203727,forced_long,second half,1,background,3,NA
+SS1619205955626,9,simple_dissimilar,3,dissimilar deviant,deviant,simple,simple_04_A,149.5950000025914,forced_long,second half,1,first_deviant,3,NA
+SS1619205955626,9,simple_dissimilar,4,background,background,simple,simple_09_A,1736.445000002277,forced_long,second half,1,background,3,NA
+SS1619205955626,9,simple_dissimilar,5,background,background,simple,simple_09_A,1590.8300000010058,forced_long,second half,1,background,3,NA
+SS1619205955626,10,complex_dissimilar,1,background,background,complex,complex_03_A,4696.885000004841,forced_short,second half,1,background,3,NA
+SS1619205955626,10,complex_dissimilar,2,background,background,complex,complex_03_A,7841.5100000056555,forced_short,second half,1,background,3,NA
+SS1619205955626,10,complex_dissimilar,3,dissimilar deviant,deviant,complex,complex_09_A,825.9699999980512,forced_short,second half,1,first_deviant,3,NA
+SS1619205955626,10,complex_dissimilar,4,background,background,complex,complex_03_A,1793.1600000010803,forced_short,second half,1,background,3,NA
+SS1619205955626,10,complex_dissimilar,5,background,background,complex,complex_03_A,750.8649999945192,forced_short,second half,1,background,3,NA
+SS1619205955626,10,complex_dissimilar,6,background,background,complex,complex_03_A,6909.970000000612,forced_short,second half,1,background,3,NA
+SS1619205955626,11,complex_dissimilar,1,background,background,complex,complex_20_A,3426.4750000002095,forced_short,second half,2,background,5,6
+SS1619205955626,11,complex_dissimilar,2,background,background,complex,complex_20_A,4637.924999995448,forced_short,second half,2,background,5,6
+SS1619205955626,11,complex_dissimilar,3,background,background,complex,complex_20_A,8492.605000006792,forced_short,second half,2,background,5,6
+SS1619205955626,11,complex_dissimilar,4,background,background,complex,complex_20_A,3027.630000004079,forced_short,second half,2,background,5,6
+SS1619205955626,11,complex_dissimilar,5,dissimilar deviant,deviant,complex,complex_05_A,503.3899999980349,forced_short,second half,2,first_deviant,5,6
+SS1619205955626,11,complex_dissimilar,6,dissimilar deviant,deviant,complex,complex_05_A,3422.890000001644,forced_short,second half,2,second_deviant,5,6

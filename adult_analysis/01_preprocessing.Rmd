@@ -14,11 +14,20 @@ library(tidyverse)
 library(stringr) # for parsing r string 
 library(jsonlite) # for parsing r string 
 
- d_path <- here("data/merged_data/merged_data.csv")
+# d_path <- here("data/merged_data/merged_data.csv")
+MERGED_DATA_PATH <- here("data/platform_comparison_data/prolific/merged_data/merged_data.csv")
+
+rt_path <- here("data/platform_comparison_data/prolific/processed_data/trimmed_RTdata.csv")
+demog_path <- here("data/platform_comparison_data/prolific/processed_data/trimmed_demogdata.csv")
+similarity_path <- here("data/platform_comparison_data/prolific/processed_data/trimmed_similaritydata.csv")
+complexity_path <- here("data/platform_comparison_data/prolific/processed_data/trimmed_complexitydata.csv")
+
 # d_path <- here("data/raw_data/testSS1612925903745.csv")
 #d_path <- here("data/merged_data/sample_1/merged_data.csv")
-df.raw <- read_csv(d_path)
+df.raw <- read_csv(MERGED_DATA_PATH)
 ```
+
+
 
 
 # RT data 
@@ -188,7 +197,7 @@ df.processed <- df.processed %>%
 
   
 
-write_csv(df.processed, here('data/processed_data/processed_RTdata.csv'))
+#write_csv(df.processed, here('data/processed_data/processed_RTdata.csv'))
 
 # df.main
 ```
@@ -238,7 +247,7 @@ df.similarity <- df.raw %>%
     rating = as.numeric(str_extract(raw_answer, "[[:digit:]]+"))) %>% 
   select(subject, question_type, stimulus_left, stimulus_right, rating)
 
-write_csv(df.similarity, here('data/processed_data/processed_similaritydata.csv'))
+#write_csv(df.similarity, here('data/processed_data/processed_similaritydata.csv'))
 ```
 
 ## complexity 
@@ -260,7 +269,7 @@ df.complexity <- df.raw %>%
   select(subject, question_type, stimulus, rating)
 
 
-write_csv(df.complexity, here('data/processed_data/processed_complexitydata.csv'))
+#write_csv(df.complexity, here('data/processed_data/processed_complexitydata.csv'))
 ```
 
 # Demographic information 
@@ -279,7 +288,7 @@ df.demog <- df.raw  %>%
   distinct() %>% 
   select(-responses, -trial_type)
 
-write_csv(df.demog, here('data/processed_data/processed_demogdata.csv'))
+#write_csv(df.demog, here('data/processed_data/processed_demogdata.csv'))
 ```
 
 # trimmed data 
@@ -370,11 +379,12 @@ df.rt_trimmed <- df.rt_trimmed %>%
 
 ## writeout trimmed data 
 ```{r}
-write_csv(df.rt_trimmed, here('data/processed_data/trimmed_RTdata.csv'))
+
+write_csv(df.rt_trimmed, rt_path)
 #write_csv(df.pref_trimmed, here('data/processed_data/trimmed_prefdata.csv'))
-write_csv(df.demog_trimmmed, here('data/processed_data/trimmed_demogdata.csv'))
-write_csv(df.similarity_trimmed, here('data/processed_data/trimmed_similaritydata.csv'))
-write_csv(df.complexity_trimmed, here('data/processed_data/trimmed_complexitydata.csv'))
+write_csv(df.demog_trimmmed, demog_path)
+write_csv(df.similarity_trimmed, similarity_path)
+write_csv(df.complexity_trimmed, complexity_path)
 ```
 
 
