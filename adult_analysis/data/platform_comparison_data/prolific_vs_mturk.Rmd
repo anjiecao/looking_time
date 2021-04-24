@@ -171,3 +171,86 @@ ggplot(rt %>% mutate(block_number = block_number + 1),
   xlab("Block Number") 
 ```
 
+```{r}
+rt %>% 
+  filter(platform == "prolific") %>% 
+  filter(trial_number == 1) %>% 
+  ggplot(aes(x = exposure_type, y = rt)) + 
+  stat_summary(fun.data = "mean_cl_boot") + 
+  geom_hline(yintercept = 500) + 
+  geom_hline(yintercept = 20000) + 
+  ylim(0, 20000) + 
+  labs(title = "First trial reaction time") 
+```
+
+```{r}
+rt %>% 
+  filter(platform == "prolific") %>% 
+  filter(trial_number == 2) %>% 
+  ggplot(aes(x = exposure_type, y = looking_time)) + 
+  stat_summary(fun.data = "mean_cl_boot") + 
+  geom_hline(yintercept = 500) + 
+  geom_hline(yintercept = 20000) + 
+  ylim(0, 20000) + 
+  labs(title = "Second trial looking time") 
+```
+
+```{r}
+rt %>% 
+  filter(platform == "prolific") %>% 
+  filter(trial_number == 1) %>% 
+  ggplot(aes(x = exposure_type, y = rt)) + 
+  stat_summary(fun.data = "mean_cl_boot") + 
+  geom_hline(yintercept = 500) + 
+  geom_hline(yintercept = 20000) + 
+  ylim(0, 20000) + 
+  labs(title = "First trial reaction time")  
+```
+
+```{r}
+rt %>% 
+  filter(platform == "prolific") %>% 
+  filter(block_number == 0) %>% 
+  ggplot(aes(x = trial_number, 
+             y = looking_time, 
+             color = item_type)) + 
+  stat_summary(position = position_dodge(width = 0.1))  + 
+  stat_summary(geom = "line") + 
+  xlab("trial") + 
+  ylab("Looking time") + 
+  labs(title = "Looking time at the first block across trials")
+  #facet_wrap(~exposure_type)
+
+rt %>% 
+  filter(platform == "prolific") %>% 
+  filter(block_number == 1) %>% 
+  ggplot(aes(x = trial_number, 
+             y = looking_time, 
+             color = item_type)) + 
+  stat_summary(position = position_dodge(width = 0.1))  + 
+  stat_summary(geom = "line") + 
+  xlab("trial") + 
+  ylab("Looking time") + 
+  labs(title = "Looking time at the second block across trials")
+  #facet_wrap(~exposure_type)
+
+
+rt %>% 
+  filter(platform == "prolific") %>% 
+  filter(trial_number == 1) %>%
+  filter(exposure_type == "self_paced") %>% 
+  ggplot(aes(x = block_number, 
+             y = looking_time, 
+             color = item_type)) + 
+  stat_summary(position = position_dodge(width = 0.1))  + 
+  stat_summary(geom = "line") + 
+  xlab("block") + 
+  ylab("Looking time") + 
+  labs(title = "Looking time at the first trial on self-paced blocks across blocks")
+  #facet_wrap(~exposure_type)
+```
+
+```{r}
+
+```
+
