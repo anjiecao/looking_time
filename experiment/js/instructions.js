@@ -1,7 +1,7 @@
 function instructions(timeline){
 
-var forced_short_viewing_duration = 100
-var forced_long_viewing_duration = 10 * 1000
+var forced_short_viewing_duration = 500
+var forced_long_viewing_duration = 15 * 1000
         
     
 var intro0 = {
