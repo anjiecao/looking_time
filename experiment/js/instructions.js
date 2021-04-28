@@ -1,9 +1,16 @@
 function demog_question_package(timeline){
 
+<<<<<<< HEAD
 var forced_short_viewing_duration = 100
 var forced_long_viewing_duration = 10 * 1000
 
 
+=======
+var forced_short_viewing_duration = 500
+var forced_long_viewing_duration = 15 * 1000
+        
+    
+>>>>>>> 98bce2342497a2da3e3b137cda8d1ce3b19f642a
 var intro0 = {
     type: "instructions",
     pages: [

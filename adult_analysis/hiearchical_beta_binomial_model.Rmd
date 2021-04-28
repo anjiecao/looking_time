@@ -1,0 +1,17 @@
+---
+title: "hiearchical beta-binomial model"
+author: "anjie"
+date: "4/27/2021"
+output: html_document
+---
+
+https://bayesball.github.io/BOOK/bayesian-hierarchical-modeling.html#hierarchical-beta-binomial-modeling
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+
+```
+
