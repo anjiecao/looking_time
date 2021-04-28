@@ -5,6 +5,17 @@ function instructions(timeline){
     fullscreen_mode: true
   });
 
+  var demog = {
+        type: 'survey-text',
+        questions: [
+        {prompt: "Age in days", name: "Age", required: true},
+        {prompt: "Gender (F/M)", name: "Gender", required: true}
+        ],
+    }
+
+timeline.push(demog)
+
+
   var audio_check = {
         type: "audio-keyboard-response",
         stimulus: 'stimuli/audio/music_intro.wav',

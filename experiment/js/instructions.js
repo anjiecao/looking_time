@@ -1,9 +1,9 @@
-function instructions(timeline){
+function demog_question_package(timeline){
 
 var forced_short_viewing_duration = 100
 var forced_long_viewing_duration = 10 * 1000
-        
-    
+
+
 var intro0 = {
     type: "instructions",
     pages: [
@@ -77,8 +77,8 @@ var intro0 = {
             type: "instructions",
             pages: [
                 "<p> In the real experiment, during some trials, you might find that the creature will stay for a while on the screen. </p>" +
-                "<p> During other trials, you might find that the creature will just flash for a short period of time. </p>" + 
-                "<p> In these trials where you can not control how long you can see the creature, you can press the down arrow to go to the next trial <b>after</b> the creature disappears. </p>" + 
+                "<p> During other trials, you might find that the creature will just flash for a short period of time. </p>" +
+                "<p> In these trials where you can not control how long you can see the creature, you can press the down arrow to go to the next trial <b>after</b> the creature disappears. </p>" +
                 "Next, you will see what a very long trial and a very short trial looks like."
               ],
                 data: {stimulus_type: 'instructions'},
@@ -86,11 +86,11 @@ var intro0 = {
 
 
             var intro4 = {
-            
+
             type: 'sequential-stimulus-presentation-old',
           frame_animation: function(){
-        var html = '<p>&nbsp;</p>' + '<p>&nbsp;</p>'+ '<p>&nbsp;</p>'+ '<p>This is a long trial, which means that you can not go to the next trial when the creature is on the screen. </p><p>But you can press the down arrow when the creature disappears!</p>' + 
-           
+        var html = '<p>&nbsp;</p>' + '<p>&nbsp;</p>'+ '<p>&nbsp;</p>'+ '<p>This is a long trial, which means that you can not go to the next trial when the creature is on the screen. </p><p>But you can press the down arrow when the creature disappears!</p>' +
+
 '<p><img src= images/blank.png width ="400" height = "400" style="position:absolute; top:40%; transform: translate(-50%, -50%);left:50%;border:5px solid black"></p>'
 
 
@@ -108,14 +108,14 @@ var intro0 = {
             exposure_type: "forced_long"
         }
 
-               
-            
+
+
             var intro5 = {
-            
+
             type: 'sequential-stimulus-presentation-old',
           frame_animation: function(){
-        var html = '<p>&nbsp;</p>' + '<p>&nbsp;</p>'+ '<p>&nbsp;</p>'+ '<p>This is a short trial, which means that the creature will just flash. </p><p>You can go to the next trial as soon as the creature disappears.</p>' + 
-           
+        var html = '<p>&nbsp;</p>' + '<p>&nbsp;</p>'+ '<p>&nbsp;</p>'+ '<p>This is a short trial, which means that the creature will just flash. </p><p>You can go to the next trial as soon as the creature disappears.</p>' +
+
 '<p><img src= images/blank.png width ="400" height = "400" style="position:absolute; top:40%; transform: translate(-50%, -50%);left:50%;border:5px solid black"></p>'
 
 
@@ -133,7 +133,7 @@ var intro0 = {
             exposure_type: "forced_long"
         }
 
-               
+
 
 
         var intro6 = {
@@ -161,7 +161,7 @@ var intro0 = {
                 data: {stimulus_type: 'instructions'},
                 show_clickable_nav: true}
 
-      
+
         timeline.push(intro0)
         timeline.push(intro1)
         timeline.push(intro2)
