@@ -14,17 +14,16 @@ library(tidyverse)
 library(stringr) # for parsing r string 
 library(jsonlite) # for parsing r string 
 
-# d_path <- here("data/merged_data/merged_data.csv")
-MERGED_DATA_PATH <- here("data/platform_comparison_data/prolific/merged_data/merged_data.csv")
+ d_path <- here("data/merged_data/merged_data.csv")
+#MERGED_DATA_PATH <- here("data/platform_comparison_data/prolific/merged_data/merged_data.csv")
 
-rt_path <- here("data/platform_comparison_data/prolific/processed_data/trimmed_RTdata.csv")
-demog_path <- here("data/platform_comparison_data/prolific/processed_data/trimmed_demogdata.csv")
-similarity_path <- here("data/platform_comparison_data/prolific/processed_data/trimmed_similaritydata.csv")
-complexity_path <- here("data/platform_comparison_data/prolific/processed_data/trimmed_complexitydata.csv")
+rt_path <- here("data/processed_data/trimmed_RTdata.csv")
+demog_path <- here("data/processed_data/trimmed_demogdata.csv")
+similarity_path <- here("data/processed_data/trimmed_similaritydata.csv")
+complexity_path <- here("data/processed_data/trimmed_complexitydata.csv")
 
-# d_path <- here("data/raw_data/testSS1612925903745.csv")
 #d_path <- here("data/merged_data/sample_1/merged_data.csv")
-df.raw <- read_csv(MERGED_DATA_PATH)
+df.raw <- read_csv(d_path)
 ```
 
 

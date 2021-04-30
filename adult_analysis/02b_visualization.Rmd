@@ -31,8 +31,8 @@ process the looking time!
 ```{r}
 RT_data <- RT_data %>% 
   mutate(looking_time = case_when(
-    exposure_type == "forced_short" & trial_number == 1 ~ 50, 
-    exposure_type == "forced_long" & trial_number == 1 ~ 5000, 
+    exposure_type == "forced_short" & trial_number == 1 ~ 500, 
+    exposure_type == "forced_long" & trial_number == 1 ~ 15000, 
     TRUE ~ 500 + rt
   ))
 ```
@@ -54,16 +54,11 @@ feedback <- read_csv(here('data/merged_data/merged_data.csv')) %>%
 feedback %>% kableExtra::kable()
 ```
 
-```{r}
-read_csv(here('data/merged_data/merged_data.csv')) %>% 
-  filter(subject == "SS1618438527994") %>% 
-  select(stimulus_displayed) %>% 
-  distinct()
-```
+
 
 
 # Descriptive Info 
-N = 203
+N = 200
 ```{r}
 RT_data %>% 
   distinct(subject) %>% 
@@ -311,13 +306,11 @@ exposure_comparison_df %>%
 
 
 
-crazy dynamic across the blocks....
 ```{r}
 exposure_comparison_df %>% 
 ggplot(
        aes(x = block_number, 
-           y = log(looking_time), colour=exposure_type)) +
-  geom_smooth(se = FALSE)+
+           y = log(looking_time), colour=trial_complexity)) +
   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
   langcog::scale_color_solarized(name = "Item Type") + 
   facet_wrap(~item_type)+
@@ -364,13 +357,81 @@ ggplot(RT_data,
 ```
 
 ## Looking time 
+### models
+```{r}
+prunned_model <-  lmer(log(looking_time) ~ I((exp(1)**(-trial_number))) * item_type * trial_complexity * exposure_type + (1|subject), 
+                    data = RT_data)
+summary(prunned_model)$coef %>% knitr::kable(digits = 2)
+```
+
+```{r}
+
+prunned_model_second_trial <-  lmer(log(looking_time) ~ exposure_type * trial_complexity + (1|subject), data = RT_data %>% filter(trial_number == 2))
+
+summary(prunned_model_second_trial)$coeff %>% knitr::kable(digits = 2)
+
+```
+
+
+
+### critical comparison 
+```{r}
+RT_data %>% 
+  filter(trial_type == "background") %>% 
+  filter(trial_number %in% c(1, 2)) %>% 
+  ggplot(aes(x = trial_number, y = looking_time, colour = exposure_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1))  + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) +
+  langcog::scale_color_solarized(name = "Exposure Type") + 
+  scale_x_continuous(breaks = seq(1,2,1)) + 
+  facet_wrap(~trial_complexity)+
+  theme_classic() + 
+  xlab("Trial Number") + 
+  ylab("Looking time (ms)") + 
+  labs(title = "Looking time at critical trials (Second trial background only)")
+```
+
+```{r}
+RT_data %>% 
+  filter((trial_number == 1 & item_type == "background") | 
+           trial_number == 2 & item_type == "dissimilar deviant") %>% 
+  ggplot(aes(x = trial_number, y = looking_time, colour = exposure_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1))  + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) +
+  langcog::scale_color_solarized(name = "Exposure Type") + 
+  scale_x_continuous(breaks = seq(1,2,1)) + 
+  facet_wrap(~trial_complexity)+
+  theme_classic() + 
+  xlab("Trial Number") + 
+  ylab("Looking time (ms)") +
+  labs(title = "Looking time at critical trials (Second trial deviants only)")
+```
+
+
+
+
+### compare looking time at the second trial
+
+```{r}
+RT_data %>% 
+  filter(trial_number == 2) %>% 
+  ggplot(aes(x = exposure_type, y = looking_time, color = item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) +
+   langcog::scale_color_solarized(name = "Item Type") + 
+  theme_classic() + 
+  labs(title = "Looking time at the second trial")
+```
+
+
+
+
 ```{r}
 ggplot(RT_data %>% filter(trial_number != 1), 
        aes(x=trial_number, y=log(looking_time), colour=item_type)) + 
   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
   geom_smooth(method = "lm", 
               formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
-  facet_grid(~exposure_type) +
+  facet_grid(~trial_complexity) +
   langcog::scale_color_solarized(name = "Item Type") + 
   theme(legend.position = "bottom") + 
   ylab("Looking time)") + 
@@ -391,21 +452,9 @@ ggplot(RT_data %>% filter(trial_number != 1),
 ```
 
 
-looking time by half 
-```{r}
-ggplot(RT_data %>% filter(trial_number != 1), 
-       aes(x=trial_number, y=log(looking_time), colour=item_type)) + 
-  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
-  geom_smooth(method = "lm", 
-              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
-  facet_grid(half~exposure_type) +
-  langcog::scale_color_solarized(name = "Item Type") + 
-  theme(legend.position = "bottom") + 
-  ylab("Looking time)") + 
-  xlab("Trial Number") 
-```
 
-# first block only 
+
+## first block only 
 
 compare critical trials 
 ```{r}
@@ -440,6 +489,28 @@ ggplot(RT_data %>% filter(trial_number != 1) %>% filter(block_number == 0),
 
 
 ```
+
+# Across block 
+```{r}
+RT_data %>% 
+  filter(trial_number != 1) %>% 
+  mutate(block_number = block_number + 1) %>%  #block number starts with 0
+ggplot(
+       aes(x=block_number, y=log(looking_time), colour=trial_complexity)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ log(x), se = FALSE) + 
+  facet_wrap(~exposure_type)+
+  scale_x_continuous(breaks = seq(1, 12, 1))+
+  langcog::scale_color_solarized(name = "Item Type") + 
+  theme(legend.position = "bottom") + 
+  theme_classic()+
+  ylab("Looking time)") + 
+  xlab("Block Number") + 
+  labs("Across block looking time change (exclude first trial)")
+```
+
+
 
 # some very exploratory stuff 
 - effect of block length? 
@@ -530,35 +601,4 @@ ggplot(
   xlab("Trial Number") 
   
 ```
-
-# comparing the current self paced blocks with the old studies 
-```{r}
-new_self_paced <- RT_data %>% 
-  filter(exposure_type == "self_paced") %>% 
-  mutate(version = "new")
-
-old_self_paced <- read_csv(here('data/processed_data/sample_1/trimmed_RTdata.csv')) %>% 
-  mutate(version = "old", 
-         exposure_type = "self_paced") %>% 
-  mutate(looking_time = 500 + rt) %>% 
-  filter(block_type == "complex_dissimilar" | block_type == "simple_dissimilar")
-
-self_paced_df <-bind_rows(new_self_paced, old_self_paced)
-```
-
-```{r}
-self_paced_df %>% 
-  ggplot(aes(x=trial_number, y=log(looking_time), colour=item_type)) + 
-  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
-  geom_smooth(method = "lm", 
-              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
-  facet_grid(~version) +
-  langcog::scale_color_solarized(name = "Item Type") + 
-  theme(legend.position = "bottom") + 
-  ylab("Looking time)") + 
-  xlab("Trial Number") 
-  
-```
-
-
 
