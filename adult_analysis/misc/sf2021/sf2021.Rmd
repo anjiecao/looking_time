@@ -1,0 +1,103 @@
+---
+title: "Sun & Firestone (2021) - Homebrew Analysis"
+author: "anjie"
+date: "5/1/2021"
+output: html_document
+---
+```{r}
+library(tidyverse)
+library(here)
+```
+
+```{r}
+d <- read_csv(here("data/data_exp4.csv"))
+```
+
+
+```{r}
+d_rt %>% 
+  ggplot(aes(x = rt)) + 
+  geom_histogram() + 
+  scale_x_log10()
+```
+
+```{r}
+
+```
+
+
+
+
+```{r}
+d_rt <- d %>% 
+  select(WorkerId, contains("rt")) %>% 
+  pivot_longer(cols = contains("rt"), 
+               names_to = "Type", 
+               values_to = "rt") %>% 
+  separate("Type", into = c('name', 'trial_number'), 
+           sep = "_") %>% 
+  select(WorkerId, trial_number, rt) %>% 
+  mutate(trial_number = as.numeric(trial_number), 
+         temp_id = paste(WorkerId, trial_number)) # this is to figure out which trials are missing
+
+d_rt %>% 
+  ggplot(aes(x = trial_number, y = rt)) + 
+  stat_summary(fun.data =  mean_cl_boot)
+```
+
+
+
+
+```{r}
+
+d_pic <- d %>% 
+  select(WorkerId, contains("Answer.pic")) %>% 
+  pivot_longer(cols = contains("Answer.pic"), 
+               names_to = "Type", 
+               values_to = "pic_value") %>% 
+   separate("Type", into = c('name', 'trial_number'), 
+           sep = "_") %>% 
+  select(-name) %>% 
+  mutate(trial_complexity = if_else(pic_value < 0, "simple", "complex"), 
+         trial_number = as.numeric(trial_number), 
+         temp_id = paste(WorkerId, trial_number)) %>% 
+  select(trial_complexity, temp_id) %>% 
+ left_join(d_rt, by = c("temp_id")) %>% 
+  select(-temp_id) %>% 
+  mutate(block_number = floor(trial_number / 20 ) + 1) # this is for 5 blocks, each block has 20 trials 
+
+d_pic %>% 
+  filter(trial_number < 7) %>% 
+  ggplot(aes(x = trial_number, y = log(rt), color = trial_complexity)) + 
+  geom_point(alpha = .3, position = "jitter") + 
+  stat_summary(fun.data =  mean_cl_boot) +
+  facet_wrap(~block_number)
+
+
+d_pic %>% 
+  ggplot(aes(x = block_number, y = rt, color = trial_complexity)) + 
+  stat_summary(fun.data =  mean_cl_boot) + 
+  geom_smooth()
+```
+
+```{r}
+d_pic %>% 
+  filter(rt > 10000 | rt < 500) %>% 
+  ggplot(aes(x = trial_complexity, y = log(rt))) + 
+  geom_point(position = "jitter", alpha = .2)+
+  geom_violin()+
+  stat_summary(fun.data =  mean_cl_boot) 
+```
+
+```{r}
+library(lme4)
+library(lmerTest)
+
+fit.model <- lmer(rt ~ trial_complexity + (1|WorkerId), data = d_pic)
+
+fit.model %>% summary()
+```
+
+
+
+
