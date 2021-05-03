@@ -1,0 +1,62 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+```{r}
+library(tidyverse)
+```
+$$p(\theta) = Beta(\alpha, \beta)$$
+
+```{r}
+alpha  = 1
+beta = 2
+theta <- rbeta(1, 1,  2)
+```
+
+```{r}
+a <- pbeta(c(0,), shape1, shape2, ncp = 0, lower.tail = TRUE, log.p = FALSE)
+```
+
+
+```{r}
+get_z_i_j_given_theta <- function(i, j, theta, epsilon){
+  
+  z_i_j_given_y_i_is_one = epsilon # very questionable 
+  y_i_is_one_given_theta = theta # bernoulli? 
+  
+  z_i_j_given_y_i_is_zero = 1- epsilon # very questionable 
+  y_i_is_zero_given_theta = 1 - theta
+  
+  z_ij_given_theta = z_i_j_given_y_i_is_one * y_i_is_one_given_theta + 
+    z_i_j_given_y_i_is_zero *y_i_is_zero_given_theta
+  
+  return (z_ij_given_theta)
+}
+```
+
+
+So we could imagine seeing a sequence like [z11,z12,z13,z21,z22,z31], which would repre-sent a series of noisy observations over three experimental trials.  The first is the longest,and they get shorter over the experiment.  So if we assumed noisy perceptual informationaccumulates at a rate of one sample per second, then we’d have a 3s, a 2s, and a 1s tria
+
+```{r}
+i = 1
+j = 3
+theta = 0.6
+epsilon = 0.7
+
+all_z_ij_given_theta = c()
+for (exemplar in seq(1:i)){
+ for (timepoint in seq(1:j)){
+   
+   z_ij_given_theta = get_z_i_j_given_theta(i, j, theta, epsilon)
+   all_z_ij_given_theta = c(all_z_ij_given_theta, z_ij_given_theta)
+     
+    
+ }
+  
+}
+all_z_ij_given_theta
+```
+
+
