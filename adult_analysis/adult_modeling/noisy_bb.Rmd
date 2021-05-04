@@ -7,7 +7,151 @@ output: html_notebook
 ```{r}
 library(tidyverse)
 ```
-$$p(\theta) = Beta(\alpha, \beta)$$
+We are learning theta, the probability of a single binary feature being active. 
+
+
+Our training data are individual exemplars of the concept, e.g. sample sfrom theta, y1....yn. 
+
+$$ p(\theta) = Beta(\alpha, \beta) $$
+
+this defines a simple Beta-Bernoulli conjugate model, so 
+
+$$p(y | \theta) = Bernoulli(\theta)$$
+
+but actually we don't observe y directly. for each examplear $$y_i$$, we can choose to gather noisy sample $$z_i1...z_it$$ from these. these samples are: 
+
+\begin{equation}
+p(z_{ij} | y_i) = 
+\begin{cases}
+    \epsilon, & \text{for } y_i = 0 \\
+    1-\epsilon, & \text{for } y_i = 1. \\
+\end{cases}
+\end{equation}
+
+```{r}
+# our training data are individual exemplar of this concept y 
+y_1 = c(1, 0, 0) 
+y_2 = c(1, 0, 0) # is this true? 
+y_3 = c(1, 0, 0) 
+# or does each individual feature is a theta, and the theta is shared among all features? 
+# so it will look something like 
+y_1 = c(bernoulli(theta), 
+        bernoulli(theta), 
+        bernoulli(theta))  
+y_2 = c(bernoulli(theta), 
+        bernoulli(theta), 
+        bernoulli(theta)) 
+...
+
+#and something new would look like 
+z_1  = c(bernoulli(theta_prime), 
+        bernoulli(theta_prime), 
+        bernoulli(theta_prime))
+
+```
+
+```{r}
+# the first thing looks easier, so i'll go with that one for now
+y_1 = c(1)
+
+# theta is prior for y_1
+#p_theta = beta(alpha, beta)
+p_theta = 0.5 
+
+# what we want is 
+# p_theta_given_overbar_z
+
+p_theta_given_overbar_z = (p_overbar_z_given_theta * p_theta) / p_overbar_z
+```
+
+
+```{r}
+get_z_i_j_given_theta <- function(i, j, theta, epsilon){
+  
+  z_i_j_given_y_i_is_one = epsilon # very questionable 
+  y_i_is_one_given_theta = theta # bernoulli? 
+  
+  z_i_j_given_y_i_is_zero = 1- epsilon # very questionable 
+  y_i_is_zero_given_theta = 1 - theta
+  
+  z_ij_given_theta = z_i_j_given_y_i_is_one * y_i_is_one_given_theta + 
+    z_i_j_given_y_i_is_zero *y_i_is_zero_given_theta
+  
+  return (z_ij_given_theta)
+}
+
+get_z_overbar_given_theta <- function(i, j, theta, epsilon){
+  
+  all_z_ij_given_theta <- c() 
+  
+  for (i_index in seq(1:i)){
+    for(j_index in seq(1:j)){
+      
+      z_ij_given_theta <- get_z_i_j_given_theta(i, j, theta, epsilon)
+      
+      all_z_ij_given_theta <- c(all_z_ij_given_theta, z_ij_given_theta)
+      
+    }
+  }
+  
+  z_overbar_given_theta <- prod(all_z_ij_given_theta)
+  
+  return (z_overbar_given_theta)
+}
+
+
+get_all_z_overbar_given_theta <- function(i, j, epsilon, all_thetas){
+  
+  all_p_overbar_z_given_theta <- c()
+  
+  for (theta_i in 1:length(all_thetas)){
+    theta = all_thetas[theta_i]
+    #print(theta)
+    current_z_overbar_given_theta <- get_z_overbar_given_theta(i, j, theta, epsilon)
+    all_p_overbar_z_given_theta <- c(all_p_overbar_z_given_theta, current_z_overbar_given_theta)
+  
+  }
+  
+  return(all_p_overbar_z_given_theta)
+  
+}
+
+get_overbar_z <- function(i, j, epsilon, all_thetas){
+  
+  all_z_overbar_z_given_theta <- get_all_z_overbar_given_theta(i, j, epsilon, all_thetas)
+  
+  return (sum(all_z_overbar_z_given_theta * all_thetas))
+  
+}
+```
+
+```{r}
+n = 1 # one exemplar 
+t = 3 # look at for 3 second 
+theta = 0.5
+overbar_z_given_theta <- get_z_overbar_given_theta(n, t, theta, epsilon)
+
+
+epsilon = 0.2
+
+all_thetas = c(0.2, 0.4, 0.6, 0.8)
+
+all_p_overbar_z_given_theta <- get_all_z_overbar_given_theta(n, t, epsilon, all_thetas)
+
+overbar_z <- get_overbar_z(n, t, epsilon, all_thetas)
+
+final_distribution <- (all_p_overbar_z_given_theta * all_thetas)/overbar_z
+
+all_thetas
+all_p_overbar_z_given_theta
+overbar_z
+final_distribution
+
+```
+
+
+
+
 
 ```{r}
 alpha  = 1

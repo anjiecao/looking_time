@@ -1767,79 +1767,46 @@ summary {
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeSh0aWR5dmVyc2UpXG5gYGAifQ== -->
 <pre class="r"><code>library(tidyverse)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiUmVnaXN0ZXJlZCBTMyBtZXRob2RzIG92ZXJ3cml0dGVuIGJ5ICdkYnBseXInOlxuICBtZXRob2QgICAgICAgICBmcm9tXG4gIHByaW50LnRibF9sYXp5ICAgICBcbiAgcHJpbnQudGJsX3NxbCAgICAgIFxuXHUwMDFiWzMwbeKUgOKUgCBcdTAwMWJbMW1BdHRhY2hpbmcgcGFja2FnZXNcdTAwMWJbMjJtIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgCB0aWR5dmVyc2UgMS4zLjAg4pSA4pSAXHUwMDFiWzM5bVxuXHUwMDFiWzMwbVx1MDAxYlszMm3inJNcdTAwMWJbMzBtIFx1MDAxYlszNG1nZ3Bsb3QyXHUwMDFiWzMwbSAzLjMuMyAgICAgXHUwMDFiWzMybeKck1x1MDAxYlszMG0gXHUwMDFiWzM0bXB1cnJyICBcdTAwMWJbMzBtIDAuMy40XG5cdTAwMWJbMzJt4pyTXHUwMDFiWzMwbSBcdTAwMWJbMzRtdGliYmxlIFx1MDAxYlszMG0gMy4xLjAgICAgIFx1MDAxYlszMm3inJNcdTAwMWJbMzBtIFx1MDAxYlszNG1kcGx5ciAgXHUwMDFiWzMwbSAxLjAuNVxuXHUwMDFiWzMybeKck1x1MDAxYlszMG0gXHUwMDFiWzM0bXRpZHlyICBcdTAwMWJbMzBtIDEuMS4xICAgICBcdTAwMWJbMzJt4pyTXHUwMDFiWzMwbSBcdTAwMWJbMzRtc3RyaW5nclx1MDAxYlszMG0gMS40LjBcblx1MDAxYlszMm3inJNcdTAwMWJbMzBtIFx1MDAxYlszNG1yZWFkciAgXHUwMDFiWzMwbSAxLjMuMSAgICAgXHUwMDFiWzMybeKck1x1MDAxYlszMG0gXHUwMDFiWzM0bWZvcmNhdHNcdTAwMWJbMzBtIDAuNC4wXHUwMDFiWzM5bVxuXHUwMDFiWzMwbeKUgOKUgCBcdTAwMWJbMW1Db25mbGljdHNcdTAwMWJbMjJtIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgCB0aWR5dmVyc2VfY29uZmxpY3RzKCkg4pSA4pSAXG5cdTAwMWJbMzFteFx1MDAxYlszMG0gXHUwMDFiWzM0bXRpZHlyXHUwMDFiWzMwbTo6XHUwMDFiWzMybWV4cGFuZCgpXHUwMDFiWzMwbSBtYXNrcyBcdTAwMWJbMzRtTWF0cml4XHUwMDFiWzMwbTo6ZXhwYW5kKClcblx1MDAxYlszMW14XHUwMDFiWzMwbSBcdTAwMWJbMzRtZHBseXJcdTAwMWJbMzBtOjpcdTAwMWJbMzJtZmlsdGVyKClcdTAwMWJbMzBtIG1hc2tzIFx1MDAxYlszNG1zdGF0c1x1MDAxYlszMG06OmZpbHRlcigpXG5cdTAwMWJbMzFteFx1MDAxYlszMG0gXHUwMDFiWzM0bWRwbHlyXHUwMDFiWzMwbTo6XHUwMDFiWzMybWxhZygpXHUwMDFiWzMwbSAgICBtYXNrcyBcdTAwMWJbMzRtc3RhdHNcdTAwMWJbMzBtOjpsYWcoKVxuXHUwMDFiWzMxbXhcdTAwMWJbMzBtIFx1MDAxYlszNG10aWR5clx1MDAxYlszMG06Olx1MDAxYlszMm1wYWNrKClcdTAwMWJbMzBtICAgbWFza3MgXHUwMDFiWzM0bU1hdHJpeFx1MDAxYlszMG06OnBhY2soKVxuXHUwMDFiWzMxbXhcdTAwMWJbMzBtIFx1MDAxYlszNG10aWR5clx1MDAxYlszMG06Olx1MDAxYlszMm11bnBhY2soKVx1MDAxYlszMG0gbWFza3MgXHUwMDFiWzM0bU1hdHJpeFx1MDAxYlszMG06OnVucGFjaygpXHUwMDFiWzM5bVxuIn0= -->
-<pre><code>Registered S3 methods overwritten by &#39;dbplyr&#39;:
-  method         from
-  print.tbl_lazy     
-  print.tbl_sql      
-[30m── [1mAttaching packages[22m ───────────────────────────────────────────────────── tidyverse 1.3.0 ──[39m
-[30m[32m✓[30m [34mggplot2[30m 3.3.3     [32m✓[30m [34mpurrr  [30m 0.3.4
-[32m✓[30m [34mtibble [30m 3.1.0     [32m✓[30m [34mdplyr  [30m 1.0.5
-[32m✓[30m [34mtidyr  [30m 1.1.1     [32m✓[30m [34mstringr[30m 1.4.0
-[32m✓[30m [34mreadr  [30m 1.3.1     [32m✓[30m [34mforcats[30m 0.4.0[39m
-[30m── [1mConflicts[22m ──────────────────────────────────────────────────────── tidyverse_conflicts() ──
-[31mx[30m [34mtidyr[30m::[32mexpand()[30m masks [34mMatrix[30m::expand()
-[31mx[30m [34mdplyr[30m::[32mfilter()[30m masks [34mstats[30m::filter()
-[31mx[30m [34mdplyr[30m::[32mlag()[30m    masks [34mstats[30m::lag()
-[31mx[30m [34mtidyr[30m::[32mpack()[30m   masks [34mMatrix[30m::pack()
-[31mx[30m [34mtidyr[30m::[32munpack()[30m masks [34mMatrix[30m::unpack()[39m</code></pre>
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>We are learning theta, the probability of a single binary feature being active.</p>
+<p>Our training data are individual exemplars of the concept, e.g. sample sfrom theta, y1….yn.</p>
+<p><span class="math display">\[ p(\theta) = Beta(\alpha, \beta) \]</span></p>
+<p>this defines a simple Beta-Bernoulli conjugate model, so</p>
+<p><span class="math display">\[p(y | \theta) = Bernoulli(\theta)\]</span></p>
+<p>but actually we don’t observe y directly. for each examplear <span class="math display">\[y_i\]</span>, we can choose to gather noisy sample <span class="math display">\[z_i1...z_it\]</span> from these. these samples are:</p>
+<p><span class="math display">\[\begin{equation}
+p(z_{ij} | y_i) = 
+\begin{cases}
+    \epsilon, &amp; \text{for } y_i = 0 \\
+    1-\epsilon, &amp; \text{for } y_i = 1. \\
+\end{cases}
+\end{equation}\]</span></p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBvdXIgdHJhaW5pbmcgZGF0YSBhcmUgaW5kaXZpZHVhbCBleGVtcGxhciBvZiB0aGlzIGNvbmNlcHQgeSBcbnlfMSA9IGMoMSwgMCwgMCkgXG55XzIgPSBjKDEsIDAsIDApICMgaXMgdGhpcyB0cnVlPyBcbnlfMyA9IGMoMSwgMCwgMCkgXG4jIG9yIGRvZXMgZWFjaCBpbmRpdmlkdWFsIGZlYXR1cmUgaXMgYSB0aGV0YSwgYW5kIHRoZSB0aGV0YSBpcyBzaGFyZWQgYW1vbmcgYWxsIGZlYXR1cmVzPyBcbiMgc28gaXQgd2lsbCBsb29rIHNvbWV0aGluZyBsaWtlIFxueV8xID0gYyhiZXJub3VsbGkodGhldGEpLCBcbiAgICAgICAgYmVybm91bGxpKHRoZXRhKSwgXG4gICAgICAgIGJlcm5vdWxsaSh0aGV0YSkpICBcbmBgYCJ9 -->
+<pre class="r"><code># our training data are individual exemplar of this concept y 
+y_1 = c(1, 0, 0) 
+y_2 = c(1, 0, 0) # is this true? 
+y_3 = c(1, 0, 0) 
+# or does each individual feature is a theta, and the theta is shared among all features? 
+# so it will look something like 
+y_1 = c(bernoulli(theta), 
+        bernoulli(theta), 
+        bernoulli(theta))  </code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gYmVybm91bGxpKHRoZXRhKSA6IGNvdWxkIG5vdCBmaW5kIGZ1bmN0aW9uIFwiYmVybm91bGxpXCJcbiJ9 -->
+<pre><code>Error in bernoulli(theta) : could not find function &quot;bernoulli&quot;</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p><span class="math display">\[p(\theta) = Beta(\alpha, \beta)\]</span></p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYWxwaGEgID0gMVxuYmV0YSA9IDJcbnRoZXRhIDwtIHJiZXRhKDEsIDEsICAyKVxudGhldGFcbmBgYCJ9 -->
-<pre class="r"><code>alpha  = 1
-beta = 2
-theta &lt;- rbeta(1, 1,  2)
-theta</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDAuMDg0NTMyXG4ifQ== -->
-<pre><code>[1] 0.084532</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2FtcGxlLnNwYWNlIDwtIGMoMCwxKVxudGhldGEgPC0gcmJldGEoMSwgMSwgIDIpXG50aGV0YVxuYGBgIn0= -->
-<pre class="r"><code>sample.space &lt;- c(0,1)
-theta &lt;- rbeta(1, 1,  2)
-theta</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDAuNDQ0NTQ1OVxuIn0= -->
-<pre><code>[1] 0.4445459</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuTiA8LSAyMCAjIHdlIHdhbnQgdG8gZmxpcCBhIGNvaW4gMjAgdGltZXNcblxuZmxpcHMgPC0gc2FtcGxlKHNhbXBsZS5zcGFjZSwgXG4gICAgICAgICAgICAgICAgc2l6ZSA9IE4sIFxuICAgICAgICAgICAgICAgIHJlcGxhY2UgPSBUUlVFLCBcbiAgICAgICAgICAgICAgICBwcm9iID0gYyh0aGV0YSwgMSAtIHRoZXRhKSlcblxuZmxpcHNfcmIgPC0gcmJpbm9tKG4gPSAxLCBcbiAgICAgICAgICAgICAgICBzaXplID0gMSwgXG4gICAgICAgICAgICAgICAgcHJvYiA9IHRoZXRhKVxuYGBgIn0= -->
-<pre class="r"><code>N &lt;- 20 # we want to flip a coin 20 times
-
-flips &lt;- sample(sample.space, 
-                size = N, 
-                replace = TRUE, 
-                prob = c(theta, 1 - theta))
-
-flips_rb &lt;- rbinom(n = 1, 
-                size = 1, 
-                prob = theta)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2V0X3pfaV9qX2dpdmVuX3lfaSA8LSBmdW5jdGlvbih5X2ksIGVwc2lsb24pe1xuICBpZiAoeV9pID09IDApe1xuICAgIHJldHVybiAoZXBzaWxvbilcbiAgfWVsc2V7XG4gICAgcmV0dXJuICgxIC0gZXBzaWxvbilcbiAgfVxufVxuYGBgIn0= -->
-<pre class="r"><code>get_z_i_j_given_y_i &lt;- function(y_i, epsilon){
-  if (y_i == 0){
-    return (epsilon)
-  }else{
-    return (1 - epsilon)
-  }
-}</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2V0X3pfaV9qX2dpdmVuX3RoZXRhIDwtIGZ1bmN0aW9uKGksIGosIHRoZXRhLCBlcHNpbG9uKXtcbiAgXG4gIHpfaV9qX2dpdmVuX3lfaV9pc19vbmUgPSBlcHNpbG9uICMgdmVyeSBxdWVzdGlvbmFibGUgXG4gIHlfaV9pc19vbmVfZ2l2ZW5fdGhldGEgPSB0aGV0YSAjIGJlcm5vdWxsaT8gXG4gIFxuICB6X2lfal9naXZlbl95X2lfaXNfemVybyA9IDEtIGVwc2lsb24gIyB2ZXJ5IHF1ZXN0aW9uYWJsZSBcbiAgeV9pX2lzX3plcm9fZ2l2ZW5fdGhldGEgPSAxIC0gdGhldGFcbiAgXG4gIHpfaWpfZ2l2ZW5fdGhldGEgPSB6X2lfal9naXZlbl95X2lfaXNfb25lICogeV9pX2lzX29uZV9naXZlbl90aGV0YSArIFxuICAgIHpfaV9qX2dpdmVuX3lfaV9pc196ZXJvICp5X2lfaXNfemVyb19naXZlbl90aGV0YVxuICBcbiAgcmV0dXJuICh6X2lqX2dpdmVuX3RoZXRhKVxufVxuYGBgIn0= -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2V0X3pfaV9qX2dpdmVuX3RoZXRhIDwtIGZ1bmN0aW9uKGksIGosIHRoZXRhLCBlcHNpbG9uKXtcbiAgXG4gIHpfaV9qX2dpdmVuX3lfaV9pc19vbmUgPSBlcHNpbG9uICMgdmVyeSBxdWVzdGlvbmFibGUgXG4gIHlfaV9pc19vbmVfZ2l2ZW5fdGhldGEgPSB0aGV0YSAjIGJlcm5vdWxsaT8gXG4gIFxuICB6X2lfal9naXZlbl95X2lfaXNfemVybyA9IDEtIGVwc2lsb24gIyB2ZXJ5IHF1ZXN0aW9uYWJsZSBcbiAgeV9pX2lzX3plcm9fZ2l2ZW5fdGhldGEgPSAxIC0gdGhldGFcbiAgXG4gIHpfaWpfZ2l2ZW5fdGhldGEgPSB6X2lfal9naXZlbl95X2lfaXNfb25lICogeV9pX2lzX29uZV9naXZlbl90aGV0YSArIFxuICAgIHpfaV9qX2dpdmVuX3lfaV9pc196ZXJvICp5X2lfaXNfemVyb19naXZlbl90aGV0YVxuICBcbiAgcmV0dXJuICh6X2lqX2dpdmVuX3RoZXRhKVxufVxuXG5nZXRfel9vdmVyYmFyX2dpdmVuX3RoZXRhIDwtIGZ1bmN0aW9uKGksIGosIHRoZXRhLCBlcHNpbG9uKXtcbiAgXG4gIGFsbF96X2lqX2dpdmVuX3RoZXRhIDwtIGMoKSBcbiAgXG4gIGZvciAoaV9pbmRleCBpbiBzZXEoMTppKSl7XG4gICAgZm9yKGpfaW5kZXggaW4gc2VxKDE6aikpe1xuICAgICAgXG4gICAgICB6X2lqX2dpdmVuX3RoZXRhIDwtIGdldF96X2lfal9naXZlbl90aGV0YShpLCBqLCB0aGV0YSwgZXBzaWxvbilcbiAgICAgIFxuICAgICAgYWxsX3pfaWpfZ2l2ZW5fdGhldGEgPC0gYyhhbGxfel9pal9naXZlbl90aGV0YSwgel9pal9naXZlbl90aGV0YSlcbiAgICAgIFxuICAgIH1cbiAgfVxuICBcbiAgel9vdmVyYmFyX2dpdmVuX3RoZXRhIDwtIHByb2QoYWxsX3pfaWpfZ2l2ZW5fdGhldGEpXG4gIFxuICByZXR1cm4gKHpfb3ZlcmJhcl9naXZlbl90aGV0YSlcbn1cblxuXG5nZXRfYWxsX3pfb3ZlcmJhcl9naXZlbl90aGV0YSA8LSBmdW5jdGlvbihpLCBqLCBlcHNpbG9uLCBhbGxfdGhldGFzKXtcbiAgXG4gIGFsbF9wX292ZXJiYXJfel9naXZlbl90aGV0YSA8LSBjKClcbiAgXG4gIGZvciAodGhldGFfaSBpbiAxOmxlbmd0aChhbGxfdGhldGFzKSl7XG4gICAgdGhldGEgPSBhbGxfdGhldGFzW3RoZXRhX2ldXG4gICAgI3ByaW50KHRoZXRhKVxuICAgIGN1cnJlbnRfel9vdmVyYmFyX2dpdmVuX3RoZXRhIDwtIGdldF96X292ZXJiYXJfZ2l2ZW5fdGhldGEoaSwgaiwgdGhldGEsIGVwc2lsb24pXG4gICAgYWxsX3Bfb3ZlcmJhcl96X2dpdmVuX3RoZXRhIDwtIGMoYWxsX3Bfb3ZlcmJhcl96X2dpdmVuX3RoZXRhLCBjdXJyZW50X3pfb3ZlcmJhcl9naXZlbl90aGV0YSlcbiAgXG4gIH1cbiAgXG4gIHJldHVybihhbGxfcF9vdmVyYmFyX3pfZ2l2ZW5fdGhldGEpXG4gIFxufVxuXG5nZXRfb3ZlcmJhcl96IDwtIGZ1bmN0aW9uKGksIGosIGVwc2lsb24sIGFsbF90aGV0YXMpe1xuICBcbiAgYWxsX3pfb3ZlcmJhcl96X2dpdmVuX3RoZXRhIDwtIGdldF9hbGxfel9vdmVyYmFyX2dpdmVuX3RoZXRhKGksIGosIGVwc2lsb24sIGFsbF90aGV0YXMpXG4gIFxuICByZXR1cm4gKHN1bShhbGxfel9vdmVyYmFyX3pfZ2l2ZW5fdGhldGEgKiBhbGxfdGhldGFzKSlcbiAgXG59XG5gYGAifQ== -->
 <pre class="r"><code>get_z_i_j_given_theta &lt;- function(i, j, theta, epsilon){
   
   z_i_j_given_y_i_is_one = epsilon # very questionable 
@@ -1852,15 +1819,249 @@ flips_rb &lt;- rbinom(n = 1,
     z_i_j_given_y_i_is_zero *y_i_is_zero_given_theta
   
   return (z_ij_given_theta)
+}
+
+get_z_overbar_given_theta &lt;- function(i, j, theta, epsilon){
+  
+  all_z_ij_given_theta &lt;- c() 
+  
+  for (i_index in seq(1:i)){
+    for(j_index in seq(1:j)){
+      
+      z_ij_given_theta &lt;- get_z_i_j_given_theta(i, j, theta, epsilon)
+      
+      all_z_ij_given_theta &lt;- c(all_z_ij_given_theta, z_ij_given_theta)
+      
+    }
+  }
+  
+  z_overbar_given_theta &lt;- prod(all_z_ij_given_theta)
+  
+  return (z_overbar_given_theta)
+}
+
+
+get_all_z_overbar_given_theta &lt;- function(i, j, epsilon, all_thetas){
+  
+  all_p_overbar_z_given_theta &lt;- c()
+  
+  for (theta_i in 1:length(all_thetas)){
+    theta = all_thetas[theta_i]
+    #print(theta)
+    current_z_overbar_given_theta &lt;- get_z_overbar_given_theta(i, j, theta, epsilon)
+    all_p_overbar_z_given_theta &lt;- c(all_p_overbar_z_given_theta, current_z_overbar_given_theta)
+  
+  }
+  
+  return(all_p_overbar_z_given_theta)
+  
+}
+
+get_overbar_z &lt;- function(i, j, epsilon, all_thetas){
+  
+  all_z_overbar_z_given_theta &lt;- get_all_z_overbar_given_theta(i, j, epsilon, all_thetas)
+  
+  return (sum(all_z_overbar_z_given_theta * all_thetas))
+  
 }</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p>So we could imagine seeing a sequence like [z11,z12,z13,z21,z22,z31], which would repre-sent a series of noisy observations over three experimental trials. The first is the longest,and they get shorter over the experiment. So if we assumed noisy perceptual informationaccumulates at a rate of one sample per second, then we’d have a 3s, a 2s, and a 1s tria</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaSA9IDFcbmogPSAzXG5lcHNpbG9uID0gMC43XG50aGV0YXMgPSBjKDAuMiwgMC40LCAwLjYsIDAuOClcblxuYWxsX3pfb3ZlcmJhcl9naXZlbl90aGV0YSA9IGMoKVxuYWxsX3pfaWpfZ2l2ZW5fdGhldGEgPSBjKClcbmZvciAodGhldGFfaW5kZXggaW4gc2VxKDE6bGVuZ3RoKHRoZXRhcykpKXtcbiAgZm9yIChleGVtcGxhciBpbiBzZXEoMTppKSl7XG4gICAgZm9yICh0aW1lcG9pbnQgaW4gc2VxKDE6aikpe1xuICAgICB0aGV0YSA9IHRoZXRhc1t0aGV0YV9pbmRleF1cbiAgICAgIHpfaWpfZ2l2ZW5fdGhldGEgPSBnZXRfel9pX2pfZ2l2ZW5fdGhldGEoaSwgaiwgdGhldGEsIGVwc2lsb24pXG4gICAgYWxsX3pfaWpfZ2l2ZW5fdGhldGEgPSBjKGFsbF96X2lqX2dpdmVuX3RoZXRhLCB6X2lqX2dpdmVuX3RoZXRhKVxuICAgIFxuICAgIH1cbiAgfVxuICBcbiAgel9vdmVyYmFyX2dpdmVuX3RoZXRhIDwtICBwcm9kKGFsbF96X2lqX2dpdmVuX3RoZXRhKVxuICBhbGxfel9vdmVyYmFyX2dpdmVuX3RoZXRhIDwtIGMoYWxsX3pfb3ZlcmJhcl9naXZlbl90aGV0YSwgel9vdmVyYmFyX2dpdmVuX3RoZXRhKVxuICBcbn1cblxuXG5hbGxfel9pal9naXZlbl90aGV0YVxuYGBgIn0= -->
-<pre class="r"><code>i = 1
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubiA9IDEgIyBvbmUgZXhlbXBsYXIgXG50ID0gMyAjIGxvb2sgYXQgZm9yIDMgc2Vjb25kIFxudGhldGEgPSAwLjVcbm92ZXJiYXJfel9naXZlbl90aGV0YSA8LSBnZXRfel9vdmVyYmFyX2dpdmVuX3RoZXRhKG4sIHQsIHRoZXRhLCBlcHNpbG9uKVxuXG5cbmVwc2lsb24gPSAwLjJcblxuYWxsX3RoZXRhcyA9IGMoMC4yLCAwLjQsIDAuNiwgMC44KVxuXG5hbGxfcF9vdmVyYmFyX3pfZ2l2ZW5fdGhldGEgPC0gZ2V0X2FsbF96X292ZXJiYXJfZ2l2ZW5fdGhldGEobiwgdCwgZXBzaWxvbiwgYWxsX3RoZXRhcylcblxub3ZlcmJhcl96IDwtIGdldF9vdmVyYmFyX3oobiwgdCwgZXBzaWxvbiwgYWxsX3RoZXRhcylcblxuZmluYWxfZGlzdHJpYnV0aW9uIDwtIChhbGxfcF9vdmVyYmFyX3pfZ2l2ZW5fdGhldGEgKiBhbGxfdGhldGFzKS9vdmVyYmFyX3pcblxuYWxsX3RoZXRhc1xuYGBgIn0= -->
+<pre class="r"><code>n = 1 # one exemplar 
+t = 3 # look at for 3 second 
+theta = 0.5
+overbar_z_given_theta &lt;- get_z_overbar_given_theta(n, t, theta, epsilon)
+
+
+epsilon = 0.2
+
+all_thetas = c(0.2, 0.4, 0.6, 0.8)
+
+all_p_overbar_z_given_theta &lt;- get_all_z_overbar_given_theta(n, t, epsilon, all_thetas)
+
+overbar_z &lt;- get_overbar_z(n, t, epsilon, all_thetas)
+
+final_distribution &lt;- (all_p_overbar_z_given_theta * all_thetas)/overbar_z
+
+all_thetas</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDAuMiAwLjQgMC42IDAuOFxuIn0= -->
+<pre><code>[1] 0.2 0.4 0.6 0.8</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYWxsX3Bfb3ZlcmJhcl96X2dpdmVuX3RoZXRhXG5gYGAifQ== -->
+<pre class="r"><code>all_p_overbar_z_given_theta</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDAuMzE0NDMyIDAuMTc1NjE2IDAuMDg1MTg0XG5bNF0gMC4wMzI3NjhcbiJ9 -->
+<pre><code>[1] 0.314432 0.175616 0.085184
+[4] 0.032768</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxub3ZlcmJhcl96XG5gYGAifQ== -->
+<pre class="r"><code>overbar_z</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDAuMjEwNDU3NlxuIn0= -->
+<pre><code>[1] 0.2104576</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZmluYWxfZGlzdHJpYnV0aW9uXG5gYGAifQ== -->
+<pre class="r"><code>final_distribution</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDAuMjk4ODA3OSAwLjMzMzc3OTMgMC4yNDI4NTM3XG5bNF0gMC4xMjQ1NTkxXG4ifQ== -->
+<pre><code>[1] 0.2988079 0.3337793 0.2428537
+[4] 0.1245591</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuYWxwaGEgID0gMVxuYmV0YSA9IDJcbnRoZXRhIDwtIHJiZXRhKDEsIDEsICAyKVxudGhldGFcbmBgYFxuYGBgIn0= -->
+<pre class="r"><code>```r
+alpha  = 1
+beta = 2
+theta &lt;- rbeta(1, 1,  2)
+theta</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIDAuMDg0NTMyXG4ifQ== --&gt;
+</code></pre>
+<p>[1] 0.084532</p>
+<pre><code>
+
+
+&lt;!-- rnb-output-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuc2FtcGxlLnNwYWNlIDwtIGMoMCwxKVxudGhldGEgPC0gcmJldGEoMSwgMSwgIDIpXG50aGV0YVxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+sample.space &lt;- c(0,1)
+theta &lt;- rbeta(1, 1,  2)
+theta</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIDAuNDQ0NTQ1OVxuIn0= --&gt;
+</code></pre>
+<p>[1] 0.4445459</p>
+<pre><code>
+
+
+&lt;!-- rnb-output-end --&gt;
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuTiA8LSAyMCAjIHdlIHdhbnQgdG8gZmxpcCBhIGNvaW4gMjAgdGltZXNcblxuZmxpcHMgPC0gc2FtcGxlKHNhbXBsZS5zcGFjZSwgXG4gICAgICAgICAgICAgICAgc2l6ZSA9IE4sIFxuICAgICAgICAgICAgICAgIHJlcGxhY2UgPSBUUlVFLCBcbiAgICAgICAgICAgICAgICBwcm9iID0gYyh0aGV0YSwgMSAtIHRoZXRhKSlcblxuZmxpcHNfcmIgPC0gcmJpbm9tKG4gPSAxLCBcbiAgICAgICAgICAgICAgICBzaXplID0gMSwgXG4gICAgICAgICAgICAgICAgcHJvYiA9IHRoZXRhKVxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+N &lt;- 20 # we want to flip a coin 20 times
+
+flips &lt;- sample(sample.space, 
+                size = N, 
+                replace = TRUE, 
+                prob = c(theta, 1 - theta))
+
+flips_rb &lt;- rbinom(n = 1, 
+                size = 1, 
+                prob = theta)</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuZ2V0X3pfaV9qX2dpdmVuX3lfaSA8LSBmdW5jdGlvbih5X2ksIGVwc2lsb24pe1xuICBpZiAoeV9pID09IDApe1xuICAgIHJldHVybiAoZXBzaWxvbilcbiAgfWVsc2V7XG4gICAgcmV0dXJuICgxIC0gZXBzaWxvbilcbiAgfVxufVxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+get_z_i_j_given_y_i &lt;- function(y_i, epsilon){
+  if (y_i == 0){
+    return (epsilon)
+  }else{
+    return (1 - epsilon)
+  }
+}</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuZ2V0X3pfaV9qX2dpdmVuX3RoZXRhIDwtIGZ1bmN0aW9uKGksIGosIHRoZXRhLCBlcHNpbG9uKXtcbiAgXG4gIHpfaV9qX2dpdmVuX3lfaV9pc19vbmUgPSBlcHNpbG9uICMgdmVyeSBxdWVzdGlvbmFibGUgXG4gIHlfaV9pc19vbmVfZ2l2ZW5fdGhldGEgPSB0aGV0YSAjIGJlcm5vdWxsaT8gXG4gIFxuICB6X2lfal9naXZlbl95X2lfaXNfemVybyA9IDEtIGVwc2lsb24gIyB2ZXJ5IHF1ZXN0aW9uYWJsZSBcbiAgeV9pX2lzX3plcm9fZ2l2ZW5fdGhldGEgPSAxIC0gdGhldGFcbiAgXG4gIHpfaWpfZ2l2ZW5fdGhldGEgPSB6X2lfal9naXZlbl95X2lfaXNfb25lICogeV9pX2lzX29uZV9naXZlbl90aGV0YSArIFxuICAgIHpfaV9qX2dpdmVuX3lfaV9pc196ZXJvICp5X2lfaXNfemVyb19naXZlbl90aGV0YVxuICBcbiAgcmV0dXJuICh6X2lqX2dpdmVuX3RoZXRhKVxufVxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+get_z_i_j_given_theta &lt;- function(i, j, theta, epsilon){
+  
+  z_i_j_given_y_i_is_one = epsilon # very questionable 
+  y_i_is_one_given_theta = theta # bernoulli? 
+  
+  z_i_j_given_y_i_is_zero = 1- epsilon # very questionable 
+  y_i_is_zero_given_theta = 1 - theta
+  
+  z_ij_given_theta = z_i_j_given_y_i_is_one * y_i_is_one_given_theta + 
+    z_i_j_given_y_i_is_zero *y_i_is_zero_given_theta
+  
+  return (z_ij_given_theta)
+}</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+
+So we could imagine seeing a sequence like [z11,z12,z13,z21,z22,z31], which would repre-sent a series of noisy observations over three experimental trials.  The first is the longest,and they get shorter over the experiment.  So if we assumed noisy perceptual informationaccumulates at a rate of one sample per second, then we’d have a 3s, a 2s, and a 1s tria
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuaSA9IDFcbmogPSAzXG5lcHNpbG9uID0gMC43XG50aGV0YXMgPSBjKDAuMiwgMC40LCAwLjYsIDAuOClcblxuYWxsX3pfb3ZlcmJhcl9naXZlbl90aGV0YSA9IGMoKVxuYWxsX3pfaWpfZ2l2ZW5fdGhldGEgPSBjKClcbmZvciAodGhldGFfaW5kZXggaW4gc2VxKDE6bGVuZ3RoKHRoZXRhcykpKXtcbiAgZm9yIChleGVtcGxhciBpbiBzZXEoMTppKSl7XG4gICAgZm9yICh0aW1lcG9pbnQgaW4gc2VxKDE6aikpe1xuICAgICB0aGV0YSA9IHRoZXRhc1t0aGV0YV9pbmRleF1cbiAgICAgIHpfaWpfZ2l2ZW5fdGhldGEgPSBnZXRfel9pX2pfZ2l2ZW5fdGhldGEoaSwgaiwgdGhldGEsIGVwc2lsb24pXG4gICAgYWxsX3pfaWpfZ2l2ZW5fdGhldGEgPSBjKGFsbF96X2lqX2dpdmVuX3RoZXRhLCB6X2lqX2dpdmVuX3RoZXRhKVxuICAgIFxuICAgIH1cbiAgfVxuICBcbiAgel9vdmVyYmFyX2dpdmVuX3RoZXRhIDwtICBwcm9kKGFsbF96X2lqX2dpdmVuX3RoZXRhKVxuICBhbGxfel9vdmVyYmFyX2dpdmVuX3RoZXRhIDwtIGMoYWxsX3pfb3ZlcmJhcl9naXZlbl90aGV0YSwgel9vdmVyYmFyX2dpdmVuX3RoZXRhKVxuICBcbn1cblxuXG5hbGxfel9pal9naXZlbl90aGV0YVxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+i = 1
 j = 3
 epsilon = 0.7
 thetas = c(0.2, 0.4, 0.6, 0.8)
@@ -1884,66 +2085,151 @@ for (theta_index in seq(1:length(thetas))){
 
 
 all_z_ij_given_theta</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiIFsxXSAwLjM4IDAuMzggMC4zOCAwLjQ2IDAuNDYgMC40NiAwLjU0XG4gWzhdIDAuNTQgMC41NCAwLjYyIDAuNjIgMC42MlxuIn0= -->
-<pre><code> [1] 0.38 0.38 0.38 0.46 0.46 0.46 0.54
- [8] 0.54 0.54 0.62 0.62 0.62</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuICMgbGl0ZXJhbGx5IGV2ZXJ5dGhpbmcgd2FzIHRoZSBzYW1lP1xuYWxsX3pfb3ZlcmJhcl9naXZlbl90aGV0YVxuYGBgIn0= -->
-<pre class="r"><code> # literally everything was the same?
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-output-begin eyJkYXRhIjoiIFsxXSAwLjM4IDAuMzggMC4zOCAwLjQ2IDAuNDYgMC40NiAwLjU0XG4gWzhdIDAuNTQgMC41NCAwLjYyIDAuNjIgMC42MlxuIn0= --&gt;
+</code></pre>
+<p>[1] 0.38 0.38 0.38 0.46 0.46 0.46 0.54 [8] 0.54 0.54 0.62 0.62 0.62</p>
+<pre><code>
+
+
+&lt;!-- rnb-output-end --&gt;
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuICMgbGl0ZXJhbGx5IGV2ZXJ5dGhpbmcgd2FzIHRoZSBzYW1lP1xuYWxsX3pfb3ZlcmJhcl9naXZlbl90aGV0YVxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+ # literally everything was the same?
 all_z_overbar_given_theta</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDAuMDU0ODcyMDAwMCAwLjAwNTM0MTAyMTAgMC4wMDA4NDEwMTg1XG5bNF0gMC4wMDAyMDA0MzgzXG4ifQ== -->
-<pre><code>[1] 0.0548720000 0.0053410210 0.0008410185
-[4] 0.0002004383</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuel9vdmVyYmFyX2dpdmVuX3RoZXRhXG5gYGAifQ== -->
-<pre class="r"><code>z_overbar_given_theta</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDAuMDAwMjAwNDM4M1xuIn0= -->
-<pre><code>[1] 0.0002004383</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYWxsX3pfb3ZlcmJhcl9naXZlbl90aGV0YVxuYGBgIn0= -->
-<pre class="r"><code>all_z_overbar_given_theta</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDAuMDU0ODcyMDAwMCAwLjAwNTM0MTAyMTBcblszXSAwLjAwMDg0MTAxODUgMC4wMDAyMDA0MzgzXG4ifQ== -->
-<pre><code>[1] 0.0548720000 0.0053410210
-[3] 0.0008410185 0.0002004383</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuel9vdmVyYmFyID0gc3VtKGFsbF96X292ZXJiYXJfZ2l2ZW5fdGhldGEgKiB0aGV0YXMpXG5gYGAifQ== -->
-<pre class="r"><code>z_overbar = sum(all_z_overbar_given_theta * thetas)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucG9zdGVyaW9yX2Rpc3RyaWJ1dGlvbiA9IChhbGxfel9vdmVyYmFyX2dpdmVuX3RoZXRhICogdGhldGFzKSAvIHpfb3ZlcmJhclxuYGBgIn0= -->
-<pre class="r"><code>posterior_distribution = (all_z_overbar_given_theta * thetas) / z_overbar</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucG9zdGVyaW9yX2Rpc3RyaWJ1dGlvblxuYGBgIn0= -->
-<pre class="r"><code>posterior_distribution</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDAuNzk2NjQ1MTIgMC4xNTUwODQ1MFxuWzNdIDAuMDM2NjMwMzQgMC4wMTE2NDAwNVxuIn0= -->
-<pre><code>[1] 0.79664512 0.15508450
-[3] 0.03663034 0.01164005</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIDAuMDU0ODcyMDAwMCAwLjAwNTM0MTAyMTAgMC4wMDA4NDEwMTg1XG5bNF0gMC4wMDAyMDA0MzgzXG4ifQ== --&gt;
+</code></pre>
+<p>[1] 0.0548720000 0.0053410210 0.0008410185 [4] 0.0002004383</p>
+<pre><code>
+
+
+&lt;!-- rnb-output-end --&gt;
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuel9vdmVyYmFyX2dpdmVuX3RoZXRhXG5gYGBcbmBgYCJ9 --&gt;
+
+```r
+```r
+z_overbar_given_theta</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIDAuMDAwMjAwNDM4M1xuIn0= --&gt;
+</code></pre>
+<p>[1] 0.0002004383</p>
+<pre><code>
+
+
+&lt;!-- rnb-output-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuYWxsX3pfb3ZlcmJhcl9naXZlbl90aGV0YVxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+all_z_overbar_given_theta</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIDAuMDU0ODcyMDAwMCAwLjAwNTM0MTAyMTBcblszXSAwLjAwMDg0MTAxODUgMC4wMDAyMDA0MzgzXG4ifQ== --&gt;
+</code></pre>
+<p>[1] 0.0548720000 0.0053410210 [3] 0.0008410185 0.0002004383</p>
+<pre><code>
+
+
+&lt;!-- rnb-output-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuel9vdmVyYmFyID0gc3VtKGFsbF96X292ZXJiYXJfZ2l2ZW5fdGhldGEgKiB0aGV0YXMpXG5gYGBcbmBgYCJ9 --&gt;
+
+```r
+```r
+z_overbar = sum(all_z_overbar_given_theta * thetas)</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxucG9zdGVyaW9yX2Rpc3RyaWJ1dGlvbiA9IChhbGxfel9vdmVyYmFyX2dpdmVuX3RoZXRhICogdGhldGFzKSAvIHpfb3ZlcmJhclxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+posterior_distribution = (all_z_overbar_given_theta * thetas) / z_overbar</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxucG9zdGVyaW9yX2Rpc3RyaWJ1dGlvblxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+posterior_distribution</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-output-begin eyJkYXRhIjoiWzFdIDAuNzk2NjQ1MTIgMC4xNTUwODQ1MFxuWzNdIDAuMDM2NjMwMzQgMC4wMTE2NDAwNVxuIn0= --&gt;
+</code></pre>
+<p>[1] 0.79664512 0.15508450 [3] 0.03663034 0.01164005 ```</p>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiUiBOb3RlYm9vayIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKCmBgYHtyfQpsaWJyYXJ5KHRpZHl2ZXJzZSkKYGBgCiQkcChcdGhldGEpID0gQmV0YShcYWxwaGEsIFxiZXRhKSQkCgpgYGB7cn0KYWxwaGEgID0gMQpiZXRhID0gMgp0aGV0YSA8LSByYmV0YSgxLCAxLCAgMikKdGhldGEKYGBgCgpgYGB7cn0Kc2FtcGxlLnNwYWNlIDwtIGMoMCwxKQp0aGV0YSA8LSByYmV0YSgxLCAxLCAgMikKdGhldGEKTiA8LSAyMCAjIHdlIHdhbnQgdG8gZmxpcCBhIGNvaW4gMjAgdGltZXMKCmZsaXBzIDwtIHNhbXBsZShzYW1wbGUuc3BhY2UsIAogICAgICAgICAgICAgICAgc2l6ZSA9IE4sIAogICAgICAgICAgICAgICAgcmVwbGFjZSA9IFRSVUUsIAogICAgICAgICAgICAgICAgcHJvYiA9IGModGhldGEsIDEgLSB0aGV0YSkpCgpmbGlwc19yYiA8LSByYmlub20obiA9IDEsIAogICAgICAgICAgICAgICAgc2l6ZSA9IDEsIAogICAgICAgICAgICAgICAgcHJvYiA9IHRoZXRhKQoKCgoKYGBgCgpgYGB7cn0KZ2V0X3pfaV9qX2dpdmVuX3lfaSA8LSBmdW5jdGlvbih5X2ksIGVwc2lsb24pewogIGlmICh5X2kgPT0gMCl7CiAgICByZXR1cm4gKGVwc2lsb24pCiAgfWVsc2V7CiAgICByZXR1cm4gKDEgLSBlcHNpbG9uKQogIH0KfQpgYGAKCgpgYGB7cn0KZ2V0X3pfaV9qX2dpdmVuX3RoZXRhIDwtIGZ1bmN0aW9uKGksIGosIHRoZXRhLCBlcHNpbG9uKXsKICAKICB6X2lfal9naXZlbl95X2lfaXNfb25lID0gZXBzaWxvbiAjIHZlcnkgcXVlc3Rpb25hYmxlIAogIHlfaV9pc19vbmVfZ2l2ZW5fdGhldGEgPSB0aGV0YSAjIGJlcm5vdWxsaT8gCiAgCiAgel9pX2pfZ2l2ZW5feV9pX2lzX3plcm8gPSAxLSBlcHNpbG9uICMgdmVyeSBxdWVzdGlvbmFibGUgCiAgeV9pX2lzX3plcm9fZ2l2ZW5fdGhldGEgPSAxIC0gdGhldGEKICAKICB6X2lqX2dpdmVuX3RoZXRhID0gel9pX2pfZ2l2ZW5feV9pX2lzX29uZSAqIHlfaV9pc19vbmVfZ2l2ZW5fdGhldGEgKyAKICAgIHpfaV9qX2dpdmVuX3lfaV9pc196ZXJvICp5X2lfaXNfemVyb19naXZlbl90aGV0YQogIAogIHJldHVybiAoel9pal9naXZlbl90aGV0YSkKfQpgYGAKCgpTbyB3ZSBjb3VsZCBpbWFnaW5lIHNlZWluZyBhIHNlcXVlbmNlIGxpa2UgW3oxMSx6MTIsejEzLHoyMSx6MjIsejMxXSwgd2hpY2ggd291bGQgcmVwcmUtc2VudCBhIHNlcmllcyBvZiBub2lzeSBvYnNlcnZhdGlvbnMgb3ZlciB0aHJlZSBleHBlcmltZW50YWwgdHJpYWxzLiAgVGhlIGZpcnN0IGlzIHRoZSBsb25nZXN0LGFuZCB0aGV5IGdldCBzaG9ydGVyIG92ZXIgdGhlIGV4cGVyaW1lbnQuICBTbyBpZiB3ZSBhc3N1bWVkIG5vaXN5IHBlcmNlcHR1YWwgaW5mb3JtYXRpb25hY2N1bXVsYXRlcyBhdCBhIHJhdGUgb2Ygb25lIHNhbXBsZSBwZXIgc2Vjb25kLCB0aGVuIHdl4oCZZCBoYXZlIGEgM3MsIGEgMnMsIGFuZCBhIDFzIHRyaWEKCmBgYHtyfQppID0gMQpqID0gMwplcHNpbG9uID0gMC43CnRoZXRhcyA9IGMoMC4yLCAwLjQsIDAuNiwgMC44KQoKYWxsX3pfb3ZlcmJhcl9naXZlbl90aGV0YSA9IGMoKQphbGxfel9pal9naXZlbl90aGV0YSA9IGMoKQpmb3IgKHRoZXRhX2luZGV4IGluIHNlcSgxOmxlbmd0aCh0aGV0YXMpKSl7CiAgZm9yIChleGVtcGxhciBpbiBzZXEoMTppKSl7CiAgICBmb3IgKHRpbWVwb2ludCBpbiBzZXEoMTpqKSl7CiAgICAgdGhldGEgPSB0aGV0YXNbdGhldGFfaW5kZXhdCiAgICAgIHpfaWpfZ2l2ZW5fdGhldGEgPSBnZXRfel9pX2pfZ2l2ZW5fdGhldGEoaSwgaiwgdGhldGEsIGVwc2lsb24pCiAgICBhbGxfel9pal9naXZlbl90aGV0YSA9IGMoYWxsX3pfaWpfZ2l2ZW5fdGhldGEsIHpfaWpfZ2l2ZW5fdGhldGEpCiAgICAKICAgIH0KICB9CiAgCiAgel9vdmVyYmFyX2dpdmVuX3RoZXRhIDwtICBwcm9kKGFsbF96X2lqX2dpdmVuX3RoZXRhKQogIGFsbF96X292ZXJiYXJfZ2l2ZW5fdGhldGEgPC0gYyhhbGxfel9vdmVyYmFyX2dpdmVuX3RoZXRhLCB6X292ZXJiYXJfZ2l2ZW5fdGhldGEpCiAgCn0KCgphbGxfel9pal9naXZlbl90aGV0YQogIyBsaXRlcmFsbHkgZXZlcnl0aGluZyB3YXMgdGhlIHNhbWU/CmFsbF96X292ZXJiYXJfZ2l2ZW5fdGhldGEKCmBgYAoKYGBge3J9CmFsbF96X292ZXJiYXJfZ2l2ZW5fdGhldGEKYGBgCgpgYGB7cn0Kel9vdmVyYmFyID0gc3VtKGFsbF96X292ZXJiYXJfZ2l2ZW5fdGhldGEgKiB0aGV0YXMpCmBgYAoKYGBge3J9CnBvc3Rlcmlvcl9kaXN0cmlidXRpb24gPSAoYWxsX3pfb3ZlcmJhcl9naXZlbl90aGV0YSAqIHRoZXRhcykgLyB6X292ZXJiYXIKYGBgCgpgYGB7cn0KcG9zdGVyaW9yX2Rpc3RyaWJ1dGlvbgpgYGAKCg==</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiUiBOb3RlYm9vayIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKCmBgYHtyfQpsaWJyYXJ5KHRpZHl2ZXJzZSkKYGBgCldlIGFyZSBsZWFybmluZyB0aGV0YSwgdGhlIHByb2JhYmlsaXR5IG9mIGEgc2luZ2xlIGJpbmFyeSBmZWF0dXJlIGJlaW5nIGFjdGl2ZS4gCgoKT3VyIHRyYWluaW5nIGRhdGEgYXJlIGluZGl2aWR1YWwgZXhlbXBsYXJzIG9mIHRoZSBjb25jZXB0LCBlLmcuIHNhbXBsZSBzZnJvbSB0aGV0YSwgeTEuLi4ueW4uIAoKJCQgcChcdGhldGEpID0gQmV0YShcYWxwaGEsIFxiZXRhKSAkJAoKdGhpcyBkZWZpbmVzIGEgc2ltcGxlIEJldGEtQmVybm91bGxpIGNvbmp1Z2F0ZSBtb2RlbCwgc28gCgokJHAoeSB8IFx0aGV0YSkgPSBCZXJub3VsbGkoXHRoZXRhKSQkCgpidXQgYWN0dWFsbHkgd2UgZG9uJ3Qgb2JzZXJ2ZSB5IGRpcmVjdGx5LiBmb3IgZWFjaCBleGFtcGxlYXIgJCR5X2kkJCwgd2UgY2FuIGNob29zZSB0byBnYXRoZXIgbm9pc3kgc2FtcGxlICQkel9pMS4uLnpfaXQkJCBmcm9tIHRoZXNlLiB0aGVzZSBzYW1wbGVzIGFyZTogCgpcYmVnaW57ZXF1YXRpb259CnAoel97aWp9IHwgeV9pKSA9IApcYmVnaW57Y2FzZXN9CiAgICBcZXBzaWxvbiwgJiBcdGV4dHtmb3IgfSB5X2kgPSAwIFxcCiAgICAxLVxlcHNpbG9uLCAmIFx0ZXh0e2ZvciB9IHlfaSA9IDEuIFxcClxlbmR7Y2FzZXN9ClxlbmR7ZXF1YXRpb259CgpgYGB7cn0KIyBvdXIgdHJhaW5pbmcgZGF0YSBhcmUgaW5kaXZpZHVhbCBleGVtcGxhciBvZiB0aGlzIGNvbmNlcHQgeSAKeV8xID0gYygxLCAwLCAwKSAKeV8yID0gYygxLCAwLCAwKSAjIGlzIHRoaXMgdHJ1ZT8gCnlfMyA9IGMoMSwgMCwgMCkgCiMgb3IgZG9lcyBlYWNoIGluZGl2aWR1YWwgZmVhdHVyZSBpcyBhIHRoZXRhLCBhbmQgdGhlIHRoZXRhIGlzIHNoYXJlZCBhbW9uZyBhbGwgZmVhdHVyZXM/IAojIHNvIGl0IHdpbGwgbG9vayBzb21ldGhpbmcgbGlrZSAKeV8xID0gYyhiZXJub3VsbGkodGhldGEpLCAKICAgICAgICBiZXJub3VsbGkodGhldGEpLCAKICAgICAgICBiZXJub3VsbGkodGhldGEpKSAgCnlfMiA9IGMoYmVybm91bGxpKHRoZXRhKSwgCiAgICAgICAgYmVybm91bGxpKHRoZXRhKSwgCiAgICAgICAgYmVybm91bGxpKHRoZXRhKSkgCi4uLgoKI2FuZCBzb21ldGhpbmcgbmV3IHdvdWxkIGxvb2sgbGlrZSAKel8xICA9IGMoYmVybm91bGxpKHRoZXRhX3ByaW1lKSwgCiAgICAgICAgYmVybm91bGxpKHRoZXRhX3ByaW1lKSwgCiAgICAgICAgYmVybm91bGxpKHRoZXRhX3ByaW1lKSkKCmBgYAoKYGBge3J9CiMgdGhlIGZpcnN0IHRoaW5nIGxvb2tzIGVhc2llciwgc28gaSdsbCBnbyB3aXRoIHRoYXQgb25lIGZvciBub3cKeV8xID0gYygxKQoKIyB0aGV0YSBpcyBwcmlvciBmb3IgeV8xCiNwX3RoZXRhID0gYmV0YShhbHBoYSwgYmV0YSkKcF90aGV0YSA9IDAuNSAKCiMgd2hhdCB3ZSB3YW50IGlzIAojIHBfdGhldGFfZ2l2ZW5fb3ZlcmJhcl96CgpwX3RoZXRhX2dpdmVuX292ZXJiYXJfeiA9IChwX292ZXJiYXJfel9naXZlbl90aGV0YSAqIHBfdGhldGEpIC8gcF9vdmVyYmFyX3oKYGBgCgoKYGBge3J9CmdldF96X2lfal9naXZlbl90aGV0YSA8LSBmdW5jdGlvbihpLCBqLCB0aGV0YSwgZXBzaWxvbil7CiAgCiAgel9pX2pfZ2l2ZW5feV9pX2lzX29uZSA9IGVwc2lsb24gIyB2ZXJ5IHF1ZXN0aW9uYWJsZSAKICB5X2lfaXNfb25lX2dpdmVuX3RoZXRhID0gdGhldGEgIyBiZXJub3VsbGk/IAogIAogIHpfaV9qX2dpdmVuX3lfaV9pc196ZXJvID0gMS0gZXBzaWxvbiAjIHZlcnkgcXVlc3Rpb25hYmxlIAogIHlfaV9pc196ZXJvX2dpdmVuX3RoZXRhID0gMSAtIHRoZXRhCiAgCiAgel9pal9naXZlbl90aGV0YSA9IHpfaV9qX2dpdmVuX3lfaV9pc19vbmUgKiB5X2lfaXNfb25lX2dpdmVuX3RoZXRhICsgCiAgICB6X2lfal9naXZlbl95X2lfaXNfemVybyAqeV9pX2lzX3plcm9fZ2l2ZW5fdGhldGEKICAKICByZXR1cm4gKHpfaWpfZ2l2ZW5fdGhldGEpCn0KCmdldF96X292ZXJiYXJfZ2l2ZW5fdGhldGEgPC0gZnVuY3Rpb24oaSwgaiwgdGhldGEsIGVwc2lsb24pewogIAogIGFsbF96X2lqX2dpdmVuX3RoZXRhIDwtIGMoKSAKICAKICBmb3IgKGlfaW5kZXggaW4gc2VxKDE6aSkpewogICAgZm9yKGpfaW5kZXggaW4gc2VxKDE6aikpewogICAgICAKICAgICAgel9pal9naXZlbl90aGV0YSA8LSBnZXRfel9pX2pfZ2l2ZW5fdGhldGEoaSwgaiwgdGhldGEsIGVwc2lsb24pCiAgICAgIAogICAgICBhbGxfel9pal9naXZlbl90aGV0YSA8LSBjKGFsbF96X2lqX2dpdmVuX3RoZXRhLCB6X2lqX2dpdmVuX3RoZXRhKQogICAgICAKICAgIH0KICB9CiAgCiAgel9vdmVyYmFyX2dpdmVuX3RoZXRhIDwtIHByb2QoYWxsX3pfaWpfZ2l2ZW5fdGhldGEpCiAgCiAgcmV0dXJuICh6X292ZXJiYXJfZ2l2ZW5fdGhldGEpCn0KCgpnZXRfYWxsX3pfb3ZlcmJhcl9naXZlbl90aGV0YSA8LSBmdW5jdGlvbihpLCBqLCBlcHNpbG9uLCBhbGxfdGhldGFzKXsKICAKICBhbGxfcF9vdmVyYmFyX3pfZ2l2ZW5fdGhldGEgPC0gYygpCiAgCiAgZm9yICh0aGV0YV9pIGluIDE6bGVuZ3RoKGFsbF90aGV0YXMpKXsKICAgIHRoZXRhID0gYWxsX3RoZXRhc1t0aGV0YV9pXQogICAgI3ByaW50KHRoZXRhKQogICAgY3VycmVudF96X292ZXJiYXJfZ2l2ZW5fdGhldGEgPC0gZ2V0X3pfb3ZlcmJhcl9naXZlbl90aGV0YShpLCBqLCB0aGV0YSwgZXBzaWxvbikKICAgIGFsbF9wX292ZXJiYXJfel9naXZlbl90aGV0YSA8LSBjKGFsbF9wX292ZXJiYXJfel9naXZlbl90aGV0YSwgY3VycmVudF96X292ZXJiYXJfZ2l2ZW5fdGhldGEpCiAgCiAgfQogIAogIHJldHVybihhbGxfcF9vdmVyYmFyX3pfZ2l2ZW5fdGhldGEpCiAgCn0KCmdldF9vdmVyYmFyX3ogPC0gZnVuY3Rpb24oaSwgaiwgZXBzaWxvbiwgYWxsX3RoZXRhcyl7CiAgCiAgYWxsX3pfb3ZlcmJhcl96X2dpdmVuX3RoZXRhIDwtIGdldF9hbGxfel9vdmVyYmFyX2dpdmVuX3RoZXRhKGksIGosIGVwc2lsb24sIGFsbF90aGV0YXMpCiAgCiAgcmV0dXJuIChzdW0oYWxsX3pfb3ZlcmJhcl96X2dpdmVuX3RoZXRhICogYWxsX3RoZXRhcykpCiAgCn0KYGBgCgpgYGB7cn0KbiA9IDEgIyBvbmUgZXhlbXBsYXIgCnQgPSAzICMgbG9vayBhdCBmb3IgMyBzZWNvbmQgCnRoZXRhID0gMC41Cm92ZXJiYXJfel9naXZlbl90aGV0YSA8LSBnZXRfel9vdmVyYmFyX2dpdmVuX3RoZXRhKG4sIHQsIHRoZXRhLCBlcHNpbG9uKQoKCmVwc2lsb24gPSAwLjIKCmFsbF90aGV0YXMgPSBjKDAuMiwgMC40LCAwLjYsIDAuOCkKCmFsbF9wX292ZXJiYXJfel9naXZlbl90aGV0YSA8LSBnZXRfYWxsX3pfb3ZlcmJhcl9naXZlbl90aGV0YShuLCB0LCBlcHNpbG9uLCBhbGxfdGhldGFzKQoKb3ZlcmJhcl96IDwtIGdldF9vdmVyYmFyX3oobiwgdCwgZXBzaWxvbiwgYWxsX3RoZXRhcykKCmZpbmFsX2Rpc3RyaWJ1dGlvbiA8LSAoYWxsX3Bfb3ZlcmJhcl96X2dpdmVuX3RoZXRhICogYWxsX3RoZXRhcykvb3ZlcmJhcl96CgphbGxfdGhldGFzCmFsbF9wX292ZXJiYXJfel9naXZlbl90aGV0YQpvdmVyYmFyX3oKZmluYWxfZGlzdHJpYnV0aW9uCgpgYGAKCgoKCgpgYGB7cn0KYWxwaGEgID0gMQpiZXRhID0gMgp0aGV0YSA8LSByYmV0YSgxLCAxLCAgMikKdGhldGEKYGBgCgpgYGB7cn0Kc2FtcGxlLnNwYWNlIDwtIGMoMCwxKQp0aGV0YSA8LSByYmV0YSgxLCAxLCAgMikKdGhldGEKTiA8LSAyMCAjIHdlIHdhbnQgdG8gZmxpcCBhIGNvaW4gMjAgdGltZXMKCmZsaXBzIDwtIHNhbXBsZShzYW1wbGUuc3BhY2UsIAogICAgICAgICAgICAgICAgc2l6ZSA9IE4sIAogICAgICAgICAgICAgICAgcmVwbGFjZSA9IFRSVUUsIAogICAgICAgICAgICAgICAgcHJvYiA9IGModGhldGEsIDEgLSB0aGV0YSkpCgpmbGlwc19yYiA8LSByYmlub20obiA9IDEsIAogICAgICAgICAgICAgICAgc2l6ZSA9IDEsIAogICAgICAgICAgICAgICAgcHJvYiA9IHRoZXRhKQoKCgoKYGBgCgpgYGB7cn0KZ2V0X3pfaV9qX2dpdmVuX3lfaSA8LSBmdW5jdGlvbih5X2ksIGVwc2lsb24pewogIGlmICh5X2kgPT0gMCl7CiAgICByZXR1cm4gKGVwc2lsb24pCiAgfWVsc2V7CiAgICByZXR1cm4gKDEgLSBlcHNpbG9uKQogIH0KfQpgYGAKCgpgYGB7cn0KZ2V0X3pfaV9qX2dpdmVuX3RoZXRhIDwtIGZ1bmN0aW9uKGksIGosIHRoZXRhLCBlcHNpbG9uKXsKICAKICB6X2lfal9naXZlbl95X2lfaXNfb25lID0gZXBzaWxvbiAjIHZlcnkgcXVlc3Rpb25hYmxlIAogIHlfaV9pc19vbmVfZ2l2ZW5fdGhldGEgPSB0aGV0YSAjIGJlcm5vdWxsaT8gCiAgCiAgel9pX2pfZ2l2ZW5feV9pX2lzX3plcm8gPSAxLSBlcHNpbG9uICMgdmVyeSBxdWVzdGlvbmFibGUgCiAgeV9pX2lzX3plcm9fZ2l2ZW5fdGhldGEgPSAxIC0gdGhldGEKICAKICB6X2lqX2dpdmVuX3RoZXRhID0gel9pX2pfZ2l2ZW5feV9pX2lzX29uZSAqIHlfaV9pc19vbmVfZ2l2ZW5fdGhldGEgKyAKICAgIHpfaV9qX2dpdmVuX3lfaV9pc196ZXJvICp5X2lfaXNfemVyb19naXZlbl90aGV0YQogIAogIHJldHVybiAoel9pal9naXZlbl90aGV0YSkKfQpgYGAKCgpTbyB3ZSBjb3VsZCBpbWFnaW5lIHNlZWluZyBhIHNlcXVlbmNlIGxpa2UgW3oxMSx6MTIsejEzLHoyMSx6MjIsejMxXSwgd2hpY2ggd291bGQgcmVwcmUtc2VudCBhIHNlcmllcyBvZiBub2lzeSBvYnNlcnZhdGlvbnMgb3ZlciB0aHJlZSBleHBlcmltZW50YWwgdHJpYWxzLiAgVGhlIGZpcnN0IGlzIHRoZSBsb25nZXN0LGFuZCB0aGV5IGdldCBzaG9ydGVyIG92ZXIgdGhlIGV4cGVyaW1lbnQuICBTbyBpZiB3ZSBhc3N1bWVkIG5vaXN5IHBlcmNlcHR1YWwgaW5mb3JtYXRpb25hY2N1bXVsYXRlcyBhdCBhIHJhdGUgb2Ygb25lIHNhbXBsZSBwZXIgc2Vjb25kLCB0aGVuIHdl4oCZZCBoYXZlIGEgM3MsIGEgMnMsIGFuZCBhIDFzIHRyaWEKCmBgYHtyfQppID0gMQpqID0gMwplcHNpbG9uID0gMC43CnRoZXRhcyA9IGMoMC4yLCAwLjQsIDAuNiwgMC44KQoKYWxsX3pfb3ZlcmJhcl9naXZlbl90aGV0YSA9IGMoKQphbGxfel9pal9naXZlbl90aGV0YSA9IGMoKQpmb3IgKHRoZXRhX2luZGV4IGluIHNlcSgxOmxlbmd0aCh0aGV0YXMpKSl7CiAgZm9yIChleGVtcGxhciBpbiBzZXEoMTppKSl7CiAgICBmb3IgKHRpbWVwb2ludCBpbiBzZXEoMTpqKSl7CiAgICAgdGhldGEgPSB0aGV0YXNbdGhldGFfaW5kZXhdCiAgICAgIHpfaWpfZ2l2ZW5fdGhldGEgPSBnZXRfel9pX2pfZ2l2ZW5fdGhldGEoaSwgaiwgdGhldGEsIGVwc2lsb24pCiAgICBhbGxfel9pal9naXZlbl90aGV0YSA9IGMoYWxsX3pfaWpfZ2l2ZW5fdGhldGEsIHpfaWpfZ2l2ZW5fdGhldGEpCiAgICAKICAgIH0KICB9CiAgCiAgel9vdmVyYmFyX2dpdmVuX3RoZXRhIDwtICBwcm9kKGFsbF96X2lqX2dpdmVuX3RoZXRhKQogIGFsbF96X292ZXJiYXJfZ2l2ZW5fdGhldGEgPC0gYyhhbGxfel9vdmVyYmFyX2dpdmVuX3RoZXRhLCB6X292ZXJiYXJfZ2l2ZW5fdGhldGEpCiAgCn0KCgphbGxfel9pal9naXZlbl90aGV0YQogIyBsaXRlcmFsbHkgZXZlcnl0aGluZyB3YXMgdGhlIHNhbWU/CmFsbF96X292ZXJiYXJfZ2l2ZW5fdGhldGEKCmBgYAoKYGBge3J9CmFsbF96X292ZXJiYXJfZ2l2ZW5fdGhldGEKYGBgCgpgYGB7cn0Kel9vdmVyYmFyID0gc3VtKGFsbF96X292ZXJiYXJfZ2l2ZW5fdGhldGEgKiB0aGV0YXMpCmBgYAoKYGBge3J9CnBvc3Rlcmlvcl9kaXN0cmlidXRpb24gPSAoYWxsX3pfb3ZlcmJhcl9naXZlbl90aGV0YSAqIHRoZXRhcykgLyB6X292ZXJiYXIKYGBgCgpgYGB7cn0KcG9zdGVyaW9yX2Rpc3RyaWJ1dGlvbgpgYGAKCg==</div>
 
 
 
