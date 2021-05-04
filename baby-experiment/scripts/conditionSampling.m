@@ -4,7 +4,7 @@ function currentCondition = conditionSampling(varargin)
 % if input is 1, then it restores the possible conditions to the whole set
 % and ends the function
 
-if isempty(varargin)
+if     isempty(varargin)
     0;
 elseif varargin{1} == 1
     possibleConditions = 1:6; % iall conditions are possible
