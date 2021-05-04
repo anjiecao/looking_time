@@ -13,10 +13,37 @@ $$p(\theta) = Beta(\alpha, \beta)$$
 alpha  = 1
 beta = 2
 theta <- rbeta(1, 1,  2)
+theta
 ```
 
 ```{r}
-a <- pbeta(c(0,), shape1, shape2, ncp = 0, lower.tail = TRUE, log.p = FALSE)
+sample.space <- c(0,1)
+theta <- rbeta(1, 1,  2)
+theta
+N <- 20 # we want to flip a coin 20 times
+
+flips <- sample(sample.space, 
+                size = N, 
+                replace = TRUE, 
+                prob = c(theta, 1 - theta))
+
+flips_rb <- rbinom(n = 1, 
+                size = 1, 
+                prob = theta)
+
+
+
+
+```
+
+```{r}
+get_z_i_j_given_y_i <- function(y_i, epsilon){
+  if (y_i == 0){
+    return (epsilon)
+  }else{
+    return (1 - epsilon)
+  }
+}
 ```
 
 
@@ -42,21 +69,46 @@ So we could imagine seeing a sequence like [z11,z12,z13,z21,z22,z31], which woul
 ```{r}
 i = 1
 j = 3
-theta = 0.6
 epsilon = 0.7
+thetas = c(0.2, 0.4, 0.6, 0.8)
 
+all_z_overbar_given_theta = c()
 all_z_ij_given_theta = c()
-for (exemplar in seq(1:i)){
- for (timepoint in seq(1:j)){
-   
-   z_ij_given_theta = get_z_i_j_given_theta(i, j, theta, epsilon)
-   all_z_ij_given_theta = c(all_z_ij_given_theta, z_ij_given_theta)
-     
+for (theta_index in seq(1:length(thetas))){
+  for (exemplar in seq(1:i)){
+    for (timepoint in seq(1:j)){
+     theta = thetas[theta_index]
+      z_ij_given_theta = get_z_i_j_given_theta(i, j, theta, epsilon)
+    all_z_ij_given_theta = c(all_z_ij_given_theta, z_ij_given_theta)
     
- }
+    }
+  }
+  
+  z_overbar_given_theta <-  prod(all_z_ij_given_theta)
+  all_z_overbar_given_theta <- c(all_z_overbar_given_theta, z_overbar_given_theta)
   
 }
+
+
 all_z_ij_given_theta
+ # literally everything was the same?
+all_z_overbar_given_theta
+
 ```
 
+```{r}
+all_z_overbar_given_theta
+```
+
+```{r}
+z_overbar = sum(all_z_overbar_given_theta * thetas)
+```
+
+```{r}
+posterior_distribution = (all_z_overbar_given_theta * thetas) / z_overbar
+```
+
+```{r}
+posterior_distribution
+```
 
