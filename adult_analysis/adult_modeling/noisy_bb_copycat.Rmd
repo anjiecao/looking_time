@@ -166,8 +166,51 @@ plot(grid_theta, unnormalized_log_posterior)
 
 
 
+```{r}
+grid_theta <- seq(0.01, .99, .02)
+grid_epsilon <- seq(0.01, .99, .02)
+
+samps <- expand_grid(theta = grid_theta,
+                     epsilon = grid_epsilon) 
+  
+
+samps$unnormalized_log_posterior <- mapply(function(x, y) 
+                                   lp_theta_given_z(z_bar = z_bar, 
+                                                    theta = x, 
+                                                    epsilon = y, 
+                                                    alpha_theta = alpha_theta, 
+                                                    beta_theta = beta_theta,
+                                                    alpha_epsilon = alpha_epsilon, 
+                                                    beta_epsilon = beta_epsilon), 
+                                   samps$theta, 
+                                   samps$epsilon)
+
+# normalizing 
+
+samps$log_posterior = samps$unnormalized_log_posterior - matrixStats::logSumExp(samps$unnormalized_log_posterior)
+
+ggplot(samps, 
+       aes(x = theta, y = log_posterior, col = epsilon, group = epsilon)) +
+  geom_line() + 
+  viridis::scale_color_viridis()
+
+```
 
 
+```{r}
+theta_posterior <- samps %>%
+  group_by(theta) %>%
+  summarise(log_posterior = matrixStats::logSumExp(log_posterior) + 
+              log(1/length(log_posterior))) %>%
+  mutate(posterior = exp(log_posterior))
+
+ggplot(theta_posterior, 
+       aes(x = theta, y = posterior)) +
+  geom_line() + 
+  viridis::scale_color_viridis() +
+  ylim(0,.01)
+  
+```
 
 
 
@@ -193,10 +236,103 @@ creature_noisy_observation <- function(creature, n, epsilon){
   )})
 }
 
-creature <- c(1, 1, 0)
-z_bar <- creature_noisy_observation(creature, 10, 0.2)
+creature_thetas <- c(0.2, 0.2, 0.8)
+  
+  
+
+creature <- sapply(creature_thetas, function(x){rbernoulli(p = x, n = 1)})
+creature_noisy_z <- creature_noisy_observation(creature, 200, 0.2)
+
+creature
+creature_noisy_z
+```
+
+```{r}
+grid_estimate_theta_only <- function(feature_index, 
+                                     thetas, 
+                                     z_bar, 
+                                     epsilon, 
+                                     alpha_theta, 
+                                     beta_theta,
+                                     alpha_epsilon, 
+                                     beta_epsilon){
+  
+  posterior_df <- tibble("grid_theta" = thetas)
+  posterior_df$unnormalized_log_posterior <- sapply(thetas, 
+                                 function(x){ 
+                                   lp_theta_given_z(z_bar = z_bar, 
+                                                    theta = x, 
+                                                    epsilon = epsilon, 
+                                                    alpha_theta = alpha_theta, 
+                                                    beta_theta = beta_theta,
+                                                    alpha_epsilon = alpha_epsilon, 
+                                                    beta_epsilon = beta_epsilon)})
+  posterior_df$normalized_log_posterior <- posterior_df$unnormalized_log_posterior - matrixStats::logSumExp(posterior_df$unnormalized_log_posterior)
+  posterior_df$feature_index <- feature_index
+  
+  return(posterior_df)
+  
+}
+
+grid_estimate_theta_only(1,
+                         seq(0.01, 0.99, 0.01), 
+                         creature_noisy_z[,2], 
+                         epsilon, 
+                                     alpha_theta, 
+                                     beta_theta,
+                                     alpha_epsilon, 
+                                     beta_epsilon)
 
 ```
+
+````{r}
+grid_estimate_creature_posterior <- function(creature_noisy_z, 
+                                        thetas, 
+                                        epsilon, 
+                                        alpha_theta, 
+                                        beta_theta, 
+                                        alpha_epsilon, 
+                                        beta_epsilon){
+  
+  
+    feature_number = ncol(creature_noisy_z)
+    
+    lapply(seq(1, feature_number, 1), 
+           function(x){
+             grid_estimate_theta_only(
+               feature_index = x, 
+                thetas = thetas, 
+                z_bar = creature_noisy_z[,x], 
+                epsilon = epsilon , 
+                alpha_theta = alpha_theta, 
+                beta_theta = beta_theta,
+                alpha_epsilon = alpha_epsilon, 
+                beta_epsilon = beta_epsilon
+             )
+           }
+           ) %>% 
+      bind_rows()
+    
+  
+  
+  
+}
+
+grid_estimate_creature_posterior(creature_noisy_z, 
+                                        seq(0.01, 0.99, 0.01), 
+                                        epsilon, 
+                                        alpha_theta, 
+                                        beta_theta, 
+                                        alpha_epsilon, 
+                                        beta_epsilon)
+```
+
+# now also adding grid approximate over the episolon? 
+
+
+# ok do some calculation 
+- surprise
+- KL divergence: https://machinelearningmastery.com/divergence-between-probability-distributions/#:~:text=KL%20divergence%20can%20be%20calculated,of%20the%20event%20in%20P.&text=The%20value%20within%20the%20sum%20is%20the%20divergence%20for%20a%20given%20event.
 
 
 
