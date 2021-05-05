@@ -1,0 +1,206 @@
+---
+title: "noisy_bb_copycat"
+author: "anjie"
+date: "5/4/2021"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(matrixStats)
+```
+
+
+
+# inference 
+
+this is the ultimate posterior we want to get 
+$$p(\theta | z) = p(z | \theta)p(\theta)p(\epsilon)$$
+
+
+```{r}
+lp_theta_given_z <- function(z_bar, 
+                             theta, epsilon, 
+                             alpha_theta, beta_theta, 
+                             alpha_epsilon, beta_epsilon) {
+  #print(lp_z_given_theta(z_bar, theta, epsilon))
+  #print(lp_theta(theta, alpha_theta, beta_theta))
+  #print(lp_episolon(epsilon, alpha_epsilon, beta_epsilon))
+  
+  lp_z_given_theta(z_bar, theta, epsilon) + 
+    lp_theta(theta, alpha_theta, beta_theta) + 
+    lp_episolon(epsilon, alpha_epsilon, beta_epsilon)
+}
+```
+
+
+$$p(\bar{z}|\theta) = \prod_{i \in 1....n} \prod_{j \in 1...n} p(z_{ij} |\theta) $$
+
+```{r}
+#z_bar is a vector that keeps track of all z_ij
+lp_z_given_theta <- function(z_bar, 
+                             theta, 
+                             episolon){
+  
+  # doing sum because we are keeping track of all the log probabilities  
+  sum(sapply(z_bar, function(x){lp_z_ij_given_theta(zij = x, 
+                                            theta = theta, 
+                                            episolon = episolon)}))
+  
+  
+}
+```
+
+
+$$p(z_{ij} | \theta) = p(z_{ij}|y_i)p(y_i | \theta)$$ 
+$$p(z_{ij}|y_i)p(y_i | \theta) = p(z_{ij}|y_i = 1)p(y_i = 1 | \theta) + p(z_{ij}|y_i = 0)p(y_i = 0 | \theta)$$
+
+
+```{r}
+lp_z_ij_given_theta <- function(zij, theta, episolon){
+  
+  
+  #print()
+  #print(lp_z_ij_given_y(zij = zij, yi = 1, episolon = episolon) + lp_yi_given_theta(yi = 1, theta = theta ))
+  #print(lp_z_ij_given_y(zij = zij, yi = 0, episolon = episolon) + lp_yi_given_theta(yi = 0, theta = theta))
+  
+  logSumExp(
+    c(lp_z_ij_given_y(zij = zij, yi = 1, episolon = episolon) + lp_yi_given_theta(yi = 1, theta = theta ), 
+    lp_z_ij_given_y(zij = zij, yi = 0, episolon = episolon) + lp_yi_given_theta(yi = 0, theta = theta))
+  )
+  
+}
+```
+
+
+```{r}
+lp_z_ij_given_y <- function(zij, yi, episolon){
+  if (zij == yi){
+    log(1 - episolon)
+  }else{
+    log(episolon)
+  }
+}
+
+lp_yi_given_theta <- function(yi, theta){
+  # a cooler way to say that if yi = 1 then theta if yi = 0 then yi = 1-theta? 
+  dbinom(yi, size = 1, prob = theta, log = TRUE)
+}
+
+
+```
+
+
+```{r}
+lp_theta <- function(theta, alpha_theta, beta_theta){
+  # actually i think i'm still a little unsure of what the relationship between theta and p(theta) is
+  dbeta(x = theta, shape1 = alpha_theta, shape2 = beta_theta, log = TRUE)
+}
+
+lp_episolon <- function(theta, alpha_episolon, beta_episolon){
+  dbeta(x = theta, shape1 = alpha_episolon, shape2 = beta_episolon, log = TRUE)
+}
+```
+
+# setting up the prior 
+
+```{r}
+# perturbs observations with probability epsilon
+noisy_observation <- function(y, n = 1, epsilon = .2) {
+  ys <- rep(y, n)
+  noisy <- rbernoulli(p = epsilon, n = n)
+  return(ifelse(noisy, 1-ys, ys))
+}
+
+n_samps <- 100 # this is technically j? 
+
+alpha_theta <- 1
+beta_theta <- 1
+
+alpha_epsilon <- 1
+beta_epsilon <- 10
+
+theta <- .3
+epsilon <- .2
+
+
+# our training data n observations of individual exemplars of this concept y 
+y_1 = rbernoulli(p = theta, n = 1)
+y_2 = rbernoulli(p = theta, n = 1)
+y_3 = rbernoulli(p = theta, n = 1)
+
+# noisy_observation(y = 1, n = 10, epsilon = .2)
+
+z_bar = c(noisy_observation(y = y_1, n = n_samps, epsilon = epsilon),
+          noisy_observation(y = y_2, n = n_samps, epsilon = epsilon),
+          noisy_observation(y = y_3, n = n_samps, epsilon = epsilon))
+```
+
+```{r}
+lp_theta_given_z(z_bar, .3, epsilon, alpha_theta, beta_theta, alpha_epsilon, beta_epsilon)
+lp_theta_given_z(z_bar, .7, epsilon, alpha_theta, beta_theta, alpha_epsilon, beta_epsilon)
+```
+
+
+
+
+# grid posterior 
+
+```{r}
+grid_theta <- seq(0.01, .99, 0.01)
+
+unnormalized_log_posterior <- sapply(grid_theta, 
+                                 function(x){ 
+                                   lp_theta_given_z(z_bar = z_bar, 
+                                                    theta = x, 
+                                                    epsilon = epsilon, 
+                                                    alpha_theta = alpha_theta, 
+                                                    beta_theta = beta_theta,
+                                                    alpha_epsilon = alpha_epsilon, 
+                                                    beta_epsilon = beta_epsilon)})
+
+plot(grid_theta, unnormalized_log_posterior)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# generative stuff for multiple features 
+```{r}
+feature_noisy_observation <- function(y, n, epsilon){
+  ys <- rep(y, n)
+  noisy <- rbernoulli(p = epsilon, n = n)
+  return(ifelse(noisy, 1-ys, ys))
+}
+
+creature_noisy_observation <- function(creature, n, epsilon){
+  sapply(creature, function(y){feature_noisy_observation(
+    y = y, 
+    n = n, 
+    epsilon
+  )})
+}
+
+creature <- c(1, 1, 0)
+z_bar <- creature_noisy_observation(creature, 10, 0.2)
+
+```
+
+
+
+
+
+
+

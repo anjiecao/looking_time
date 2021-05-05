@@ -43,7 +43,7 @@ noisy_observation <- function(y, n = 1, epsilon = .2) {
   return(ifelse(noisy, 1-ys, ys))
 }
 
-n_samps <- 100
+n_samps <- 100 # this is technically j? 
 
 alpha_theta <- 1
 beta_theta <- 1
@@ -167,6 +167,7 @@ qplot(grid_theta, posterior) +
 
 ```{r}
 posterior_entropy = sum(- posterior * log(posterior))
+posterior_entropy
 ```
 
 # Two parameters
