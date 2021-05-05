@@ -38,6 +38,7 @@ $$p(\bar{z}|\theta) = \prod_{i \in 1....n} \prod_{j \in 1...n} p(z_{ij} |\theta)
 
 ```{r}
 #z_bar is a vector that keeps track of all z_ij
+#z bar is not probability yet, is 1/0 
 lp_z_given_theta <- function(z_bar, 
                              theta, 
                              episolon){
@@ -124,8 +125,16 @@ theta <- .3
 epsilon <- .2
 
 
-# our training data n observations of individual exemplars of this concept y 
-y_1 = rbernoulli(p = theta, n = 1)
+# our training data n observations of individual exemplars of this concept y
+
+
+# y1 = [rbernoulli(p = theta_y1_f1, n = 1), rbernoulli(p = theta_y1_f2, n = 1), rbernoulli(p = theta_y1_f3, n = 1)]
+
+
+# concept z 
+#[rbernoulli(p = theta_z1_f1, n = 1), rbernoulli(p = theta_z1_f2, n = 1), rbernoulli(p = theta_z1_f3, n = 1)]
+
+y_1 = rbernoulli(p = theta, n = 1) #[f_1]
 y_2 = rbernoulli(p = theta, n = 1)
 y_3 = rbernoulli(p = theta, n = 1)
 
@@ -167,8 +176,8 @@ plot(grid_theta, unnormalized_log_posterior)
 
 
 ```{r}
-grid_theta <- seq(0.01, .99, .02)
-grid_epsilon <- seq(0.01, .99, .02)
+grid_theta <- seq(0.01, .99, .01)
+grid_epsilon <- seq(0.01, .99, .01)
 
 samps <- expand_grid(theta = grid_theta,
                      epsilon = grid_epsilon) 
@@ -214,6 +223,75 @@ ggplot(theta_posterior,
 
 
 
+```{r}
+new_prior <- theta_posterior
+new_prior
+
+# recompute p(\theta | z)
+
+new_z <- c(noisy_observation(y = y_1, n = 1000, epsilon = epsilon),
+          noisy_observation(y = y_2, n = 1000, epsilon = epsilon),
+          noisy_observation(y = y_3, n = 1000, epsilon = epsilon))
+
+
+grid_theta <- seq(0.01, .99, 0.01)
+
+update_lp_theta <- function(theta_value, updated_posterior){
+  
+  updated_posterior %>% 
+    filter(theta == theta_value) %>% 
+    select(log_posterior) %>% 
+    pull()
+  
+}
+
+
+
+update_lp_theta_given_z_after_observation <- function(new_observation, 
+                                                      theta, 
+                                                      epsilon, 
+                                                      updated_posterior, 
+                                                      alpha_epsilon, 
+                                                      beta_epsilon){
+  
+  
+    #sampling from the updated posterior, which is a broken beta distribution 
+  
+    new_lp_theta <- update_lp_theta(theta, updated_posterior)
+    new_lp_epsilon <- lp_episolon(epsilon, alpha_epsilon, beta_epsilon)  
+    new_lp_z_given_theta <- lp_z_given_theta(new_observation, theta, epsilon)
+    print(new_lp_theta)
+    print(new_lp_epsilon)
+    print(new_lp_z_given_theta)
+    
+    return (new_lp_theta + new_lp_epsilon + new_lp_z_given_theta)
+  
+  
+  
+  }
+
+
+new_unormalized_log_posterior <- sapply(grid_theta, 
+                                 function(x){ 
+                                   update_lp_theta_given_z_after_observation(new_observation = new_z, 
+                                                    theta = x, 
+                                                    epsilon = epsilon, 
+                                                    updated_posterior = new_prior,
+                                                    alpha_epsilon = alpha_epsilon, 
+                                                    beta_epsilon = beta_epsilon)})
+
+
+theta_posterior$new_udpated_posterior <- new_unormalized_log_posterior
+# p / sum(p)
+theta_posterior$new_normalized_posterior <- new_unormalized_log_posterior - matrixStats::logSumExp(new_unormalized_log_posterior)
+
+theta_posterior$normalized_old_posterior <- theta_posterior$posterior/(sum(theta_posterior$posterior))
+
+ggplot(theta_posterior) +
+  geom_point(aes(x = theta, y = (normalized_old_posterior), alpha = .3)) + 
+ geom_point(aes(x = theta, y = exp(new_normalized_posterior)))
+
+```
 
 
 
@@ -328,6 +406,23 @@ grid_estimate_creature_posterior(creature_noisy_z,
 ```
 
 # now also adding grid approximate over the episolon? 
+```{r}
+grid_estimate_creature_posterior_with_epsilon <- function(
+                                        creature_noisy_z, 
+                                        thetas, 
+                                        epsilons, 
+                                        alpha_theta, 
+                                        beta_theta, 
+                                        alpha_epsilon, 
+                                        beta_epsilon){
+  
+  
+  
+  
+  
+
+  }
+```
 
 
 # ok do some calculation 
