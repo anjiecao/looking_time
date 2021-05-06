@@ -1,0 +1,86 @@
+lp_theta_given_z <- function(z_bar, 
+                             theta, epsilon, 
+                             alpha_theta, beta_theta, 
+                             alpha_epsilon, beta_epsilon) {
+ 
+  lp_z_given_theta(z_bar, theta, epsilon) + 
+    lp_theta(theta, alpha_theta, beta_theta) + 
+    lp_episolon(epsilon, alpha_epsilon, beta_epsilon)
+}
+
+
+lp_z_given_theta <- function(z_bar, 
+                             theta, 
+                             episolon){
+  
+  sum(sapply(z_bar, function(x){lp_z_ij_given_theta(zij = x, 
+                                                    theta = theta, 
+                                                    episolon = episolon)}))
+  
+  
+}
+
+lp_z_ij_given_theta <- function(zij, theta, episolon){
+  
+  
+  logSumExp(
+    c(lp_z_ij_given_y(zij = zij, yi = 1, episolon = episolon) + lp_yi_given_theta(yi = 1, theta = theta ), 
+      lp_z_ij_given_y(zij = zij, yi = 0, episolon = episolon) + lp_yi_given_theta(yi = 0, theta = theta))
+  )
+  
+}
+
+
+
+
+lp_z_ij_given_y <- function(zij, yi, episolon){
+  if (zij == yi){
+    log(1 - episolon)
+  }else{
+    log(episolon)
+  }
+}
+
+lp_yi_given_theta <- function(yi, theta){
+  # a cooler way to say that if yi = 1 then theta if yi = 0 then yi = 1-theta? 
+  dbinom(yi, size = 1, prob = theta, log = TRUE)
+}
+
+
+lp_theta <- function(theta, alpha_theta, beta_theta){
+  # actually i think i'm still a little unsure of what the relationship between theta and p(theta) is
+  dbeta(x = theta, shape1 = alpha_theta, shape2 = beta_theta, log = TRUE)
+}
+
+lp_episolon <- function(theta, alpha_episolon, beta_episolon){
+  dbeta(x = theta, shape1 = alpha_episolon, shape2 = beta_episolon, log = TRUE)
+}
+
+
+
+# below are for updates after the first sample when beta distribution is destroyed 
+update_lp_theta <- function(theta_value, updated_posterior){
+  updated_posterior %>% 
+    filter(theta == theta_value) %>% 
+    select(normalized_log_posterior) %>% 
+    pull()
+}
+
+update_lp_theta_given_z_after_observation <- function(new_observation, 
+                                                      theta, 
+                                                      epsilon, 
+                                                      updated_posterior, 
+                                                      alpha_epsilon, 
+                                                      beta_epsilon){
+  
+  
+  
+  #sampling from the updated posterior, which is a broken beta distribution 
+  
+  new_lp_theta <- update_lp_theta(theta, updated_posterior)
+  new_lp_epsilon <- lp_episolon(epsilon, alpha_epsilon, beta_epsilon)  
+  new_lp_z_given_theta <- lp_z_given_theta(new_observation, theta, epsilon)
+  
+  return (new_lp_theta + new_lp_epsilon + new_lp_z_given_theta)
+  
+}

@@ -150,10 +150,57 @@ lp_theta_given_z(z_bar, .3, epsilon, alpha_theta, beta_theta, alpha_epsilon, bet
 lp_theta_given_z(z_bar, .7, epsilon, alpha_theta, beta_theta, alpha_epsilon, beta_epsilon)
 ```
 
-
-
-
 # grid posterior 
+
+```{r}
+
+grid_theta <- seq(0.01, .99, .01)
+  grid_epsilon <- seq(0.01, .99, .01)
+
+grid_approximation_with_theta_and_epsilon <- function(
+  grid_theta = seq(0.01, .99, .01), 
+  grid_epsilon = seq(0.01, .99, .01), 
+  z_bar, 
+  estimated_posterior_df, 
+  alpha_epsilon = alpha_epsilon, 
+  beta_epsilon = beta_epsilon){
+  
+  
+
+  samps <- expand_grid(theta = grid_theta,
+                     epsilon = grid_epsilon) 
+  
+  
+  samps$unnormalized_log_posterior <- mapply(function(x, y) update_lp_theta_given_z_after_observation(new_observation = z_bar, 
+                                                    theta = x, 
+                                                    epsilon = y, 
+                                                    updated_posterior = estimated_posterior_df,
+                                                    alpha_epsilon = alpha_epsilon, 
+                                                    beta_epsilon = beta_epsilon), 
+                                   samps$theta, 
+                                   samps$epsilon)
+  
+  
+  samps$normalized_log_posterior <- samps$unnormalized_log_posterior - matrixStats::logSumExp(samps$unnormalized_log_posterior)
+
+  
+  return(samps)
+  
+  
+}
+
+grid_approximation_with_theta(
+  z_bar = new_z, 
+  estimated_posterior_df = theta_posterior, 
+  alpha_epsilon = alpha_epsilon, 
+  beta_epsilon = beta_epsilon
+  
+)
+```
+
+
+
+
 
 ```{r}
 grid_theta <- seq(0.01, .99, 0.01)
@@ -229,20 +276,18 @@ new_prior
 
 # recompute p(\theta | z)
 
-new_z <- c(noisy_observation(y = y_1, n = 1000, epsilon = epsilon),
-          noisy_observation(y = y_2, n = 1000, epsilon = epsilon),
-          noisy_observation(y = y_3, n = 1000, epsilon = epsilon))
+new_z <- c(noisy_observation(y = y_1, n = 100, epsilon = epsilon),
+          noisy_observation(y = y_2, n = 100, epsilon = epsilon),
+          noisy_observation(y = y_3, n = 100, epsilon = epsilon))
 
 
 grid_theta <- seq(0.01, .99, 0.01)
 
 update_lp_theta <- function(theta_value, updated_posterior){
-  
   updated_posterior %>% 
     filter(theta == theta_value) %>% 
-    select(log_posterior) %>% 
+    select(normalized_log_posterior) %>% 
     pull()
-  
 }
 
 
@@ -255,20 +300,16 @@ update_lp_theta_given_z_after_observation <- function(new_observation,
                                                       beta_epsilon){
   
   
+  
     #sampling from the updated posterior, which is a broken beta distribution 
   
     new_lp_theta <- update_lp_theta(theta, updated_posterior)
     new_lp_epsilon <- lp_episolon(epsilon, alpha_epsilon, beta_epsilon)  
     new_lp_z_given_theta <- lp_z_given_theta(new_observation, theta, epsilon)
-    print(new_lp_theta)
-    print(new_lp_epsilon)
-    print(new_lp_z_given_theta)
-    
+   
     return (new_lp_theta + new_lp_epsilon + new_lp_z_given_theta)
   
-  
-  
-  }
+}
 
 
 new_unormalized_log_posterior <- sapply(grid_theta, 
