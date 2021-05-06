@@ -85,15 +85,15 @@ z_1 <-  sapply(test_creature_deviant_theta, function(x){rbernoulli(p = x, n = 1)
 #y_5 <- sapply(test_creature_background_theta, function(x){rbernoulli(p = x, n = 1)})
 
 # in each trial collects like 100 times
-y_1_noisy_observation <- rbind(noisy_observation_creature(y_1, 50, 0.2))
+y_1_noisy_observation <- rbind(noisy_observation_creature(y_1, 5000, 0.3))
 y_2_noisy_observation <- rbind(noisy_observation_creature(y_2, 50, 0.2))
 y_3_noisy_observation <-  rbind(noisy_observation_creature(y_3, 50, 0.2))
 y_4_noisy_observation <-  rbind(noisy_observation_creature(y_4, 30, 0.2))
 z_1_noisy_observation <-  rbind(noisy_observation_creature(z_1, 30, 0.2))
 
 
-
 ```
+
 
 
 ```{r}
@@ -125,6 +125,8 @@ post_first_update_theta_epsilon_approx <- grid_approximate_creature_with_theta_a
 post_first_update_theta_approx
 post_first_update_theta_epsilon_approx
 ```
+
+
 
 
 
@@ -233,22 +235,41 @@ gal: take the surprisal for each value of theta, and take the average of those s
 
 $$p(\theta = \theta_{k} | z) $$
 
+```{r}
+post_first_update_theta_approx
+post_second_update_theta_approx
+
+# we will use 
+y_2_noisy_observation
+# to calculate based on
+y_1
+post_first_update_theta_approx %>% 
+  mutate(probability = exp(normalized_log_posterior)) %>% 
+  ggplot(aes(x = theta, y = probability)) + 
+  geom_line() +
+  facet_wrap(~feature_index)
+```
 
 ```{r}
-two_updates %>% 
-  group_by(update_num, feature_index) %>% 
+
+calculate_surprise_from_trial <- function(observations, 
+                                          posterior_df){
   
+  
+}
+
+calculate_feature_suprirse_from_observation <- function(observation, new_prior_df){
+  thetas <- new_prior_df$theta 
+  lp_thetas <- new_prior_df$normalized_log_posterior 
+  if (observation == 1){
+    surprise <- -log(lp_theta)
+    all_surprise <- 
+  }else {
+    
+  }
+  
+}
 ```
-
-let's just look at the feature_1 first
-```{r}
-y_1_noisy_observation[,1]
-
-two_updates %>% 
-  filter(feature_index == 1)
-```
-
-
 
 
 
