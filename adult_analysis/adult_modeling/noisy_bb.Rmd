@@ -227,3 +227,7 @@ ggplot(theta_posterior,
 
 ```
 
+```{r}
+theta_posterior
+```
+

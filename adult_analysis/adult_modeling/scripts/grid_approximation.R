@@ -110,7 +110,7 @@ grid_approximate_creature_with_theta_and_epsilon_continuous <- function(
              grid_theta = grid_theta, 
              grid_epsilon = grid_epsilon, 
              z_bar = noisy_creature_observation[,x], 
-             estimated_posterior_df = filter(estimated_posterior_df, feature_index == x),
+             estimated_posterior_df = filter(updated_posterior_df, feature_index == x),
              alpha_epsilon = alpha_epsilon, 
              beta_epsilon = beta_epsilon
            )
@@ -187,7 +187,13 @@ grid_approximation_with_theta_and_epsilon <- function(
                                              samps$epsilon)
   
   
-  #samps$normalized_log_posterior <- samps$unnormalized_log_posterior - matrixStats::logSumExp(samps$unnormalized_log_posterior)
+  samps$normalized_log_posterior <- samps$unnormalized_log_posterior - matrixStats::logSumExp(samps$unnormalized_log_posterior)
+  samps <- samps %>% 
+    group_by(theta) %>% 
+    summarise(log_posterior = matrixStats::logSumExp(normalized_log_posterior) + 
+                log(1/length(normalized_log_posterior))) 
+  
+  samps$feature_index <- feature_index
   
   
   return(samps)
@@ -252,8 +258,12 @@ first_update_grid_approximate_with_theta_and_epsilon <- function(
   
   
   samps$normalized_log_posterior <- samps$unnormalized_log_posterior - matrixStats::logSumExp(samps$unnormalized_log_posterior)
-  samps$feature_index <- feature_index
   
+  samps <- samps %>% 
+    group_by(theta) %>% 
+    summarise(log_posterior = matrixStats::logSumExp(normalized_log_posterior) + 
+                log(1/length(normalized_log_posterior))) 
+  samps$feature_index <- feature_index
   
   return(samps)
   
