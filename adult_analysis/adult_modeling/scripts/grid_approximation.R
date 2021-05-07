@@ -7,24 +7,48 @@ grid_approximate_creature_with_theta_initial <- function(
   alpha_epsilon, 
   beta_epsilon
 ){
+  # special case this is for when only update based on 1 observation
+  if(!is.matrix(noisy_creature_observation)){
+    feature_number = length(noisy_creature_observation)
+    
+    lapply(seq(1, feature_number, 1), 
+           function(x){
+             first_update_grid_approximate_with_theta(
+               feature_index = x, 
+               thetas = grid_theta, 
+               z_bar = noisy_creature_observation[x], 
+               epsilon = epsilon, 
+               alpha_theta = alpha_prior, 
+               beta_theta = beta_prior,
+               alpha_epsilon = alpha_epsilon, 
+               beta_epsilon = beta_epsilon
+             )
+           }
+    ) %>% 
+      bind_rows()
+  }else{
+    feature_number = ncol(noisy_creature_observation)
+    
+    lapply(seq(1, feature_number, 1), 
+           function(x){
+             first_update_grid_approximate_with_theta(
+               feature_index = x, 
+               thetas = grid_theta, 
+               z_bar = noisy_creature_observation[,x], 
+               epsilon = epsilon, 
+               alpha_theta = alpha_prior, 
+               beta_theta = beta_prior,
+               alpha_epsilon = alpha_epsilon, 
+               beta_epsilon = beta_epsilon
+             )
+           }
+    ) %>% 
+      bind_rows()
+  }
   
-  feature_number = ncol(noisy_creature_observation)
   
-  lapply(seq(1, feature_number, 1), 
-         function(x){
-           first_update_grid_approximate_with_theta(
-             feature_index = x, 
-             thetas = grid_theta, 
-             z_bar = noisy_creature_observation[,x], 
-             epsilon = epsilon, 
-             alpha_theta = alpha_prior, 
-             beta_theta = beta_prior,
-             alpha_epsilon = alpha_epsilon, 
-             beta_epsilon = beta_epsilon
-           )
-         }
-  ) %>% 
-    bind_rows()
+  
+  
   
 
 }
@@ -38,24 +62,50 @@ grid_approximate_creature_with_theta_and_epsilon_initial <- function(
   alpha_epsilon, 
   beta_epsilon
 ){
+  # special case this is for when only update based on 1 observation
   
-  feature_number = ncol(noisy_creature_observation)
+  if(!is.matrix(noisy_creature_observation)){
+    feature_number = length(noisy_creature_observation)
+    
+    lapply(seq(1, feature_number, 1), 
+           function(x){
+             first_update_grid_approximate_with_theta_and_epsilon(
+               feature_index = x, 
+               grid_theta = grid_theta, 
+               grid_epsilon = grid_epsilon, 
+               z_bar = noisy_creature_observation[x], 
+               alpha_theta = alpha_prior, 
+               beta_theta = beta_prior,
+               alpha_epsilon = alpha_epsilon, 
+               beta_epsilon = beta_epsilon
+             )
+           }
+    ) %>% 
+      bind_rows()
+    
+    
+    
+  }else{
+    feature_number = ncol(noisy_creature_observation)
+    
+    lapply(seq(1, feature_number, 1), 
+           function(x){
+             first_update_grid_approximate_with_theta_and_epsilon(
+               feature_index = x, 
+               grid_theta = grid_theta, 
+               grid_epsilon = grid_epsilon, 
+               z_bar = noisy_creature_observation[,x], 
+               alpha_theta = alpha_prior, 
+               beta_theta = beta_prior,
+               alpha_epsilon = alpha_epsilon, 
+               beta_epsilon = beta_epsilon
+             )
+           }
+    ) %>% 
+      bind_rows()
+  }
 
-  lapply(seq(1, feature_number, 1), 
-         function(x){
-           first_update_grid_approximate_with_theta_and_epsilon(
-             feature_index = x, 
-             grid_theta = grid_theta, 
-             grid_epsilon = grid_epsilon, 
-             z_bar = noisy_creature_observation[,x], 
-             alpha_theta = alpha_prior, 
-             beta_theta = beta_prior,
-             alpha_epsilon = alpha_epsilon, 
-             beta_epsilon = beta_epsilon
-           )
-         }
-  ) %>% 
-    bind_rows()
+  
   
   
   
@@ -261,8 +311,12 @@ first_update_grid_approximate_with_theta_and_epsilon <- function(
   
   samps <- samps %>% 
     group_by(theta) %>% 
-    summarise(log_posterior = matrixStats::logSumExp(normalized_log_posterior) + 
-                log(1/length(normalized_log_posterior))) 
+    summarise(
+      unnormalized_log_posterior = matrixStats::logSumExp(unnormalized_log_posterior) + 
+        log(1/length(unnormalized_log_posterior)), 
+      log_posterior = matrixStats::logSumExp(normalized_log_posterior) + 
+                log(1/length(normalized_log_posterior))
+      ) 
   samps$feature_index <- feature_index
   
   return(samps)
