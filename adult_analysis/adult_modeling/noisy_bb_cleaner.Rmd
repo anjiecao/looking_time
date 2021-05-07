@@ -108,6 +108,64 @@ noisy_update <- function(observations,
 }
 ```
 
+```{r}
+theta_only <- first_update_grid_approximate_with_theta(feature_index = 1,
+                                                                 thetas = seq(0.01, .99, .02),                                                                                 z_bar = z_bar, 
+                                                       epsilon = .01,
+                                                                   
+                                                                                                                                                  alpha_theta = alpha_theta, beta_theta = beta_theta, alpha_epsilon = alpha_epsilon, beta_epsilon = beta_epsilon)
+theta_and_epsilon <- first_update_grid_approximate_with_theta_and_epsilon(feature_index = 1,
+                                                                                                                                                 z_bar = z_bar, 
+                                                                                                                                                  alpha_theta = alpha_theta, beta_theta = beta_theta, alpha_epsilon = alpha_epsilon, beta_epsilon = beta_epsilon)
+```
+
+```{r}
+theta_only
+theta_and_epsilon %>% 
+  group_by(theta) %>% 
+  summarise(
+    normalized_log_posterior = unnormalized_log_posterior - logSumExp(unnormalized_log_posterior), 
+     log_posterior = matrixStats::logSumExp(normalized_log_posterior) + 
+          log(1/length(normalized_log_posterior))
+  ) 
+```
+
+```{r}
+theta_and_epsilon %>% 
+  group_by(theta) %>% 
+     summarise(
+   #     #unnormalized_log_posterior = matrixStats::logSumExp(unnormalized_log_posterior) + 
+   #     #     log(1/length(unnormalized_log_posterior)), 
+        log_posterior = matrixStats::logSumExp(normalized_log_posterior) + 
+          log(1/length(normalized_log_posterior))
+   #     
+   #     #unnormalized_log_posterior = matrixStats::logSumExp(unnormalized_log_posterior) + 
+   #    #   log(1/length(unnormalized_log_posterior)), 
+   #    # log_posterior = matrixStats::logSumExp(normalized_log_posterior) + 
+   #     #          log(1/length(normalized_log_posterior))
+      ) 
+```
+
+
+```{r}
+theta <- first_update_grid_approximate_with_theta(feature_index, 
+                                                  )
+```
+
+
+
+```{r}
+z_bar 
+
+theta_only %>% 
+  ggplot(aes(x = theta, y = exp(normalized_log_posterior))) + 
+  geom_point()
+
+theta_and_epsilon %>% 
+  ggplot(aes(x = theta, y = exp(log_posterior))) + 
+  geom_point()
+```
+
 
 
 ```{r}
@@ -246,6 +304,9 @@ for(t in grid_theta){
 ```
 
 
+
+
+
 ```{r}
 get_kl_for_feature <- function(feature = 3, 
                                distribution_df = all_updates){
@@ -313,14 +374,15 @@ kl_df %>%
   geom_line()
 ```
 
+```{r}
+get_kl_for_creature <- function(distribution_df){
+  
+  
+  
+}
+```
 
 
-
-The value within the sum is the divergence for a given event.
-
-This is the same as the positive sum of probability of each event in P multiplied by the log of the probability of the event in P over the probability of the event in Q (e.g. the terms in the fraction are flipped). This is the more common implementation used in practice.
-
-KL(P || Q) = sum x in X P(x) * log(P(x) / Q(x))
 
 ```{r}
 all_updates

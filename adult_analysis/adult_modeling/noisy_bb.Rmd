@@ -210,7 +210,11 @@ Or we could look at the conditional posterior for theta, integrating across epsi
 
 ```{r}
 # average = sum(x) / length(x) 
-# log average = logsumexp(x) * log(1/length(x))
+# log average = logsumexp(x)  + log(1/length(x))
+ #= log
+
+# log(sum(x)/length(x)) = log(sum(x)) - log(length(x)) = 
+ # = log(logsumexp(x)))
 
 theta_posterior <- samps %>%
   group_by(theta) %>%

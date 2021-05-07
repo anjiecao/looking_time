@@ -255,7 +255,7 @@ grid_approximation_with_theta_and_epsilon <- function(
 # for trial 1 when beta distribution hasn't been destroyed 
 
 first_update_grid_approximate_with_theta <- function(feature_index = 1, 
-                                     thetas = seq(0.01, .99, .01), 
+                                     thetas = seq(0.01, .99, .02), 
                                      z_bar, 
                                      epsilon, 
                                      alpha_theta, 
@@ -282,8 +282,8 @@ first_update_grid_approximate_with_theta <- function(feature_index = 1,
 
 first_update_grid_approximate_with_theta_and_epsilon <- function(
   feature_index,
-  grid_theta = seq(0.01, .99, .01),
-  grid_epsilon = seq(0.01, .99, .01), 
+  grid_theta = seq(0.01, .99, .02),
+  grid_epsilon = seq(0.01, .99, .02), 
   z_bar, 
   alpha_theta, 
   beta_theta,
@@ -296,7 +296,8 @@ first_update_grid_approximate_with_theta_and_epsilon <- function(
   
   
   
-  samps$unnormalized_log_posterior <- mapply(function(x, y) lp_theta_given_z(z_bar = z_bar, 
+  samps$unnormalized_log_posterior <- mapply(function(x, y) 
+    lp_theta_given_z(z_bar = z_bar, 
                                                                                                 theta = x, 
                                                                                                 epsilon = y, 
                                                                                                 alpha_theta = alpha_theta, 
@@ -307,16 +308,23 @@ first_update_grid_approximate_with_theta_and_epsilon <- function(
                                              samps$epsilon)
   
   
-  samps$normalized_log_posterior <- samps$unnormalized_log_posterior - matrixStats::logSumExp(samps$unnormalized_log_posterior)
+  samps$normalized_log_posterior <- samps$unnormalized_log_posterior - 
+    matrixStats::logSumExp(samps$unnormalized_log_posterior)
   
-  samps <- samps %>% 
-    group_by(theta) %>% 
-    summarise(
-      unnormalized_log_posterior = matrixStats::logSumExp(unnormalized_log_posterior) + 
-        log(1/length(unnormalized_log_posterior)), 
-      log_posterior = matrixStats::logSumExp(normalized_log_posterior) + 
-                log(1/length(normalized_log_posterior))
-      ) 
+   # samps <- samps #%>% 
+   #   group_by(theta) %>% 
+   #   
+   #   summarise(
+   #     #unnormalized_log_posterior = matrixStats::logSumExp(unnormalized_log_posterior) + 
+   #     #     log(1/length(unnormalized_log_posterior)), 
+   #     log_posterior = matrixStats::logSumExp(normalized_log_posterior) + 
+   #       log(1/length(normalized_log_posterior))
+   #     
+   #     #unnormalized_log_posterior = matrixStats::logSumExp(unnormalized_log_posterior) + 
+   #    #   log(1/length(unnormalized_log_posterior)), 
+   #    # log_posterior = matrixStats::logSumExp(normalized_log_posterior) + 
+   #     #          log(1/length(normalized_log_posterior))
+   #     ) 
   samps$feature_index <- feature_index
   
   return(samps)
