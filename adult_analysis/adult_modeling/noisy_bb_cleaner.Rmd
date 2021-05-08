@@ -18,19 +18,17 @@ source(here("adult_modeling/scripts/noisy_update.R"))
 # generate creature sequence 
 this is easy fill in later 
 ```{r}
-make_creature <- function(
-  total_feature,
-  complexity
-){
-  
-}
 
-make_dissimilar_creature <- function(
-  creature, 
-  dissmilar_ratio, 
-){
-  
-}
+
+b_1 <- make_creature(total_feature = 20, 
+                     
+                     feature_theta = 0.8,   # currently assuming all situations where there are features the theta are the same 
+
+                     feature_ratio = 0.4  #complexity controls for the proportion of the features 
+                     )
+
+d_1 <- make_dissimilar_creature(creature = b_1, 
+                                dissimilar_ratio = .8)
 
 generate_creature_sequence <- function(
   block_length, 
