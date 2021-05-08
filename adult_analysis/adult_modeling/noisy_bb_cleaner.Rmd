@@ -121,9 +121,38 @@ theta_and_epsilon <- first_update_grid_approximate_with_theta_and_epsilon(featur
 
 ```{r}
 theta_only
-theta_and_epsilon %>% 
+
+
+epsilon_normalized <- theta_and_epsilon %>% 
+  group_by(theta, .drop = FALSE) %>% 
+  summarize(normalized_log_posterior = unnormalized_log_posterior - logSumExp(unnormalized_log_posterior)) 
+
+
+# #
+# samps$log_posterior = samps$unnormalized_log_posterior - matrixStats::logSumExp(samps$unnormalized_log_posterior)
+# 
+# theta_posterior <- samps %>%
+#   group_by(theta) %>%
+#   summarise(log_posterior = matrixStats::logSumExp(log_posterior) + 
+#               log(1/length(log_posterior))) %>%
+#   mutate(posterior = exp(log_posterior))
+
+
+theta_and_epsilon$log_posterior <- theta_and_epsilon$unnormalized_log_posterior - matrixStats::logSumExp(theta_and_epsilon$unnormalized_log_posterior)
+
+new_theta_posterior <- theta_and_epsilon %>% 
+  filter(epsilon == 0.03) %>%
   group_by(theta) %>% 
+  summarise(log_posterior = matrixStats::logSumExp(log_posterior) +
+              log(1/length(log_posterior))) 
+
+  
+  
+new_theta_and_epsilon <- theta_and_epsilon %>% 
+  filter(epsilon == 0.5) %>% 
+  group_by(theta, .drop = FALSE) %>% 
   summarise(
+    
     normalized_log_posterior = unnormalized_log_posterior - logSumExp(unnormalized_log_posterior), 
      log_posterior = matrixStats::logSumExp(normalized_log_posterior) + 
           log(1/length(normalized_log_posterior))
@@ -161,7 +190,7 @@ theta_only %>%
   ggplot(aes(x = theta, y = exp(normalized_log_posterior))) + 
   geom_point()
 
-theta_and_epsilon %>% 
+new_theta_posterior %>% 
   ggplot(aes(x = theta, y = exp(log_posterior))) + 
   geom_point()
 ```
@@ -181,11 +210,10 @@ updates = nrow(three_observations)
 
 # let's just look at 10 updates first
 
-# or big_data <- dplyr::bind_rows(datalist)
 datalist = list()
-for (i in seq(1, 10, 1)){
+for (i in seq(1, updates, 1)){
   
-  post_first_update_theta_epsilon_approx <- grid_approximate_creature_with_theta_and_epsilon_initial(
+  post_first_update_theta_epsilon_approx <- grid_approximate_creature_with_theta_and_epsilon(
   grid_theta = grid_theta, 
   grid_epsilon = grid_epsilon, 
   noisy_creature_observation = three_observations[1:i, ], 
@@ -213,7 +241,7 @@ is it something wrong with doing grid appproximation on epsilon?
 datalist = list()
 for (i in seq(1, updates, 1)){
   
-  post_first_update_theta_approx <- grid_approximate_creature_with_theta_initial(
+  post_first_update_theta_approx <- grid_approximate_creature_with_theta(
   grid_theta = grid_theta, 
   grid_epsilon = grid_epsilon, 
   noisy_creature_observation = three_observations[1:i, ], 
@@ -230,7 +258,7 @@ for (i in seq(1, updates, 1)){
   
   
 }
-all_updates <- dplyr::bind_rows(datalist)
+all_updates_theta <- dplyr::bind_rows(datalist)
 
 
 ```
@@ -244,6 +272,7 @@ y_1
 y_2
 y_3
 all_updates %>% 
+  filter(update_number %in% seq(1, 20, 1)) %>% 
   ggplot(aes(x = theta, y = exp(log_posterior), color = update_number)) + 
   geom_point()+ 
   facet_wrap(~feature_index)
@@ -256,130 +285,59 @@ all_updates %>%
 $$EIG(y) = \sum_{y'_{t+1}} { D_{KL} ( p(\theta | y_{1..y_{t+1}}) || p(\theta | y_{1..y_{t}})  ) p(y_{t+1} | \theta) }$$
 actually not so sure if it makes sense to calculate EIG based on y because we don't really know anythinga bt it 
 
+what about just doing it based on z? 
 
+http://todd.gureckislab.org/2021/05/05/negative-information
 
-http://hanj.cs.illinois.edu/cs412/bk3/KL-divergence.pdf
+so if the formula was: 
 
-$$D_{KL}(p(x) || q(x)) = –\sum_{x \in X} p(x) ln\frac{p(x)}{q(x)}$$
-$$D_{KL}(p(x) || q(x)) = –\sum_{x \in X} p(x) * ln\frac{p(x)}{q(x)}$$
+$$D_{KL}(p(x) || q(x)) = \sum_{x \in X} p(x) log\frac{p(x)}{q(x)}$$
+
 
 in our case it will be 
 
-$$D_{KL}(p(\theta|z_{i+1}) || p(\theta|z_{i})) = –\sum_{x \in X} p(\theta|z_{i+1})  ln\frac{p(\theta|z_{i+1})}{p(\theta|z_{i}))}$$
+$$D_{KL}(p(\theta|z_{i+1}) || p(\theta|z_{i})) = \sum_{x \in X} p(\theta|z_{i+1})  log\frac{p(\theta|z_{i+1})}{p(\theta|z_{i}))}$$
 maybe we can pretend theta is concrete like we've been doing? so effectively we will have 
 
-$$D_{KL}(p(\theta|z_{i+1}) || p(\theta|z_{i})) = –\sum_{\theta \in [\theta_{1}, \theta_{2}...]} p(\theta|z_{i+1})  ln\frac{p(\theta|z_{i+1})}{p(\theta|z_{i})}$$
-
-
-what the heck let's just give it a try 
-```{r}
-distribtuion_for_feature <- distribution_df %>% 
-  filter(feature_index == 1)
-
-second_update <- distribtuion_for_feature %>% 
-  filter(update_number == 2)
-
-first_update <- distribtuion_for_feature %>% 
-  filter(update_number == 1)
-
-grid_theta <- seq(0.01, 0.99, 0.05)
-kl <- c() 
-for(t in grid_theta){
-  
-  second_update_posterior <- second_update %>% 
-    filter(theta == t) %>% 
-    pull(log_posterior)
-  
-  first_update_posterior <- first_update %>% 
-    filter(theta == t)%>% 
-    pull(log_posterior)
-  
-  # because everything is in log
-  kl_for_t <- second_update_posterior + second_update_posterior - first_update_posterior
-  
-  kl <- c(kl, kl_for_t)
-}
-
--matrixStats::logSumExp(kl)
-```
-
-
-
-
+$$D_{KL}(p(\theta|z_{i+1}) || p(\theta|z_{i})) = \sum_{\theta \in [\theta_{1}, \theta_{2}...]} p(\theta|z_{i+1})  log\frac{p(\theta|z_{i+1})}{p(\theta|z_{i})}$$
 
 ```{r}
-get_kl_for_feature <- function(feature = 3, 
-                               distribution_df = all_updates){
-  
-  total_update_number <- length(distribution_df %>% 
-                                  distinct(update_number) %>% 
-                                  pull())
-  
-  all_learning_step_updates <- c()
-  
-  for(update_i in 2:total_update_number){
-    
-    first_update_index <- update_i - 1
-    second_update_index <- update_i 
-    
-    distribtuion_for_feature <- distribution_df %>% 
-    filter(feature_index == feature)
 
-    second_update <- distribtuion_for_feature %>% 
-      filter(update_number == second_update_index)
-    
-    first_update <- distribtuion_for_feature %>% 
-        filter(update_number == first_update_index)
 
-    all_thetas <- all_updates %>% distinct(theta) %>% pull()
-    kl <- c() 
-    for(t in all_thetas){
-        
-        second_update_posterior <- second_update %>% 
-          filter(theta == t) %>% 
-          pull(log_posterior)
-        
-        first_update_posterior <- first_update %>% 
-          filter(theta == t)%>% 
-          pull(log_posterior)
-        
-        # because everything is in log
-        kl_for_t <- second_update_posterior + second_update_posterior - first_update_posterior
-        
-        kl <- c(kl, kl_for_t)
-    }
-    
-    # wrong math but apprently give you a right curve???!?what the heck?? 
-    current_step_kl <- matrixStats::logSumExp(kl)
-    all_learning_step_updates <- c(all_learning_step_updates, 
-                                   current_step_kl)
-  
-  }
-  
-  learning_updates <- tibble("kl" = all_learning_step_updates) %>% 
-    mutate(udpate_step = row_number() + 1)
-  
-  return(learning_updates)
+kl_df_theta_only <- get_kl_for_feature(feature = 3, 
+                  distribution_df = all_updates_theta) 
 
-}
 
-kl_df <- get_kl_for_feature(feature = 3, 
+kl_df_theta_espilon <- get_kl_for_feature(feature = 3, 
                   distribution_df = all_updates) 
 ```
 
 ```{r}
-kl_df %>% 
+kl_df_theta_espilon %>% 
+  ggplot(aes(x = udpate_step, y = kl), 
+        ) + 
+  geom_line() #+
+  #geom_point(aes(x = kl_df$udpate_step, y = three_observations[,3][2:length(three_observations[,3])]))
+
+kl_df_theta_only %>% 
   ggplot(aes(x = udpate_step, y = kl), 
         ) + 
   geom_line()
+
 ```
 
 ```{r}
-get_kl_for_creature <- function(distribution_df){
+
+all_updates_theta_kl <- get_kl_for_creature(all_updates_theta)
+
+all_updates_theta_kl %>% 
+  group_by(update_step) %>% 
+  summarise(kl_creature = sum(kl)) %>% 
+  ggplot(aes(x = update_step, 
+             y = kl_creature)) + 
+  geom_line() #+ 
+  #facet_wrap(~feature_index)
   
-  
-  
-}
 ```
 
 

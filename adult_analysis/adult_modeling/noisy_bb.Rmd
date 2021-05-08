@@ -51,7 +51,7 @@ beta_theta <- 1
 alpha_epsilon <- 1
 beta_epsilon <- 10
 
-theta <- .7
+theta <- .2
 epsilon <- .2
 
 
@@ -173,8 +173,8 @@ posterior_entropy
 # Two parameters
 
 ```{r}
-grid_theta <- seq(0.01, .99, .02)
-grid_epsilon <- seq(0.01, .99, .02)
+grid_theta <- seq(0.01, .99, .01)
+grid_epsilon <- seq(0.01, .99, .01)
 
 samps <- expand_grid(theta = grid_theta,
                      epsilon = grid_epsilon) 
@@ -218,7 +218,8 @@ Or we could look at the conditional posterior for theta, integrating across epsi
 
 theta_posterior <- samps %>%
   group_by(theta) %>%
-  summarise(log_posterior = matrixStats::logSumExp(log_posterior) + 
+  summarise(
+    log_posterior = matrixStats::logSumExp(log_posterior) + 
               log(1/length(log_posterior))) %>%
   mutate(posterior = exp(log_posterior))
 
@@ -232,6 +233,9 @@ ggplot(theta_posterior,
 ```
 
 ```{r}
-theta_posterior
+samps %>% 
+  filter(epsilon == 0.2)
+unnormalized_log_posterior 
+
 ```
 
