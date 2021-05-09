@@ -13,13 +13,17 @@ generate_creature_sequence <- function(
 ){
   
   
-  background <- make_creature(total_feature = total_feature, 
+  background_theta <- make_creature(total_feature = total_feature, 
                               feature_theta = feature_theta, 
                               feature_number = feature_number)
   
-  deviant <- make_dissimilar_creature(creature = background, 
+  
+  deviant_theta <- make_dissimilar_creature(creature = background_theta, 
                                       dissimilar_ratio = dissimilar_ratio)
   
+  
+  background <- make_individual_creature(background_theta)
+  deviant <- make_individual_creature(deviant_theta)
   
   block_list <- replicate(block_length, background, simplify = FALSE)
   
@@ -80,6 +84,10 @@ make_dissimilar_creature <- function(
   dissimilar_stimuli = creature
   
   return(dissimilar_stimuli)
+}
+
+make_individual_creature <- function(creature_theta){
+  sapply(creature_theta, function(x){rbernoulli(p = x, n = 1)})
 }
 
 

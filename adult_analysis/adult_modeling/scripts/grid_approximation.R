@@ -179,8 +179,8 @@ update_grid_approximate_with_theta_and_epsilon <- function(
     group_by(theta) %>%
     summarise(
     
-      log_posterior = matrixStats::logSumExp(log_posterior) + 
-        log(1/length(log_posterior))
+      log_posterior = matrixStats::logSumExp(log_posterior) #+ 
+        #log(1/length(log_posterior)) 
       ) %>%
     mutate(posterior = exp(log_posterior)) %>% 
     mutate(feature_index = feature_i)

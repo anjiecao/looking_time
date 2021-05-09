@@ -12,7 +12,7 @@ library(here)
 
 source(here("adult_modeling/scripts/grid_approximation.R"))
 source(here("adult_modeling/scripts/noisy_update.R"))
-
+source(here("adult_modeling/scripts/get_stimuli_and_observations.R"))
 ```
 
 # generate creature sequence 
@@ -47,15 +47,18 @@ obs<-generate_noisy_observations(
                             exposure_type = "self_paced", 
                             short_exposure_samps = 1, 
                             long_exposure_samps = 10, 
-                            normal_exposure_samps = 5, 
+                            normal_exposure_samps = 10, 
                             epsilon = 0.02)                     
 
 ```
 
 ## try new stimuli
 ```{r}
-grid_theta <- seq(0.01, 0.99, 0.05)
-grid_epsilon <- seq(0.01, 0.99, 0.05)
+#grid_theta <- seq(0.01, 0.99, 0.05)
+#grid_epsilon <- seq(0.01, 0.99, 0.05)
+
+grid_theta <- seq(0.1, 0.9, 0.2)
+grid_epsilon <- seq(0.1, 0.9, 0.2)
 
 all_observaion <- do.call(rbind, obs)
 
@@ -94,7 +97,34 @@ for (i in seq(1, updates, 1)){
   
 }
 all_updates <- dplyr::bind_rows(datalist)
+all_updates_kl <- get_kl_for_creature(all_updates)
+
 ```
+
+```{r}
+all_updates %>% 
+  #filter(update_number %in% seq(1, 10, 1)) %>% 
+  ggplot(aes(x = theta, y = posterior, color = update_number)) + 
+  geom_point()+ 
+  facet_wrap(~feature_index) + 
+  labs(title = "theta + epislon")
+
+all_updates_kl %>% 
+  group_by(update_step) %>% 
+  summarise(kl_creature = sum(kl)) %>% 
+  ggplot(aes(x = update_step, 
+             y = kl_creature)) + 
+  geom_line() #+ 
+  #facet_wrap(~feature_index)
+
+all_updates_kl %>% 
+   ggplot(aes(x = update_step, 
+             y = kl)) + 
+  geom_line() + 
+  facet_wrap(~feature_index)
+
+```
+
 
 
 
@@ -225,8 +255,14 @@ new_theta_posterior %>%
 # continuous update 
 
 ```{r}
-grid_theta <- seq(0.01, 0.99, 0.05)
-grid_epsilon <- seq(0.01, 0.99, 0.05)
+three_observations
+all_observaion
+```
+
+
+```{r}
+grid_theta <- seq(0.1, 1, 0.2)
+grid_epsilon <- seq(0.1, 1, 0.2)
 
 three_observations <- rbind(y_1_noisy_observation, 
                             y_2_noisy_observation, 
@@ -268,7 +304,9 @@ for (i in seq(1, updates, 1)){
 }
 all_updates <- dplyr::bind_rows(datalist)
 
-
+all_updates %>% group_by(update_number, 
+                         feature_index) %>% 
+  summarise(sum = sum(posterior))
 
 ```
 
