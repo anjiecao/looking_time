@@ -1,6 +1,6 @@
 grid_approximate_creature_with_theta <- function(
   grid_theta = seq(0.01, .99, .01), 
-  grid_epsilon = seq(0.01, .99, .01), 
+  epsilon = epsilon, 
   noisy_creature_observation, 
   alpha_prior = 1, 
   beta_prior = 1,
@@ -70,10 +70,10 @@ grid_approximate_creature_with_theta_and_epsilon <- function(
     lapply(seq(1, feature_number, 1), 
            function(x){
              update_grid_approximate_with_theta_and_epsilon(
-               feature_index = x, 
+               feature_i = x, 
                grid_theta = grid_theta, 
                grid_epsilon = grid_epsilon, 
-               z_bar = noisy_creature_observation[x], 
+               observations = noisy_creature_observation[x], 
                alpha_theta = alpha_prior, 
                beta_theta = beta_prior,
                alpha_epsilon = alpha_epsilon, 
@@ -91,10 +91,10 @@ grid_approximate_creature_with_theta_and_epsilon <- function(
     lapply(seq(1, feature_number, 1), 
            function(x){
              update_grid_approximate_with_theta_and_epsilon(
-               feature_index = x, 
+               feature_i = x, 
                grid_theta = grid_theta, 
                grid_epsilon = grid_epsilon, 
-               z_bar = noisy_creature_observation[,x], 
+               observations = noisy_creature_observation[,x], 
                alpha_theta = alpha_prior, 
                beta_theta = beta_prior,
                alpha_epsilon = alpha_epsilon, 
@@ -104,6 +104,7 @@ grid_approximate_creature_with_theta_and_epsilon <- function(
     ) %>% 
       bind_rows()
   }
+  
 
   
   
@@ -143,55 +144,48 @@ update_grid_approximate_with_theta <- function(feature_index = 1,
   
 }
 
+  
+  
+  
 update_grid_approximate_with_theta_and_epsilon <- function(
-  feature_index,
-  grid_theta,
+  feature_i, 
+  grid_theta, 
   grid_epsilon, 
-  z_bar, 
-  alpha_theta, 
-  beta_theta,
-  alpha_epsilon, 
-  beta_epsilon
+  observations, 
+  alpha_theta, beta_theta, 
+  alpha_epsilon, beta_epsilon
 ){
+  
+
   samps <- expand_grid(theta = grid_theta,
                        epsilon = grid_epsilon) 
   
   
-  
-  
   samps$unnormalized_log_posterior <- mapply(function(x, y) 
-    lp_theta_given_z(z_bar = z_bar, 
-                                                                                                theta = x, 
-                                                                                                epsilon = y, 
-                                                                                                alpha_theta = alpha_theta, 
-                                                                                                beta_theta = beta_theta, 
-                                                                                                alpha_epsilon = alpha_epsilon, 
-                                                                                                beta_epsilon = beta_epsilon), 
-                                             samps$theta, 
-                                             samps$epsilon)
+    lp_theta_given_z(z_bar = observations, 
+                     theta = x, 
+                     epsilon = y, 
+                     alpha_theta = alpha_theta, 
+                     beta_theta = beta_theta,
+                     alpha_epsilon = alpha_epsilon, 
+                     beta_epsilon = beta_epsilon), 
+    samps$theta, 
+    samps$epsilon)
   
+  samps$log_posterior = samps$unnormalized_log_posterior - matrixStats::logSumExp(samps$unnormalized_log_posterior)
   
-
-  
-  samps$log_posterior <- samps$unnormalized_log_posterior - 
-    matrixStats::logSumExp(samps$unnormalized_log_posterior)
   
   theta_posterior <- samps %>%
     group_by(theta) %>%
     summarise(
       log_posterior = matrixStats::logSumExp(log_posterior) + 
         log(1/length(log_posterior))) %>%
-    mutate(posterior = exp(log_posterior))
+    mutate(posterior = exp(log_posterior)) %>% 
+    mutate(feature_index = feature_i)
   
-  
-  theta_posterior$feature_index <- feature_index
   
   return(theta_posterior)
   
 }
-  
-  
-  
-
 
 

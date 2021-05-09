@@ -21,7 +21,7 @@ get_kl_for_creature <- function(distribution_df){
 
 
 
-get_kl_for_feature <- function(feature = 3, 
+get_kl_for_feature <- function(feature, 
                                distribution_df = all_updates){
   
   total_update_number <- length(distribution_df %>% 

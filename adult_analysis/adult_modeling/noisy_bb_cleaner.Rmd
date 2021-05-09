@@ -211,16 +211,26 @@ updates = nrow(three_observations)
 datalist = list()
 for (i in seq(1, updates, 1)){
   
-  post_first_update_theta_epsilon_approx <- grid_approximate_creature_with_theta_and_epsilon(
-  grid_theta = grid_theta, 
-  grid_epsilon = grid_epsilon, 
-  noisy_creature_observation = three_observations[1:i, ], 
-  alpha_prior = 1, 
-  beta_prior = 1,
-  alpha_epsilon = 10, 
-  beta_epsilon = 1
-) %>% 
-    mutate(update_number = i)
+  
+  post_first_update_theta_epsilon_approx <- grid_approximate_creature_with_theta_and_epsilon(grid_theta = grid_theta, 
+                         grid_epsilon = grid_epsilon, 
+                         noisy_creature_observation = three_observations[1:i, ], 
+                         alpha_prior = 1, 
+                         beta_prior= 1, 
+                         alpha_epsilon = 1, beta_epsilon = 10) %>% 
+    mutate(update_number = i) 
+
+  
+#   post_first_update_theta_epsilon_approx <- grid_approximate_creature_with_theta_and_epsilon(
+#   grid_theta = grid_theta, 
+#   grid_epsilon = grid_epsilon, 
+#   noisy_creature_observation = three_observations[1:i, ], 
+#   alpha_prior = 1, 
+#   beta_prior = 1,
+#   alpha_epsilon = 10, 
+#   beta_epsilon = 1
+# ) %>% 
+#     mutate(update_number = i)
   
    datalist[[i]] <-  post_first_update_theta_epsilon_approx
   
@@ -239,17 +249,19 @@ is it something wrong with doing grid appproximation on epsilon?
 datalist = list()
 for (i in seq(1, updates, 1)){
   
-  post_first_update_theta_approx <- grid_approximate_creature_with_theta(
-  grid_theta = grid_theta, 
-  grid_epsilon = grid_epsilon, 
-  noisy_creature_observation = three_observations[1:i, ], 
-  alpha_prior = 1, 
-  beta_prior = 1,
-  alpha_epsilon = 10, 
-  beta_epsilon = 1
-) %>% 
-    mutate(update_number = i) %>% 
-    rename(log_posterior = normalized_log_posterior)
+
+  
+   post_first_update_theta_approx <- grid_approximate_creature_with_theta(
+   grid_theta = grid_theta, 
+   epsilon = 0.2, 
+   noisy_creature_observation = three_observations[1:i, ], 
+   alpha_prior = 1, 
+   beta_prior = 1,
+   alpha_epsilon = 10, 
+   beta_epsilon = 1
+ ) %>% 
+     mutate(update_number = i) %>% 
+     rename(log_posterior = normalized_log_posterior)
   
    datalist[[i]] <-  post_first_update_theta_approx
   
@@ -269,9 +281,15 @@ all_updates_theta <- dplyr::bind_rows(datalist)
 y_1
 y_2
 y_3
+y_1
 all_updates %>% 
-  filter(update_number %in% seq(1, 20, 1)) %>% 
-  ggplot(aes(x = theta, y = exp(log_posterior), color = update_number)) + 
+  #filter(update_number %in% seq(1, 10, 1)) %>% 
+  ggplot(aes(x = theta, y = posterior, color = update_number)) + 
+  geom_point()+ 
+  facet_wrap(~feature_index)
+
+all_updates_theta %>% 
+   ggplot(aes(x = theta, y = exp(log_posterior), color = update_number)) + 
   geom_point()+ 
   facet_wrap(~feature_index)
 ```
@@ -325,20 +343,34 @@ kl_df_theta_only %>%
 ```
 
 ```{r}
+y_1
+y_2
+y_3
+all_updates_kl <- get_kl_for_creature(all_updates)
 
-all_updates_theta_kl <- get_kl_for_creature(all_updates_theta)
-
-all_updates_theta_kl %>% 
+all_updates_kl %>% 
   group_by(update_step) %>% 
   summarise(kl_creature = sum(kl)) %>% 
   ggplot(aes(x = update_step, 
              y = kl_creature)) + 
   geom_line() #+ 
   #facet_wrap(~feature_index)
+
+all_updates_kl %>% 
+   ggplot(aes(x = update_step, 
+             y = kl)) + 
+  geom_line() + 
+  facet_wrap(~feature_index)
+
   
 ```
 
 
+```{r}
+y_1
+y_2
+y_3
+```
 
 ```{r}
 all_updates

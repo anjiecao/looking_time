@@ -65,6 +65,9 @@ y_3 = rbernoulli(p = theta, n = 1)
 z_bar = c(noisy_observation(y = y_1, n = n_samps, epsilon = epsilon),
           noisy_observation(y = y_2, n = n_samps, epsilon = epsilon),
           noisy_observation(y = y_3, n = n_samps, epsilon = epsilon))
+
+
+
 ```
 
 # Inference direction
@@ -175,6 +178,153 @@ posterior_entropy
 ```{r}
 grid_theta <- seq(0.01, .99, .01)
 grid_epsilon <- seq(0.01, .99, .01)
+source(here("adult_modeling/scripts/noisy_update.R"))
+
+
+
+mike_version_creature <- function(
+  grid_theta,
+  grid_epsilon, 
+  noisy_creature_observation, 
+  alpha_prior, 
+  beta_prior,
+  alpha_epsilon, 
+  beta_epsilon
+){
+  # special case this is for when only update based on 1 observation
+  
+  if(!is.matrix(noisy_creature_observation)){
+    feature_number = length(noisy_creature_observation)
+    
+    lapply(seq(1, feature_number, 1), 
+           function(x){
+             mike_version_grid_approx(
+               feature_i = x, 
+               grid_theta = grid_theta, 
+               grid_epsilon = grid_epsilon, 
+               observations = noisy_creature_observation[x], 
+               alpha_theta = alpha_prior, 
+               beta_theta = beta_prior,
+               alpha_epsilon = alpha_epsilon, 
+               beta_epsilon = beta_epsilon
+             )
+           }
+    ) %>% 
+      bind_rows()
+    
+    
+    
+  }else{
+    feature_number = ncol(noisy_creature_observation)
+    
+    lapply(seq(1, feature_number, 1), 
+           function(x){
+             mike_version_grid_approx(
+               feature_i = x, 
+               grid_theta = grid_theta, 
+               grid_epsilon = grid_epsilon, 
+               observations = noisy_creature_observation[,x], 
+               alpha_theta = alpha_prior, 
+               beta_theta = beta_prior,
+               alpha_epsilon = alpha_epsilon, 
+               beta_epsilon = beta_epsilon
+             )
+           }
+    ) %>% 
+      bind_rows()
+  }
+
+  
+  
+  
+  
+}
+
+
+
+mike_version_grid_approx <- function(
+  feature_i, 
+  grid_theta, 
+  grid_epsilon, 
+  observations, 
+  alpha_theta, beta_theta, 
+  alpha_epsilon, beta_epsilon
+){
+  
+
+samps <- expand_grid(theta = grid_theta,
+                     epsilon = grid_epsilon) 
+  
+
+samps$unnormalized_log_posterior <- mapply(function(x, y) 
+                                   lp_theta_given_z(z_bar = observations, 
+                                                    theta = x, 
+                                                    epsilon = y, 
+                                                    alpha_theta = alpha_theta, 
+                                                    beta_theta = beta_theta,
+                                                    alpha_epsilon = alpha_epsilon, 
+                                                    beta_epsilon = beta_epsilon), 
+                                   samps$theta, 
+                                   samps$epsilon)
+
+samps$log_posterior = samps$unnormalized_log_posterior - matrixStats::logSumExp(samps$unnormalized_log_posterior)
+
+
+theta_posterior <- samps %>%
+  group_by(theta) %>%
+  summarise(
+    log_posterior = matrixStats::logSumExp(log_posterior) + 
+              log(1/length(log_posterior))) %>%
+  mutate(posterior = exp(log_posterior)) %>% 
+  mutate(feature_index = feature_i)
+
+
+return(theta_posterior)
+  
+}
+
+
+test_creature_background_theta <- c(0.01, 0.01, 0.01, 0.99, 0.99, 0.8)
+test_creature_deviant_theta <- c(0.2, 0.8, 0.8, 0.2, 0.2, 0.9)
+#test creature
+# these will be a block [y_1, y_2, y_3, y_4, z_1, y_5]
+y_1 <- sapply(test_creature_background_theta, function(x){rbernoulli(p = x, n = 1)})
+y_2 <- sapply(test_creature_background_theta, function(x){rbernoulli(p = x, n = 1)})
+y_3 <- sapply(test_creature_background_theta, function(x){rbernoulli(p = x, n = 1)})
+y_4 <- sapply(test_creature_background_theta, function(x){rbernoulli(p = x, n = 1)})
+z_1 <-  sapply(test_creature_deviant_theta, function(x){rbernoulli(p = x, n = 1)})
+#y_5 <- sapply(test_creature_background_theta, function(x){rbernoulli(p = x, n = 1)})
+
+# in each trial collects like 100 times
+y_1_noisy_observation <- rbind(noisy_observation_creature(y_1, 20, 0.02))
+
+three_observations <- rbind(y_1_noisy_observation, 
+                            y_2_noisy_observation, 
+                            y_3_noisy_observation)
+
+mike_v <- mike_version_creature(grid_theta = grid_theta, 
+                         grid_epsilon = grid_epsilon, 
+                         noisy_creature_observation = three_observations, 
+                         alpha_prior = 1, 
+                         beta_prior= 1, 
+                         alpha_epsilon = alpha_epsilon, beta_epsilon = beta_epsilon)
+
+
+```
+
+
+```{r}
+mike_v %>% 
+  ggplot(aes(x = theta, y = posterior)) + 
+  geom_line() + 
+  facet_wrap(~feature_index)
+```
+
+
+
+```{r}
+grid_theta <- seq(0.01, .99, .01)
+grid_epsilon <- seq(0.01, .99, .01)
 
 samps <- expand_grid(theta = grid_theta,
                      epsilon = grid_epsilon) 
@@ -223,7 +373,7 @@ theta_posterior <- samps %>%
               log(1/length(log_posterior))) %>%
   mutate(posterior = exp(log_posterior))
 
-ggplot(theta_posterior, 
+ggplot(mike_v, 
        aes(x = theta, y = posterior)) +
   geom_line() + 
   viridis::scale_color_viridis() +
