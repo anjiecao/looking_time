@@ -20,7 +20,7 @@ this is easy fill in later
 ```{r}
 
 
-b_1 <- make_creature(total_feature = 20, 
+b_1 <- make_creature(total_feature = 10, 
                      
                      feature_theta = 0.8,   # currently assuming all situations where there are features the theta are the same 
 
@@ -35,29 +35,68 @@ d_1 <- make_dissimilar_creature(creature = b_1,
 t <- generate_creature_sequence(
   block_length = 8, 
   deviant_positions = c(3, 5),  # takes a vector, 
-  total_feature = 100, 
+  total_feature = 10, 
   feature_theta = 0.8, 
-  feature_number = 20, 
+  feature_number = 5, 
   dissimilar_ratio = 0.8)
 
 
 
-       
+obs<-generate_noisy_observations(
+                            block = t, 
+                            exposure_type = "self_paced", 
+                            short_exposure_samps = 1, 
+                            long_exposure_samps = 10, 
+                            normal_exposure_samps = 5, 
+                            epsilon = 0.02)                     
 
-obs<-generate_noisy_observations(t, 
-                            "self_paced", 
-                            10, 
-                            10, 
-                            5, 
-                            0.02)                     
 ```
 
-# generate creature sequence 
-
+## try new stimuli
 ```{r}
+grid_theta <- seq(0.01, 0.99, 0.05)
+grid_epsilon <- seq(0.01, 0.99, 0.05)
+
+all_observaion <- do.call(rbind, obs)
+
+updates = nrow(all_observaion)
 
 
+# let's just look at 10 updates first
+
+datalist = list()
+for (i in seq(1, updates, 1)){
+  
+  
+  post_first_update_theta_epsilon_approx <- grid_approximate_creature_with_theta_and_epsilon(grid_theta = grid_theta, 
+                         grid_epsilon = grid_epsilon, 
+                         noisy_creature_observation = all_observaion[1:i, ], 
+                         alpha_prior = 1, 
+                         beta_prior= 1, 
+                         alpha_epsilon = 1, beta_epsilon = 10) %>% 
+    mutate(update_number = i) 
+
+  
+#   post_first_update_theta_epsilon_approx <- grid_approximate_creature_with_theta_and_epsilon(
+#   grid_theta = grid_theta, 
+#   grid_epsilon = grid_epsilon, 
+#   noisy_creature_observation = three_observations[1:i, ], 
+#   alpha_prior = 1, 
+#   beta_prior = 1,
+#   alpha_epsilon = 10, 
+#   beta_epsilon = 1
+# ) %>% 
+#     mutate(update_number = i)
+  
+   datalist[[i]] <-  post_first_update_theta_epsilon_approx
+  
+  
+  
+}
+all_updates <- dplyr::bind_rows(datalist)
 ```
+
+
 
 ## test creature 
 ```{r}
