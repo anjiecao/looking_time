@@ -1,3 +1,46 @@
+
+
+update_posterior_distribution <- function(grid_theta, 
+                                          grid_epsilon, 
+                                          observations, 
+                                          alpha_prior, 
+                                          beta_prior, 
+                                          alpha_epsilon, 
+                                          beta_epsilon){
+  
+  
+  
+  all_observaion <- do.call(rbind, observations)
+  updates = nrow(all_observaion)
+  
+  
+  datalist = list()
+  for (i in seq(1, updates, 1)){
+    
+    
+    post_first_update_theta_epsilon_approx <- grid_approximate_creature_with_theta_and_epsilon(grid_theta = grid_theta, 
+                                                                                               grid_epsilon = grid_epsilon, 
+                                                                                               noisy_creature_observation = all_observaion[1:i, ], 
+                                                                                               alpha_prior = alpha_prior, 
+                                                                                               beta_prior= beta_prior, 
+                                                                                               alpha_epsilon = alpha_epsilon, beta_epsilon = beta_epsilon) %>% 
+      mutate(update_number = i) 
+    
+    
+    
+    datalist[[i]] <-  post_first_update_theta_epsilon_approx
+    
+    
+    
+  }
+  
+  all_updates <- dplyr::bind_rows(datalist)
+  
+  return(all_updates)
+  
+}
+
+
 lp_theta_given_z <- function(z_bar, 
                              theta, epsilon, 
                              alpha_theta, beta_theta, 

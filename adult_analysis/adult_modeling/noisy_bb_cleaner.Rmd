@@ -52,7 +52,52 @@ obs<-generate_noisy_observations(
 
 ```
 
-## try new stimuli
+
+
+```{r}
+
+grid_theta <- seq(0.1, 0.9, 0.2)
+grid_epsilon <- seq(0.1, 0.9, 0.2)
+alpha_prior = 1
+beta_prior = 1 
+alpha_epsilon = 1 
+beta_epsilon = 10
+
+
+
+sequential_update <- update_posterior_distribution(grid_theta = grid_theta, 
+                              grid_epsilon = grid_epsilon, 
+                              observations = obs, 
+                              alpha_prior = 1, 
+                              beta_prior = 1, 
+                              alpha_epsilon = 1, 
+                              beta_epsilon = 10
+                              )
+
+sequential_update_kl <- get_kl_for_creature(sequential_update) 
+
+
+```
+
+```{r}
+sequential_update_kl %>% 
+  group_by(update_step) %>% 
+  summarise(kl_creature = sum(kl)) %>% 
+  ggplot(aes(x = update_step, 
+             y = kl_creature)) + 
+  geom_line() #+ 
+  #facet_wrap(~feature_index)
+  
+
+sequential_update_kl %>% 
+  group_by(update_step) %>% 
+  ggplot(aes(x = update_step, 
+             y = kl)) + 
+  geom_line() + 
+  facet_wrap(~feature_index)
+```
+
+
 ```{r}
 #grid_theta <- seq(0.01, 0.99, 0.05)
 #grid_epsilon <- seq(0.01, 0.99, 0.05)
@@ -102,7 +147,7 @@ all_updates_kl <- get_kl_for_creature(all_updates)
 ```
 
 ```{r}
-all_updates %>% 
+test %>% 
   #filter(update_number %in% seq(1, 10, 1)) %>% 
   ggplot(aes(x = theta, y = posterior, color = update_number)) + 
   geom_point()+ 
