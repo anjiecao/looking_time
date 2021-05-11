@@ -42,16 +42,27 @@ t <- generate_creature_sequence(
 
 
 
-obs<-generate_noisy_observations(
+obs_1<-generate_noisy_observations(
                             block = t, 
                             exposure_type = "self_paced", 
                             short_exposure_samps = 1, 
                             long_exposure_samps = 10, 
                             normal_exposure_samps = 10, 
-                            epsilon = 0.02)                     
+                            epsilon = 0.02)    
+
+obs_2<-generate_noisy_observations(
+                            block = t, 
+                            exposure_type = "forced_short", 
+                            short_exposure_samps = 1, 
+                            long_exposure_samps = 10, 
+                            normal_exposure_samps = 10, 
+                            epsilon = 0.02)    
 
 ```
 
+```{r}
+
+```
 
 
 ```{r}
@@ -64,37 +75,64 @@ alpha_epsilon = 1
 beta_epsilon = 10
 
 
-
-sequential_update <- update_posterior_distribution(grid_theta = grid_theta, 
+# i should specify the trial number 
+obs_1_sequential_update <- update_posterior_distribution(grid_theta = grid_theta, 
                               grid_epsilon = grid_epsilon, 
-                              observations = obs, 
+                              observations = obs_1, 
                               alpha_prior = 1, 
                               beta_prior = 1, 
                               alpha_epsilon = 1, 
                               beta_epsilon = 10
                               )
 
-sequential_update_kl <- get_kl_for_creature(sequential_update) 
+obs_1_sequential_update_kl <- get_kl_for_creature(obs_1_sequential_update) 
+
+
+obs_2_sequential_update <- update_posterior_distribution(grid_theta = grid_theta, 
+                              grid_epsilon = grid_epsilon, 
+                              observations = obs_2, 
+                              alpha_prior = 1, 
+                              beta_prior = 1, 
+                              alpha_epsilon = 1, 
+                              beta_epsilon = 10
+                              )
+
+obs_2_sequential_update_kl <- get_kl_for_creature(obs_2_sequential_update) 
+
 
 
 ```
 
 ```{r}
-sequential_update_kl %>% 
-  group_by(update_step) %>% 
+obs_1_sequential_update_kl <- obs_1_sequential_update_kl %>% 
+  mutate(exp_type = "self-paced") 
+  
+obs_2_sequential_update_kl <- obs_2_sequential_update_kl %>% 
+  mutate(exp_type = "forced_short")
+
+obs <- bind_rows(obs_1_sequential_update_kl, 
+                 obs_2_sequential_update_kl)
+
+  
+obs %>% 
+  group_by(update_step, exp_type) %>% 
   summarise(kl_creature = sum(kl)) %>% 
   ggplot(aes(x = update_step, 
-             y = kl_creature)) + 
+             y = kl_creature, 
+             color = exp_type)) + 
   geom_line() #+ 
   #facet_wrap(~feature_index)
   
 
-sequential_update_kl %>% 
-  group_by(update_step) %>% 
+obs %>% 
+  group_by(update_step, exp_type) %>% 
   ggplot(aes(x = update_step, 
-             y = kl)) + 
+             y = kl, 
+             color = exp_type)) + 
   geom_line() + 
   facet_wrap(~feature_index)
+
+
 ```
 
 
