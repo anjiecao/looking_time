@@ -10,7 +10,14 @@ update_posterior_distribution <- function(grid_theta,
   
   
   
-  all_observaion <- do.call(rbind, observations)
+  all_observaion <- observations %>% 
+    select(-c(trial_num, trial_observation_num)) %>% 
+    as.matrix()
+  
+  trial_num <- observations$trial_num 
+  trial_observation_num <- observations$trial_observation_num
+  
+  
   updates = nrow(all_observaion)
   
   
@@ -35,7 +42,12 @@ update_posterior_distribution <- function(grid_theta,
   }
   
   all_updates <- dplyr::bind_rows(datalist)
-  
+  all_updates <- all_updates %>% left_join(tibble(update_number = all_updates %>% 
+                                                    distinct(update_number) %>% pull(),
+                                                   trial_num = trial_num, 
+                                                  trial_observation_num = trial_observation_num), 
+                                           by = "update_number")
+
   return(all_updates)
   
 }

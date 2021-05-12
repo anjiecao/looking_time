@@ -124,7 +124,27 @@ generate_noisy_observations <- function(block,
   all_observations[[1]] <- first_trial_observation
   all_observations[2:length(all_observations)] <- remaining_trials
   
-  return(all_observations)
+  # this is to make sure we can keep track of the trial number and the number of observations for each trial 
+  obs <-  as.data.frame(do.call(rbind, all_observations))
+  
+  
+  obs_length = as.vector(lapply(all_observations, function(x){
+    length(x)
+  }))
+  creature_feature_n <- ncol(obs)
+  obs_num <- unlist(obs_length) / creature_feature_n
+  trial_observation_num <- lapply(obs_num, 
+                                  function(x){
+                                    rep(x, x)
+                                  }) %>% unlist()
+  
+  trial_num <- rep(seq(obs_num), obs_num)
+  
+  obs$trial_num <- rep(seq(obs_num), obs_num)
+  obs$trial_observation_num <- trial_observation_num
+  
+  
+  return(obs)
   
 }
 

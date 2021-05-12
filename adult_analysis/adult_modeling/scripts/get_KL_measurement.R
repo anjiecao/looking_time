@@ -28,6 +28,12 @@ get_kl_for_feature <- function(feature,
                                   distinct(update_number) %>% 
                                   pull())
   
+  index_track <- distribution_df %>% 
+    distinct(update_number, trial_num, trial_observation_num) %>% 
+    # because we won't be look at the first posterior 
+    tail(-1)
+  
+  
   all_learning_step_updates <- c()
   
   for(update_i in 2:total_update_number){
@@ -48,13 +54,8 @@ get_kl_for_feature <- function(feature,
     kl <- c() 
     for(t in all_thetas){
       
-      second_update_posterior <- second_update %>% 
-        filter(theta == t) %>% 
-        pull(log_posterior)
-      
-      first_update_posterior <- first_update %>% 
-        filter(theta == t)%>% 
-        pull(log_posterior)
+      second_update_posterior <- 
+        
       
       # because everything is in log
       kl_for_t <- second_update_posterior + second_update_posterior - first_update_posterior
@@ -71,6 +72,9 @@ get_kl_for_feature <- function(feature,
   learning_updates <- tibble("kl" = all_learning_step_updates) %>% 
     mutate(update_step = row_number() + 1, 
            feature_index = feature) 
+  
+  learning_updates$trial_num <- index_track$trial_num
+  learning_updates$trial_observation_num <- index_track$trial_observation_num
   
   return(learning_updates)
   
