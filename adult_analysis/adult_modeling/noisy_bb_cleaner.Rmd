@@ -77,8 +77,8 @@ obs_2<-generate_noisy_observations(
 
 grid_theta <- seq(0.1, 1, 0.2)
 grid_epsilon <- seq(0.1, 1, 0.2)
-alpha_prior = 1
-beta_prior = 1 
+alpha_prior = 5
+beta_prior = 1
 alpha_epsilon = 1 
 beta_epsilon = 10
 
@@ -86,8 +86,8 @@ beta_epsilon = 10
 obs_1_sequential_update <- update_posterior_distribution(grid_theta = grid_theta, 
                               grid_epsilon = grid_epsilon, 
                               observations = obs_1, 
-                              alpha_prior = 1, 
-                              beta_prior = 1, 
+                              alpha_prior = alpha_prior, 
+                              beta_prior = beta_prior , 
                               alpha_epsilon = 1, 
                               beta_epsilon = 10
                               )
@@ -98,8 +98,8 @@ obs_1_sequential_update_kl <- get_kl_for_creature(obs_1_sequential_update)
 obs_2_sequential_update <- update_posterior_distribution(grid_theta = grid_theta, 
                               grid_epsilon = grid_epsilon, 
                               observations = obs_2, 
-                              alpha_prior = 1, 
-                              beta_prior = 1, 
+                              alpha_prior = alpha_prior, 
+                              beta_prior = beta_prior, 
                               alpha_epsilon = 1, 
                               beta_epsilon = 10
                               )
@@ -140,17 +140,342 @@ obs %>%
   geom_line()
 ```
 
+```{r}
+obs_1_sequential_update_kl %>% 
+  group_by(update_step) %>% 
+  summarise(kl_creature = sum(kl)) %>% 
+  ggplot(aes(x = update_step, 
+             y = kl_creature)) + 
+  geom_line()
+```
+
+
 
 ```{r}
 saveRDS(obs_1_sequential_update, 
-        file = here("adult_modeling/obs_1_sequential_update.rds"))
+        file = here("adult_modeling/obs_1_a1b5_sequential_update.rds"))
 
 saveRDS(obs_2_sequential_update, 
-        file = here("adult_modeling/obs_2_sequential_update.rds"))
+        file = here("adult_modeling/obs_2_a1b5_sequential_update.rds"))
 
-obs_1_sequential_update_kl <- get_kl_for_creature(obs_1_sequential_update) 
+
+saveRDS(obs_1_sequential_update_kl, 
+        file = here("adult_modeling/obs_1_a1b5_sequential_update_kl.rds"))
+
+saveRDS(obs_2_sequential_update_kl, 
+        file = here("adult_modeling/obs_2_a5b1_update_kl.rds"))
+
+
 
 ```
+
+# try calculating surprise 
+
+
+entropy of a random variable X is defined as 
+
+$$H(X) = - \sum_{x}p(x)logp(x)$$
+
+in our case we want to calculate the entropy of an observation given the theta 
+
+for a specific \theta 
+
+$$H(z_i|\theta = \theta_1) = - \sum_{z_i}p(z_i|\theta)logp(z_i|\theta)$$
+then we sum across all \theta 
+
+$$H(z_i|\theta) = \sum_{\theta_n}p(\theta_n)H(z_i|\theta_n)$$
+but above is notion taken from information theory, what abt the more cognitive science related version? 
+
+we start with the concept of prior 
+$$g_0 = H(\theta) = -\sum_{\theta}p(\theta)logp(\theta)$$
+and when we make some observations $$z = z_{i}$$, and then we will have an updated posterior uncertainty 
+
+$$g_{1}(z_i) = H(\theta|z_i) = -\sum_{\theta}p(\theta|z_i)logp(\theta|z_i)$$
+so information gain is basically (IG): 
+
+$$IG(\theta; z_i) = g_{0} - g_1(z_i)$$
+
+maybe we will want to consider each individual trial as an "experiment" and all observations from that trial as data from that experiment? but maybe math will work differently? maybe we can't simply sum them up because of the noise parameters? 
+
+
+but let's do it baby step! simple case 
+
+
+```{r}
+get_entropy_for_feature_one_update <- function(lps){
+  -sum(lps * exp(lps))
+}
+
+get_entropy_for_feature_updates <- function(feature_i, updates_df){
+  
+  feature_df <- updates_df %>% 
+    filter(feature_index == feature_i)
+  
+  thetas <- feature_df %>% 
+    distinct(theta) %>% 
+    pull()
+  
+  all_updates <- feature_df %>% 
+  distinct(update_number) %>% 
+  pull()
+  
+  
+  # FIXME: currently not including the prior's entropy
+  all_entropy <- c()
+  
+  for (i in all_updates){
+    
+    current_lps <- feature_df %>% 
+        filter(update_number == i) %>% 
+        pull(log_posterior) 
+    current_ep <- get_entropy(current_lps)
+    all_entropy <- c(all_entropy, current_ep)
+  }
+    
+  entropy_df <- tibble(e = all_entropy, 
+                       predictability = -all_entropy,
+                       update_number = seq(1, length(all_entropy), 1)) %>% 
+    mutate(feature_index = feature_i)
+  
+  return(entropy_df)
+  
+}
+
+get_entropy_for_creature_udpates <- function(updates_df){
+  all_features <- updates_df %>% 
+    distinct(feature_index) %>% 
+    pull()
+  
+  lapply(all_features, function(x){
+    get_entropy_for_feature_updates(x, updates_df)
+  }) %>% 
+    bind_rows()
+  
+}
+
+obs_1_entropy <- get_entropy_for_creature_udpates(obs_1_sequential_update) 
+obs_2_entropy <- get_entropy_for_creature_udpates(obs_2_sequential_update) 
+```
+
+
+
+
+
+```{r}
+obs_1_entropy <- obs_1_entropy %>% 
+  mutate(complexity = "simple") 
+
+obs_2_entropy <- obs_2_entropy %>% 
+  mutate(complexity = "complex")
+
+obs_entropy <- bind_rows(obs_1_entropy, obs_2_entropy)
+
+obs_entropy %>% 
+  group_by(update_number, complexity) %>% 
+  summarise(sum_p = sum(predictability)) %>% 
+  ggplot(aes(x = update_number, y = sum_p, color = complexity)) + 
+  geom_line()
+```
+## surprise 
+
+```{r}
+get_surprise_for_feature_updates <- function(feature_i, updates_df){
+  
+  feature_df <- updates_df %>% 
+    filter(feature_index == feature_i)
+  
+  thetas <- feature_df %>% 
+    distinct(theta) %>% 
+    pull()
+  
+  all_updates <- feature_df %>% 
+  distinct(update_number) %>% 
+  pull()
+  
+  
+  # FIXME: currently not including the prior's surprise(?)
+  all_surprise <- c()
+  
+  for (i in all_updates){
+    
+    current_lps <- feature_df %>% 
+        filter(update_number == i) %>% 
+        pull(log_posterior) 
+    
+    current_s <-weighted.mean(x = -current_lps, w = exp(current_lps)) 
+    all_surprise <- c(all_surprise, current_s)
+  
+  }
+    
+  surprise_df <- tibble(surprise = all_surprise, 
+                       update_number = seq(1, length(all_surprise), 1)) %>% 
+    mutate(feature_index = feature_i)
+  
+  return(surprise_df)
+  
+}
+
+
+get_surprise_for_creature_updates <- function(updates_df){
+  
+  all_features <- updates_df %>% 
+    distinct(feature_index) %>% 
+    pull()
+  
+  lapply(all_features, function(x){
+    get_surprise_for_feature_updates(x, updates_df)
+  }) %>% 
+    bind_rows()
+  
+  
+}
+
+obs_1_surprise <- get_surprise_for_creature_updates(obs_1_sequential_update) 
+obs_2_surprise <- get_surprise_for_creature_updates(obs_2_sequential_update) 
+```
+
+
+```{r}
+obs_1_surprise <- obs_1_surprise %>% 
+  mutate(complexity = "simple") 
+
+obs_2_surprise <- obs_2_surprise %>% 
+  mutate(complexity = "complex")
+
+obs_surprise <- bind_rows(obs_1_surprise, obs_2_surprise)
+
+obs_surprise %>% 
+  group_by(update_number, complexity) %>% 
+  summarise(sum_surprise = sum(surprise)) %>% 
+  ggplot(aes(x = update_number, y = sum_surprise, color = complexity)) + 
+  geom_line()
+```
+
+
+
+```{r}
+thetas <- obs_1_sequential_update %>% 
+  distinct(theta) %>% 
+  pull()
+alpha_theta = 1
+beta_theta = 1
+
+prior_theta <- thetas
+prior_lp <- dbeta(x = thetas, shape1 = alpha_theta, shape2 = beta_theta, log = TRUE)
+
+prior_theta
+prior_lp
+
+g0 <- get_entropy(prior_lp)
+
+
+```
+
+g_1z is basically calculating from this: 
+```{r}
+obs1_lps <- obs_1_sequential_update %>% 
+  filter(update_number == 1) %>% 
+  filter(feature_index == 1) %>% 
+  pull(log_posterior) 
+
+g1 = get_entropy(obs1_lps)
+
+IG_1 = g0 - g1
+
+obs2_lps <- obs_1_sequential_update %>% 
+  filter(update_number == 2) %>% 
+  filter(feature_index == 1) %>% 
+  pull(log_posterior) 
+
+g2 = get_entropy(obs2_lps)
+
+IG_2 = g1 - g2
+
+obs3_lps <- obs_1_sequential_update %>% 
+  filter(update_number == 3) %>% 
+  filter(feature_index == 1) %>% 
+  pull(log_posterior) 
+
+g3 = get_entropy(obs3_lps)
+
+IG_3 = g2 - g3
+
+IG_1
+IG_2
+IG_3
+
+```
+
+ok this looks very sketchy, but it would be nice to see the curve 
+```{r}
+obs_f1_df <- obs_1_sequential_update %>% 
+  filter(feature_index == 1)
+
+all_updates <- obs_1_sequential_update %>% 
+  distinct(update_number) %>% 
+  pull()
+
+all_e <- c(g0)
+surprise <- c()
+all_IG <- c()
+for (i in all_updates){
+  
+  current_lps <- obs_f1_df %>% 
+  filter(update_number == i) %>% 
+  pull(log_posterior) 
+  current_ep <- get_entropy(current_lps)
+  all_e <- c(all_e, current_ep)
+
+  
+  ig = current_ep - all_e[i]
+  
+  all_IG <- c(all_IG, ig)
+  
+  current_s <- -current_lps
+  s<-weighted.mean(x = current_s, w = exp(current_lps)) 
+  surprise <- c(surprise, s)
+  
+}
+
+tibble("neg_entropy" = -all_e, 
+       "trial" = seq(0, length(all_e)-1,1)) %>% 
+  filter(trial > 1) %>% 
+  ggplot(aes(x = trial, y = neg_entropy)) + 
+  geom_line()
+
+tibble("ig" = all_IG, 
+       "trial" = seq(0, length(all_IG)-1,1)) %>% 
+  ggplot(aes(x = trial, y = ig)) + 
+  geom_line()
+
+tibble("surprise" = surprise, 
+       "trial" = seq(0, length(all_IG)-1,1)) %>% 
+  ggplot(aes(x = trial, y = surprise)) + 
+  geom_line()
+
+
+
+```
+
+oh well that's an epic fail
+
+let's give surprise a shot: 
+
+$$I(z_i) = -logp(z_i | \theta)$$
+
+$$-logp(z_i = 1| \theta) = -log(p(z_{i}|y_{i})p(y_{i} | \theta)p(\theta))$$
+
+```{r}
+f1_obs <- obs_1 %>% 
+  pull(V1)
+
+lp_z_ij_given_theta(zij = ??,
+                    theta = ??, 
+                    episolon = 0.02)
+
+```
+
+
 
 
 
@@ -626,7 +951,7 @@ in our case it will be
 $$D_{KL}(p(\theta|z_{i+1}) || p(\theta|z_{i})) = \sum_{x \in X} p(\theta|z_{i+1})  log\frac{p(\theta|z_{i+1})}{p(\theta|z_{i}))}$$
 maybe we can pretend theta is concrete like we've been doing? so effectively we will have 
 
-$$D_{KL}(p(\theta|z_{i+1}) || p(\theta|z_{i})) = \sum_{\theta \in [\theta_{1}, \theta_{2}...]} p(\theta|z_{i+1})  log\frac{p(\theta|z_{i+1})}{p(\theta|z_{i})}$$
+$$D_{KL}(p(\theta|z_{i+1}) || p(\theta|z_{i})) = \sum_{\theta \in [\theta_{1}, \theta_{2}...\theta_{n}]} p(\theta|z_{i+1})  log\frac{p(\theta|z_{i+1})}{p(\theta|z_{i})}$$
 
 ```{r}
 source("scripts/get_KL_measurement.R")

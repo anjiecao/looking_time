@@ -22,7 +22,7 @@ get_kl_for_creature <- function(distribution_df){
 
 
 get_kl_for_feature <- function(feature, 
-                               distribution_df = all_updates){
+                               distribution_df){
   
   total_update_number <- length(distribution_df %>% 
                                   distinct(update_number) %>% 
@@ -50,11 +50,17 @@ get_kl_for_feature <- function(feature,
     first_update <- distribtuion_for_feature %>% 
       filter(update_number == first_update_index)
     
-    all_thetas <- all_updates %>% distinct(theta) %>% pull()
+    all_thetas <- distribution_df %>% distinct(theta) %>% pull()
     kl <- c() 
     for(t in all_thetas){
       
-      second_update_posterior <- 
+      second_update_posterior <- second_update %>% 
+        filter(theta == t) %>% 
+        pull(log_posterior)
+      
+      first_update_posterior <- first_update %>% 
+        filter(theta == t)%>% 
+        pull(log_posterior)
         
       
       # because everything is in log
