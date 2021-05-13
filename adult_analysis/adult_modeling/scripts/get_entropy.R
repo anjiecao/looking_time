@@ -24,7 +24,7 @@ get_entropy_for_feature_updates <- function(feature_i, updates_df){
     current_lps <- feature_df %>% 
       filter(update_number == i) %>% 
       pull(log_posterior) 
-    current_ep <- get_entropy(current_lps)
+    current_ep <- get_entropy_for_feature_one_update(current_lps)
     all_entropy <- c(all_entropy, current_ep)
   }
   

@@ -114,12 +114,11 @@ so the entropy at timestep 0 is
 $$g_0 = H(\theta) = -\sum_{\theta}p(\theta)logp(\theta)$$
 
 
-
 and after i update the entropy will become 
 $$g_{i}(z_i) = H(\theta|z_i) = -\sum_{\theta}p(\theta|z_i)logp(\theta|z_i)$$
 
 translate the computation to code looks something like this: 
-```{r}
+```{r, eval=FALSE}
 get_entropy_for_feature_one_update <- function(lps){
   -sum(lps * exp(lps))
 }
@@ -128,17 +127,45 @@ get_entropy_for_feature_one_update <- function(lps){
 
 Poli uses negative entropy as a measurement for predictability, so here we will do something similar. 
 
-
 ```{r}
+s_a1b1_e <- get_entropy_for_creature_udpates(s_a1b1) %>% 
+  mutate(complexity = "simple", 
+         params = "a1b1")
+c_a1b1_e <- get_entropy_for_creature_udpates(c_a1b1) %>% 
+  mutate(complexity = "complex", 
+         params = "a1b1")
 
+s_a1b5_e <- get_entropy_for_creature_udpates(s_a1b5) %>% 
+  mutate(complexity = "simple", 
+         params = "a1b5")
+
+c_a1b5_e <- get_entropy_for_creature_udpates(c_a1b5)%>% 
+  mutate(complexity = "complex", 
+         params = "a1b5")
+
+s_a5b1_e <- get_entropy_for_creature_udpates(s_a5b1)%>% 
+  mutate(complexity = "simple", 
+         params = "a5b1")
+c_a5b1_e <- get_entropy_for_creature_udpates(c_a5b1)%>% 
+  mutate(complexity = "complex", 
+         params = "a5b1")
+
+e_all <- bind_rows(s_a1b1_e, c_a1b1_e, 
+                   s_a1b5_e, c_a1b5_e, 
+                   s_a5b1_e, c_a5b1_e) 
 ```
 
-```{r}
-
-```
+a little bit weird, shouldn't this be upside down? this is the entropy not the negative entropy aka the surprise 
 
 ```{r}
-
+e_all %>% 
+  group_by(update_number, complexity, params) %>% 
+  summarise(entropy_creature = sum(e)) %>% 
+  ggplot(aes(x = update_number, 
+             y = entropy_creature, 
+             color = complexity)) + 
+  geom_line() + 
+  facet_wrap(~params)
 ```
 
 
@@ -147,9 +174,46 @@ Poli uses negative entropy as a measurement for predictability, so here we will 
 this is what got me confused the most.
 currently calculating as: surprisal at observation $z_{t}$ just the weighted average of the surprisal for each value of theta, and take the average of those surprisals weighed by p(theta = this_particular_value_of_theta|z) (so doing an weighted average over $$p(\theta|z_{t}))$$? 
 
+this is looks exactly like the entropy so i must be doing something wrong?? unless they are technically the same thing?
 
 ```{r}
+s_a1b1_s <- get_surprise_for_creature_updates(s_a1b1) %>% 
+  mutate(complexity = "simple", 
+         params = "a1b1")
+c_a1b1_s <- get_surprise_for_creature_updates(c_a1b1) %>% 
+  mutate(complexity = "complex", 
+         params = "a1b1")
 
+s_a1b5_s <- get_surprise_for_creature_updates(s_a1b5) %>% 
+  mutate(complexity = "simple", 
+         params = "a1b5")
+
+c_a1b5_s <- get_surprise_for_creature_updates(c_a1b5)%>% 
+  mutate(complexity = "complex", 
+         params = "a1b5")
+
+s_a5b1_s <- get_surprise_for_creature_updates(s_a5b1)%>% 
+  mutate(complexity = "simple", 
+         params = "a5b1")
+c_a5b1_s <- get_surprise_for_creature_updates(c_a5b1)%>% 
+  mutate(complexity = "complex", 
+         params = "a5b1")
+
+s_all <- bind_rows(s_a1b1_s, c_a1b1_s, 
+                   s_a1b5_s, c_a1b5_s, 
+                   s_a5b1_s, c_a5b1_s) 
+```
+
+
+```{r}
+s_all %>% 
+  group_by(update_number, complexity, params) %>% 
+  summarise(surprise_creature = sum(surprise)) %>% 
+  ggplot(aes(x = update_number, 
+             y = surprise_creature, 
+             color = complexity)) + 
+  geom_line() + 
+  facet_wrap(~params)
 ```
 
 
