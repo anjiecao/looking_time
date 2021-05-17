@@ -1,0 +1,277 @@
+---
+title: "noisy_bb_learning_measurement"
+author: "anjie"
+date: "5/12/2021"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(here)
+
+source(here("adult_modeling/scripts/get_entropy.R"))
+source(here("adult_modeling/scripts/get_KL_measurement.R"))
+source(here("adult_modeling/scripts/get_surprise.R"))
+
+```
+
+# first load the updates 
+
+Stimuli seqeuence: 
+- 8 trial, deviants at 3rd and 5th trial  
+- total feature 100; simple feature n = 30 , complex feature = 80; deviants have 20% different features
+- all feature theta = 0.8; all non-feature theta = 0.2 
+
+observation sequence: 
+- each trial has 10 observations 
+- epsilon = 0.02 
+
+noisy observation update: 
+- grid theta and grid epsilon: seq(0.1, 1, 0.2)
+- alpha_prior = 1; beta_prior = 1
+- alpha_epsilon = 1; beta_epsilon = 10
+
+
+
+```{r}
+s_a1b1 <- readRDS(here("adult_modeling/m_res/obs_1_sequential_update.rds"))
+c_a1b1 <- readRDS(here("adult_modeling/m_res/obs_2_sequential_update.rds"))
+
+s_a1b5 <- readRDS(here("adult_modeling/m_res/obs_1_a1b5_sequential_update.rds"))
+c_a1b5 <- readRDS(here("adult_modeling/m_res/obs_2_a1b5_sequential_update.rds"))
+
+s_a5b1 <- readRDS(here("adult_modeling/m_res/obs_1_a5b1_sequential_update.rds"))
+c_a5b1 <- readRDS(here("adult_modeling/m_res/obs_2_a5b1_sequential_update.rds"))
+
+```
+
+
+# KL divergence 
+
+here we calculate the expected information gain (EIG) for a new observation $z_{t+1}$ at time point $t$
+
+
+
+$$D_{KL}(p(\theta|z_{i+1}) || p(\theta|z_{i})) = \sum_{\theta \in [\theta_{1}, \theta_{2}...\theta_{d}]} p(\theta|z_{i+1})  log\frac{p(\theta|z_{i+1})}{p(\theta|z_{i}))}$$
+
+So for each observation at time point $z_{t+1}$, we summed over all the possible grid $$\theta$$ value. 
+
+```{r}
+kl_s_a1b1 <- readRDS(here("adult_modeling/m_res/obs_1_sequential_update_kl.rds")) %>% 
+  mutate(complexity = "simple", 
+         params = "a1b1")
+
+kl_c_a1b1 <- readRDS(here("adult_modeling/m_res/obs_2_sequential_update_kl.rds")) %>% 
+  mutate(complexity = "complex", 
+         params = "a1b1") 
+
+kl_s_a1b5 <- readRDS(here("adult_modeling/m_res/obs_1_a1b5_sequential_update_kl.rds")) %>% 
+  mutate(complexity = "simple", 
+         params = "a1b5")
+
+kl_c_a1b5 <- readRDS(here("adult_modeling/m_res/obs_2_a1b5_sequential_update_kl.rds")) %>% 
+  mutate(complexity = "complex", 
+         params = "a1b5")
+
+kl_s_a5b1 <- readRDS(here("adult_modeling/m_res/obs_1_a5b1_sequential_update_kl.rds")) %>% 
+  mutate(complexity = "simple", 
+         params = "a5b1")
+
+kl_c_a5b1 <- readRDS(here("adult_modeling/m_res/obs_2_a5b1_sequential_update_kl.rds")) %>% 
+  mutate(complexity = "complex", 
+         params = "a5b1")#needs rerun
+
+kl_all <- bind_rows(kl_s_a1b1, 
+                    kl_c_a1b1, 
+                    kl_s_a1b5, 
+                    kl_c_a1b5, 
+                    kl_s_a5b1, 
+                    kl_c_a5b1)
+
+kl_all %>% 
+  filter(complexity == "complex")
+
+```
+
+```{r}
+kl_all %>% 
+  group_by(update_step, complexity, params) %>% 
+  summarise(kl_creature = sum(kl)) %>% 
+  ggplot(aes(x = update_step, 
+             y = kl_creature, 
+             color = complexity)) + 
+  geom_line() + 
+  facet_wrap(~params)
+
+kl_all %>% 
+  group_by(trial_num, complexity, params) %>% 
+  summarise(kl_creature = sum(kl)) %>% 
+  ggplot(aes(x = trial_num, 
+             y = kl_creature, 
+             color = complexity)) + 
+  geom_line() + 
+  facet_wrap(~params)
+```
+
+
+# entropy 
+
+following the notation given in:http://todd.gureckislab.org/2021/05/05/negative-information
+
+The prior is
+so the entropy at timestep 0 is 
+$$g_0 = H(\theta) = -\sum_{\theta}p(\theta)logp(\theta)$$
+
+
+and after i update the entropy will become 
+$$g_{i}(z_i) = H(\theta|z_i) = -\sum_{\theta}p(\theta|z_i)logp(\theta|z_i)$$
+
+translate the computation to code looks something like this: 
+```{r, eval=FALSE}
+get_entropy_for_feature_one_update <- function(lps){
+  -sum(lps * exp(lps))
+}
+```
+
+
+Poli uses negative entropy as a measurement for predictability, so here we will do something similar. 
+
+```{r}
+s_a1b1_e <- get_entropy_for_creature_udpates(s_a1b1) %>% 
+  mutate(complexity = "simple", 
+         params = "a1b1")
+c_a1b1_e <- get_entropy_for_creature_udpates(c_a1b1) %>% 
+  mutate(complexity = "complex", 
+         params = "a1b1")
+
+s_a1b5_e <- get_entropy_for_creature_udpates(s_a1b5) %>% 
+  mutate(complexity = "simple", 
+         params = "a1b5")
+
+c_a1b5_e <- get_entropy_for_creature_udpates(c_a1b5)%>% 
+  mutate(complexity = "complex", 
+         params = "a1b5")
+
+s_a5b1_e <- get_entropy_for_creature_udpates(s_a5b1)%>% 
+  mutate(complexity = "simple", 
+         params = "a5b1")
+c_a5b1_e <- get_entropy_for_creature_udpates(c_a5b1)%>% 
+  mutate(complexity = "complex", 
+         params = "a5b1")
+
+e_all <- bind_rows(s_a1b1_e, c_a1b1_e, 
+                   s_a1b5_e, c_a1b5_e, 
+                   s_a5b1_e, c_a5b1_e) 
+```
+
+a little bit weird, shouldn't this be upside down? this is the entropy not the negative entropy aka the surprise 
+
+```{r}
+e_all %>% 
+  group_by(update_number, complexity, params) %>% 
+  summarise(entropy_creature = sum(e)) %>% 
+  ggplot(aes(x = update_number, 
+             y = entropy_creature, 
+             color = complexity)) + 
+  geom_line() + 
+  facet_wrap(~params)
+```
+
+
+# surprisal 
+
+this is what got me confused the most.
+currently calculating as: surprisal at observation $z_{t}$ just the weighted average of the surprisal for each value of theta, and take the average of those surprisals weighed by p(theta = this_particular_value_of_theta|z) (so doing an weighted average over $$p(\theta|z_{t}))$$? 
+
+this is looks exactly like the entropy so i must be doing something wrong?? unless they are technically the same thing?
+
+```{r}
+s_a1b1_surprise_test <- get_surprise_for_creature_updates(observation = obs_1, 
+                                  updates_df = s_a1b1)
+```
+
+
+```{r}
+s_a1b1_s <- get_surprise_for_creature_updates(observation = obs_1,
+                                              updates_df = s_a1b1) %>% 
+  mutate(complexity = "simple", 
+         params = "a1b1")
+c_a1b1_s <- get_surprise_for_creature_updates(observation = obs_2, 
+                                              updates_df = c_a1b1) %>% 
+  mutate(complexity = "complex", 
+         params = "a1b1")
+
+s_a1b5_s <- get_surprise_for_creature_updates(observation = obs_1,
+                                              s_a1b5) %>% 
+  mutate(complexity = "simple", 
+         params = "a1b5")
+
+c_a1b5_s <- get_surprise_for_creature_updates(observation = obs_2,
+                                              c_a1b5)%>% 
+  mutate(complexity = "complex", 
+         params = "a1b5")
+
+s_a5b1_s <- get_surprise_for_creature_updates(observation = obs_1,
+                                              s_a5b1)%>% 
+  mutate(complexity = "simple", 
+         params = "a5b1")
+c_a5b1_s <- get_surprise_for_creature_updates(observation = obs_2,
+                                              c_a5b1)%>% 
+  mutate(complexity = "complex", 
+         params = "a5b1")
+
+s_all <- bind_rows(s_a1b1_s, c_a1b1_s, 
+                   s_a1b5_s, c_a1b5_s, 
+                   s_a5b1_s, c_a5b1_s) 
+```
+
+
+```{r}
+s_a1b1_surprise_test %>% 
+  group_by(update_number) %>% 
+  summarise(surprise_creature = sum(surprise)) %>% 
+  ggplot(aes(x = update_number, 
+             y = surprise_creature))+ 
+  geom_line()
+```
+
+
+```{r}
+s_all %>% 
+  #filter(feature_index < 10) %>% 
+  group_by(update_number, complexity, params) %>% 
+  summarise(surprise_creature = mean(surprise)) %>% 
+  ggplot(aes(x = update_number, 
+             y = surprise_creature, 
+             color = complexity)) + 
+  geom_line() + 
+  facet_wrap(~params)
+```
+
+
+# conceptula understanding to-do
+
+how do these terms related to one another? 
+  - expected information gain 
+  - information gain 
+  - surprise 
+  - entropy 
+  - KL divergence
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
