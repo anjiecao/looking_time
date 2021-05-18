@@ -1,5 +1,5 @@
 get_entropy_for_feature_one_update <- function(lps){
-  -sum(lps * exp(lps))
+  sum(lps * exp(lps))
 }
 
 get_entropy_for_feature_updates <- function(feature_i, updates_df){

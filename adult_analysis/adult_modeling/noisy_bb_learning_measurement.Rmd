@@ -51,8 +51,13 @@ c_a5b1 <- readRDS(here("adult_modeling/m_res/obs_2_a5b1_sequential_update.rds"))
 here we calculate the expected information gain (EIG) for a new observation $z_{t+1}$ at time point $t$
 
 
+maybe this is the acutal information gain? 
 
 $$D_{KL}(p(\theta|z_{i+1}) || p(\theta|z_{i})) = \sum_{\theta \in [\theta_{1}, \theta_{2}...\theta_{d}]} p(\theta|z_{i+1})  log\frac{p(\theta|z_{i+1})}{p(\theta|z_{i}))}$$
+
+
+$$D_{KL}(p(\theta|z_{i+1}) || p(\theta|z_{i})) = \sum_{z_i \in [z_{i+1} = 1, z_{i+1}= 0]} \sum_{\theta \in [\theta_{1}, \theta_{2}...\theta_{d}]} p(\theta|z_{i+1})  log\frac{p(\theta|z_{i+1})}{p(\theta|z_{i}))}$$
+
 
 So for each observation at time point $z_{t+1}$, we summed over all the possible grid $$\theta$$ value. 
 
@@ -167,6 +172,61 @@ e_all <- bind_rows(s_a1b1_e, c_a1b1_e,
 a little bit weird, shouldn't this be upside down? this is the entropy not the negative entropy aka the surprise 
 
 ```{r}
+s_a1b1_e
+```
+
+```{r}
+
+get_ig_entropy_feature <- function(e_df_feature){
+  
+  all_updates <- e_df_feature %>% 
+    distinct(update_number) %>% 
+    pull()
+  
+  all_ig <- c()
+  for (i in seq(2, length(all_updates),1)){
+    
+    previous_update_e <- e_df_feature %>% 
+      filter(update_number == (i-1)) %>%
+      pull(e)
+    
+    current_update_e <- e_df_feature %>% 
+      filter(update_number == (i)) %>%
+      pull(e)
+    
+    ig = previous_update_e - current_update_e
+    
+    all_ig <- c(all_ig, ig)
+  }
+  
+  ig_df <- tibble(update_number =  seq(2, length(all_updates),1), 
+                  ig = -all_ig)
+  
+  return(ig_df)
+}
+
+test_ig <- get_ig_entropy_feature(s_a1b5_e %>% filter(feature_index == 94))
+
+```
+
+```{r}
+test_ig %>% 
+  ggplot(aes(x = update_number, y = ig)) + 
+  geom_line()
+```
+
+## toy example for entropy 
+```{r}
+lp_prior <- dbeta(x = seq(0, 1, 0.2), shape1 = 1, shape2 = 1, log = FALSE)
+lp_posterior <- dbeta(x = seq(0, 1, 0.2), shape1 = 2, shape2 = 1, log = FALSE)
+
+lp_prior * exp(lp_prior)
+lp_posterior * exp(lp_posterior)
+```
+
+
+
+```{r}
 e_all %>% 
   group_by(update_number, complexity, params) %>% 
   summarise(entropy_creature = sum(e)) %>% 
@@ -224,6 +284,56 @@ s_all <- bind_rows(s_a1b1_s, c_a1b1_s,
                    s_a1b5_s, c_a1b5_s, 
                    s_a5b1_s, c_a5b1_s) 
 ```
+
+
+## Entropy 
+
+```{r}
+obs_1
+s_a1b1
+
+get_flipped_observation <- function(original_observation){
+  
+  flip_observation <- original_observation %>% 
+    select(-c(trial_num, trial_observation_num)) %>% 
+    map_df(., function(x){if_else(x == 1, 0, 1) })
+  
+  flip_observation$trial_num <- original_observation$trial_num
+  flip_observation$trial_observation_num <- original_observation$trial_observation_num
+  return (flip_observation)
+  
+}
+
+
+get_eig_entropy <- function(observations, 
+                        posterior_df){
+  
+   alternative_observations <- get_flipped_observation(observations) # if actually observe 0101, flip 1010
+
+   grid_theta <- seq(0.1, 1, 0.2)
+  grid_epsilon <- seq(0.1, 1, 0.2)
+  alpha_prior = 5
+  beta_prior = 1
+  alpha_epsilon = 1 
+  beta_epsilon = 10
+
+
+alternative_posterior <- update_alternative_posterior_distribution(grid_theta = grid_theta, 
+                              grid_epsilon = grid_epsilon, 
+                              observations = observations, 
+                              alternative_observations = alternative_observations, 
+                              alpha_prior = alpha_prior, 
+                              beta_prior = beta_prior , 
+                              alpha_epsilon = 1, 
+                              beta_epsilon = 10
+                              )
+
+
+  
+}
+```
+
+
 
 
 ```{r}
