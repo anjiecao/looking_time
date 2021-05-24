@@ -57,7 +57,7 @@ get_kl_for_feature <- function(feature,
         
       
       # because everything is in log
-      kl_for_t <- second_update_posterior + second_update_posterior - first_update_posterior  kl(x|y)  =  p(x) * log(p(x)/p(y))
+      kl_for_t <- second_update_posterior + second_update_posterior - first_update_posterior  
       
       kl <- c(kl, kl_for_t)
     }

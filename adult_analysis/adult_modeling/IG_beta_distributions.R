@@ -23,11 +23,11 @@ for (i in seq(1,15,1)) {
   counterfactual_entropy <- -sum((counterfactual_dist) * log(counterfactual_dist))
   counterfactual_IG <- previous_entropy - counterfactual_entropy
   
-  # calculate posterior predictive distribution (first value is probability)
+  # calculate posterior predictive distribution (first value is probability of failure, second is of success)
   posterior_predictive <- unlist(lapply(0:1, beta_bernoulli))
   
-  # expected information gain
-  EIG <- posterior_predictive[1]*counterfactual_IG + posterior_predictive[2]*IG
+  # expected information gain (weighted average of real IG and hypothetical IG)
+  EIG <- posterior_predictive[1]*IG + posterior_predictive[2]*counterfactual_IG
   
   EIGs <- c(EIGs, IG)
   
