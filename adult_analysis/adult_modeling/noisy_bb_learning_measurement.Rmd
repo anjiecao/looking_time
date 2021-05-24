@@ -286,7 +286,13 @@ s_all <- bind_rows(s_a1b1_s, c_a1b1_s,
 ```
 
 
-## Entropy 
+## Expected information gain
+- take distribution
+- calculate entropy (or use previously calculated entropy)
+- imagine what would happen at next instance to distribution
+- take what actually happened
+- weigh by posterior predictive
+
 
 ```{r}
 obs_1
@@ -323,7 +329,7 @@ alternative_posterior <- update_alternative_posterior_distribution(grid_theta = 
                               observations = observations, 
                               alternative_observations = alternative_observations, 
                               alpha_prior = alpha_prior, 
-                              beta_prior = beta_prior , 
+                              beta_prior = beta_prior, 
                               alpha_epsilon = 1, 
                               beta_epsilon = 10
                               )
@@ -358,7 +364,14 @@ s_all %>%
 
 # Expected information gain with IG = change in entropy
 
+```{r}
 
+s_a1b1_eig <- get_eig_entropy_for_creature(observation = obs_1,
+                                        updates_df = s_a1b1) %>% 
+  mutate(complexity = "simple", 
+         params = "a1b1")
+
+```
 
 # Expected info gain with IG = KL divergence between prior and posterior
 
