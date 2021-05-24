@@ -334,8 +334,6 @@ alternative_posterior <- update_alternative_posterior_distribution(grid_theta = 
 ```
 
 
-
-
 ```{r}
 s_a1b1_surprise_test %>% 
   group_by(update_number) %>% 
@@ -357,6 +355,12 @@ s_all %>%
   geom_line() + 
   facet_wrap(~params)
 ```
+
+# Expected information gain with IG = change in entropy
+
+
+
+# Expected info gain with IG = KL divergence between prior and posterior
 
 
 # conceptula understanding to-do
