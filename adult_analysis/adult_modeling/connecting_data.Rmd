@@ -10,9 +10,9 @@ knitr::opts_chunk$set(echo = TRUE)
 library(here)
 library(tidyverse)
 
-source(here("adult_modeling/scripts/00_generate_stimuli.R"))
-source(here("adult_modeling/scripts/01_get_learning_measure.R"))
-source(here("adult_modeling/scripts/02_get_experiment_parameter.R"))
+source(here("adult_modeling/scripts/archive/00_generate_stimuli.R"))
+source(here("adult_modeling/scripts/archive/01_get_learning_measure.R"))
+source(here("adult_modeling/scripts/archive/02_get_experiment_parameter.R"))
 d <- read_csv(here("adult_modeling/data/processed_RTdata.csv"))
 ```
 
@@ -88,9 +88,13 @@ d_exp_sim %>%
               formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
   facet_grid(~trial_complexity) +
   langcog::scale_color_solarized(name = "Item Type") + 
-  theme(legend.position = "bottom") + 
   ylab("surprise") + 
-  xlab("Trial Number") 
+  xlab("Trial Number") +
+   theme_classic()+ 
+   theme(
+    axis.text=element_text(size=12),
+    axis.title=element_text(size=14,face="bold"), 
+     legend.position = "bottom") 
 
 
 d_exp_sim %>% 
@@ -107,7 +111,12 @@ d_exp_sim %>%
   langcog::scale_color_solarized(name = "Item Type") + 
   theme(legend.position = "bottom") + 
   ylab("learning_progress") + 
-  xlab("Trial Number") 
+  xlab("Trial Number") + 
+  theme_classic()+
+  theme(
+    axis.text=element_text(size=12),
+    axis.title=element_text(size=14,face="bold"), 
+     legend.position = "bottom") 
 
 
 d_exp_sim %>% 
@@ -122,11 +131,62 @@ d_exp_sim %>%
               formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
   facet_grid(~trial_complexity) +
   langcog::scale_color_solarized(name = "Item Type") + 
-  theme(legend.position = "bottom") + 
-  ylab("rt") + 
-  xlab("Trial Number") 
+  ylab("Log looking time (ms)") + 
+  xlab("Trial Number")  + 
+  theme_classic()+
+  theme(
+    axis.text=element_text(size=12),
+    axis.title=element_text(size=14,face="bold"), 
+    legend.position = "bottom")
   
 ```
+
+
+pivot_longer(cols = c(mean_rt, mean_kl, mean_surprise), 
+               names_to = "measure_type", 
+               values_to = "measure_value") %>% 
+  ggplot(aes(x = measure_value,))
+  
+```{r}
+
+d_exp_sim %>% 
+  group_by(trial_number, item_type, trial_complexity) %>% 
+  summarise(
+    mean_rt = mean(log(rt)), 
+    mean_kl = mean(learning_progress), 
+    mean_surprise = mean(surprise)
+  ) %>% 
+  ggplot(aes(x= mean_kl, y = mean_rt)) +
+  geom_point() + 
+  geom_smooth(method = "lm") + 
+  ylab("log looking time (ms)") + 
+  xlab("KL divergence") + 
+  theme_classic() + 
+  theme(
+    axis.text=element_text(size=12),
+    axis.title=element_text(size=14,face="bold"))
+  
+```
+
+```{r}
+d_exp_sim %>% 
+  group_by(trial_number, item_type, trial_complexity) %>% 
+  summarise(
+    mean_rt = mean(log(rt)), 
+    mean_kl = mean(learning_progress), 
+    mean_surprise = mean(surprise)
+  ) %>% 
+  ggplot(aes(x= mean_surprise, y = mean_rt)) +
+  geom_point() + 
+  geom_smooth(method = "lm") + 
+  ylab("log looking time (ms)") + 
+  xlab("Surprise") + 
+  theme_classic() + 
+  theme(
+    axis.text=element_text(size=12),
+    axis.title=element_text(size=14,face="bold"))
+```
+
 
 
 
@@ -148,6 +208,11 @@ d_cor_summary <- d_cor %>%
     mean_suprirse = mean(surprise), 
     mean_lp = mean(learning_progress),
     mean_log_rt = mean(log_rt))
+```
+
+
+```{r}
+d_cor_summary
 ```
 
 ## surprise and rt 
@@ -218,6 +283,14 @@ rmse(d_cor$log_rt, d_cor$surprise)
 cor(x = d_cor$log_rt, y = d_cor$surprise, method = "pearson")
 ```
 
+```{r}
+cor(x = d_cor_summary$mean_log_rt, y = d_cor_summary$mean_suprirse, method = "pearson")
+
+cor(x = d_cor_summary$mean_log_rt, y = d_cor_summary$mean_lp, method = "pearson")
+
+```
+
+
 ## now try a bunch of parameters 
 
 ```{r}
@@ -245,7 +318,7 @@ df_sequence
 library(lineprof)
 library(furrr)
 test_beta_count <- function(df_sequence){
-  get_beta_count <- function(block, feature_prior = c(3, 1)){
+  get_beta_count <- function(block, feature_prior = c(1, 1)){
     prior <- replicate(length(block[[1]]), feature_prior, simplify = FALSE)
     
     beta_count <- list()
@@ -285,7 +358,7 @@ registerDoParallel(myCluster)
 test_beta_count <- function(df_sequence){
   
   
-  get_beta_count <- function(block, feature_prior = c(3, 1)){
+  get_beta_count <- function(block, feature_prior = c(1, 1)){
     prior <- replicate(length(block[[1]]), feature_prior, simplify = FALSE)
     
     beta_count <- list()
@@ -303,7 +376,7 @@ test_beta_count <- function(df_sequence){
 
   }
   
-  get_beta_count_parallel <- function(block, feature_prior = c(3, 1)){
+  get_beta_count_parallel <- function(block, feature_prior = c(1, 1)){
     
     prior <- replicate(length(block[[1]]), feature_prior, simplify = FALSE)
     
