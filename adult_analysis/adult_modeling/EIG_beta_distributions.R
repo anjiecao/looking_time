@@ -29,7 +29,7 @@ for (i in seq(1,15,1)) {
   # expected information gain (weighted average of real IG and hypothetical IG)
   EIG <- posterior_predictive[1]*IG + posterior_predictive[2]*counterfactual_IG
   
-  EIGs <- c(EIGs, IG)
+  EIGs <- c(EIGs, EIG)
   
 }
 

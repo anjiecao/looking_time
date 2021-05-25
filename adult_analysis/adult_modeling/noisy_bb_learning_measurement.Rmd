@@ -341,6 +341,38 @@ alternative_posterior <- update_alternative_posterior_distribution(grid_theta = 
 
 
 ```{r}
+get_eig_kl <- function(observations, 
+                        posterior_df){
+  
+   alternative_observations <- get_flipped_observation(observations) # if actually observe 0101, flip 1010
+
+   grid_theta <- seq(0.1, 1, 0.2)
+  grid_epsilon <- seq(0.1, 1, 0.2)
+  alpha_prior = 5
+  beta_prior = 1
+  alpha_epsilon = 1 
+  beta_epsilon = 10
+
+
+alternative_posterior <- update_alternative_posterior_distribution(grid_theta = grid_theta, 
+                              grid_epsilon = grid_epsilon, 
+                              observations = observations, 
+                              alternative_observations = alternative_observations, 
+                              alpha_prior = alpha_prior, 
+                              beta_prior = beta_prior, 
+                              alpha_epsilon = 1, 
+                              beta_epsilon = 10
+                              )
+
+
+  
+}
+```
+
+
+
+
+```{r}
 s_a1b1_surprise_test %>% 
   group_by(update_number) %>% 
   summarise(surprise_creature = sum(surprise)) %>% 
