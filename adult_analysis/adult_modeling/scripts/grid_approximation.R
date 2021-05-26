@@ -191,3 +191,107 @@ update_grid_approximate_with_theta_and_epsilon <- function(
 }
 
 
+
+
+
+
+grid_approximate_creature_with_theta_and_epsilon_has_epsilon <- function(
+  grid_theta = seq(0.01, .99, .01), 
+  grid_epsilon = seq(0.01, .99, .01), 
+  noisy_creature_observation, 
+  alpha_prior = 1, 
+  beta_prior = 1,
+  alpha_epsilon, 
+  beta_epsilon
+){
+  # special case this is for when only update based on 1 observation
+  
+  if(!is.matrix(noisy_creature_observation)){
+    feature_number = length(noisy_creature_observation)
+    
+    lapply(seq(1, feature_number, 1), 
+           function(x){
+             update_grid_approximate_with_theta_and_epsilon_has_epsilon(
+               feature_i = x, 
+               grid_theta = grid_theta, 
+               grid_epsilon = grid_epsilon, 
+               observations = noisy_creature_observation[x], 
+               alpha_theta = alpha_prior, 
+               beta_theta = beta_prior,
+               alpha_epsilon = alpha_epsilon, 
+               beta_epsilon = beta_epsilon
+             )
+           }
+    ) %>% 
+      bind_rows()
+    
+    
+    
+  }else{
+    feature_number = ncol(noisy_creature_observation)
+    
+    lapply(seq(1, feature_number, 1), 
+           function(x){
+             update_grid_approximate_with_theta_and_epsilon_has_epsilon(
+               feature_i = x, 
+               grid_theta = grid_theta, 
+               grid_epsilon = grid_epsilon, 
+               observations = noisy_creature_observation[,x], 
+               alpha_theta = alpha_prior, 
+               beta_theta = beta_prior,
+               alpha_epsilon = alpha_epsilon, 
+               beta_epsilon = beta_epsilon
+             )
+           }
+    ) %>% 
+      bind_rows()
+  }
+  
+  
+  
+  
+  
+  
+}
+
+
+
+
+update_grid_approximate_with_theta_and_epsilon_has_epsilon <- function(
+  feature_i, 
+  grid_theta, 
+  grid_epsilon, 
+  observations, 
+  alpha_theta, beta_theta, 
+  alpha_epsilon, beta_epsilon
+){
+  
+  
+  samps <- expand_grid(theta = grid_theta,
+                       epsilon = grid_epsilon) 
+  
+  
+  samps$unnormalized_log_posterior <- mapply(function(x, y) 
+    lp_theta_given_z(z_bar = observations, 
+                     theta = x, 
+                     epsilon = y, 
+                     alpha_theta = alpha_theta, 
+                     beta_theta = beta_theta,
+                     alpha_epsilon = alpha_epsilon, 
+                     beta_epsilon = beta_epsilon), 
+    samps$theta, 
+    samps$epsilon)
+  
+  samps$log_posterior = samps$unnormalized_log_posterior - matrixStats::logSumExp(samps$unnormalized_log_posterior)
+  
+  
+  theta_posterior <- samps %>%
+    mutate(posterior = exp(log_posterior)) %>% 
+    mutate(feature_index = feature_i)
+  
+  
+  return(theta_posterior)
+  
+}
+
+

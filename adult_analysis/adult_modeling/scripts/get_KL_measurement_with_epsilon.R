@@ -1,20 +1,21 @@
 
-get_kl_for_creature <- function(distribution_df){
+
+get_kl_for_creature_with_epsilon <- function(distribution_df){
   
   all_features <- distribution_df %>% distinct(feature_index) %>% pull()
   
   all_feature_kl <- lapply(all_features, 
-         function(x){
-           get_kl_for_feature(x, 
-                              distribution_df)
-           
-         }) %>% 
+                           function(x){
+                             get_kl_for_feature_with_epsilon(x, 
+                                                distribution_df)
+                             
+                           }) %>% 
     bind_rows()
   
   return(all_feature_kl)
 }
 
-get_kl_for_feature <- function(feature, 
+get_kl_for_feature_with_epsilon <- function(feature, 
                                distribution_df){
   
   total_update_number <- length(distribution_df %>% 
@@ -44,22 +45,31 @@ get_kl_for_feature <- function(feature,
       filter(update_number == first_update_index)
     
     all_thetas <- distribution_df %>% distinct(theta) %>% pull()
+    all_epsilons <- distribution_df %>% distinct(epsilon) %>% pull()
     kl <- c() 
+    
+    
     for(t in all_thetas){
       
-      second_update_posterior <- second_update %>% 
-        filter(theta == t) %>% 
-        pull(log_posterior)
+      for (e in  all_epsilons){
       
-      first_update_posterior <- first_update %>% 
-        filter(theta == t)%>% 
-        pull(log_posterior)
+        second_update_posterior <- second_update %>% 
+          filter(theta == t) %>% 
+          filter(epsilon == e) %>% 
+          pull(log_posterior)
         
-      
-      # because everything is in log
-      kl_for_t <- second_update_posterior + second_update_posterior - first_update_posterior  
-      
-      kl <- c(kl, kl_for_t)
+        first_update_posterior <- first_update %>% 
+          filter(theta == t) %>% 
+          filter(epsilon == e) %>% 
+          pull(log_posterior)
+        
+          
+        # because everything is in log
+        kl_for_t <- second_update_posterior + second_update_posterior - first_update_posterior  
+        
+        kl <- c(kl, kl_for_t)
+        
+      }
     }
     
     current_step_kl <- matrixStats::logSumExp(kl)

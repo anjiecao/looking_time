@@ -1,14 +1,24 @@
 library(reshape2)
 library(tidyverse)
+library(here)
+library(matrixStats)
 
 ## source relevant files
-
+source(here("adult_modeling/scripts/get_entropy.R"))
+source(here("adult_modeling/scripts/get_KL_measurement.R"))
+source(here("adult_modeling/scripts/get_surprise.R"))
+source(here("adult_modeling/scripts/noisy_update.R"))
+source(here("adult_modeling/scripts/grid_approximation.R"))
 
 
 # read 
 s_a1b5 <- readRDS(here("adult_modeling/obs_1_a1b5_sequential_update.rds"))
 kl_s_a1b5 <- readRDS(here("adult_modeling/obs_1_a1b5_sequential_update_kl.rds"))
 obs_1 <-  readRDS(here("adult_modeling/m_res/obs_1"))
+alternative_df <- readRDS(here("adult_modeling/m_res/s_a1b5_alternative_posterior_df.rds"))
+alternative_df_kl <- readRDS(here("adult_modeling/m_res/s_a1b5_alternative_kl_df.rds"))
+
+
 
 # plan:
 #- add columns: entropy, kl divergence, alternative entropy, alternative kl divergence
@@ -46,15 +56,18 @@ beta_epsilon = 10
 
 alternative_observation <- get_flipped_observation(obs_1)
 
-alternative_df <- update_alternative_posterior_distribution(grid_theta, 
-                                                            grid_epsilon, 
-                                                            obs_1, 
-                                                            alternative_observation, 
-                                                            alpha_prior, 
-                                                            beta_prior, 
-                                                            alpha_epsilon, 
-                                                            beta_epsilon 
-                                                            )
+# alternative_df <- update_alternative_posterior_distribution(grid_theta, 
+#                                                             grid_epsilon, 
+#                                                             obs_1, 
+#                                                             alternative_observation, 
+#                                                             alpha_prior, 
+#                                                             beta_prior, 
+#                                                             alpha_epsilon, 
+#                                                             beta_epsilon 
+#                                                             )
+
+#saveRDS(alternative_df, here("adult_modeling/m_res/s_a1b5_alternative_posterior_df.rds"))
+
 
 df <- alternative_df %>% 
   rename(alternative_posterior = posterior, alternative_log_posterior = log_posterior) %>%
@@ -63,12 +76,24 @@ df <- alternative_df %>%
 
 # add alternative KL
 
+#alternative_df_kl <- get_kl_for_creature(alternative_df)
+#saveRDS(alternative_df_kl, here("adult_modeling/m_res/s_a1b5_alternative_kl_df.rds"))
 
+alternative_df_kl <- alternative_df_kl %>% 
+  mutate(temp_id = paste0(update_step,sep = "_", feature_index,sep = "_", trial_num)) %>% 
+  select(kl, temp_id) %>% 
+  rename(alternative_kl = kl)
+
+df <- df %>% 
+  left_join(alternative_df_kl, by = "temp_id")
 # add alternative entropy
 
 
 
 #- add epsilon column
+
+
+
 
 #- calculate posterior predictive distribution:
 #     - compute p(z|theta, epsilon) --> will give P(z_ij=0) and P(z_ij=1)
@@ -78,6 +103,7 @@ df <- alternative_df %>%
 # - get EIG with KL:
 # if true z = 1: P(z_ij=0) * KL(previous dist||alternative dist) + P(z_ij=1) * KL(previous dist||current dist)
 # else if z = 0: P(z_ij=0) * KL(previous dist||current dist) + P(z_ij=1) * KL(previous dist||alternative dist)
+
 
 
 

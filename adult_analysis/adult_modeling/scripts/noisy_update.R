@@ -119,6 +119,59 @@ update_posterior_distribution <- function(grid_theta,
 }
 
 
+update_posterior_distribution_with_epsilon_tracked <- function(grid_theta, 
+                                          grid_epsilon, 
+                                          observations, 
+                                          alpha_prior, 
+                                          beta_prior, 
+                                          alpha_epsilon, 
+                                          beta_epsilon){
+  
+  
+  
+  all_observaion <- observations %>% 
+    select(-c(trial_num, trial_observation_num)) %>% 
+    as.matrix()
+  
+  trial_num <- observations$trial_num 
+  trial_observation_num <- observations$trial_observation_num
+  
+  
+  updates = nrow(all_observaion)
+  
+  
+  datalist = list()
+  for (i in seq(1, updates, 1)){
+    
+    
+    post_first_update_theta_epsilon_approx <- grid_approximate_creature_with_theta_and_epsilon_has_epsilon(grid_theta = grid_theta, 
+                                                                                               grid_epsilon = grid_epsilon, 
+                                                                                               noisy_creature_observation = all_observaion[1:i, ], 
+                                                                                               alpha_prior = alpha_prior, 
+                                                                                               beta_prior= beta_prior, 
+                                                                                               alpha_epsilon = alpha_epsilon, beta_epsilon = beta_epsilon) %>% 
+      mutate(update_number = i) 
+    
+    
+    
+    datalist[[i]] <-  post_first_update_theta_epsilon_approx
+    
+    
+    
+  }
+  
+  all_updates <- dplyr::bind_rows(datalist)
+  all_updates <- all_updates %>% left_join(tibble(update_number = all_updates %>% 
+                                                    distinct(update_number) %>% pull(),
+                                                  trial_num = trial_num, 
+                                                  trial_observation_num = trial_observation_num), 
+                                           by = "update_number")
+  
+  return(all_updates)
+  
+}
+
+
 lp_theta_given_z <- function(z_bar, 
                              theta, epsilon, 
                              alpha_theta, beta_theta, 
@@ -140,6 +193,9 @@ lp_z_given_theta <- function(z_bar,
   
   
 }
+
+
+
 
 lp_z_ij_given_theta <- function(zij, theta, episolon){
   
