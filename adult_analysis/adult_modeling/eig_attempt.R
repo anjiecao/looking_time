@@ -18,8 +18,6 @@ obs_1 <-  readRDS(here("adult_modeling/m_res/obs_1"))
 alternative_df <- readRDS(here("adult_modeling/m_res/s_a1b5_alternative_posterior_df.rds"))
 alternative_df_kl <- readRDS(here("adult_modeling/m_res/s_a1b5_alternative_kl_df.rds"))
 
-
-
 # plan:
 #- add columns: entropy, kl divergence, alternative entropy, alternative kl divergence
 
@@ -50,6 +48,10 @@ alpha_epsilon = 1
 beta_epsilon = 10
 
 ## adding on entropy
+entropy_per_update_and_feature <- get_entropy_for_creature_updates(df_updated)
+
+df_updated <- entropy_per_update_and_feature %>% left_join(df_updated)
+
 
 
 ## adding on alternative (log)posterior 
@@ -69,24 +71,34 @@ alternative_observation <- get_flipped_observation(obs_1)
 #saveRDS(alternative_df, here("adult_modeling/m_res/s_a1b5_alternative_posterior_df.rds"))
 
 
-df <- alternative_df %>% 
-  rename(alternative_posterior = posterior, alternative_log_posterior = log_posterior) %>%
-  left_join(df_updated) # this does a natural join i.e. using al lvariables common across alternative_df and df_updated
+# get alternative entropy
+alternative_df_entropy <- get_entropy_for_creature_updates(alternative_df) %>%
+  rename(alternative_entropy = entropy) 
+
+#saveRDS(alternative_df_entropy, here("adult_modeling/m_res/s_a1b5_alternative_df_entropy.rds"))
 
 
-# add alternative KL
+# get alternative KL
+alternative_df_kl <- get_kl_for_creature(alternative_df) %>%
+  rename(alternative_kl = kl)  %>%
+  mutate(temp_id = paste0(update_step,sep = "_", feature_index,sep = "_", trial_num)) %>% 
+  select(alternative_kl, temp_id)
 
-#alternative_df_kl <- get_kl_for_creature(alternative_df)
 #saveRDS(alternative_df_kl, here("adult_modeling/m_res/s_a1b5_alternative_kl_df.rds"))
 
-alternative_df_kl <- alternative_df_kl %>% 
-  mutate(temp_id = paste0(update_step,sep = "_", feature_index,sep = "_", trial_num)) %>% 
-  select(kl, temp_id) %>% 
-  rename(alternative_kl = kl)
 
-df <- df %>% 
-  left_join(alternative_df_kl, by = "temp_id")
-# add alternative entropy
+df <- alternative_df %>% 
+  rename(alternative_posterior = posterior, alternative_log_posterior = log_posterior) %>%
+  mutate(temp_id = paste0(update_number,sep = "_", feature_index,sep = "_", trial_num)) %>% # add temp_id 
+  left_join(alternative_df_entropy) %>% 
+  left_join(alternative_df_kl, by = "temp_id") %>% 
+  left_join(df_updated)  # join with original df with real entropy & kls
+
+
+saveRDS(df, here("adult_modeling/m_res/s_a1b5_full_df.rds"))
+
+
+
 
 
 

@@ -28,8 +28,8 @@ get_entropy_for_feature_updates <- function(feature_i, updates_df){
     all_entropy <- c(all_entropy, current_ep)
   }
   
-  entropy_df <- tibble(e = all_entropy, 
-                       predictability = -all_entropy,
+  entropy_df <- tibble(entropy = all_entropy, 
+                       #predictability = -all_entropy,
                        update_number = seq(1, length(all_entropy), 1)) %>% 
     mutate(feature_index = feature_i)
   
@@ -37,7 +37,7 @@ get_entropy_for_feature_updates <- function(feature_i, updates_df){
   
 }
 
-get_entropy_for_creature_udpates <- function(updates_df){
+get_entropy_for_creature_updates <- function(updates_df){
   all_features <- updates_df %>% 
     distinct(feature_index) %>% 
     pull()
