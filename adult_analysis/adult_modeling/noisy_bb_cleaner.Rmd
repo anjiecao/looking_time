@@ -89,8 +89,8 @@ obs_1_sequential_update <- update_posterior_distribution(grid_theta = grid_theta
                               observations = obs_1, 
                               alpha_prior = alpha_prior, 
                               beta_prior = beta_prior , 
-                              alpha_epsilon = 1, 
-                              beta_epsilon = 10
+                              alpha_epsilon = alpha_epsilon, 
+                              beta_epsilon = beta_epsilon
                               )
 
 # add observations to dataframe
@@ -104,8 +104,8 @@ obs_2_sequential_update <- update_posterior_distribution(grid_theta = grid_theta
                               observations = obs_2, 
                               alpha_prior = alpha_prior, 
                               beta_prior = beta_prior, 
-                              alpha_epsilon = 1, 
-                              beta_epsilon = 10
+                              alpha_epsilon = alpha_epsilon, 
+                              beta_epsilon = beta_epsilon
                               )
 
 obs_2_sequential_update_kl <- get_kl_for_creature(obs_2_sequential_update) 
@@ -551,10 +551,10 @@ beta_epsilon = 10
 obs_1_sequential_update <- update_posterior_distribution(grid_theta = grid_theta, 
                               grid_epsilon = grid_epsilon, 
                               observations = obs_1, 
-                              alpha_prior = 1, 
-                              beta_prior = 1, 
-                              alpha_epsilon = 1, 
-                              beta_epsilon = 10
+                              alpha_prior = alpha_prior, 
+                              beta_prior = beta_prior, 
+                              alpha_epsilon = alpha_epsilon, 
+                              beta_epsilon = beta_epsilon
                               )
 
 obs_1_sequential_update_kl <- get_kl_for_creature(obs_1_sequential_update) 
@@ -563,10 +563,10 @@ obs_1_sequential_update_kl <- get_kl_for_creature(obs_1_sequential_update)
 obs_2_sequential_update <- update_posterior_distribution(grid_theta = grid_theta, 
                               grid_epsilon = grid_epsilon, 
                               observations = obs_2, 
-                              alpha_prior = 1, 
-                              beta_prior = 1, 
-                              alpha_epsilon = 1, 
-                              beta_epsilon = 10
+                              alpha_prior = alpha_prior, 
+                              beta_prior = beta_prior, 
+                              alpha_epsilon = alpha_epsilon, 
+                              beta_epsilon = beta_epsilon
                               )
 
 obs_2_sequential_update_kl <- get_kl_for_creature(obs_2_sequential_update) 

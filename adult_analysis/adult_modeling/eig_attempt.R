@@ -95,15 +95,10 @@ df <- alternative_df %>%
   left_join(df_updated)  # join with original df with real entropy & kls
 
 
-saveRDS(df, here("adult_modeling/m_res/s_a1b5_full_df.rds"))
-
-
-
-
-
+#saveRDS(df, here("adult_modeling/m_res/s_a1b5_full_df.rds"))
 
 #- add epsilon column
-
+lp_epsilon(grid_epsilon, alpha_epsilon, beta_epsilon)
 
 
 
