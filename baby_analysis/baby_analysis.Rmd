@@ -44,18 +44,69 @@ age_and_gender <- jspsych_df %>% select(responses) %>%
   select(age, gender) %>% mutate(subject_id = 1:n())
 
 
+
 # get trials
 trial_df <- jspsych_df %>%
   filter(stimulus_type == 'trial') %>% 
-  select(subject, rt, stimulus_displayed, block_number) %>%
-  group_by(subject) %>% mutate(id = cur_group_id(),
+  select(subject, rt, stimulus_displayed, block_number, block_type) %>%
+  group_by(subject) %>% mutate(subject_id = cur_group_id(),
                                stimulus = str_match(stimulus_displayed, "simple_\\s*(.*?)\\s*_A.gif")[,2]) %>%
-  group_by(id, block_number) %>% mutate(trial_num = 1:n(),
-                                        valid = case_when(    #exclude blocks with uneven trial num or less than 4
-                                        n() %% 2 != 0 ~ FALSE, 
-                                        n() < 4 ~ FALSE,
-                                        TRUE ~ TRUE,
-                                        )) 
+  group_by(subject_id, block_number) %>% 
+  mutate(trial_num = 1:n(),
+        valid = case_when(    
+        #mark blocks with uneven trial num or less than 4 (ended prematurely)  
+        n() %% 2 != 0 ~ FALSE, 
+        n() < 4 ~ FALSE,
+        TRUE ~ TRUE),
+        fam_or_test = case_when( # last trial is test, rest if familiarization
+        trial_num < n() ~ 'fam',
+        trial_num == n() ~ 'test'
+        ),
+        fam_duration = max(trial_num) - 1 # how many fam trials in this block
+        ) %>%
+  group_by(subject_id, block_number, fam_or_test) %>%
+  # remove fam trials except last, because this is the format of the looking data (one row for all fam trials)
+  filter(!(fam_or_test == 'fam' & trial_num < n())) %>%
+  ungroup() %>%
+  left_join(age_and_gender, by= 'subject_id')  # add age & gender info
+  
+  
+  
+  # check for subjects with missing blocks (when experiment was ended prematurely)
+incomplete_subjects <- trial_df %>% 
+                      group_by(subject_id) %>% 
+                      summarise(count = n_distinct(block_number)) %>% 
+                      filter(count<6) %>% 
+                      pull(subject_id)
+
+# complete missing blocks (for experiments that ended prematurely)
+trial_df <- trial_df %>% complete(subject_id, nesting(block_number, fam_or_test)) %>%
+  # fill in all the relevant info: age, gender, subject id, valid=FALSE (leave rest as NA)
+  #
+
+# check that correct columns were added
+View(trial_df %>% filter(subject_id == incomplete_subjects))
+
+
+
+# add rows for missing trials
+
+
+  
+  # combine jspsych info with looking info
+  
+
+  
+  
+
+  
+  
+  
+  
+
+                                       # ) %>%
+
+
 
 looking_df %>% mutate(),
                       trial_type = ,
