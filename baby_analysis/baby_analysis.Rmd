@@ -1,0 +1,86 @@
+---
+title: "baby_analysis"
+author: "Gal"
+date: "6/14/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(here)
+library(readxl)
+library(dplyr)
+```
+
+## load files
+
+```{r }
+
+# jspsych files
+setwd(here())
+looking_list <- read_excel_allsheets(here("data", "output.xlsx"))
+
+
+# jspsych files
+jspsych_files <- list.files("data/jspsych")
+setwd(here("data", "jspsych"))
+jspsych_list <- lapply(jspsych_files, read.csv)
+```
+
+## reshape dfs
+
+```{r}
+looking_df <- map_dfr(looking_list, ~ .x, .id = 'subject')
+jspsych_df <- map_dfr(jspsych_list, ~ .x, .id = 'subjectid') 
+
+# get age and gender
+age_and_gender <- jspsych_df %>% select(responses) %>%
+  filter(responses != "") %>%
+  separate(responses, into = c('age', 'gender'), sep=',') %>% 
+    separate(age, into = c('del', 'age'), sep=':') %>% 
+    separate(gender, into = c('del2', 'gender'), sep=':') %>%
+  extract(age, "age") %>% extract(gender, "gender") %>%
+  select(age, gender) %>% mutate(subject_id = 1:n())
+
+
+# get trials
+trial_df <- jspsych_df %>%
+  filter(stimulus_type == 'trial') %>% 
+  select(subject, rt, stimulus_displayed, block_number) %>%
+  group_by(subject) %>% mutate(id = cur_group_id(),
+                               stimulus = str_match(stimulus_displayed, "simple_\\s*(.*?)\\s*_A.gif")[,2]) %>%
+  group_by(id, block_number) %>% mutate(trial_num = 1:n(),
+                                        valid = case_when(    #exclude blocks with uneven trial num or less than 4
+                                        n() %% 2 != 0 ~ FALSE, 
+                                        n() < 4 ~ FALSE,
+                                        TRUE ~ TRUE,
+                                        )) 
+
+looking_df %>% mutate(),
+                      trial_type = ,
+                      test_type =  case_when(
+                        rt == 
+                      ))
+
+
+```
+
+```{r pressure, echo=FALSE}
+jspsych_df 
+
+
+```
+
+## helper functions
+```{r}
+read_excel_allsheets <- function(filename, tibble = TRUE) {
+    sheets <- readxl::excel_sheets(filename)
+    x <- lapply(sheets, function(X) readxl::read_excel(filename, sheet = X))
+    if(!tibble) x <- lapply(x, as.data.frame)
+    names(x) <- sheetsa
+    x
+}
+
+
+```
