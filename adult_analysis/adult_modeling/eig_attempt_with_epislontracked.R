@@ -42,14 +42,14 @@ obs <- generate_noisy_observations(
 
 # generate the necessary df: 
 
-# df_posterior <- update_posterior_distribution_with_epsilon_tracked(
-#   grid_theta = seq(0.1, .99, .1), 
-#   grid_epsilon = seq(0.1, .99, .1), 
-#   obs, 
-#   alpha_prior = 1, 
-#   beta_prior = 5,
-#   alpha_epsilon = 1, 
-#   beta_epsilon = 10)
+ df_posterior <- update_posterior_distribution_with_epsilon_tracked(
+   grid_theta = seq(0.1, .99, .1), 
+   grid_epsilon = seq(0.1, .99, .1), 
+   obs, 
+   alpha_prior = 1, 
+   beta_prior = 5,
+   alpha_epsilon = 1, 
+   beta_epsilon = 10)
 
 saveRDS(df_posterior, here("adult_modeling/m_res/s_a1b5_posterior_df.rds"))
 
