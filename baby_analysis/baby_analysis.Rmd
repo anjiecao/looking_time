@@ -11,6 +11,7 @@ library(tidyverse)
 library(here)
 library(readxl)
 library(dplyr)
+library(janitor)
 ```
 
 ## load files
@@ -31,7 +32,7 @@ jspsych_list <- lapply(jspsych_files, read.csv)
 ## reshape dfs
 
 ```{r}
-looking_df <- map_dfr(looking_list, ~ .x, .id = 'subject')
+looking_df <- map_dfr(looking_list, ~ .x, .id = 'subject') %>% clean_names()
 jspsych_df <- map_dfr(jspsych_list, ~ .x, .id = 'subjectid') 
 
 # get age and gender
@@ -62,8 +63,8 @@ trial_df <- jspsych_df %>%
         trial_num < n() ~ 'fam',
         trial_num == n() ~ 'test'
         ),
-        fam_duration = max(trial_num) - 1 # how many fam trials in this block
-        ) %>%
+        fam_duration = max(trial_num) - 1, # how many fam trials in this block
+        block_number = block_number + 1) %>%
   group_by(subject_id, block_number, fam_or_test) %>%
   # remove fam trials except last, because this is the format of the looking data (one row for all fam trials)
   filter(!(fam_or_test == 'fam' & trial_num < n())) %>%
@@ -81,45 +82,37 @@ incomplete_subjects <- trial_df %>%
 
 # complete missing blocks (for experiments that ended prematurely)
 trial_df <- trial_df %>% complete(subject_id, nesting(block_number, fam_or_test)) %>%
-  # fill in all the relevant info: age, gender, subject id, valid=FALSE (leave rest as NA)
-  #
+  # add temp_id
+  mutate(temp_id = paste0(subject_id, block_number, fam_or_test))
+  
+
+# add temp id to looking df
+looking_df_new <- looking_df %>% filter(trial_type != 'a') %>% 
+  mutate(
+    trial_type = case_when(
+                  trial_type == 'f' ~ 'fam',
+                  trial_type == 't' ~ 'test')
+  ) %>%
+  group_by(subject, trial_type) %>%
+  mutate(block_number = row_number(),
+         subject = as.numeric(subject),
+         temp_id = paste0(subject, block_number, trial_type)) %>%
+  select(-c("block_number", "subject"))
+
+
+# join trials and looking times
+complete_df <- left_join(looking_df_new, trial_df, by = 'temp_id')  %>%
+  select(-c("temp_id", "x1"))
 
 # check that correct columns were added
 View(trial_df %>% filter(subject_id == incomplete_subjects))
 
-
-
-# add rows for missing trials
-
-
-  
-  # combine jspsych info with looking info
-  
-
-  
-  
-
-  
-  
-  
-  
-
-                                       # ) %>%
-
-
-
-looking_df %>% mutate(),
-                      trial_type = ,
-                      test_type =  case_when(
-                        rt == 
-                      ))
-
-
 ```
 
+# Visualize
 ```{r pressure, echo=FALSE}
-jspsych_df 
 
+ggplot()...
 
 ```
 
