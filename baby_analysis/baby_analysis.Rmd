@@ -54,6 +54,7 @@ trial_df <- jspsych_df %>%
                                stimulus = str_match(stimulus_displayed, "simple_\\s*(.*?)\\s*_A.gif")[,2]) %>%
   group_by(subject_id, block_number) %>% 
   mutate(trial_num = 1:n(),
+         stimulus = as.numeric(stimulus),
         valid = case_when(    
         #mark blocks with uneven trial num or less than 4 (ended prematurely)  
         n() %% 2 != 0 ~ FALSE, 
@@ -82,37 +83,67 @@ incomplete_subjects <- trial_df %>%
 
 # complete missing blocks (for experiments that ended prematurely)
 trial_df <- trial_df %>% complete(subject_id, nesting(block_number, fam_or_test)) %>%
+   # make these trials invalid
   # add temp_id
-  mutate(temp_id = paste0(subject_id, block_number, fam_or_test))
+  mutate(valid = case_when(
+         is.na(valid) ~ FALSE,
+         TRUE ~ valid),
+        temp_id = paste0(subject_id, block_number, fam_or_test)) 
   
 
+View(trial_df %>% filter(subject_id == incomplete_subjects))
+
+
+
 # add temp id to looking df
-looking_df_new <- looking_df %>% filter(trial_type != 'a') %>% 
+looking_df <- looking_df %>% filter(trial_type != 'a') %>% 
   mutate(
     trial_type = case_when(
                   trial_type == 'f' ~ 'fam',
-                  trial_type == 't' ~ 'test')
+                  trial_type == 't' ~ 'test'),
+   subject_num = as.numeric(subject),
   ) %>%
   group_by(subject, trial_type) %>%
   mutate(block_number = row_number(),
-         subject = as.numeric(subject),
-         temp_id = paste0(subject, block_number, trial_type)) %>%
-  select(-c("block_number", "subject"))
+         temp_id = paste0(subject_num, block_number, trial_type)) %>%
+  rename(looking_time = looks_on_s) %>%
+  select(-c("block_number", "subject_num"))
 
 
 # join trials and looking times
-complete_df <- left_join(looking_df_new, trial_df, by = 'temp_id')  %>%
-  select(-c("temp_id", "x1"))
+complete_df <- left_join(looking_df, trial_df, by = 'temp_id')  %>%
+  select(-c("temp_id", "x1", "trial_number", "subject.x"))
 
 # check that correct columns were added
-View(trial_df %>% filter(subject_id == incomplete_subjects))
+# 
+
+```
+
+# Exclusions
+
+```{r}
+
+# remove outlier looking times
+
+# remove based on looking at familiarization 
+
 
 ```
 
 # Visualize
 ```{r pressure, echo=FALSE}
 
-ggplot()...
+#visualize test looking times
+test_df <- complete_df %>% filter(fam_or_test == 'test') 
+
+
+# calculate means
+mean_df <-test_df %>% group_by(block_number) %>% summarize(mean_looking = mean(looking_time))
+
+ggplot(test_df %>% filter(fam_or_test == 'test'), aes(x=block_number, y = looking_time)) + 
+  geom_point() + geom_line(aes(group = subject_id)) + geom_point(data=mean_df, aes(x = block_number, y=mean_looking), fill = 'red', shape = 24, size =3)
+
+
 
 ```
 
