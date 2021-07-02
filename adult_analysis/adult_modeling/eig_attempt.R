@@ -11,14 +11,16 @@ source(here("adult_modeling/scripts/noisy_update.R"))
 source(here("adult_modeling/scripts/grid_approximation.R"))
 
 
-# read 
-s_a1b5 <- readRDS(here("adult_modeling/obs_1_a1b5_sequential_update.rds"))
-kl_s_a1b5 <- readRDS(here("adult_modeling/obs_1_a1b5_sequential_update_kl.rds"))
-obs_1 <-  readRDS(here("adult_modeling/m_res/obs_1"))
-alternative_df <- readRDS(here("adult_modeling/m_res/s_a1b5_alternative_posterior_df.rds"))
-alternative_df_kl <- readRDS(here("adult_modeling/m_res/s_a1b5_alternative_kl_df.rds"))
+# Uncomment code to recompute df. If not, just read out the df with the current settings:
+# full_df <- readRDS(df, here("adult_modeling/m_res/s_a1b5_full_df.rds"))
 
 
+# # read 
+# s_a1b5 <- readRDS(here("adult_modeling/obs_1_a1b5_sequential_update.rds"))
+# kl_s_a1b5 <- readRDS(here("adult_modeling/obs_1_a1b5_sequential_update_kl.rds"))
+# obs_1 <-  readRDS(here("adult_modeling/m_res/obs_1"))
+# alternative_df <- readRDS(here("adult_modeling/m_res/s_a1b5_alternative_posterior_df.rds"))
+# alternative_df_kl <- readRDS(here("adult_modeling/m_res/s_a1b5_alternative_kl_df.rds"))
 
 # plan:
 #- add columns: entropy, kl divergence, alternative entropy, alternative kl divergence
@@ -28,28 +30,32 @@ alternative_df_kl <- readRDS(here("adult_modeling/m_res/s_a1b5_alternative_kl_df
 ##  arrange(update_step, feature_index) %>% 
 
 ## adding on KL 
-unique_theta <- s_a1b5 %>% 
-  select(theta) %>% 
-  distinct()
-
-df_kl <- kl_s_a1b5 %>% 
-  mutate(temp_id = paste0(update_step,sep = "_", feature_index,sep = "_", trial_num)) %>% 
-  select(kl, temp_id)
-
-
-df_updated <- s_a1b5 %>% 
-  mutate(temp_id = paste0(update_number, sep = "_", feature_index,sep = "_", trial_num)) %>% 
-  left_join(df_kl, by = "temp_id") 
- 
-
-grid_theta <- seq(0.1, 1, 0.2)
-grid_epsilon <- seq(0.1, 1, 0.2)
-alpha_prior = 5
-beta_prior = 1
-alpha_epsilon = 1 
-beta_epsilon = 10
+# unique_theta <- s_a1b5 %>% 
+#   select(theta) %>% 
+#   distinct()
+# 
+# df_kl <- kl_s_a1b5 %>% 
+#   mutate(temp_id = paste0(update_step,sep = "_", feature_index,sep = "_", trial_num)) %>% 
+#   select(kl, temp_id)
+# 
+# 
+# df_updated <- s_a1b5 %>% 
+#   mutate(temp_id = paste0(update_number, sep = "_", feature_index,sep = "_", trial_num)) %>% 
+#   left_join(df_kl, by = "temp_id") 
+#  
+# 
+# grid_theta <- seq(0.1, 1, 0.2)
+# grid_epsilon <- seq(0.1, 1, 0.2)
+# alpha_prior = 5
+# beta_prior = 1
+# alpha_epsilon = 1 
+# beta_epsilon = 10
 
 ## adding on entropy
+# entropy_per_update_and_feature <- get_entropy_for_creature_updates(df_updated)
+# 
+# df_updated <- entropy_per_update_and_feature %>% left_join(df_updated)
+
 
 
 ## adding on alternative (log)posterior 
@@ -69,30 +75,36 @@ alternative_observation <- get_flipped_observation(obs_1)
 #saveRDS(alternative_df, here("adult_modeling/m_res/s_a1b5_alternative_posterior_df.rds"))
 
 
-df <- alternative_df %>% 
-  rename(alternative_posterior = posterior, alternative_log_posterior = log_posterior) %>%
-  left_join(df_updated) # this does a natural join i.e. using al lvariables common across alternative_df and df_updated
+# get alternative entropy
+# alternative_df_entropy <- get_entropy_for_creature_updates(alternative_df) %>%
+#   rename(alternative_entropy = entropy) 
+
+#saveRDS(alternative_df_entropy, here("adult_modeling/m_res/s_a1b5_alternative_df_entropy.rds"))
 
 
-# add alternative KL
+# get alternative KL
+# alternative_df_kl <- get_kl_for_creature(alternative_df) %>%
+#   rename(alternative_kl = kl)  %>%
+#   mutate(temp_id = paste0(update_step,sep = "_", feature_index,sep = "_", trial_num)) %>% 
+#   select(alternative_kl, temp_id)
 
-#alternative_df_kl <- get_kl_for_creature(alternative_df)
 #saveRDS(alternative_df_kl, here("adult_modeling/m_res/s_a1b5_alternative_kl_df.rds"))
 
-alternative_df_kl <- alternative_df_kl %>% 
-  mutate(temp_id = paste0(update_step,sep = "_", feature_index,sep = "_", trial_num)) %>% 
-  select(kl, temp_id) %>% 
-  rename(alternative_kl = kl)
 
-df <- df %>% 
-  left_join(alternative_df_kl, by = "temp_id")
-# add alternative entropy
-
+# df <- alternative_df %>% 
+#   rename(alternative_posterior = posterior, alternative_log_posterior = log_posterior) %>%
+#   mutate(temp_id = paste0(update_number,sep = "_", feature_index,sep = "_", trial_num)) %>% # add temp_id 
+#   left_join(alternative_df_entropy) %>% 
+#   left_join(alternative_df_kl, by = "temp_id") %>% 
+#   left_join(df_updated)  # join with original df with real entropy & kls
 
 
-#- add epsilon column
+#saveRDS(df, here("adult_modeling/m_res/s_a1b5_full_df.rds"))
 
+#- get epsilon prior - this one is the same for all features and doesn't get updated 
+epsilon_prior <- lp_epsilon(grid_epsilon, alpha_epsilon, beta_epsilon)
 
+full_df <- readRDS(df, here("adult_modeling/m_res/s_a1b5_full_df.rds"))
 
 
 #- calculate posterior predictive distribution:

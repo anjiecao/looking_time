@@ -33,7 +33,6 @@ for (i in seq(1,15,1)) {
   
 }
 
-plot(seq(1,15,1), IGs)
 plot(seq(1,15,1), EIGs)
 
 

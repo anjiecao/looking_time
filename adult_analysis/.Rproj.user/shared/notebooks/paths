@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /Users/caoanjie/Desktop/projects/SyntacticBootstrappingMA/writeups/paper/sections/01_intro.Rmd="E368BCFD"
 /Users/caoanjie/Desktop/projects/SyntacticBootstrappingMA/writeups/paper/sections/02_method.Rmd="EA87B50C"
 /Users/caoanjie/Desktop/projects/SyntacticBootstrappingMA/writeups/paper/sections/03_results.Rmd="9AE7C304"
@@ -23,3 +24,15 @@
 /Users/caoanjie/Desktop/projects/looking_time/adult_analysis/adult_modeling/scripts/get_surprise.R="15039E92"
 /Users/caoanjie/Desktop/projects/looking_time/adult_analysis/adult_modeling/scripts/grid_approximation.R="5F8FA2C2"
 /Users/caoanjie/Desktop/projects/looking_time/adult_analysis/adult_modeling/scripts/noisy_update.R="14F0BE5D"
+=======
+/Users/galraz1/Desktop/Past academic stuff/Oxford/Oxford analysis/Gal's Experiment/Analysis scripts/Behavioral analysis/R functions/D2Models.R="1BFA0CD2"
+/Users/galraz1/Developer/Datavyu/Scripts/ChangeDetScript.R="AE182BA1"
+/Users/galraz1/Developer/looking_time/adult_analysis/adult_modeling/EIG_beta_distributions.R="C1F40922"
+/Users/galraz1/Developer/looking_time/adult_analysis/adult_modeling/eig_attempt_with_epislontracked.R="66E0D704"
+/Users/galraz1/Developer/looking_time/adult_analysis/adult_modeling/noisy_bb_cleaner.Rmd="FC761773"
+/Users/galraz1/Developer/looking_time/experiment/js/helper_for_generating_stimuli_array.js="CC0C5A6E"
+/Users/galraz1/Developer/looking_time_models/m2_noisy_feature_learning/EIG_predictions.Rmd="5A2E3C48"
+/Users/galraz1/Developer/looking_time_models/m2_noisy_feature_learning/tidyup_infrastructure.Rmd="5E828870"
+/Users/galraz1/Developer/looking_time_models/misc/choice_rules.R="6696653A"
+/Users/galraz1/Developer/looking_time_models/misc/kl_sanity_check.R="3BA597BC"
+>>>>>>> e38b9bf240df0ef791c1f058c33f87e900f684e9
