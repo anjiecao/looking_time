@@ -341,6 +341,8 @@ function generate_all_block(condition_num,
 
     // determine familiarization order
     fam_num = [3,7,5,5,7,3]
+    //fam_num = [0,0,0,0,0,0]
+
     fam_num.length = num_blocks
     fam_orders = arrayRotate(fam_num, rotation_num)
 
@@ -350,7 +352,6 @@ function generate_all_block(condition_num,
     // determine block types
     block_types = ["Std", "Dev", "Dev", "Std", "Std", "Dev"]
     block_orders = arrayRotate(block_types, rotation_num)
-
 
     // random order of pairs
     pairs = [0,1,2,3,4,5]
