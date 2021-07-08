@@ -38,6 +38,17 @@ obs_1 <-  readRDS(here("adult_modeling/m_res/obs_1"))
 
 
 # generate the necessary df: 
+<<<<<<< HEAD
+
+ df_posterior <- update_posterior_distribution_with_epsilon_tracked(
+   grid_theta = seq(0.1, .99, .1), 
+   grid_epsilon = seq(0.1, .99, .1), 
+   obs, 
+   alpha_prior = 1, 
+   beta_prior = 5,
+   alpha_epsilon = 1, 
+   beta_epsilon = 10)
+=======
 df_posterior <- update_posterior_distribution_with_epsilon_tracked(
   grid_theta = seq(0.1, .99, .1),
   grid_epsilon = seq(0.1, .99, .1),
@@ -46,6 +57,7 @@ df_posterior <- update_posterior_distribution_with_epsilon_tracked(
   beta_prior = 5,
   alpha_epsilon = 1,
   beta_epsilon = 10)
+>>>>>>> e38b9bf240df0ef791c1f058c33f87e900f684e9
 
 saveRDS(df_posterior, here("adult_modeling/m_res/s_a1b5_posterior_df.rds"))
 

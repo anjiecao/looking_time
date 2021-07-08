@@ -22,17 +22,27 @@ d <- read_csv(here("adult_modeling/data/processed_RTdata.csv"))
 d_experiment_parameter <- get_experiment_parameter(d)
 ```
 
+```{r}
+saveRDS(d_experiment_parameter, file = here("experiment_parameter.RDS"))
+
+```
+
+
 recover the experiment sequence 
 ```{r}
+
+
+
+
 d_exp_sim <- d_experiment_parameter %>% 
   # the block length doesn't match 
   mutate(
     
     sequence = pmap(d_experiment_parameter %>% select(-c(subject, block_number)), .f = ~with(list(...), 
                                              get_block_sequence(complexity, similarity, 
-                                                                20, 
-                                                                5, 10, 
-                                                                0.2, 0.8, 
+                                                                200, 
+                                                                50, 100, 
+                                                                0.2, 0.6, 
                                                                 block_length, 
                                                                 dev_positions)))
   ) %>% 
@@ -141,11 +151,11 @@ d_exp_sim %>%
   
 ```
 
+```{r}
+saveRDS(d_exp_sim, file = here("connecting_data_res.RDS"))
+```
 
-pivot_longer(cols = c(mean_rt, mean_kl, mean_surprise), 
-               names_to = "measure_type", 
-               values_to = "measure_value") %>% 
-  ggplot(aes(x = measure_value,))
+
   
 ```{r}
 
@@ -179,7 +189,7 @@ d_exp_sim %>%
   ggplot(aes(x= mean_surprise, y = mean_rt)) +
   geom_point() + 
   geom_smooth(method = "lm") + 
-  ylab("log looking time (ms)") + 
+  ylab("") + 
   xlab("Surprise") + 
   theme_classic() + 
   theme(

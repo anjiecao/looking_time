@@ -19,6 +19,7 @@ library(nlme)
 ## load files
 
 ```{r, include=FALSE}
+
 # jspsych files
 looking_list <- read_excel_allsheets(here::here("data", "output.xlsx"))
 
@@ -214,6 +215,30 @@ ggplot(test_df, aes(x=block_type, y=normalized_LT, group=fam_duration, color = f
   # geom_point(data=mean_df, aes(x = block_type, y=looking_time_until_lookaway, color = fam_duration), shape=24, size=3, position = position_jitter(width = 0.25, seed = 123)) + geom_errorbar(data=mean_df, aes(ymin=looking_time_until_lookaway-ci/2, ymax=looking_time_until_lookaway+ci/2, color = fam_duration), width=0, size=0.0, position = position_jitter(width = 0.25, seed = 123)) 
 
 ```
+
+## order effect? 
+
+```{r}
+ggplot(test_df, 
+       aes(x=block_number, y=looking_time_2000, group=block_type, color = block_type)) + geom_point(alpha=0.2, position = position_dodge(width = .1))  + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .3)) +
+  geom_smooth(method = "lm")+
+  facet_wrap(~fam_duration)
+```
+that was not too informative, can we just count how many data point we have in each category? 
+
+```{r}
+test_df %>% 
+  group_by(block_number, block_type, fam_duration) %>% 
+   dplyr::summarize(n_trial = n()) %>% 
+  ggplot(aes(x=block_number, y=n_trial, group=block_type, color = block_type)) + 
+  geom_point(alpha=.8, position = position_dodge(width = .1))  + 
+  geom_line()+
+  facet_wrap(~fam_duration)
+
+```
+
+
 ## Models
 ```{r}
 # log transform once figuring out how to deal with 0's
