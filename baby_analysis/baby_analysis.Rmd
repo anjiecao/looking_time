@@ -129,31 +129,51 @@ complete_df <- left_join(looking_df, trial_df, by = 'temp_id')  %>%
 
 ```
 
-# Inter-coder reliability
-```{r}
-# Correlation
-coder_1 <- complete_df %>% filter(coder_num == 2 & coder == 1) %>% pull(looking_time_2000)
-coder_2 <- complete_df %>% filter(coder_num == 2 & coder == 2) %>% pull(looking_time_2000)
-  
-cor(coder_1, coder_2)
-
-# Big discrepancies
-coder_df <- complete_df %>% filter(coder_num == 2 & coder == 1)
-View(coder_df[abs(coder_1-coder_2) > 5,])
-
-```
-
-
 # Exclusions
 
 ```{r}
 # remove outlier looking times
+ # complete_df <- complete_df %>% filter(looking_time_2000 > 2)
+
+```
+
+# Inter-coder reliability
+```{r}
+# Correlation
+coder_1 <- complete_df %>% filter(coder_num == 2 & coder == 1, ) %>% pull(looking_time_2000)
+coder_2 <- complete_df %>% filter(coder_num == 2 & coder == 2) %>% pull(looking_time_2000)
+  
+cor(coder_1, coder_2)
+
+plot(coder_1, coder_2)
+
+# Big discrepancies (more than 4 sec)
+comparison_df <- complete_df %>% filter(coder_num == 2) %>% 
+  pivot_wider(names_from = coder, values_from = starts_with('look')) %>% 
+  filter(abs(looking_time_2000_1 - looking_time_2000_2) > 4) %>% select(block_number, fam_or_test, subject_id)
+
+```
 
 
-# remove based on looking at familiarization 
+
+
+# Check for sampling imbalance
+
+## We want how uneven the sampling was and which assignments would make it even again (out of the possible assignments)
+```{r}
+
+# check out distribution of block types and fam duration across block
+x <- complete_df %>% filter(fam_or_test == 'test' & coder == 1) %>% dplyr::group_by(block_number, block_type, fam_duration) %>% dplyr::summarize(n = n())
+
+# check which rotation of 3,5,7,7,5,3 would balance order the best
+
+rotation = c(3,7,5,5,7,3)
+block_types = c("Std", "Dev", "Dev", "Std", "Std", "Dev")
+
 
 
 ```
+
 
 # Visualize
 
@@ -208,11 +228,28 @@ mean_df <- summarySE(test_df, measurevar="normalized_LT", groupvars=c("block_typ
 
 ggplot(test_df, aes(x=block_type, y=normalized_LT, group=fam_duration, color = fam_duration)) + geom_point(alpha=0.2, position = position_dodge(width = .1)) + 
     stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1))  + 
-  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + facet_wrap(~fam_duration) + xlab('Block number') + ylab('normalized LT') + labs(color = '# of Fam Trials') + theme_classic() + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + facet_wrap(~fam_duration) + xlab('Trial type') + ylab('normalized LT') + labs(color = '# of Fam Trials') + theme_classic() + 
   theme(strip.text.x = element_text(size = 14, colour = "black")) + ggtitle('')
   
+  # geom_point(data=mean_df, aes(x = block_type, y=looking_time_until_lookaway, color = fam_duration), shape=24, size=3, position = position_jitter(width = 0.25, seed = 123)) + geom_errorbar(data=mean_df, aes(ymin=looking_time_until_lookaway-ci/2, ymax=looking_time_until_lookaway+ci/2, color = fam_duration), width=0, size=0.0, position = position_jitter(width = 0.25, seed = 123)) 
+
+```
+
+## Block
+
+```{r}
+
+ggplot(test_df, aes(x=block_type, y=block_number, group=fam_duration, color = fam_duration)) + geom_point(alpha=0.2, position = position_dodge(width = .1)) + 
+    stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1))  + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + facet_wrap(~fam_duration) + xlab('Trial type') + ylab('block number') + labs(color = '# of Fam Trials') + theme_classic() + 
+  theme(strip.text.x = element_text(size = 14, colour = "black")) + ggtitle('')
   
   # geom_point(data=mean_df, aes(x = block_type, y=looking_time_until_lookaway, color = fam_duration), shape=24, size=3, position = position_jitter(width = 0.25, seed = 123)) + geom_errorbar(data=mean_df, aes(ymin=looking_time_until_lookaway-ci/2, ymax=looking_time_until_lookaway+ci/2, color = fam_duration), width=0, size=0.0, position = position_jitter(width = 0.25, seed = 123)) 
+
+```
+
+
+
 
 ```
 
