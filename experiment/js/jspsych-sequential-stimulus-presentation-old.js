@@ -232,7 +232,8 @@ jsPsych.plugins["sequential-stimulus-presentation-old"] = (function() {
         "trial_looking_time": trial.minimum_viewing_duration + response.rt,
         "block_deviant": trial.block_deviant,
         "block_background": trial.block_background, 
-        "exposure_type": trial.exposure_type
+        "exposure_type": trial.exposure_type,
+        "forced_exposure_time": trial.forced_short_viewing_duration
       };
 
       // clear the display

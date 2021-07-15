@@ -43,7 +43,7 @@ df.processed <- df.raw %>%
   #         block_deviant, block_background) %>% 
   select(subject, rt,
           block_number, block_type, stimulus_displayed, 
-          block_deviant, block_background, 
+          block_deviant, block_background, forced_exposure_time,
           exposure_type) %>% 
   group_by(subject, block_number) %>% 
   mutate(
@@ -80,7 +80,7 @@ df.processed <- df.raw %>%
              str_match(stimulus_displayed, "spore_stims/\\s*(.*?)..\\s*.gif")[,2]
     )  %>% 
   # select(subject, block_number, block_type, trial_number, item_type, trial_type, trial_complexity, item_id, rt) %>% 
- select(subject, block_number, block_type, trial_number, item_type, trial_type, trial_complexity, item_id, rt, exposure_type) %>% 
+ select(subject, block_number, block_type, forced_exposure_time, trial_number, item_type, trial_type, trial_complexity, item_id, rt, exposure_type) %>% 
   transform(rt = as.numeric(rt)) %>%
         mutate(half = case_when(
      block_number <= max(block_number)/2 ~ 'first half' , 
