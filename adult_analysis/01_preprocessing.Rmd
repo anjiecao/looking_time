@@ -30,7 +30,6 @@ df.raw <- read_csv(d_path)
 
 
 # RT data 
-note that the rt here does not take into account the forced exposure phase (50,5000,500)
 ```{r}
 TEST_TRIAL <- c("pref_reveal", "trial")
 # do we want to go w/ the data wrangling route or the jspsych route? 

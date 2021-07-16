@@ -1,9 +1,9 @@
 {
-    "path" : "~/Desktop/projects/looking_time/adult_analysis/adult_modeling",
-    "sortOrder" : [
+    "path": "~/Desktop/projects/looking_time/adult_analysis",
+    "sortOrder": [
         {
-            "ascending" : true,
-            "columnIndex" : 2
+            "columnIndex": 2,
+            "ascending": true
         }
     ]
 }

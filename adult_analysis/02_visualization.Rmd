@@ -120,7 +120,7 @@ RT_data %>%
  # filter(trial_number == 1) %>% 
    ggplot(aes(x = rt)) + 
   geom_histogram() + 
- # scale_x_log10() 
+  scale_x_log10() 
 ```
 
 
@@ -170,15 +170,6 @@ RT_data %>%
 
 
 ## by item id 
-### simple 
-```{r}
-RT_data %>% 
-  filter(trial_complexity == "simple") %>% 
-   ggplot(aes(x = rt)) + 
-  geom_histogram() + 
-  scale_x_log10() + 
-  facet_wrap(~item_id)
-```
 
 ### complex 
 ```{r}
