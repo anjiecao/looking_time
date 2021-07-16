@@ -1,16 +1,10 @@
-function demog_question_package(timeline){
-
-<<<<<<< HEAD
-var forced_short_viewing_duration = 100
-var forced_long_viewing_duration = 10 * 1000
+function instructions(timeline){
 
 
-=======
 var forced_short_viewing_duration = 500
 var forced_long_viewing_duration = 15 * 1000
         
     
->>>>>>> 98bce2342497a2da3e3b137cda8d1ce3b19f642a
 var intro0 = {
     type: "instructions",
     pages: [
@@ -37,7 +31,7 @@ var intro0 = {
 
 
         var html =
-                  "<p> On every trial, a creature will appear in the frame. </p>" +
+                  "<p> On most trials, a creature will appear in the frame. </p>" +
                   "<p> To continue, <b> press the down arrow-key </b> on your keyboard. </p>" +
                   "<p> You can try it now! </p>"
 
@@ -83,10 +77,9 @@ var intro0 = {
         var intro3 = {
             type: "instructions",
             pages: [
-                "<p> In the real experiment, during some trials, you might find that the creature will stay for a while on the screen. </p>" +
-                "<p> During other trials, you might find that the creature will just flash for a short period of time. </p>" +
-                "<p> In these trials where you can not control how long you can see the creature, you can press the down arrow to go to the next trial <b>after</b> the creature disappears. </p>" +
-                "Next, you will see what a very long trial and a very short trial looks like."
+                "<p> However, once in a while, there will be a trial where you can not control how long you can see the creature. </p>" +
+                "<p> In these trials, you can press the down arrow to go to the next trial <b>after</b> the creature disappears. </p>" +
+                "Next, you will see what these trials look like."
               ],
                 data: {stimulus_type: 'instructions'},
                 show_clickable_nav: true}
@@ -96,7 +89,7 @@ var intro0 = {
 
             type: 'sequential-stimulus-presentation-old',
           frame_animation: function(){
-        var html = '<p>&nbsp;</p>' + '<p>&nbsp;</p>'+ '<p>&nbsp;</p>'+ '<p>This is a long trial, which means that you can not go to the next trial when the creature is on the screen. </p><p>But you can press the down arrow when the creature disappears!</p>' +
+        var html = '<p>&nbsp;</p>' + '<p>&nbsp;</p>'+ '<p>&nbsp;</p>'+ 'This is an example trial. You can press the down arrow when the creature disappears!</p>' +
 
 '<p><img src= images/blank.png width ="400" height = "400" style="position:absolute; top:40%; transform: translate(-50%, -50%);left:50%;border:5px solid black"></p>'
 
@@ -111,8 +104,9 @@ var intro0 = {
           key_response: [40],
           minimum_viewing_duration: 500, // daffner2000's info was 600, changed to 200
           response_ends_trial: true,
-         forced_long_viewing_duration: forced_long_viewing_duration,
-            exposure_type: "forced_long"
+                forced_short_viewing_duration:forced_short_viewing_duration,
+
+                exposure_type: "forced_short"
         }
 
 
@@ -121,7 +115,7 @@ var intro0 = {
 
             type: 'sequential-stimulus-presentation-old',
           frame_animation: function(){
-        var html = '<p>&nbsp;</p>' + '<p>&nbsp;</p>'+ '<p>&nbsp;</p>'+ '<p>This is a short trial, which means that the creature will just flash. </p><p>You can go to the next trial as soon as the creature disappears.</p>' +
+        var html = '<p>&nbsp;</p>' + '<p>&nbsp;</p>'+ '<p>&nbsp;</p>'+ '<p>This is another example trial. You can press the down arrow when the creature disappears!</p>' +
 
 '<p><img src= images/blank.png width ="400" height = "400" style="position:absolute; top:40%; transform: translate(-50%, -50%);left:50%;border:5px solid black"></p>'
 
@@ -136,8 +130,8 @@ var intro0 = {
           key_response: [40],
           minimum_viewing_duration: 500, // daffner2000's info was 600, changed to 200
           response_ends_trial: true,
-                forced_long_viewing_duration: forced_short_viewing_duration,
-            exposure_type: "forced_long"
+                forced_short_viewing_duration:forced_short_viewing_duration,
+            exposure_type: "forced_short"
         }
 
 

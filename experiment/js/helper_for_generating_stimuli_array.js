@@ -6,6 +6,13 @@
 
 // function returning an object with the frequency of it occurrences in the array
 
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
+}
+
+
 function count_occurence(array){
     var occurences = {}
     for (var i = 0; i < array.length; i++){
@@ -127,14 +134,19 @@ function pop_multiple(array, n){
 // -------- V2 dealing with Stimuli --------- //
 // currently ignoring inter-relationship between stimuli
 // just get all stimuli
-function get_all_stimuli(TEST_RUN, SPECIES_NUM, SHOW_SIMILAR){
+function get_all_stimuli(TEST_RUN, SPECIES_NUM, SHOW_SIMILAR, SHOW_SIMPLE){
 
 
     all_stimuli = []
     MAIN_DIR = "images/stimuli/spore_stims/"
 
     // 2 complexity levels
-    complexity_levels = ['simple', 'complex']
+    if (SHOW_SIMPLE){
+        complexity_levels = ['simple', 'complex']
+    }else{
+        complexity_levels = ['complex']
+    }
+    
 
     if (TEST_RUN == 1) {
       // 30 species
@@ -265,7 +277,8 @@ function generate_all_block(num_blocks,
                             all_deviant_position_array,
                             num_deviants,
                             num_species,
-                            show_similar){
+                            show_similar, 
+                            show_simple){
 
     // check that number of blocks is divisible by 4
     if (num_blocks % 4 != 0){
@@ -282,11 +295,13 @@ function generate_all_block(num_blocks,
     }
 
     // get paths to all simple stimuli
+    if (show_simple){
     simple_stims = []
     for (var i = 0; i < stimuli_array.length; i++) {
       if (stimuli_array[i].includes('simple')) {
         simple_stims.push(stimuli_array[i])
       }
+    }
     }
 
     // get paths to all complex stimuli
@@ -316,6 +331,8 @@ if (show_similar) {
   for (i = 0; i < loop_length; i++) {
 
   // simple similar blocks
+      
+      if(show_simple){
    output = generate_similar_block(simple_stims, num_blocks, num_trial_per_block, all_deviant_position_array, num_deviants, num_species, block_type = 'simple_similar')
 
    simple_stims = output[0]
@@ -323,8 +340,10 @@ if (show_similar) {
 
 
    all_block_information.push(block_information)
-      
+          
 
+      }
+      
    // complex similar blocks
   output = generate_similar_block(complex_stims, num_blocks, num_trial_per_block, all_deviant_position_array, num_deviants, num_species, block_type = 'complex_similar')
 
@@ -342,13 +361,14 @@ if (show_similar) {
 for (i = 0; i < loop_length; i++) {
 
   // simple dissimilar blocks
+ if (show_simple){
   output = generate_dissimilar_block(simple_stims, num_blocks, num_trial_per_block, all_deviant_position_array, num_deviants,  block_type = 'simple_dissimilar')
 
  simple_stims = output[0]
  block_information = output[1]
 
  all_block_information.push(block_information)
-
+}
  // complex dissimilar blocks
  output = generate_dissimilar_block(complex_stims, num_blocks, num_trial_per_block, all_deviant_position_array, num_deviants, block_type = 'complex_dissimilar')
 
@@ -360,25 +380,29 @@ all_block_information.push(block_information)
 
     //  each block type has 3 exposure types 
     
-    var num_block_each_exposure_type = loop_length / 3 
+    var num_block_each_exposure_type = loop_length
     
     // will be replaced by non-hardcoded version 
-    var forced_long_arr = fillArray("forced_long", 
-                               num_block_each_exposure_type)
+  //  var forced_long_arr = fillArray("forced_long", 
+    //                           num_block_each_exposure_type)
     var forced_short_arr = fillArray("forced_short", 
                                num_block_each_exposure_type)
-    var self_paced_arr = fillArray("self_paced", 
-                               num_block_each_exposure_type)
+    //var self_paced_arr = fillArray("self_paced", 
+      //                         num_block_each_exposure_type)
     
     
-    var exposure_type = forced_long_arr.concat(forced_short_arr, self_paced_arr)
+    var exposure_type = forced_short_arr
     
-    
-    var simple_dissimilar_blocks =  all_block_information.filter(x => x.block_type == "simple_dissimilar") 
+    if (show_simple){
+        
+        var simple_dissimilar_blocks =  all_block_information.filter(x => x.block_type == "simple_dissimilar") 
+        shuffleArray(simple_dissimilar_blocks)
+    }
+ 
+
     var complex_dissimilar_blocks = all_block_information.filter(x => x.block_type == "complex_dissimilar") 
     
     // first shuffle these two block types
-    shuffleArray(simple_dissimilar_blocks)
     shuffleArray(complex_dissimilar_blocks)
      
     
@@ -386,10 +410,13 @@ all_block_information.push(block_information)
         
         
         // add the exposure type 
-        var current_sd = simple_dissimilar_blocks[i]
+        if(show_simple){
+            var current_sd = simple_dissimilar_blocks[i]
+            current_sd.exposure_type = exposure_type[i]
+
+        }
         var current_cd = complex_dissimilar_blocks[i]
         
-        current_sd.exposure_type = exposure_type[i]
         current_cd.exposure_type = exposure_type[i]
 
     }
@@ -499,7 +526,7 @@ function generate_dissimilar_block(stims, num_blocks, num_trial_per_block, all_d
   var randomIdx = Math.floor(Math.random() * stims.length)
   var background = stims[randomIdx];
 
-  // console.log('stims')
+  //console.log('stims')
   // console.log(stims)
 
   console.log('background')
@@ -517,15 +544,15 @@ function generate_dissimilar_block(stims, num_blocks, num_trial_per_block, all_d
   console.log(stims)
 
   // remove these creatures from the list for next iteration (not including their modification)
-  stims.splice(randomIdx, 1)
+  //stims.splice(randomIdx, 1)
 
-  //stims = stims.filter(x => !(x.includes(speciesInfo_1) && x.includes(modificationInfo_1) && x.includes(movementInfo_1)))
+  stims = stims.filter(x => !(x.includes(speciesInfo_1) && x.includes(modificationInfo_1) && x.includes(movementInfo_1)))
 
   console.log('stims:')
   console.log(stims)
 
   // stimuli to sample from, which don't come from the same species or movement
-  sampleFrom = stims.filter(x => !(x.includes(speciesInfo_1) || x.includes(movementInfo_1)))
+  sampleFrom = stims.filter(x => !(x.includes(speciesInfo_1) && x.includes(movementInfo_1)))
 
   // console.log('stims2:')
   // console.log(stims)

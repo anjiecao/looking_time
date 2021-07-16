@@ -415,6 +415,15 @@ RT_data %>%
 ```{r}
 RT_data %>% 
   filter(trial_number == 2) %>% 
+  ggplot(aes(x = forced_exposure_time, y = log(looking_time), color = item_type)) +
+  geom_point() +
+  geom_smooth(method = "lm")+ 
+  facet_wrap(~block_number)
+```
+
+```{r}
+RT_data %>% 
+  filter(trial_number == 2) %>% 
   ggplot(aes(x = exposure_type, y = looking_time, color = item_type)) + 
   stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) +
    langcog::scale_color_solarized(name = "Item Type") + 
