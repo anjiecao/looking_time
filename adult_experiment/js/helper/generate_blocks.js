@@ -485,11 +485,29 @@ function generate_dissimilar_block(stims, num_blocks, num_trial_per_block, all_d
 
     options = [result, option1, option2]
 
-    console.log(result)
-    console.log(options)
+    //console.log(result)
+    //console.log(options)
 
     shuffleArray(options)
 
+    
+    // get stimuli for the memory test purpose 
+    // one stimulus will be the actual stimulus that we use, randomly selected from background or deviant 
+    // the other stimulus will be selected from a pool of stimulus that the participants have never seen before
+    // ?: do we need the false stimulus to be very similar to the original one, or keep them very different? 
+
+    
+    var true_stimulus = getRandomSubarray([background, deviant], 1)[0]
+    
+    // current approach: selecting a completely different creature 
+    sampleFrom = stims.filter(x => !(x.includes(speciesInfo_2) && x.includes(movementInfo_2)))
+    var randomIdx = Math.floor(Math.random() * sampleFrom.length)
+    var false_stimulus = sampleFrom[randomIdx]
+    
+    var memory_test_stimuli = [true_stimulus, false_stimulus]
+    
+    shuffleArray(memory_test_stimuli)
+    
       block_information = {
           num_trial_per_block: num_trial_per_block,
           background_stimuli: background,
@@ -499,7 +517,8 @@ function generate_dissimilar_block(stims, num_blocks, num_trial_per_block, all_d
           first_addend: first_addend,
           second_addend: second_addend,
           result: result,
-          options: options
+          options: options,
+          memory_test_stimuli: memory_test_stimuli 
 
       }
 

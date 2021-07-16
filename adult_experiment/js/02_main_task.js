@@ -57,11 +57,15 @@ for (var block_index = 0;
     block_type = block_information.block_type
     block_timeline_variable = generate_timeline_variables(block_information)
     exposure_type = block_information.exposure_type
+    memory_question_stimuli = block_information.memory_test_stimuli
+    
     
     if (verbose){
         console.log("Each block time variable: ")
         console.log(block_timeline_variable)
         console.log('info: ' + block_information['stims_in_order'])
+        console.log("memory question stimuli for the block:")
+        console.log(memory_question_stimuli)
     }
 
 
@@ -115,19 +119,38 @@ for (var block_index = 0;
   
     // to be changed for new version 
     if (block_index < all_blocks_information.length - 1) {
-
-          var math_question = {
-              type: 'survey-multi-choice',
+          var memory_question_A = {
+              type: "survey-multi-choice",
               questions: [
-                {prompt: "What is " + block_information.first_addend + "+" + block_information.second_addend + "?", options: block_information.options, required: true, horizontal: true},
+                {prompt: "Have you seen this creature before?" + 
+                        '<p><img src=' +  memory_question_stimuli[0] +'width ="600" height = "600" style="position:fixed; top:50%; transform: translate(-50%, -50%);left:50%;border:5px solid black">', 
+                 options: ["Yes", "No"], 
+                 required: true, 
+                 horizontal: true},
               ],
-              data: {stimulus_type: 'math_question',
-                    math_correct_answer: block_information.first_addend + block_information.second_addend},
+              data: {stimulus_type: 'memory_test',
+                    memory_correct_answer:0},
               }
+          
+           var memory_question_B = {
+              type: "survey-multi-choice",
+              questions: [
+                {prompt: "Have you seen this creature before?" + 
+                        '<p><img src=' +  memory_question_stimuli[1] +'width ="600" height = "600" style="position:fixed; top:50%; transform: translate(-50%, -50%);left:50%;border:5px solid black">', 
+                 options: ["Yes", "No"], 
+                 required: true, 
+                 horizontal: true},
+              ],
+              data: {stimulus_type: 'memory_test',
+                    memory_correct_answer:0},
+              }
+              
+    }
 
-        test_blocks.push(math_question)
-      
-     }
+        test_blocks.push(memory_question_A)
+        test_blocks.push(memory_question_B)
+     
+     
 
 
      // collecting norming stimuli here
