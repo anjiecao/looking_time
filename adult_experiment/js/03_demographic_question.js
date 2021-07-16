@@ -1,4 +1,14 @@
-function demog_question_package(timeline){
+function get_demog_questions(timeline){
+    
+  var pre_demog_instruction = {
+        type: "instructions",
+        pages: [
+            "Congratulations! You have finished all the tasks tasks! Now, we would like to ask a few questions about you."
+        ],
+        data: {stimulus_type: 'instructions'},
+        show_clickable_nav: true
+    }
+
 
   var demog_question_age = {
         type: 'demog-age',
@@ -24,9 +34,10 @@ function demog_question_package(timeline){
         ]
     }
 
+timeline.push(pre_demog_instruction)
 timeline.push(demog_question_age)
 timeline.push(demog_question_ethnicity)
 timeline.push(demog_gender_and_education)
 
-
+return timeline 
 }

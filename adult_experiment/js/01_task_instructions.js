@@ -1,9 +1,22 @@
-function instructions(timeline){
+function get_consent_and_instructions(timeline){
 
 
 var forced_short_viewing_duration = 500
 var forced_long_viewing_duration = 15 * 1000
-        
+
+var consent = {
+        type: 'instructions',
+        pages: ["<div class='w3-container' style='width: 600px; bottom-padding: 20px; text-align: left;'>" +
+                "<div style='width: 600px; margin: 0 auto; text-align: center; background-color: #8C1516; padding: 20px 15px 10px 10px'>" +
+                "<img src='images/stanford.png' height='46' width='360' alt='Stanford University'></div>"+
+                "<center><p><strong>Stanford Language and Cognition Lab</strong></p></center>"+
+                "<p>In this experiment, you'll be watching a series of animations at your own pace. You will be asked to judge the similarity and complexity of these animations afterwards." +
+                "<p class='block-text' id='legal'>Legal information: By answering the following questions, you are participating in a study being performed by cognitive scientists in the Stanford Department of Psychology. If you have questions about this research, please contact Anjie Cao at <a href='mailto://anjiecao@stanford.edu'>anjiecao@stanford.edu</a>. You must be at least 18 years old to participate. Your participation in this research is voluntary. You may decline to answer any or all of the following questions. You may decline further participation, at any time, without adverse consequences. Your anonymity is assured; the researchers who have requested your participation will not receive any personal information about you.</p></div><p />" //,
+        ],
+        show_clickable_nav: true,
+        show_page_number: true,
+        post_trial_gap: 2000
+    }
     
 var intro0 = {
     type: "instructions",
@@ -162,7 +175,7 @@ var intro0 = {
                 data: {stimulus_type: 'instructions'},
                 show_clickable_nav: true}
 
-
+        timeline.push(consent)
         timeline.push(intro0)
         timeline.push(intro1)
         timeline.push(intro2)

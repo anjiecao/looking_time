@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <!-- jspsych -->
+  <script src="js/jspsych/jspsych.js"></script>
+  <script src="js/jspsych/jspsych-instructions.js"></script>
+  <script src= "js/jspsych/jspsych-demog-age.js"></script>
+  <script src= "js/jspsych/jspsych-demog-ethnic-US.js"></script>
+  <script src= "js/jspsych/jspsych-demog-gender-and-education.js"></script>
+    <script src="js/jspsych/jspsych-html-keyboard-response.js"></script>
+  <script src="js/jspsych/jspsych-sequential-stimulus-presentation-old.js"></script>
+  <script src= "js/jspsych/jspsych-survey-text.js"></script>
+  <script src= "js/jspsych/jspsych-survey-likert.js"></script>
+  <script src="js/jspsych/jspsych-survey-multi-choice.js"></script>
+    
+    <!-- helper function -->
+    <script src= "js/helper/array.js"></script>
+    <script src= "js/helper/generate_blocks.js"></script>
+    
+    <!-- task module -->
+     <script src= "js/00_setting.js"></script>
+    <script src= "js/01_task_instructions.js"></script>
+    <script src= "js/02_main_task.js"></script>
+    <script src= "js/03_demographic_question.js"></script>
+    <script src= "js/04_feedback_and_code.js"></script>
+    <link rel="stylesheet" href="css/jspsych.css"></link>
+</head>
+<body></body>
+<script>
+
+
+jsPsych.data.addProperties({ subject: subject_id });
+
+
+// initialize timeline
+var timeline = []
+
+  if (SHOW_INTRO) {
+      timeline = get_consent_and_instructions(timeline)
+  }
+  
+  timeline = timeline.concat(main_task)
+  timeline = get_demog_questions(timeline)
+  timeline = get_feedback_and_code(timeline)
+
+  
+function saveData(name, data){
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '../../../cgi-bin/pokebaby/write_data.php');
+        //xhr.open('POST', 'write_data.php'); // 'write_data.php' is the path to the php file described above.
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify({filename: name, filedata: data}));
+    }
+
+// For loading
+
+
+
+jsPsych.init({
+        timeline: timeline,
+        show_progress_bar: false,
+        //use_webaudio: true, // this won't work for local testing (CORS), but maybe on server
+        preload_images: all_stimuli,
+        on_trial_finish: function(){
+            saveData("test" + subject_id, jsPsych.data.get().csv());
+            //jsPsych.data.displayData();
+            //setTimeout(function() { turk.submit(jsPsych.data.get().ignore('external-html').json()); }, 5000);
+      }
+    })
+
+    </script>
+</html>
