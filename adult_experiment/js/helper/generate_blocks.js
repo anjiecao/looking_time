@@ -3,7 +3,7 @@ function get_all_stimuli(TEST_RUN, SPECIES_NUM, SHOW_SIMILAR, SHOW_SIMPLE){
 
 
     all_stimuli = []
-    MAIN_DIR = "images/stimuli/spore_stims/"
+    MAIN_DIR = "images/stimuli/"
 
     // 2 complexity levels
     if (SHOW_SIMPLE){

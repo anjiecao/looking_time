@@ -53,7 +53,7 @@ var intro0 = {
        },
         //position:absolute;top:28px;left:40px
           stimuli_animation: function(){
-              var html = "<img src='images/stimuli/instructions_example_spore1.gif' width ='400' height = '400' style='border:5px solid black'>"
+              var html = "<img src='images/practice/instructions_example_spore1.gif' width ='400' height = '400' style='border:5px solid black'>"
               return html
           },
           two_stimuli_interval: 0,
@@ -76,7 +76,7 @@ var intro0 = {
          return html
        },
           stimuli_animation: function(){
-              var html = "<p><img src='images/stimuli/instructions_example_spore0.gif' width ='400' height = '400' style='border:5px solid black'></p>"
+              var html = "<p><img src='images/practice/instructions_example_spore0.gif' width ='400' height = '400' style='border:5px solid black'></p>"
               return html
           },
           key_response: [40],
@@ -99,7 +99,7 @@ var intro0 = {
 
             var intro4 = {
 
-            type: 'sequential-stimulus-presentation-old',
+            type: 'stimuli-presentation',
           frame_animation: function(){
         var html = '<p>&nbsp;</p>' + '<p>&nbsp;</p>'+ '<p>&nbsp;</p>'+ 'This is an example trial. You can press the down arrow when the creature disappears!</p>' +
 
@@ -109,7 +109,7 @@ var intro0 = {
          return html
        },
           stimuli_animation: function(){
-              var html = "<img src='images/stimuli/instructions_example_spore2.gif' width ='400' height = '400'>"
+              var html = "<img src='images/practice/instructions_example_spore2.gif' width ='400' height = '400'>"
               return html
           },
           two_stimuli_interval: 0,
@@ -125,8 +125,8 @@ var intro0 = {
 
             var intro5 = {
 
-            type: 'sequential-stimulus-presentation-old',
-          frame_animation: function(){
+            type: 'stimuli-presentation',
+            frame_animation: function(){
         var html = '<p>&nbsp;</p>' + '<p>&nbsp;</p>'+ '<p>&nbsp;</p>'+ '<p>This is another example trial. You can press the down arrow when the creature disappears!</p>' +
 
 '<p><img src= images/blank.png width ="400" height = "400" style="position:absolute; top:40%; transform: translate(-50%, -50%);left:50%;border:5px solid black"></p>'
@@ -135,7 +135,7 @@ var intro0 = {
          return html
        },
           stimuli_animation: function(){
-              var html = "<img src='images/stimuli/instructions_example_spore2.gif' width ='400' height = '400'>"
+              var html = "<img src='images/practice/instructions_example_spore2.gif' width ='400' height = '400'>"
               return html
           },
           two_stimuli_interval: 0,
