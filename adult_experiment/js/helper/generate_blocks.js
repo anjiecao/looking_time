@@ -77,7 +77,6 @@ function generate_timeline_variables(block_information){
     block_type = block_information.block_type
     exposure_type = block_information.exposure_type
 
-     wall_animation = 'images/stimuli/wall.mp4'
 
     block_stimuli = []
     
@@ -85,7 +84,6 @@ function generate_timeline_variables(block_information){
     // the first trial is always background 
     
     var first_trial = {
-         wall_animation: wall_animation,
          stimuli: background_stimuli,
          stim_type: 'background', 
          exposure_type: exposure_type, 
@@ -95,7 +93,6 @@ function generate_timeline_variables(block_information){
     for (var i = 0; i < block_length-1; i++){
         
         var background_item = {
-         wall_animation: wall_animation,
          stimuli: background_stimuli,
          stim_type: 'background', 
          exposure_type: exposure_type, 
@@ -115,7 +112,6 @@ function generate_timeline_variables(block_information){
     // replace background with deviant
     for (var i = 0; i < deviant_position_array.length; i++){
          var deviant_item = {
-         wall_animation: wall_animation,
          stimuli: deviant_stimuli,
          stim_type: 'deviant', 
          exposure_type: exposure_type, 
@@ -148,9 +144,11 @@ function generate_all_block(num_blocks,
       throw 'Number of blocks should be divisible by 4, to have equal number of each block type';
     }
     
+    /*
     if (num_blocks % 6 != 0){
       throw 'Number of blocks should be divisible by 6, to have equal number of each block type (simple, complex vs 3 variation of trial length)';
     }
+    */
 
     // check that there's no deviant position larger than the total number of trials per block
     if (all_deviant_position_array.some(el => el > num_trial_per_block)){
@@ -159,12 +157,12 @@ function generate_all_block(num_blocks,
 
     // get paths to all simple stimuli
     if (show_simple){
-    simple_stims = []
-    for (var i = 0; i < stimuli_array.length; i++) {
-      if (stimuli_array[i].includes('simple')) {
-        simple_stims.push(stimuli_array[i])
+      simple_stims = []
+      for (var i = 0; i < stimuli_array.length; i++) {
+        if (stimuli_array[i].includes('simple')) {
+          simple_stims.push(stimuli_array[i])
+        }
       }
-    }
     }
 
     // get paths to all complex stimuli
@@ -179,12 +177,14 @@ function generate_all_block(num_blocks,
 
 
 
-    if (show_similar)
+    if (show_similar && show_simple)
     {
       loop_length = num_blocks/4
     }
-    else {
+    else if (show_simple | show_similar){
       loop_length = num_blocks/2
+    } else{
+      loop_length = num_blocks
     }
 
 if (show_similar) {
@@ -398,8 +398,8 @@ function generate_dissimilar_block(stims, num_blocks, num_trial_per_block, all_d
 
   // and get info about species, modification, movement/rotation
   speciesInfo_1 = background.slice(background.length-10, background.length-8)
-  modificationInfo_1 = background.slice(background.length-7, background.length-6)
-  movementInfo_1 = background.slice(background.length-5, background.length-1)
+  //modificationInfo_1 = background.slice(background.length-7, background.length-6)
+  //movementInfo_1 = background.slice(background.length-5, background.length-1)
 
   //console.log(speciesInfo_1)
   //console.log(modificationInfo_1)
@@ -409,14 +409,13 @@ function generate_dissimilar_block(stims, num_blocks, num_trial_per_block, all_d
 
   // remove these creatures from the list for next iteration (not including their modification)
   //stims.splice(randomIdx, 1)
-
-  stims = stims.filter(x => !(x.includes(speciesInfo_1) && x.includes(modificationInfo_1) && x.includes(movementInfo_1)))
+ 
+  stims = stims.filter(x => !(x.includes(speciesInfo_1)))
 
   //console.log('stims:')
   //console.log(stims)
 
   // stimuli to sample from, which don't come from the same species or movement
-  sampleFrom = stims.filter(x => !(x.includes(speciesInfo_1) && x.includes(movementInfo_1)))
 
   // console.log('stims2:')
   // console.log(stims)
@@ -425,13 +424,14 @@ function generate_dissimilar_block(stims, num_blocks, num_trial_per_block, all_d
   //console.log(sampleFrom)
 
   // choose random index to get deviant stim
-  var randomIdx = Math.floor(Math.random() * sampleFrom.length)
-  var deviant = sampleFrom[randomIdx]
+  
+  var randomIdx = Math.floor(Math.random() * stims.length)
+  var deviant = stims[randomIdx]
 
   // get relevant info about deviant to exclude that species
   speciesInfo_2 = deviant.slice(deviant.length-10, deviant.length-8)
-  modificationInfo_2 = deviant.slice(deviant.length-7, deviant.length-6)
-  movementInfo_2 = deviant.slice(background.length-5, background.length-1)
+  //modificationInfo_2 = deviant.slice(deviant.length-7, deviant.length-6)
+  //movementInfo_2 = deviant.slice(background.length-5, background.length-1)
   //
   // console.log('stims3:')
   // console.log(stims)
@@ -443,7 +443,7 @@ function generate_dissimilar_block(stims, num_blocks, num_trial_per_block, all_d
   // console.log('stims4:')
   // console.log(stims)
 
-  stims = stims.filter(x => !(x.includes(speciesInfo_2) && x.includes(modificationInfo_2) && x.includes(movementInfo_2)))
+  stims = stims.filter(x => !(x.includes(speciesInfo_2)))
 
   // get random trial number
   num_trial_per_block = getRandomSubarray(num_trial_per_block, 1)
@@ -500,10 +500,12 @@ function generate_dissimilar_block(stims, num_blocks, num_trial_per_block, all_d
     var true_stimulus = getRandomSubarray([background, deviant], 1)[0]
     
     // current approach: selecting a completely different creature 
-    sampleFrom = stims.filter(x => !(x.includes(speciesInfo_2) && x.includes(movementInfo_2)))
-    var randomIdx = Math.floor(Math.random() * sampleFrom.length)
-    var false_stimulus = sampleFrom[randomIdx]
-    
+    var randomIdx = Math.floor(Math.random() * stims.length)
+    var false_stimulus = stims[randomIdx]
+    var speciesInfo_3 = false_stimulus.slice(false_stimulus.length-10, false_stimulus.length-8)
+    stims = stims.filter(x => !(x.includes(speciesInfo_3)))
+
+
     var memory_test_stimuli = [true_stimulus, false_stimulus]
     
     shuffleArray(memory_test_stimuli)

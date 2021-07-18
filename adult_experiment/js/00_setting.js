@@ -27,12 +27,10 @@ if (TEST_RUN == 1) {
 }
 else {
   SHOW_INTRO = true
-  NUM_BLOCKS = 12
+  NUM_BLOCKS = 8
   NUM_TRIAL_PER_BLOCK = [4,5,6]
   DEVIANT_POSITIONS = [1, 2,3,4,5]
   NUM_DEVIANTS = [0,1,2]
-  BREAK_EVERY_N_BLOCKS = 10
-  // number of species per complexity level
   SPECIES_NUM = 24
   SHOW_SIMILAR = false
   SHOW_SIMPLE = false 
@@ -50,6 +48,14 @@ all_blocks_information = generate_all_block(num_blocks = NUM_BLOCKS,
                                             num_species = SPECIES_NUM,
                                             show_similar = SHOW_SIMILAR, 
                                             show_simple = SHOW_SIMPLE)
+
+
+checking_block_information(all_blocks_information = all_blocks_information, 
+                           blcok_number = NUM_BLOCKS, 
+                           num_trial_per_block = NUM_TRIAL_PER_BLOCK, 
+                           show_similar = SHOW_SIMILAR, 
+                           show_simple = SHOW_SIMPLE
+                            )
 
 if (verbose){
 console.log("All stimuli path: ")
