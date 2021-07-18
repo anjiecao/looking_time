@@ -39,7 +39,7 @@ var intro0 = {
 
 
         var intro1 = {
-          type: 'sequential-stimulus-presentation-old',
+          type: 'stimuli-presentation',
           frame_animation: function(){
 
 
@@ -65,7 +65,7 @@ var intro0 = {
 
 
         var intro2 = {
-          type: 'sequential-stimulus-presentation-old',
+          type: 'stimuli-presentation',
           frame_animation: function(){
         var html =
                   "<p> You are doing great! </p>" +
@@ -79,7 +79,6 @@ var intro0 = {
               var html = "<p><img src='images/stimuli/instructions_example_spore0.gif' width ='400' height = '400' style='border:5px solid black'></p>"
               return html
           },
-          two_stimuli_interval: 0,
           key_response: [40],
           minimum_viewing_duration: 500, // daffner2000's info was 600, changed to 200
           response_ends_trial: true,

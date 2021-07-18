@@ -9,12 +9,12 @@
  **/
 
 
-jsPsych.plugins["sequential-stimulus-presentation-old"] = (function() {
+jsPsych.plugins["stimuli-presentation"] = (function() {
 
   var plugin = {};
 
   plugin.info = {
-    name: 'sequential-stimulus-presentation-old',
+    name: 'stimuli-presentation',
     description: '',
     parameters: {
           frame_animation: {
@@ -27,13 +27,6 @@ jsPsych.plugins["sequential-stimulus-presentation-old"] = (function() {
       stimuli_animation: {
         type: jsPsych.plugins.parameterType.HTML_STRING,
         pretty_name: 'stimulus',
-        default: undefined,
-        description: 'The HTML string to be displayed first'
-      },
-
-      two_stimuli_interval: {
-        type: jsPsych.plugins.parameterType.HTML_STRING,
-        pretty_name: 'interval between playing first and second',
         default: undefined,
         description: 'The HTML string to be displayed first'
       },

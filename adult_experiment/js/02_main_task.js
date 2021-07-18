@@ -80,11 +80,10 @@ for (var block_index = 0;
                             choices: jsPsych.NO_KEYS
                         },
                         {
-                            type: 'sequential-stimulus-presentation-old',
+                            type: 'stimuli-presentation',
                             frame_animation: function(){
                                 var html =  '<p><img src= images/blank.png width ="600" height = "600" style="position:fixed; top:50%; transform: translate(-50%, -50%);left:50%;border:5px solid black">'
-                                //var html = "<video width ='960' height = '540' autoplay muted><source src=" + jsPsych.timelineVariable('wall_animation', true) + ' type="video/mp4"></video>'
-                                //var html = "<img src= "+ "images/stimuli/pokeball_1.gif" +" width ='800' height = '200'></p>"
+                               
                                 return html;
                             },
                             
@@ -99,7 +98,6 @@ for (var block_index = 0;
                        
                             block_deviant: block_information.deviant_stimuli,
                             block_background: block_information.background_stimuli,
-                            two_stimuli_interval: 0,
                             key_response: [40],
                             first_trial: function(){
                                 return jsPsych.timelineVariable('first_trial', true)
