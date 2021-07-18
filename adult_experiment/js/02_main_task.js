@@ -119,29 +119,33 @@ for (var block_index = 0;
     if (block_index < all_blocks_information.length - 1) {
           var memory_question_A = {
               type: "survey-multi-choice",
+              preamble: '<p><img src= ' + memory_question_stimuli[0] + ' width ="200" height = "200"</p>',
               questions: [
-                {prompt: "Have you seen this creature before?" + 
-                        '<p><img src=' +  memory_question_stimuli[0] +'width ="600" height = "600" style="position:fixed; top:50%; transform: translate(-50%, -50%);left:50%;border:5px solid black">', 
+                {prompt:
+                        'Have you seen this creature before?', 
                  options: ["Yes", "No"], 
                  required: true, 
                  horizontal: true},
               ],
               data: {stimulus_type: 'memory_test',
-                    memory_correct_answer:0},
+                    memory_question_stimuli: memory_question_stimuli[0], 
+                    memory_block_index: block_index },
               }
           
-           var memory_question_B = {
-              type: "survey-multi-choice",
-              questions: [
-                {prompt: "Have you seen this creature before?" + 
-                        '<p><img src=' +  memory_question_stimuli[1] +'width ="600" height = "600" style="position:fixed; top:50%; transform: translate(-50%, -50%);left:50%;border:5px solid black">', 
-                 options: ["Yes", "No"], 
-                 required: true, 
-                 horizontal: true},
-              ],
-              data: {stimulus_type: 'memory_test',
-                    memory_correct_answer:0},
-              }
+              var memory_question_B = {
+                type: "survey-multi-choice",
+                preamble: '<p><img src= ' + memory_question_stimuli[1] + ' width ="200" height = "200"</p>',
+                questions: [
+                  {prompt:
+                          'Have you seen this creature before?', 
+                   options: ["Yes", "No"], 
+                   required: true, 
+                   horizontal: true},
+                ],
+                data: {stimulus_type: 'memory_test',
+                      memory_question_stimuli: memory_question_stimuli[1], 
+                      memory_block_index: block_index },
+                }
               
     }
 
