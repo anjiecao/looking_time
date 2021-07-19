@@ -1,52 +1,6 @@
 // initializing the main task package 
 main_task = []
 test_blocks = []
-similarity_stims = []
-complexity_stims = []
-
-var similarity_instructions = {
-        type: "instructions",
-        pages: [
-             "<p> In this section, you will be asked to judge the similarity between two creatures you saw.</p>" +
-             "<p>There is no right or wrong answer, so feel free to judge the similarity based on your intuition.</p>"
-         ],
-         data: {stimulus_type: 'instructions'},
-         show_clickable_nav: true
-}
-
-var complexity_instruction = {
-        type: "instructions",
-        pages: [
-            "<p>Now it's time for the last section!</p><p> In this part, " +
-            "you will be asked to rate the complexity of the creatures you just saw. </p>" +
-            "<p> Again, there is no right or wrong answer, so feel free to judge their complexity based on your intuition.</p>"
-        ],
-        data: {stimulus_type: 'instructions'},
-        show_clickable_nav: true
-}
-
-var scale_similarity = [
-  "Most Dissimilar",
-  "Very Dissimilar",
-  "Quite Dissimilar",
-  "Neither Similar Nor Dissimilar",
-  "Quite Similar",
-  'Very Similar',
-  'Most Similar',
-];
-
-
-var scale_complexity = [
-  "Simplest",
-  "Very Simple",
-  "Quite Simple",
-  "Neither Simple Nor Complex",
-  "Quite Complex",
-  'Very Complex',
-  'Most Complex',
-];
-
-
 
 // setting up the main task package 
 for (var block_index = 0; 
@@ -98,7 +52,7 @@ for (var block_index = 0;
                        
                             block_deviant: block_information.deviant_stimuli,
                             block_background: block_information.background_stimuli,
-                            key_response: [40],
+                            key_response: [32],
                             first_trial: function(){
                                 return jsPsych.timelineVariable('first_trial', true)
                             }, 
@@ -119,12 +73,11 @@ for (var block_index = 0;
     if (block_index < all_blocks_information.length - 1) {
           var memory_question_A = {
               type: "survey-multi-choice",
-              preamble: '<p><img src= ' + memory_question_stimuli[0] + ' width ="200" height = "200"</p>',
+              preamble: '<p><img src= ' + memory_question_stimuli[0] + ' width ="400" height = "400"</p>',
               questions: [
-                {prompt:
-                        'Have you seen this creature before?', 
+                {prompt: 'Have you seen this creature before?', // actually we can request control from the participants 
                  options: ["Yes", "No"], 
-                 required: true, 
+                 required: false, 
                  horizontal: true},
               ],
               data: {stimulus_type: 'memory_test',
@@ -132,75 +85,12 @@ for (var block_index = 0;
                     memory_block_index: block_index },
               }
           
-              var memory_question_B = {
-                type: "survey-multi-choice",
-                preamble: '<p><img src= ' + memory_question_stimuli[1] + ' width ="200" height = "200"</p>',
-                questions: [
-                  {prompt:
-                          'Have you seen this creature before?', 
-                   options: ["Yes", "No"], 
-                   required: true, 
-                   horizontal: true},
-                ],
-                data: {stimulus_type: 'memory_test',
-                      memory_question_stimuli: memory_question_stimuli[1], 
-                      memory_block_index: block_index },
-                }
               
     }
 
         test_blocks.push(memory_question_A)
-        test_blocks.push(memory_question_B)
      
-     
-
-
-     // collecting norming stimuli here
-     similarity_array = [all_blocks_information[block_index]['background_stimuli'], all_blocks_information[block_index]['deviant_stimuli']]
-
-     // shuffle to randomize deviant/background left/right assignment
-     shuffleArray(similarity_array)
-
-    var similarity_questions = {
-        type: 'survey-likert',
-        preamble: '<p><img src=' + similarity_array[0] + ' width ="150" height = "150";"></p>' +
-       '<p><img src=' + similarity_array[1] + ' width ="150" height = "150";" ></p> ',
-        questions: [
-          {prompt: '<p> How similar are these creatures?</p>', labels: scale_similarity, required: true}
-        ],
-        scale_width: '250px',
-        data: {stimulus_type: 'similarity_question', stimulus_left: similarity_array[0], stimulus_right: similarity_array[1]}
-      }
-
-
-     similarity_stims.push(similarity_questions)
-
-     // random index for complexity question
-     random_index = Math.floor(Math.random() * similarity_array.length)
-
-    // ask about the complexity of either deviant or background (randomly chosen)
-    var complexity_questions = {
-      type: 'survey-likert',
-      preamble: '<p><img src= ' + similarity_array[random_index] + ' width ="200" height = "200"</p>',
-      questions: [
-        {prompt: '<p> How complex is this creature?</p>', labels: scale_complexity, required: true}
-      ],
-      scale_width: '250px',
-      data: {trial_type: 'complexity_question', stimulus: similarity_array[random_index]}
-    };
-
-     complexity_stims.push(complexity_questions)
-
-}
-
-shuffleArray(similarity_stims)
-shuffleArray(complexity_stims)
-
+  }
 // putting everything together 
 main_task = main_task.concat(test_blocks)
-main_task.push(similarity_instructions)
-main_task = main_task.concat(similarity_stims)
-main_task.push(complexity_instruction)
-main_task = main_task.concat(complexity_stims)
-
 

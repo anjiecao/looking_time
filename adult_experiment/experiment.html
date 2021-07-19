@@ -21,9 +21,9 @@
     
     <!-- task module -->
      <script src= "js/00_setting.js"></script>
-    <script src= "js/01_task_instructions.js"></script>
-    <script src= "js/02_main_task.js"></script>
-    <script src= "js/03_demographic_question.js"></script>
+    <script src= "js/01_consent_and_demographic.js"></script>
+    <script src= "js/02_task_instruction_and_practice.js"></script>
+    <script src= "js/03_main_task.js"></script>
     <script src= "js/04_feedback_and_code.js"></script>
     <link rel="stylesheet" href="css/jspsych.css"></link>
 </head>
@@ -37,13 +37,9 @@ jsPsych.data.addProperties({ subject: subject_id });
 // initialize timeline
 var timeline = []
 
-  if (SHOW_INTRO) {
-     //timeline = get_consent_and_instructions(timeline)
-  }
-  
+  //timeline = get_consent_and_demog(timeline)
+  timeline = get_instructions_and_practice(timeline)
   timeline = timeline.concat(main_task)
-  timeline = get_demog_questions(timeline)
-  timeline = get_feedback_and_code(timeline)
 
   
 function saveData(name, data){
