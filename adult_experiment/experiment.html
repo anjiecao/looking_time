@@ -38,7 +38,7 @@ jsPsych.data.addProperties({ subject: subject_id });
 var timeline = []
 
   if (SHOW_INTRO) {
-     //timeline = get_consent_and_instructions(timeline)
+     timeline = get_consent_and_instructions(timeline)
   }
   
   timeline = timeline.concat(main_task)

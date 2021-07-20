@@ -21,14 +21,13 @@ var consent = {
 var intro0 = {
     type: "instructions",
     pages: [
-        "<p>Hello! Thank you very much for participating in our study!</p><br></br>" +
-        "<p>We are researchers who usually study babies. :) </p>" +
-        "<p>In particular, we are interested in knowing what makes things interesting or boring to babies. </p>" +
-        "<p> So we designed some cute stimuli, which we are hoping to show to babies soon! </p>" +
-        "<p> But first, to get an initial idea, we are trying our experiment with adults first (i.e. you!). </p>" +
-        "<p> So we really appreciate your help! </p>"
-        ,
-        "<p>Since this task was designed for babies, it's going to be really easy!</p>" +
+        "<p>Hello! Thank you very much for participating in our <b>memory study</b>!</p><br></br>" +
+        "<p>In this study, you will see some cute stimuli. </p>" + 
+        "<p>Ever once in a while, your memory of those stimuli will be tested. </p>" +
+        "<p>You are going to be asked if you have seen the stimuli before.</p>" +
+        "<p> So please pay careful attention to the stimuli. </p>" +
+        "<p> But first, let's get familiar with the study. </p>",
+
         "<p>You will repeatedly see a frame on the screen, like this one:</p>" +
         '<p><img src=images/blank.png width ="400" height = "400" style="border:5px solid black"></p>'
       ],
@@ -45,7 +44,8 @@ var intro0 = {
 
         var html =
                   "<p> On most trials, a creature will appear in the frame. </p>" +
-                  "<p> To continue, <b> press the down arrow-key </b> on your keyboard. </p>" +
+                  "<p> Please pay careful attention to the details of the creature.</p>" +  
+                  "<p> When you have finished examined the creature, <b> press the down arrow-key </b> on your keyboard. </p>" +
                   "<p> You can try it now! </p>"
 
          console.log(html)
@@ -70,7 +70,7 @@ var intro0 = {
         var html =
                   "<p> You are doing great! </p>" +
             "<p>Now, let's try again.</p>" +
-                "<p> Press the down arrow key when you've had enough of this little guy. </p>"
+                "<p> Press the down arrow key when you have memorized what this little guy looks like. </p>"
 
 
          return html
@@ -152,8 +152,9 @@ var intro0 = {
         var intro6 = {
             type: "instructions",
             pages: [
-                "<p> Pretty simple, huh? , </p>" +
-                "<p> In most trials, however, you can look at each creature for as long as you like. </p>"],
+                "<p> Pretty simple, huh? </p>" +
+                "<p> But remember, in most trials, you can study each creature for as long as you like. </p>", 
+                "<p> Please try your best to remember the details of the creatures.</p>"],
                 data: {stimulus_type: 'instructions'},
                 show_clickable_nav: true}
 
@@ -161,15 +162,8 @@ var intro0 = {
             type: "instructions",
         pages: [             "<p> Before we get started, please know that if you experienced significant lag in the preceding animations, it will probably get better once we start the actual experiment. </p>" +
                             "<p> If the lagginess persists however, we would really appreciate if you could let us know in the feedback section at the end of the experiment. </p>",
-                            "<p> Final point about the experiment:</p> <p>  Every couple of trials, you will see a <b> simple math question</b>. This is just to check that you're engaged. </p>" +
-                            "<p> Then you will see a new set of creatures to look at for as long as you like, </p>" +
-                            "<p> and you can still move between creatures by pressing the down arrow. </p>",
-                            "<p> We hope you enjoy our baby stimuli! </p>" +
-                            "<p> The task should take no longer than 6 minutes, </p>" +
-                            "<p> after which we will ask you some questions about the stimuli for 2-3 minutes, </p>" +
-                            "<p> and then you'll be all done! </p>",
-                            "<p> Many thanks again for your participation. :) </p> ",
-                            "<p> <b> The experiment begins now! </b> </p> <br></br>",
+                         
+                            "<p> <b> The experiment begins now! </b> </p>"
             ],
                 data: {stimulus_type: 'instructions'},
                 show_clickable_nav: true}
