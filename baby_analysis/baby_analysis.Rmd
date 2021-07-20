@@ -113,12 +113,6 @@ trial_df <- trial_df %>% complete(subject_id, nesting(block_number, fam_or_test)
   dplyr::mutate(coder = rep_len(c(1,2), n()), 
         temp_id = paste0(subject_id, block_number, fam_or_test, coder)) %>%
   select(-c("coder"))
-        
-
-  # check whether column ids
-  
-# check out subjects who didn't finish study
-# View(trial_df %>% filter(subject_id == incomplete_subjects))
 
 
 # add temp id to looking df
@@ -155,8 +149,14 @@ complete_df <- complete_df %>% pivot_wider(names_from = coder, values_from = sta
 # Exclusions
 
 ```{r}
-# removelooking times less than 2 sec according to coder 1
-complete_df <- complete_df %>% filter(looking_time_2000_1 > 2) %>%
+
+# check how many are removed with 2 sec looking criterion
+complete_df %>% filter(looking_time_2000_1 < 2) %>% dplyr::group_by(block_number) %>% dplyr::summarize(n = n())
+ 
+
+
+# remove looking times less than 2 sec according to coder 1
+complete_df <- complete_df  %>% filter(looking_time_2000_1 > 2) %>%
   # remove babies that were fussy or notificaitons went off etc. (Babies: 23,24,25)
   filter(subject_id !=  '23' & subject_id != '24' & subject_id != '25')
   
@@ -176,7 +176,7 @@ cor(coder_1, coder_2)
 plot(coder_1, coder_2)
 
 # Big discrepancies (more than 4 sec)
- View(wide_df %>% filter(coder_num == 2  & abs(looking_time_2000_1 - looking_time_2000_2) > 5))
+wide_df %>% filter(coder_num == 2  & abs(looking_time_2000_1 - looking_time_2000_2) > 5)
 
 ```
 
@@ -210,6 +210,39 @@ full_df$n_trial[is.na(full_df$n_trial)] = 0
 full_df %>% ggplot(aes(x=block_number, y=n_trial, group=block_type, color = block_type)) + geom_point(alpha=.8, position = position_dodge(width = .1))  + 
   geom_line() + facet_wrap(~fam_duration)
 
+
+```
+
+# simulate hypothetical babies
+
+## check what happens if we just put back the 5 babies that dropped out 
+```{r}
+missing_subjects <- c(8,23,24,25,29)
+
+missing_df <- trial_df %>% 
+  filter(subject_id %in% missing_subjects & fam_or_test == 'test') %>% 
+  mutate(fam_duration = case_when(  # prematurely ended trials: 2->3 and 1->7
+    fam_duration == 2 ~ 3,
+    fam_duration == 1 ~ 7,
+    TRUE ~ fam_duration)) %>% mutate(fam_duration = as.factor(fam_duration)) %>%
+   select(c(subject_id, block_number, block_type, fam_duration)) %>% unique() # gotta do unique because otherwise duplicates remain from repeating each thing twice for each coder
+
+# non missing df
+full_df <- complete_df %>% 
+  filter(fam_or_test == 'test') %>% 
+  select(c(subject_id, block_number, block_type, fam_duration)) %>% 
+  bind_rows(missing_df) %>% dplyr::group_by(block_number, block_type, fam_duration) %>% 
+  dplyr::summarize(n_trial = n()) %>% ungroup() %>% droplevels()
+
+
+full_df %>% ggplot(aes(x=block_number, y=n_trial, group=block_type, color = block_type)) + geom_point(alpha=.8, position = position_dodge(width = .1))  + 
+  geom_line() + facet_wrap(~fam_duration) + ggtitle('with missing babies') 
+
+```
+
+
+## check what happens if we put back 5 babies in the best conditions
+```{r, eval = FALSE, echo = FALSE}
 # get sd's, which we want to minimze with the new assignments
 full_df <- full_df %>% 
   dplyr::group_by(fam_duration, block_number) %>% 
@@ -221,8 +254,6 @@ block_types = c("Std", "Dev", "Dev", "Std", "Std", "Dev")
 
 # all unordered lists of 1 to 6 with replacement
 all_combs <- CombSet(1:6, 5, repl=TRUE, ord=FALSE)
-
-
 
 # preallocate all sds
 all_sds = c()
@@ -247,20 +278,14 @@ for (i in 1:nrow(all_combs)) {
 
         # increment by one
           hypothetical_df$n_trial[
-              hypothetical_df$fam_duration==fam_durations_new[k] & 
+              hypothetical_df$fam_duration == fam_durations_new[k] & 
               hypothetical_df$block_type == block_types_new[k] & 
               hypothetical_df$block_number == k] <-
                       hypothetical_df$n_trial[
-              hypothetical_df$fam_duration==fam_durations_new[k] & 
+              hypothetical_df$fam_duration == fam_durations_new[k] & 
               hypothetical_df$block_type == block_types_new[k] & 
               hypothetical_df$block_number == k] + 1
           
-            #hypothetical_df %>% 
-        #tibble::add_row(fam_duration = fam_durations_new[k], 
-             #   block_type = block_types_new[k], 
-             #   subject_id = 30 + j, 
-             #   block_number = k)
-        
     }
   }
   
@@ -271,18 +296,7 @@ for (i in 1:nrow(all_combs)) {
     pull(stddev)
   
   all_sds <- append(all_sds, sum(cur_stdev))
-  
-  if (i == 8) {
-    store_df = hypothetical_df 
-  }
-  
-  if (i == 200) {
-    store_df2 = hypothetical_df
-  }
-  
-    if (i == 122) {
-    store_df3 = hypothetical_df
-  }
+
 }
 
 
@@ -297,10 +311,15 @@ store_df2 %>% ggplot(aes(x=block_number, y=n_trial, group=block_type, color = bl
 store_df3 %>% ggplot(aes(x=block_number, y=n_trial, group=block_type, color = block_type)) + geom_point(alpha=.8, position = position_dodge(width = .1))  + 
   geom_line() + facet_wrap(~fam_duration) + ggtitle('random other one')
 
+```
 
+# Evaluate within subject vs between subject design: The motivation is that we benefit from within subjects design statistically, but we also possibly lose trials at the end of the experiment due to attrition so we need to check: how strong are effects of interests if we take 50% of the subjects and take all their data to evaluate the effect of std vs deviant compared to when we use all the subjects but only take their data early in the experiment, and use some people's standard trials, and other people's deviant trials.
+
+```{r}
 
 
 ```
+
 
 
 # Visualize
@@ -320,10 +339,10 @@ test_df <- complete_df %>% filter(fam_or_test == 'test') %>% dplyr::group_by(sub
 
 
 # calculate means
-mean_df <- summarySE(test_df, measurevar="normalized_LT", groupvars=c("block_number"))
+mean_df <- summarySE(test_df, measurevar="looking_time_2000_1", groupvars=c("block_number"))
 
-ggplot(test_df %>% filter(fam_or_test == 'test'), aes(x=block_number, y = normalized_LT)) + 
-  geom_point(alpha = 0.2) + geom_line(aes(group = subject_id), alpha=0.2) + stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1))  + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + xlab('Block Number') + ylab('normalized LT') + theme_classic(base_size = 15)
+ggplot(test_df %>% filter(fam_or_test == 'test'), aes(x=block_number, y = looking_time_2000_1)) + 
+  geom_jitter(alpha = 0.2, width = 0.1) + stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1))  + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + xlab('Block Number') + ylab('LT in sec') + theme_classic(base_size = 15)
 ```
 
 ## Main effect
@@ -347,11 +366,10 @@ ggplot(test_df, aes(x=fam_duration, y=normalized_LT, color = fam_duration)) + ge
 ## Main effect by fam duration
 ```{r}
 # calculate means
-mean_df <- summarySE(test_df, measurevar="normalized_LT", groupvars=c("block_type", "fam_duration"))
 
-ggplot(test_df, aes(x=block_type, y=normalized_LT, group=fam_duration, color = fam_duration)) + geom_point(alpha=0.2, position = position_dodge(width = .1)) + 
+ggplot(test_df, aes(x=block_type, y=looking_time_2000_1, group=fam_duration, color = fam_duration)) + geom_point(alpha=0.2, position = position_dodge(width = .1)) + 
     stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1))  + 
-  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + facet_wrap(~fam_duration) + xlab('Trial type') + ylab('normalized LT') + labs(color = '# of Fam Trials') + theme_classic() + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + facet_wrap(~fam_duration) + xlab('Trial type') + ylab('LT in s') + labs(color = '# of Fam Trials') + theme_classic() + 
   theme(strip.text.x = element_text(size = 14, colour = "black")) + ggtitle('')
   
   # geom_point(data=mean_df, aes(x = block_type, y=looking_time_until_lookaway, color = fam_duration), shape=24, size=3, position = position_jitter(width = 0.25, seed = 123)) + geom_errorbar(data=mean_df, aes(ymin=looking_time_until_lookaway-ci/2, ymax=looking_time_until_lookaway+ci/2, color = fam_duration), width=0, size=0.0, position = position_jitter(width = 0.25, seed = 123)) 
@@ -397,7 +415,7 @@ test_df %>%
 ## Models
 ```{r}
 # log transform once figuring out how to deal with 0's
-model1 <- lme(log(looking_time_2000+0.01) ~ block_type * fam_duration + block_number, random = ~1|subject_id, data = test_df)
+model1 <- lme(log(looking_time_2000_1+0.01) ~ block_type * fam_duration, random = ~1|subject_id, data = test_df %>% mutate(fam_duration = as.numeric(fam_duration)))
 summary(model1)
 
 ```
