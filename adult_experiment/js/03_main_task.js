@@ -84,11 +84,34 @@ for (var block_index = 0;
                     memory_question_stimuli: memory_question_stimuli[0], 
                     memory_block_index: block_index },
               }
+
+            var buffer_page = {
+                type: 'stimuli-presentation',
+                frame_animation: function(){
+                  var html = ""
+               return html
+             },
+                stimuli_animation: function(){
+                    var html = 
+                    
+                    "<p> Amazing! You did great! </p>" +
+                   "<p> Now, when you are ready, we will look at more monsters</p>" + 
+                   "<p> Press the space bar to start the game! </p>" + 
+                   "<img src='images/spacebar.jpg'>"
+                    return html
+                },
+                key_response: [32],
+                minimum_viewing_duration: 500, // daffner2000's info was 600, changed to 200
+                response_ends_trial: true,
+                  exposure_type: "self_paced",
+                 data: {stimulus_type: 'buffer_page'}
+              }
           
               
     }
 
         test_blocks.push(memory_question_A)
+        test_blocks.push(buffer_page)
      
   }
 // putting everything together 
