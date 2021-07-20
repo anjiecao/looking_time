@@ -70,7 +70,7 @@ var intro0 = {
         var html =
                   "<p> You are doing great! </p>" +
             "<p>Now, let's try again.</p>" +
-                "<p> Press the down arrow key when you have memorized what this little guy looks like. </p>"
+                "<p> Press the down arrow key until you can remember what this little guy looks like. </p>"
 
 
          return html
