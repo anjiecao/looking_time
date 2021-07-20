@@ -10,6 +10,8 @@ output: html_document
 ```{r setup, include=FALSE}
 library(tidyverse)
 library(crossdes)
+library(jsonlite)
+
 ```
 
 
@@ -106,7 +108,41 @@ subject_df <- subject_df %>%
 
 subject_df %>% dplyr::group_by(block_number, block_type, fam_duration, complexity) %>% 
   dplyr::summarize(n_trial = n()) %>% ggplot(aes(x=block_number, y=n_trial, group=block_type, color = block_type)) + geom_point(alpha=.8, position = position_dodge(width = .1))  + 
-  geom_line() + facet_wrap(complexity~fam_duration)
+  geom_line() + facet_grid(complexity~fam_duration)
+
+```
+
+## Now convert to json file
+```{r}
+
+
+
+# we need the df in a different format, where each row is one subject, and each column is one dimension of interest (fam duration, complexity etc.)
+# we want to make lists of lists where each nested list is the variable for each block e.g. if we had two subjects we would do: mydf$fam_duration = list(subject1famdurations, subject2famdurations)
+my_df <- tibble(fam_duration = vector(mode = "list", length = total_subject_number), 
+                complexity = vector(mode = "list", length = total_subject_number),
+                block_type = vector(mode = "list", length = total_subject_number),
+                fam_duration_condition = vector(mode = "list", length = total_subject_number),
+                block_number = vector(mode = "list", length = total_subject_number),
+                counterbalancing_condition = vector(mode = "list", length = total_subject_number)
+                )
+
+
+for (i in 1:total_subject_number) {
+  my_df$fam_duration[[i]] <- subject_df %>% filter(subject_id == i) %>% pull(fam_duration)  
+  my_df$complexity[[i]] <- subject_df %>% filter(subject_id == i) %>% pull(complexity) 
+  my_df$block_type[[i]] <- subject_df %>% filter(subject_id == i) %>% pull(block_type) 
+  my_df$fam_duration_condition[[i]] <- subject_df %>% filter(subject_id == i) %>% pull(fam_duration_condition) 
+  my_df$block_number[[i]] <- subject_df %>% filter(subject_id == i) %>% pull(block_number) 
+  my_df$counterbalancing_condition[[i]] <- subject_df %>% filter(subject_id == i) %>% pull(counterbalancing_condition) 
+}
+
+
+# copying this JSON to javascript
+toJSON(my_df)
+
+
+
 
 ```
 
