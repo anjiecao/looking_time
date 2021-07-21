@@ -496,8 +496,12 @@ function generate_dissimilar_block(stims, num_blocks, num_trial_per_block, all_d
     // the other stimulus will be selected from a pool of stimulus that the participants have never seen before
     // ?: do we need the false stimulus to be very similar to the original one, or keep them very different? 
 
+    if (deviant_position_array.length == 0){
+      var true_stimulus = background
+    }else{
+      var true_stimulus = getRandomSubarray([background, deviant], 1)[0]
+    }
     
-    var true_stimulus = getRandomSubarray([background, deviant], 1)[0]
     
     // current approach: selecting a completely different creature 
     var randomIdx = Math.floor(Math.random() * stims.length)

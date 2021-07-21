@@ -58,7 +58,7 @@ for (var block_index = 0;
     block_timeline_variable = generate_timeline_variables(block_information)
     exposure_type = block_information.exposure_type
     memory_question_stimuli = block_information.memory_test_stimuli
-    
+    deviant_position_array = block_information.deviant_position_array
     
     if (verbose){
         console.log("Each block time variable: ")
@@ -114,7 +114,7 @@ for (var block_index = 0;
         test_blocks.push(test_block)
   
     // to be changed for new version 
-    if (block_index < all_blocks_information.length - 1) {
+    if (block_index < all_blocks_information.length) {
           var memory_question_A = {
               type: "survey-multi-choice",
               preamble: '<p><img src= ' + memory_question_stimuli[0] + ' width ="200" height = "200"</p>',

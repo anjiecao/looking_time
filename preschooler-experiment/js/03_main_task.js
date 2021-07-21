@@ -68,7 +68,7 @@ for (var block_index = 0;
         test_blocks.push(test_block)
   
     // to be changed for new version 
-    if (block_index < all_blocks_information.length - 1) {
+    if (block_index < all_blocks_information.length) {
           var memory_question_A = {
               type: "survey-multi-choice",
               preamble: '<p><img src= ' + memory_question_stimuli[0] + ' width ="400" height = "400"</p>',

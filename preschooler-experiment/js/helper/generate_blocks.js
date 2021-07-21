@@ -248,13 +248,13 @@ all_block_information.push(block_information)
     // will be replaced by non-hardcoded version 
   //  var forced_long_arr = fillArray("forced_long", 
     //                           num_block_each_exposure_type)
-   // var forced_short_arr = fillArray("forced_short", 
- //                              num_block_each_exposure_type)
-    var self_paced_arr = fillArray("self_paced", 
+    var forced_short_arr = fillArray("forced_short", 
                                num_block_each_exposure_type)
+    //var self_paced_arr = fillArray("self_paced", 
+      //                         num_block_each_exposure_type)
     
     
-    var exposure_type = self_paced_arr
+    var exposure_type = forced_short_arr
     
     if (show_simple){
         
@@ -496,8 +496,12 @@ function generate_dissimilar_block(stims, num_blocks, num_trial_per_block, all_d
     // the other stimulus will be selected from a pool of stimulus that the participants have never seen before
     // ?: do we need the false stimulus to be very similar to the original one, or keep them very different? 
 
+    if (deviant_position_array.length == 0){
+      var true_stimulus = background
+    }else{
+      var true_stimulus = getRandomSubarray([background, deviant], 1)[0]
+    }
     
-    var true_stimulus = getRandomSubarray([background, deviant], 1)[0]
     
     // current approach: selecting a completely different creature 
     var randomIdx = Math.floor(Math.random() * stims.length)
