@@ -10,6 +10,7 @@
   <script src= "js/jspsych/jspsych-demog-gender-and-education.js"></script>
     <script src="js/jspsych/jspsych-html-keyboard-response.js"></script>
   <script src="js/jspsych/jspsych-stimuli-presentation.js"></script>
+  <script src="js/jspsych/jspsych-fullscreen.js"></script>
   <script src= "js/jspsych/jspsych-survey-text.js"></script>
   <script src= "js/jspsych/jspsych-survey-likert.js"></script>
   <script src="js/jspsych/jspsych-survey-multi-choice.js"></script>
@@ -36,13 +37,24 @@ jsPsych.data.addProperties({ subject: subject_id });
 
 // initialize timeline
 var timeline = []
+timeline.push({
+  type: 'fullscreen',
+  fullscreen_mode: true
+  });
 
   if (SHOW_INTRO) {
-     timeline = get_consent_and_instructions(timeline)
+    timeline = get_consent_and_instructions(timeline)
   }
   
   timeline = timeline.concat(main_task)
+
+  timeline.push({
+  type: 'fullscreen',
+  fullscreen_mode: false
+  });
+  
   timeline = get_demog_questions(timeline)
+ 
   timeline = get_feedback_and_code(timeline)
 
   

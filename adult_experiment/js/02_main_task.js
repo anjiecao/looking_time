@@ -88,11 +88,9 @@ for (var block_index = 0;
                             },
                             
                           stimuli_animation: function(){
-                                function getRandomInt(max) {
-                                    return Math.floor(Math.random() * max);
-                                    }
-                                var width_height = parseFloat(Math.floor(Math.random() * 100) + 100);
-                                var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='" + width_height + "' height = '" + width_height + "' style='position:relative;top:" + Math.random() * (80 - 10) + 10 + "%;left:" +  Math.random() * (80 - 10) + 10  +  "%'></p>"
+                                
+                                var width_height = parseFloat(Math.floor(Math.random() * 10) + 150);
+                                var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='" + width_height + "' height = '" + width_height + "' style='position:relative;top:" + getRandomInt(-100, 100)+ "%;left:" + getRandomInt(-100, 100) +  "%'></p>"
                                 return html
                             },
                        
