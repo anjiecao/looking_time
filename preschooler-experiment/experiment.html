@@ -54,7 +54,7 @@ var timeline = []
   
 function saveData(name, data){
         var xhr = new XMLHttpRequest();
-        xhr.open('POST', '../../../cgi-bin/pokebaby/preschooler/write_data.php');
+        xhr.open('POST', '../../../cgi-bin/pokebaby/data/preschool/write_data.php');
         //xhr.open('POST', 'write_data.php'); // 'write_data.php' is the path to the php file described above.
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.send(JSON.stringify({filename: name, filedata: data}));
