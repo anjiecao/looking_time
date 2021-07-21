@@ -23,7 +23,7 @@ var intro0 = {
     pages: [
         "<p>Hello! Thank you very much for participating in our <b>memory study</b>!</p><br></br>" +
         "<p>In this study, you will see some cute stimuli. </p>" + 
-        "<p>Ever once in a while, your memory of those stimuli will be tested. </p>" +
+        "<p>Every once in a while, your memory of those stimuli will be tested. </p>" +
         "<p>You are going to be asked if you have seen the stimuli before.</p>" +
         "<p> So please pay careful attention to the stimuli. </p>" +
         "<p> But first, let's get familiar with the study. </p>",
@@ -64,31 +64,11 @@ var intro0 = {
         }
 
 
-        var intro2 = {
-          type: 'stimuli-presentation',
-          frame_animation: function(){
-        var html =
-                  "<p> You are doing great! </p>" +
-            "<p>Now, let's try again.</p>" +
-                "<p> Press the down arrow key until you can remember what this little guy looks like. </p>"
-
-
-         return html
-       },
-          stimuli_animation: function(){
-              var html = "<p><img src='images/practice/instructions_example_spore0.gif' width ='400' height = '400' style='border:5px solid black'></p>"
-              return html
-          },
-          key_response: [40],
-          minimum_viewing_duration: 500, // daffner2000's info was 600, changed to 200
-          response_ends_trial: true,
-            exposure_type: "self_paced"
-        }
-
 
         var intro3 = {
             type: "instructions",
             pages: [
+               "<p> Great job! </p>" + 
                 "<p> However, once in a while, there will be a trial where you can not control how long you can see the creature. </p>" +
                 "<p> In these trials, you can press the down arrow to go to the next trial <b>after</b> the creature disappears. </p>" +
                 "Next, you will see what these trials look like."
@@ -103,7 +83,7 @@ var intro0 = {
           frame_animation: function(){
         var html = '<p>&nbsp;</p>' + '<p>&nbsp;</p>'+ '<p>&nbsp;</p>'+ 'This is an example trial. You can press the down arrow when the creature disappears!</p>' +
 
-'<p><img src= images/blank.png width ="400" height = "400" style="position:absolute; top:40%; transform: translate(-50%, -50%);left:50%;border:5px solid black"></p>'
+                  '<p><img src= images/blank.png width ="400" height = "400" style="position:absolute; top:40%; transform: translate(-50%, -50%);left:50%;border:5px solid black"></p>'
 
 
          return html
@@ -116,7 +96,7 @@ var intro0 = {
           key_response: [40],
           minimum_viewing_duration: 500, // daffner2000's info was 600, changed to 200
           response_ends_trial: true,
-                forced_short_viewing_duration:forced_short_viewing_duration,
+                forced_short_viewing_duration:500,
 
                 exposure_type: "forced_short"
         }
@@ -129,7 +109,7 @@ var intro0 = {
             frame_animation: function(){
         var html = '<p>&nbsp;</p>' + '<p>&nbsp;</p>'+ '<p>&nbsp;</p>'+ '<p>This is another example trial. You can press the down arrow when the creature disappears!</p>' +
 
-'<p><img src= images/blank.png width ="400" height = "400" style="position:absolute; top:40%; transform: translate(-50%, -50%);left:50%;border:5px solid black"></p>'
+            '<p><img src= images/blank.png width ="400" height = "400" style="position:absolute; top:40%; transform: translate(-50%, -50%);left:50%;border:5px solid black"></p>'
 
 
          return html
@@ -142,7 +122,7 @@ var intro0 = {
           key_response: [40],
           minimum_viewing_duration: 500, // daffner2000's info was 600, changed to 200
           response_ends_trial: true,
-                forced_short_viewing_duration:forced_short_viewing_duration,
+                forced_short_viewing_duration:500,
             exposure_type: "forced_short"
         }
 
@@ -153,14 +133,45 @@ var intro0 = {
             type: "instructions",
             pages: [
                 "<p> Pretty simple, huh? </p>" +
-                "<p> But remember, in most trials, you can study each creature for as long as you like. </p>", 
-                "<p> Please try your best to remember the details of the creatures.</p>"],
+                "<p> But remember, in most trials, you can study each creature for as long as you like. </p>" +  
+                "<p> Please try your best to remember the details of the creatures.</p>" +  
+                "<p> Throughout the experiment, you will be asked about the creatures. On the next page, you will see two examples. </p>"],
                 data: {stimulus_type: 'instructions'},
                 show_clickable_nav: true}
+
+
+        var practice_memory_A = {
+                  type: "survey-multi-choice",
+                  preamble: '<p><img src= ' +  "images/practice/instructions_example_spore2.gif" + ' width ="400" height = "400"</p>',
+                  questions: [
+                    {prompt: 'Have you seen this creature before?', // actually we can request control from the participants 
+                    options: ["Yes", "No"], 
+                    required: false, 
+                    horizontal: true},
+                  ],
+                  data: {stimulus_type: 'memory_test_practice',
+                        memory_question_stimuli: "images/practice/instructions_example_spore2.gif", 
+                        memory_block_index: 0 },
+          }
+
+          var practice_memory_B= {
+            type: "survey-multi-choice",
+            preamble: '<p><img src= ' +  "images/practice/instructions_example_spore0.gif" + ' width ="400" height = "400"</p>',
+            questions: [
+              {prompt: 'Have you seen this creature before?',  
+              options: ["Yes", "No"], 
+              required: false, 
+              horizontal: true},
+            ],
+            data: {stimulus_type: 'memory_test_practice',
+                  memory_question_stimuli: "images/practice/instructions_example_spore0.gif", 
+                  memory_block_index: 0 },
+          }
 
         var intro7 = {
             type: "instructions",
         pages: [             "<p> Before we get started, please know that if you experienced significant lag in the preceding animations, it will probably get better once we start the actual experiment. </p>" +
+                            "<p> This is because it takse some time for the browser to load all the stimuli. </p>" + 
                             "<p> If the lagginess persists however, we would really appreciate if you could let us know in the feedback section at the end of the experiment. </p>",
                          
                             "<p> <b> The experiment begins now! </b> </p>"
@@ -171,11 +182,12 @@ var intro0 = {
         timeline.push(consent)
         timeline.push(intro0)
         timeline.push(intro1)
-        timeline.push(intro2)
         timeline.push(intro3)
         timeline.push(intro4)
         timeline.push(intro5)
         timeline.push(intro6)
+        timeline.push(practice_memory_A)
+        timeline.push(practice_memory_B)
         timeline.push(intro7)
 
 
