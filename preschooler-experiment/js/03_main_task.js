@@ -91,10 +91,7 @@ for (var block_index = 0;
              },
                 stimuli_animation: function(){
                     var html = 
-                    
-                    "<p> Amazing! You did great! </p>" +
-                   "<p> Now, when you are ready, we will look at more monsters</p>" + 
-                   "<p> Press the space bar to start the game! </p>" + 
+                 
                    "<img src='images/spacebar.jpg'>"
                     return html
                 },
@@ -104,11 +101,38 @@ for (var block_index = 0;
                   exposure_type: "self_paced",
                  data: {stimulus_type: 'buffer_page'}
               }
+
+            
+        var great_job = {
+
+            type: 'stimuli-presentation',
+                    frame_animation: function(){
+        
+        
+                    var html =
+                    ""
+        
+                    return html
+                    },
+                    //position:absolute;top:28px;left:40px
+                        stimuli_animation: function(){
+                            var html = "<img src='images/greatjob.gif'>"
+                        return html 
+                        },
+                        two_stimuli_interval: 0,
+                        key_response: [32],
+                        minimum_viewing_duration: 500, // daffner2000's info was 600, changed to 200
+                        response_ends_trial: true,
+                        exposure_type: "self_paced"
+        
+        
+            }
           
               
     }
 
         test_blocks.push(memory_question_A)
+        test_blocks.push(great_job)
         test_blocks.push(buffer_page)
      
   }

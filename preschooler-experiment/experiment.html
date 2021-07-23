@@ -34,6 +34,7 @@
 
 jsPsych.data.addProperties({ subject: subject_id });
 
+document.body.style.backgroundColor = '#B0E0E6'
 
 // initialize timeline
 var timeline = []
@@ -42,7 +43,7 @@ var timeline = []
   timeline.push({
   type: 'fullscreen',
   fullscreen_mode: true
-  });
+  }); 
   timeline = get_instructions_and_practice(timeline)
   timeline = timeline.concat(main_task)
   timeline.push({
