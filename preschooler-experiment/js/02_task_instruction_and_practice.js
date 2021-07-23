@@ -205,10 +205,7 @@ var great_job = {
          },
             stimuli_animation: function(){
                 var html = 
-                
-                "<p> Amazing! You did great! </p>" +
-               "<p> Now, when you are ready, we will start playing the game for real!</p>" + 
-               "<p> Press the space bar to start the game! </p>" + 
+               
                "<img src='images/spacebar.jpg'>"
                 return html
             },
