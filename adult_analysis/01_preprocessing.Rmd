@@ -18,6 +18,7 @@ library(jsonlite) # for parsing r string
 #MERGED_DATA_PATH <- here("data/platform_comparison_data/prolific/merged_data/merged_data.csv")
 
 rt_path <- here("data/processed_data/trimmed_RTdata.csv")
+prolific_path <- here("data/merged_data/prolific_demog.csvß")
 demog_path <- here("data/processed_data/trimmed_demogdata.csv")
 similarity_path <- here("data/processed_data/trimmed_similaritydata.csv")
 complexity_path <- here("data/processed_data/trimmed_complexitydata.csv")
@@ -197,15 +198,44 @@ df.processed <- df.processed %>%
 
 #write_csv(df.processed, here('data/processed_data/processed_RTdata.csv'))
 
-# df.main
+df.processed
 ```
 
 
-# Pref test
+# memory test
 ```{r}
-# df.temp_rt <- df.processed %>% 
-#   mutate(subject_block = paste0(subject, block_number)) %>% 
-#   distinct(subject_block, block_type)
+df.temp_memory <- df.raw %>% 
+   mutate(subject_block = paste0(subject, block_number)) %>% 
+   select(subject, responses, memory_question_stimuli, memory_block_index) %>% 
+  filter(!is.na(memory_question_stimuli)) %>% 
+  filter(!grepl("practice", memory_question_stimuli)) %>% 
+   mutate(subject_block = paste0(subject, memory_block_index))%>% 
+  select(-subject)
+  
+df.temp_processed <-  df.raw %>% 
+ mutate(subject_block = paste0(subject, block_number)) %>%
+ select(subject, block_number, block_background, block_deviant, subject_block) %>% 
+ filter(!is.na(block_number)) 
+
+
+df.temp_memory_answer <- left_join(df.temp_processed, df.temp_memory, by = "subject_block") %>% 
+  mutate(
+    memory_question_type = case_when(
+     (memory_question_stimuli == block_background  | memory_question_stimuli == block_deviant) ~ "true_stimulus",
+       (memory_question_stimuli != block_background  && memory_question_stimuli != block_deviant) ~ "false_stimulus", 
+     TRUE ~ "error!"
+    ),
+    memory_response = case_when(
+      (memory_question_stimuli == block_background  | memory_question_stimuli == block_deviant) & grepl("Yes", responses) ~ TRUE, 
+      (memory_question_stimuli != block_background  && memory_question_stimuli != block_deviant) & grepl("No", responses) ~ TRUE, 
+      TRUE ~ FALSE
+    )
+  ) %>% 
+  select(
+    subject_block, memory_question_type, memory_response
+  ) %>% 
+  pivot_wider(names_from = memory_question_type, values_from = memory_response)
+df.temp_memory_answer
 # 
 # df.temp_pref <- df.raw %>% 
 #   filter(stimulus_type == "pref_reveal") %>% 

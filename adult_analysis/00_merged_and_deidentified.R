@@ -11,7 +11,7 @@ library(tidyverse)
 
 RAW_DATA_DIRECTORY <- here("data/raw_data/")
 
-MIN_ROW <- 60  #subject to change 
+MIN_ROW <- 150  #subject to change 
 MERGED_DATA_PATH <- here("data/merged_data/merged_data.csv")
 
 raw_files <- str_c(RAW_DATA_DIRECTORY, dir(here(RAW_DATA_DIRECTORY), "*.csv"))
