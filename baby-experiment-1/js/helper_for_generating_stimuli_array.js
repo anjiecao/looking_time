@@ -131,8 +131,14 @@ function pop_multiple(array, n){
 // -------- V2 dealing with Stimuli --------- //
 // currently ignoring inter-relationship between stimuli
 // just get all stimuli
-function get_all_stimuli(TEST_RUN){
+function get_all_stimuli(TEST_RUN, COMPLEX){
 
+  if (COMPLEX == true) {
+    prefix = 'complex_'
+  }
+  else {
+    prefix = 'simple_'
+  }
 
     all_stimuli = []
     MAIN_DIR = "stimuli/images/spore_stims/"
@@ -157,7 +163,7 @@ function get_all_stimuli(TEST_RUN){
             current_species = species[j]
           }
 
-          current_stimuli = MAIN_DIR + 'simple_' + current_species + "_A.gif"
+          current_stimuli = MAIN_DIR + prefix + current_species + "_A.gif"
 
           all_stimuli.push(current_stimuli)
          }
@@ -172,66 +178,29 @@ function get_all_stimuli(TEST_RUN){
                                                                                                                                                                                                                                                                                                                                                                     // -------- V2 generate timeline variable for each bl
 function generate_timeline_variables(block_information){
 
-    background_location = block_information.background_location
-    deviant_location = block_information.deviant_location
     background_stimuli = block_information.background_stimuli
     deviant_stimuli = block_information.deviant_stimuli
-    deviant_position_array = block_information.deviant_position_array
     block_length = block_information.num_trial
     block_type = block_information.block_type
+    fam_duration = block_information.fam_duration
 
     console.log('block_type')
     console.log(block_type)
 
-     // pick the appropriate wall animation for background item
-     if (background_location == "right"){
-
-         background_wall_animation = 'stimuli/images/wall_2.mp4'
-         background_location_percent = '50%'
-
-     }else if (background_location == "left"){
-
-         background_wall_animation = 'stimuli/images/wall_1.mp4'
-         background_location_percent = '16%'
-     }
-
-     // pick the appropriate wall animation for deviant item
-     if (deviant_location == "right"){
-         deviant_wall_animation = 'stimuli/images/wall_2.mp4'
-         deviant_location_percent = '55%'
-
-     }else if (deviant_location == "left"){
-        deviant_wall_animation = 'stimuli/images/wall_1.mp4'
-        deviant_location_percent = '16%'
-
-     }
-
-
      background_item = {
-         wall_animation: background_wall_animation,
          stimuli: background_stimuli,
-         location: background_location,
-         location_percent: background_location_percent,
          stim_type: 'background',
          trial_duration: 6000
      }
 
-
       standard_item_last = {
-          wall_animation: deviant_wall_animation,
           stimuli: background_stimuli,
-          location: deviant_location,
-          location_percent: deviant_location_percent,
           stim_type: 'background',
           trial_duration: null
       }
 
-
      deviant_item = {
-         wall_animation: deviant_wall_animation,
          stimuli: deviant_stimuli,
-         location: deviant_location,
-         location_percent: deviant_location_percent,
          stim_type: 'deviant',
          trial_duration: null
      }
@@ -278,10 +247,7 @@ function generate_timeline_variables(block_information){
     for (i = 0; i < block_length; i++) {
 
       block_stimuli[i] = {
-          wall_animation: background_wall_animation,
           stimuli: background_stimuli,
-          location: background_location,
-          location_percent: background_location_percent,
           stim_type: 'background',
           trial_duration: 6000,
           music: music_fam_array[i],
@@ -291,10 +257,7 @@ function generate_timeline_variables(block_information){
 
     if (block_type == 'Dev'){
       block_stimuli[block_length] = {
-          wall_animation: deviant_wall_animation,
           stimuli: deviant_stimuli,
-          location: deviant_location,
-          location_percent: deviant_location_percent,
           stim_type: 'deviant',
           trial_duration: null,
           music: music_test_array[1],
@@ -304,10 +267,7 @@ function generate_timeline_variables(block_information){
 
     else if (block_type = 'Std') {
       block_stimuli[block_length] = {
-          wall_animation: background_wall_animation,
           stimuli: background_stimuli,
-          location: background_location,
-          location_percent: background_location_percent,
           stim_type: 'background',
           trial_duration: null,
           music: music_test_array[1],
@@ -324,32 +284,24 @@ function generate_timeline_variables(block_information){
 
 // -------- V2 generate all blocks combination --------- //
 
-function generate_all_block(condition_num,
+function generate_all_block(subject_num,
                             num_blocks,
                             num_trial_per_block,
                             stimuli_array,
                             num_species){
+
+
 
     // check that number of blocks is divisible by 2
     if (num_blocks % 2 != 0){
       throw 'Number of blocks should be divisible by 2, to have equal number of each block type';
     }
 
-    // rotate fam order and block type arrays by rotation num
-    rotation_num = condition_num % num_blocks
 
-    // determine familiarization order
-    fam_num = [3,7,5,5,7,3]
-    //fam_num = [0,0,0,0,0,0]
+    [{"fam_duration":[3,3,7,5,7,5],"block_type":["Std","Dev","Dev","Std","Std","Dev"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[1,2,6,3,5,4]},{"fam_duration":[3,5,3,5,7,7],"block_type":["Dev","Std","Std","Dev","Dev","Std"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[2,3,1,4,6,5]},{"fam_duration":[5,5,3,7,3,7],"block_type":["Std","Dev","Dev","Std","Std","Dev"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[3,4,2,5,1,6]},{"fam_duration":[5,7,5,7,3,3],"block_type":["Dev","Std","Std","Dev","Dev","Std"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[4,5,3,6,2,1]},{"fam_duration":[7,7,5,3,5,3],"block_type":["Std","Dev","Dev","Std","Std","Dev"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[5,6,4,1,3,2]},{"fam_duration":[7,3,7,3,5,5],"block_type":["Dev","Std","Std","Dev","Dev","Std"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[6,1,5,2,4,3]},{"fam_duration":[3,3,7,5,7,5],"block_type":["Std","Dev","Dev","Std","Std","Dev"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[1,2,6,3,5,4]},{"fam_duration":[3,5,3,5,7,7],"block_type":["Dev","Std","Std","Dev","Dev","Std"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[2,3,1,4,6,5]},{"fam_duration":[5,5,3,7,3,7],"block_type":["Std","Dev","Dev","Std","Std","Dev"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[3,4,2,5,1,6]},{"fam_duration":[5,7,5,7,3,3],"block_type":["Dev","Std","Std","Dev","Dev","Std"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[4,5,3,6,2,1]},{"fam_duration":[7,7,5,3,5,3],"block_type":["Std","Dev","Dev","Std","Std","Dev"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[5,6,4,1,3,2]},{"fam_duration":[7,3,7,3,5,5],"block_type":["Dev","Std","Std","Dev","Dev","Std"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[6,1,5,2,4,3]},{"fam_duration":[3,3,7,5,7,5],"block_type":["Std","Dev","Dev","Std","Std","Dev"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[1,2,6,3,5,4]},{"fam_duration":[3,5,3,5,7,7],"block_type":["Dev","Std","Std","Dev","Dev","Std"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[2,3,1,4,6,5]},{"fam_duration":[5,5,3,7,3,7],"block_type":["Std","Dev","Dev","Std","Std","Dev"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[3,4,2,5,1,6]},{"fam_duration":[5,7,5,7,3,3],"block_type":["Dev","Std","Std","Dev","Dev","Std"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[4,5,3,6,2,1]},{"fam_duration":[7,7,5,3,5,3],"block_type":["Std","Dev","Dev","Std","Std","Dev"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[5,6,4,1,3,2]},{"fam_duration":[7,3,7,3,5,5],"block_type":["Dev","Std","Std","Dev","Dev","Std"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[6,1,5,2,4,3]},{"fam_duration":[3,3,7,5,7,5],"block_type":["Std","Dev","Dev","Std","Std","Dev"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[1,2,6,3,5,4]},{"fam_duration":[3,5,3,5,7,7],"block_type":["Dev","Std","Std","Dev","Dev","Std"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[2,3,1,4,6,5]},{"fam_duration":[5,5,3,7,3,7],"block_type":["Std","Dev","Dev","Std","Std","Dev"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[3,4,2,5,1,6]},{"fam_duration":[5,7,5,7,3,3],"block_type":["Dev","Std","Std","Dev","Dev","Std"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[4,5,3,6,2,1]},{"fam_duration":[7,7,5,3,5,3],"block_type":["Std","Dev","Dev","Std","Std","Dev"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[5,6,4,1,3,2]},{"fam_duration":[7,3,7,3,5,5],"block_type":["Dev","Std","Std","Dev","Dev","Std"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[6,1,5,2,4,3]},{"fam_duration":[3,3,7,5,7,5],"block_type":["Std","Dev","Dev","Std","Std","Dev"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[1,2,6,3,5,4]},{"fam_duration":[3,5,3,5,7,7],"block_type":["Dev","Std","Std","Dev","Dev","Std"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[2,3,1,4,6,5]},{"fam_duration":[5,5,3,7,3,7],"block_type":["Std","Dev","Dev","Std","Std","Dev"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[3,4,2,5,1,6]},{"fam_duration":[5,7,5,7,3,3],"block_type":["Dev","Std","Std","Dev","Dev","Std"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[4,5,3,6,2,1]},{"fam_duration":[7,7,5,3,5,3],"block_type":["Std","Dev","Dev","Std","Std","Dev"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[5,6,4,1,3,2]},{"fam_duration":[7,3,7,3,5,5],"block_type":["Dev","Std","Std","Dev","Dev","Std"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[6,1,5,2,4,3]}]
 
-    fam_num.length = num_blocks
-    fam_orders = arrayRotate(fam_num, rotation_num)
-
-
-
-    // determine block types
-    block_types = ["Std", "Dev", "Dev", "Std", "Std", "Dev"]
-    block_orders = arrayRotate(block_types, rotation_num)
+    fam_orders = counterbalancing_table[subject_num].fam_duration
+    block_orders = counterbalancing_table[subject_num].block_type
 
     console.log('block_orders')
     console.log(block_orders)
@@ -393,7 +345,14 @@ function generate_all_block(condition_num,
     all_block_information = []
 
     for (i = 0; i < num_blocks; i++) {
-     block_information = generate_block(backgrounds[i], deviants[i], fam_orders[i], num_species, block_orders[i])
+        block_information = {
+            fam_duration: fam_orders[i],
+            background_stimuli: backgrounds[i],
+            deviant_stimuli: deviants[i],
+            block_type: block_orders[i],
+            complexity: complexity_orders[i]
+        }
+
      all_block_information.push(block_information)
   }
 
@@ -403,44 +362,9 @@ function generate_all_block(condition_num,
 
 }
 
-function generate_block(background, deviant, num_trial, num_species, block_type){
-
-  // assign locations
-  locations = ["left", "right"]
-
-  block_stimuli = [background, deviant]
-
-  // get location for the wall animation
-  shuffleArray(locations)
-
-  background_location = locations[0]
-  deviant_location = locations[1]
-
-  // generate array of stimulus paths to index into for pref tests
-  var stims_in_order = []
-
-  stims_in_order.push(block_stimuli[locations.indexOf('left')])
-  stims_in_order.push(block_stimuli[locations.indexOf('right')])
-
-  // generate array of stimulus types to keep track
-  var stim_types = ['background', 'deviant']
-
-  var stim_type_locations = []
-
-  stim_type_locations.push(stim_types[locations.indexOf('left')])
-  stim_type_locations.push(stim_types[locations.indexOf('right')])
 
 
-      block_information = {
-          num_trial: num_trial,
-          background_stimuli: background,
-          deviant_stimuli: deviant,
-          background_location: background_location,
-          deviant_location: deviant_location,
-          stims_in_order: stims_in_order,
-          stim_type_locations: stim_type_locations,
-          block_type: block_type
-      }
+
 
 
 return (block_information)

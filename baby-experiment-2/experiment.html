@@ -164,7 +164,7 @@ var test_block = {
                             },
 
                             stimuli_animation: function(){
-                                var width_height = parseFloat(Math.floor(Math.random() * 200) + 300);
+                                var width_height = parseFloat(Math.floor(Math.random() * 150) + 200);
                                 var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='" + width_height + "' height = '" + width_height + "' style='position:absolute;top:" +
                                 (parseFloat(28)+parseFloat(Math.floor(Math.random() * 20) - 10)) + "%;left:" + (parseFloat(40)+parseFloat(Math.floor(Math.random() * 20) - 10)) + "%'></p>" +
                                 " <audio autoplay><source src='" + jsPsych.timelineVariable('music', true) + "' type='audio/mpeg'> </audio>"

@@ -175,8 +175,6 @@ cor(coder_1, coder_2)
 
 plot(coder_1, coder_2)
 
-# Big discrepancies (more than 4 sec)
-wide_df %>% filter(coder_num == 2  & abs(looking_time_2000_1 - looking_time_2000_2) > 5)
 
 ```
 
@@ -189,7 +187,7 @@ wide_df %>% filter(coder_num == 2  & abs(looking_time_2000_1 - looking_time_2000
 length(unique(complete_df$subject_id))
 
 # check distribution of standard vs deviant trials (MUCH FEWER STANDARD TRIALS)
-full_df %>% dplyr::group_by(block_type) %>% dplyr::summarize(n=sum(n_trial))
+#full_df %>% dplyr::group_by(block_type) %>% dplyr::summarize(n=sum(n_trial))
 
 
 # check out distribution of block types and fam duration across block
@@ -302,20 +300,14 @@ for (i in 1:nrow(all_combs)) {
 
 best_combos <- all_combs[which.min(all_sds),]
 
-store_df %>% ggplot(aes(x=block_number, y=n_trial, group=block_type, color = block_type)) + geom_point(alpha=.8, position = position_dodge(width = .1))  + 
-  geom_line() + facet_wrap(~fam_duration) + ggtitle('minimized')
-
-store_df2 %>% ggplot(aes(x=block_number, y=n_trial, group=block_type, color = block_type)) + geom_point(alpha=.8, position = position_dodge(width = .1))  + 
-  geom_line() + facet_wrap(~fam_duration) + ggtitle('random other one')
-
-store_df3 %>% ggplot(aes(x=block_number, y=n_trial, group=block_type, color = block_type)) + geom_point(alpha=.8, position = position_dodge(width = .1))  + 
-  geom_line() + facet_wrap(~fam_duration) + ggtitle('random other one')
 
 ```
 
 # Evaluate within subject vs between subject design: The motivation is that we benefit from within subjects design statistically, but we also possibly lose trials at the end of the experiment due to attrition so we need to check: how strong are effects of interests if we take 50% of the subjects and take all their data to evaluate the effect of std vs deviant compared to when we use all the subjects but only take their data early in the experiment, and use some people's standard trials, and other people's deviant trials.
 
 ```{r}
+test_df <- complete_df %>% filter(trial_type == 'test') 
+
 
 
 ```
@@ -367,10 +359,27 @@ ggplot(test_df, aes(x=fam_duration, y=normalized_LT, color = fam_duration)) + ge
 ```{r}
 # calculate means
 
+late <- test_df %>% filter(block_number >= 3)
+early <- test_df %>% filter(block_number <= 3)
+
+
 ggplot(test_df, aes(x=block_type, y=looking_time_2000_1, group=fam_duration, color = fam_duration)) + geom_point(alpha=0.2, position = position_dodge(width = .1)) + 
     stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1))  + 
   stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + facet_wrap(~fam_duration) + xlab('Trial type') + ylab('LT in s') + labs(color = '# of Fam Trials') + theme_classic() + 
   theme(strip.text.x = element_text(size = 14, colour = "black")) + ggtitle('')
+
+
+ggplot(early, aes(x=block_type, y=looking_time_2000_1, group=fam_duration, color = fam_duration)) + geom_point(alpha=0.2, position = position_dodge(width = .1)) + 
+    stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1))  + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + facet_wrap(~fam_duration) + xlab('Trial type') + ylab('LT in s') + labs(color = '# of Fam Trials') + theme_classic() + 
+  theme(strip.text.x = element_text(size = 14, colour = "black")) + ggtitle('first 3')
+  
+
+ggplot(late, aes(x=block_type, y=looking_time_2000_1, group=fam_duration, color = fam_duration)) + geom_point(alpha=0.2, position = position_dodge(width = .1)) + 
+    stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1))  + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + facet_wrap(~fam_duration) + xlab('Trial type') + ylab('LT in s') + labs(color = '# of Fam Trials') + theme_classic() + 
+  theme(strip.text.x = element_text(size = 14, colour = "black")) + ggtitle('last 3')
+  
   
   # geom_point(data=mean_df, aes(x = block_type, y=looking_time_until_lookaway, color = fam_duration), shape=24, size=3, position = position_jitter(width = 0.25, seed = 123)) + geom_errorbar(data=mean_df, aes(ymin=looking_time_until_lookaway-ci/2, ymax=looking_time_until_lookaway+ci/2, color = fam_duration), width=0, size=0.0, position = position_jitter(width = 0.25, seed = 123)) 
 
@@ -415,9 +424,6 @@ test_df %>%
 ## Models
 ```{r}
 # log transform once figuring out how to deal with 0's
-model1 <- lme(log(looking_time_2000_1+0.01) ~ block_type * fam_duration, random = ~1|subject_id, data = test_df %>% mutate(fam_duration = as.numeric(fam_duration)))
+model1 <- lme(log(looking_time_2000_1+0.01) ~ block_type * fam_duration + block_number, random = ~1|subject_id, data = test_df %>% mutate(fam_duration = as.numeric(fam_duration)))
 summary(model1)
-
 ```
-
-
