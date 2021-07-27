@@ -31,7 +31,7 @@ process the looking time!
 ```{r}
 RT_data <- RT_data %>% 
   mutate(looking_time = case_when(
-    exposure_type == "forced_short" & trial_number == 1 ~ 500, 
+    exposure_type == "forced_short" & trial_number == 1 ~ forced_exposure_time, 
     exposure_type == "forced_long" & trial_number == 1 ~ 15000, 
     TRUE ~ 500 + rt
   ))
@@ -58,7 +58,7 @@ feedback %>% kableExtra::kable()
 
 
 # Descriptive Info 
-N = 200
+N = 50
 ```{r}
 RT_data %>% 
   distinct(subject) %>% 
@@ -70,7 +70,49 @@ RT_data$item_type = factor(RT_data$item_type, levels=c('background', 'similar de
 
 ```
 
+
+
 ## demographic {.tabset}
+
+## prolific finish time comparison 
+```{r}
+new_prolific <- read_csv(here("data/merged_data/prolific_demog.csv")) %>% 
+  filter(status == "APPROVED") %>% 
+  mutate(version = "new")
+old_prolific <- read_csv(here("data/merged_data/old_prolific_demog.csv")) %>% 
+  filter(status == "APPROVED") %>% 
+  mutate(version = "old")
+
+df_prolific_time <- bind_rows(
+  new_prolific, 
+  old_prolific
+)
+
+df_prolific_time %>% 
+  ggplot(aes(x = time_taken, fill = version)) +
+  geom_density(alpha = .5) + 
+  labs(title = "total time taken reported by Prolific")
+
+
+new_RT_data <- read_csv(here('data/processed_data/trimmed_RTdata.csv')) %>% 
+  mutate(version = "new")
+old_RT_data <- read_csv(here('data/processed_data/05_forced_short/trimmed_RTdata.csv')) %>% 
+  mutate(version = "old")
+
+df_comparison_rt <- bind_rows(new_RT_data, 
+                              old_RT_data)
+
+
+df_comparison_rt %>% 
+  ggplot(aes(x = rt, fill = version)) + 
+  scale_x_log10()+
+  geom_density(alpha = .5) + 
+  labs(title = "rt distribution")
+
+
+```
+
+
 
 ## age 
 
@@ -120,73 +162,6 @@ RT_data %>%
 
 
 
-## by trial type 
-```{r}
-RT_data %>% 
-   ggplot(aes(x = rt)) + 
-  geom_histogram() + 
-  scale_x_log10() + 
-  facet_wrap(~trial_type)
-```
-
-## trial type and block 
-```{r}
-RT_data %>% 
-   ggplot(aes(x = rt)) + 
-  geom_histogram() + 
-  scale_x_log10() + 
-  facet_grid(block_type~trial_type)
-```
-
-## by trial complexity 
-```{r}
-RT_data %>% 
-  ggplot(aes(x = rt)) + 
-  geom_histogram() + 
-  scale_x_log10() + 
-  facet_wrap(~trial_complexity)
-```
-
-## by block type 
-```{r}
-RT_data %>% 
-   ggplot(aes(x = rt)) + 
-  geom_histogram() + 
-  scale_x_log10() + 
-  facet_wrap(~block_type)
-```
-
-## by exposure type 
-```{r}
-RT_data %>% 
-   ggplot(aes(x = rt)) + 
-  geom_histogram() + 
-  scale_x_log10() + 
-  facet_wrap(~exposure_type)
-```
-
-
-
-## by item id 
-### simple 
-```{r}
-RT_data %>% 
-  filter(trial_complexity == "simple") %>% 
-   ggplot(aes(x = rt)) + 
-  geom_histogram() + 
-  scale_x_log10() + 
-  facet_wrap(~item_id)
-```
-
-### complex 
-```{r}
-RT_data %>% 
-  filter(trial_complexity == "complex") %>% 
-   ggplot(aes(x = rt)) + 
-  geom_histogram() + 
-  scale_x_log10() + 
-  facet_wrap(~item_id)
-```
 
 # Similarity ratings {.tabset}
 
@@ -344,7 +319,7 @@ ggplot(
 
 ## RT
 ```{r}
-ggplot(RT_data, 
+ggplot(RT_data %>% filter(trial_number != 1), 
        aes(x=trial_number, y=log(rt), colour=item_type)) + 
   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
   geom_smooth(method = "lm", 
@@ -417,9 +392,20 @@ RT_data %>%
   filter(trial_number == 2) %>% 
   ggplot(aes(x = forced_exposure_time, y = log(looking_time), color = item_type)) +
   geom_point() +
-  geom_smooth(method = "lm")+ 
-  facet_wrap(~block_number)
+  geom_smooth(method = "lm")
 ```
+
+```{r}
+RT_data %>% 
+  filter(trial_number == 2) %>% 
+  group_by(item_type, block_number) %>% 
+  summarise(
+    n = n()
+  ) %>% 
+  ggplot(aes(x = item_type, y = n)) + 
+
+```
+
 
 ```{r}
 RT_data %>% 
@@ -430,6 +416,18 @@ RT_data %>%
   theme_classic() + 
   labs(title = "Looking time at the second trial")
 ```
+
+```{r}
+RT_data %>% 
+  filter(trial_number == 2) %>% 
+  ggplot(aes(x = exposure_type, y = looking_time, color = item_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) +
+   langcog::scale_color_solarized(name = "Item Type") + 
+  theme_classic() + 
+  labs(title = "Looking time at the second trial faceted by the block number") + 
+  facet_wrap(~block_number)
+```
+
 
 
 

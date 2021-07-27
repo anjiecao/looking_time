@@ -18,7 +18,7 @@ library(jsonlite) # for parsing r string
 #MERGED_DATA_PATH <- here("data/platform_comparison_data/prolific/merged_data/merged_data.csv")
 
 rt_path <- here("data/processed_data/trimmed_RTdata.csv")
-prolific_path <- here("data/merged_data/prolific_demog.csvß")
+prolific_path <- here("data/merged_data/prolific_demog.csv")
 demog_path <- here("data/processed_data/trimmed_demogdata.csv")
 similarity_path <- here("data/processed_data/trimmed_similaritydata.csv")
 complexity_path <- here("data/processed_data/trimmed_complexitydata.csv")
@@ -221,8 +221,8 @@ df.temp_processed <-  df.raw %>%
 df.temp_memory_answer <- left_join(df.temp_processed, df.temp_memory, by = "subject_block") %>% 
   mutate(
     memory_question_type = case_when(
-     (memory_question_stimuli == block_background  | memory_question_stimuli == block_deviant) ~ "true_stimulus",
-       (memory_question_stimuli != block_background  && memory_question_stimuli != block_deviant) ~ "false_stimulus", 
+     (memory_question_stimuli == block_background  | memory_question_stimuli == block_deviant) ~ "memory_true_stimulus",
+       (memory_question_stimuli != block_background  && memory_question_stimuli != block_deviant) ~ "memory_false_stimulus", 
      TRUE ~ "error!"
     ),
     memory_response = case_when(
@@ -234,8 +234,14 @@ df.temp_memory_answer <- left_join(df.temp_processed, df.temp_memory, by = "subj
   select(
     subject_block, memory_question_type, memory_response
   ) %>% 
+  distinct(subject_block, memory_question_type, .keep_all = TRUE) %>% 
   pivot_wider(names_from = memory_question_type, values_from = memory_response)
 df.temp_memory_answer
+
+df.processed <- df.processed %>% 
+  mutate(subject_block =  paste0(subject, block_number)) %>% 
+  left_join(df.temp_memory_answer, by = "subject_block") %>% 
+  select(-subject_block)
 # 
 # df.temp_pref <- df.raw %>% 
 #   filter(stimulus_type == "pref_reveal") %>% 
@@ -321,37 +327,45 @@ df.demog <- df.raw  %>%
 
 # trimmed data 
 
-## get the attention check question 
-```{r}
-df.attention_check <- df.raw %>% 
-  filter(stimulus_type == "math_question") %>% 
-  select(subject, responses, math_correct_answer) %>% 
-  toJSON() %>% 
-  fromJSON() %>% 
-    mutate(
-      math_response = map(responses, ~ fromJSON(.) %>% as.data.frame())) %>% 
-    unnest(math_response) %>% 
-  mutate(
-    math_correct_answer = as.numeric(math_correct_answer), 
-    math_response = as.numeric(as.character(Q0))
-  ) %>% 
-  mutate(
-    correct_response = (math_correct_answer == math_response)
-  ) %>% 
-  group_by(subject) %>% 
-  summarize(
-    total_question = n(),
-    correct_question = sum(correct_response), 
-    percent_correct = correct_question / total_question
-  )
-```
-
 
 
 ## participant level exclusion 
 
 
 ```{r}
+ df.attention_check <- df.processed %>% 
+  group_by(subject) %>% 
+  distinct(subject, block_number, .keep_all = TRUE) %>% 
+  select(subject, block_number, memory_false_stimulus, memory_true_stimulus) %>% 
+  group_by(subject) %>% 
+  summarise(
+    false_stimulus_right_num = sum(memory_false_stimulus), 
+    true_stimulus_right_num = sum(memory_true_stimulus)
+  ) %>% 
+  mutate(
+    total_right_num = false_stimulus_right_num + true_stimulus_right_num, 
+    percent_correct = total_right_num / total_right_num
+  )
+
+```
+
+
+```{r}
+# prolific finish time participants 
+prolific_summary <- read_csv(prolific_path) %>% 
+  filter(status == "APPROVED") %>% 
+  select(time_taken) %>% 
+  summarize(
+  median = median(time_taken),
+    mad = mad(time_taken), 
+    upper = median + 3 * mad, 
+    lower = median - 3 * mad)
+# this is buggy! forgot to record prolific id
+#prolific_sbj <- prolific_summary %>% 
+#  filter(time_taken < lower | time_taken > upper) %>% 
+#  pull(subject)
+  
+
 # flat rt participant 
 flat_rt_sbj <- df.processed %>% 
   group_by(subject) %>% 
