@@ -28,7 +28,7 @@ timeline.push(demog)
   timeline.push(audio_check);
 
 
-for (i = 2; i <= 9; i ++){
+for (i = 2; i <= 8; i ++){
   var intro = {
       type: "html-keyboard-response",
       stimulus: "<p><img src=stimuli/intro/intro" + i + ".jpeg width ='900' height = '500'></p>"

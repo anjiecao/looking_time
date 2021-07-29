@@ -180,7 +180,7 @@ var test_block = {
                             minimum_viewing_duration: 1000, // block responses until stimulus appears
                             response_ends_trial: true,
                             trial_duration: jsPsych.timelineVariable('trial_duration'),
-                            data: {condition_num: CONDITION_NUM, block_number: block_index, block_type: block_type,  stimulus_type: 'trial', stimulus_displayed: jsPsych.timelineVariable('stimuli'), fam_duration: jsPsych.timelineVariable('fam_duration'), trial_type: jsPsych.timelineVariable('stim_type')},
+                            data: {subject_num: SUBJECT_NUM, block_number: block_index, block_type: block_type,  stimulus_type: 'trial', stimulus_displayed: jsPsych.timelineVariable('stimuli'), fam_duration: jsPsych.timelineVariable('fam_duration'), trial_type: jsPsych.timelineVariable('stim_type')},
                         }
                         ],
                     timeline_variables: block_timeline_variable
