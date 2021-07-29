@@ -1,6 +1,12 @@
 // initializing the main task package 
 main_task = []
 test_blocks = []
+initial_stickers_array = get_initial_sticker_html_array(8)
+final_stickers_array = get_final_sticker_html_array(8)
+all_sticker_blocks = get_all_stickers_blocks_array(initial_stickers_array, final_stickers_array)
+
+
+
 
 // setting up the main task package 
 for (var block_index = 0; 
@@ -58,7 +64,7 @@ for (var block_index = 0;
                             forced_short_viewing_duration: 10 * (getRandomInt(forced_short_viewing_duration_base, 100)), //50 ~ 1000 with 10 interval random
                             forced_long_viewing_duration: forced_long_viewing_duration,
                             response_ends_trial: true,
-                            exposure_type: exposure_type, 
+                            exposure_type: "self_paced", 
                             data: {block_number: block_index, block_type: block_type,  stimulus_type: 'trial', stimulus_displayed: jsPsych.timelineVariable('stimuli'), trial_type: jsPsych.timelineVariable('stim_type')},
                         }
                         ],
@@ -82,6 +88,8 @@ for (var block_index = 0;
                     memory_question_stimuli: memory_question_stimuli[0], 
                     memory_block_index: block_index },
               }
+
+
 
             var buffer_page = {
                 type: 'stimuli-presentation',
@@ -133,7 +141,12 @@ for (var block_index = 0;
 
         test_blocks.push(memory_question_A)
         test_blocks.push(great_job)
-        test_blocks.push(buffer_page)
+        test_blocks.push(all_sticker_blocks[block_index])
+
+        if(block_index < all_blocks_information.length-1){
+            test_blocks.push(buffer_page)
+        }
+        
      
   }
 // putting everything together 

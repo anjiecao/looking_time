@@ -1,24 +1,28 @@
 function get_feedback(timeline){
-    
-   var feedback = {
-     type: 'survey-text',
-     questions: [
-       {prompt: "You are all done! You did great! What do you think of our game?", placeholder: "", required: true},
-     ],
-     data: {stimulus_type: 'feedback'},
-   };
-    
-   var thankyou = {
-    type: 'instructions',
-    pages: ["You are all done! Thank you so much!"],
-    show_clickable_nav: true,
-    show_page_number: true,
-    post_trial_gap: 2000
-  }
   
 
-   timeline.push(feedback)
-   timeline.push(thankyou)
+  var generic_outro = {
+    type: 'instructions',
+    pages: [
+        "<p><img src=images/outro/outro1.jpeg width ='900' height = '500'></p>",
+        "<p><img src=images/outro/outro2.jpeg width ='900' height = '500'></p>",
+        "<p><img src=images/outro/outro3.jpeg width ='900' height = '500'></p>",
+        "<p><img src=images/outro/outro4.jpeg width ='900' height = '500'></p>",
+        "<p><img src=images/outro/outro5.jpeg width ='900' height = '500'></p>",
+        "<p><img src=images/outro/outro6.jpeg width ='900' height = '500'></p>",
+
+
+      
+    ],
+    show_clickable_nav: true
+
+
+
+} 
+  
+
+   timeline.push(generic_outro)
+   
    
 
 return timeline 
