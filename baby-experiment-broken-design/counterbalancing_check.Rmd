@@ -1,0 +1,237 @@
+---
+title: "counterbalancing_check"
+author: "Gal"
+date: "7/19/2021"
+output: html_document
+---
+
+# This RMarkdown is to come up with a counterbalancing scheme for pokebaby-infant Exp2 that balances the distribution of std/dev, fam_duration, and complex and simple
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(crossdes)
+library(jsonlite)
+
+```
+
+# Case 1: our original study
+```{r}
+
+total_subject_number = 30
+block_number_per_subj = 6
+
+fam_durations = c(3,5,7)
+block_type = c("Std", "Dev")
+
+indices = c(1,2,2,1,2,1,2,1)
+
+block_type_in_exp = block_type[indices]
+
+
+# preallocate
+subject_id = rep(1:total_subject_number, each = block_number_per_subj)
+block_number = rep(1:block_number_per_subj, total_subject_number)
+counterbalancing_condition = rep(NA, 1, total_subject_number*block_number_per_subj)
+block_type = rep(NA, 1, total_subject_number*block_number_per_subj)
+fam_duration = rep(NA, 1, total_subject_number*block_number_per_subj)
+
+# set up rotation matrix
+counterbalancing_matrix = williams(block_number_per_subj)
+  
+  # set up sampling indices 
+sampling_indices = c(rep(1:block_number_per_subj, floor(total_subject_number / block_number_per_subj)), # first repeat 1:8 , 
+        sample(1:block_number_per_subj, total_subject_number %% block_number_per_subj))  #and then randomly sample the remaining ones
+ 
+ # add to counterbalancing condition
+ counterbalancing_condition = as.vector(t(counterbalancing_matrix[sampling_indices, ]))  # index and flatten
+
+
+# initialize df with the things we already have
+subject_df = tibble(counterbalancing_condition = counterbalancing_condition,
+                    subject_id = subject_id,
+                    block_number = block_number)
+
+# now add the things that are based on counterbalnacing condition
+subject_df <- subject_df %>% 
+  mutate(
+    block_type = case_when(
+    counterbalancing_condition %% 2 == 1 ~ "Std", # odd is standard 
+    counterbalancing_condition %% 2 == 0 ~ "Dev" # odd is standard 
+    ),
+    fam_duration = case_when(
+            counterbalancing_condition <= 2 ~ 3,
+            counterbalancing_condition <= 4 ~ 5,
+            counterbalancing_condition <= 6 ~ 7)
+  )
+
+# check out distribution of trials
+
+subject_df %>% dplyr::group_by(block_number, block_type, fam_duration) %>% 
+  dplyr::summarize(n_trial = n()) %>% ggplot(aes(x=block_number, y=n_trial, group=block_type, color = block_type)) + geom_point(alpha=.8, position = position_dodge(width = .1))  + 
+  geom_line() + facet_grid(~fam_duration)
+```
+
+## Now convert to json file
+```{r}
+# we need the df in a different format, where each row is one subject, and each column is one dimension of interest (fam duration, complexity etc.)
+# we want to make lists of lists where each nested list is the variable for each block e.g. if we had two subjects we would do: mydf$fam_duration = list(subject1famdurations, subject2famdurations)
+my_df <- tibble(fam_duration = vector(mode = "list", length = total_subject_number), 
+                block_type = vector(mode = "list", length = total_subject_number),
+                block_number = vector(mode = "list", length = total_subject_number),
+                counterbalancing_condition = vector(mode = "list", length = total_subject_number)
+                )
+
+
+for (i in 1:total_subject_number) {
+  my_df$fam_duration[[i]] <- subject_df %>% filter(subject_id == i) %>% pull(fam_duration)  
+  my_df$block_type[[i]] <- subject_df %>% filter(subject_id == i) %>% pull(block_type) 
+  my_df$block_number[[i]] <- subject_df %>% filter(subject_id == i) %>% pull(block_number) 
+  my_df$counterbalancing_condition[[i]] <- subject_df %>% filter(subject_id == i) %>% pull(counterbalancing_condition) 
+}
+
+
+# copying this JSON to javascript
+toJSON(my_df)
+
+```
+
+# We do 8 blocks, with either 3/5, 5/7 or 3/7 fam duration and complexity within subjects. Let's simulate 60 subjects, i.e. 20 per fam duration
+```{r}
+total_subject_number = 60
+block_number_per_subj = 8
+
+fam_duration_conditions = 1:3
+subjects_per_fam_duration = 20
+
+fam_durations = c(3,5,7)
+block_type = c("Std", "Dev")
+complexity = c("Simple", "Complex")
+
+
+indices = c(1,2,2,1,2,1,2,1)
+
+block_type_in_exp = block_type[indices]
+complexity_in_exp = complexity[indices]
+
+
+# preallocate
+subject_id = rep(1:total_subject_number, each = block_number_per_subj)
+block_number = rep(1:block_number_per_subj, total_subject_number)
+counterbalancing_condition = rep(NA, 1, total_subject_number*block_number_per_subj)
+block_type = rep(NA, 1, total_subject_number*block_number_per_subj)
+fam_duration = rep(NA, 1, total_subject_number*block_number_per_subj)
+fam_duration_condition = rep(NA, 1, total_subject_number*block_number_per_subj)
+complexity = rep(NA, 1, total_subject_number*block_number_per_subj)
+# coun
+
+
+subject_counter = 1
+
+for (i in fam_duration_conditions) {
+  
+  
+  if (i == 1) {
+      current_fam_durations = fam_durations[c(1, 2)]
+  }
+  else if (i == 2) {
+      current_fam_durations = fam_durations[c(2, 3)]
+  }
+  else if (i == 3) {
+      current_fam_durations = fam_durations[c(1, 3)]
+  }
+  
+   # store fam_duration condition
+ fam_duration_condition[(1+(i-1)*subjects_per_fam_duration*block_number_per_subj):
+                        (subjects_per_fam_duration*block_number_per_subj+(i-1)*subjects_per_fam_duration*block_number_per_subj)] = 
+   paste(current_fam_durations, collapse="")
+ 
+  
+  # set up rotation matrix
+  counterbalancing_matrix = williams(block_number_per_subj)
+  
+  # set up sampling indices 
+ sampling_indices = c(rep(1:block_number_per_subj, floor(subjects_per_fam_duration / block_number_per_subj)), # first repeat 1:8 , 
+        sample(1:block_number_per_subj, subjects_per_fam_duration %% block_number_per_subj))  #and then randomly sample the remaining ones
+ 
+ # add to counterbalancing condition
+ counterbalancing_condition[(1+(i-1)*subjects_per_fam_duration*block_number_per_subj):
+                        (subjects_per_fam_duration*block_number_per_subj+(i-1)*subjects_per_fam_duration*block_number_per_subj)] = as.vector(t(counterbalancing_matrix[sampling_indices, ]))  # index and flatten
+
+}
+
+# initialize df with the things we already have
+subject_df = tibble(fam_duration_condition = fam_duration_condition,
+                    counterbalancing_condition = counterbalancing_condition,
+                    subject_id = subject_id,
+                    block_number = block_number)
+
+# now add the things that are based on counterbalnacing condition
+subject_df <- subject_df %>% 
+  mutate(
+    block_type = case_when(
+    counterbalancing_condition %% 2 == 1 ~ "Std", # odd is standard 
+    counterbalancing_condition %% 2 == 0 ~ "Dev" # odd is standard 
+    ),
+    complexity = case_when(
+      counterbalancing_condition <= block_number_per_subj/2 ~ 'simple',
+      TRUE ~ 'complex'
+    ),
+    fam_duration = case_when(
+            counterbalancing_condition <= 2 ~ substr(fam_duration_condition,1,1),
+            counterbalancing_condition <= 4 ~ substr(fam_duration_condition,2,2),
+            counterbalancing_condition <= 6 ~ substr(fam_duration_condition,1,1),
+            counterbalancing_condition <= 8 ~ substr(fam_duration_condition,2,2)
+    )
+  )
+
+# check out distribution of trials
+
+subject_df %>% dplyr::group_by(block_number, block_type, fam_duration, complexity) %>% 
+  dplyr::summarize(n_trial = n()) %>% ggplot(aes(x=block_number, y=n_trial, group=block_type, color = block_type)) + geom_point(alpha=.8, position = position_dodge(width = .1))  + 
+  geom_line() + facet_grid(complexity~fam_duration)
+
+```
+
+## Now convert to json file
+```{r}
+
+
+
+# we need the df in a different format, where each row is one subject, and each column is one dimension of interest (fam duration, complexity etc.)
+# we want to make lists of lists where each nested list is the variable for each block e.g. if we had two subjects we would do: mydf$fam_duration = list(subject1famdurations, subject2famdurations)
+my_df <- tibble(fam_duration = vector(mode = "list", length = total_subject_number), 
+                complexity = vector(mode = "list", length = total_subject_number),
+                block_type = vector(mode = "list", length = total_subject_number),
+                fam_duration_condition = vector(mode = "list", length = total_subject_number),
+                block_number = vector(mode = "list", length = total_subject_number),
+                counterbalancing_condition = vector(mode = "list", length = total_subject_number)
+                )
+
+
+for (i in 1:total_subject_number) {
+  my_df$fam_duration[[i]] <- subject_df %>% filter(subject_id == i) %>% pull(fam_duration)  
+  my_df$complexity[[i]] <- subject_df %>% filter(subject_id == i) %>% pull(complexity) 
+  my_df$block_type[[i]] <- subject_df %>% filter(subject_id == i) %>% pull(block_type) 
+  my_df$fam_duration_condition[[i]] <- subject_df %>% filter(subject_id == i) %>% pull(fam_duration_condition) 
+  my_df$block_number[[i]] <- subject_df %>% filter(subject_id == i) %>% pull(block_number) 
+  my_df$counterbalancing_condition[[i]] <- subject_df %>% filter(subject_id == i) %>% pull(counterbalancing_condition) 
+}
+
+
+# copying this JSON to javascript
+toJSON(my_df)
+
+
+
+
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
