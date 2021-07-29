@@ -56,10 +56,9 @@ var great_job = {
 
     
 
+      
 
-  
-
-
+        
         var first_example = {
           type: 'stimuli-presentation',
           frame_animation: function(){
@@ -101,8 +100,32 @@ var great_job = {
         }
 
 
+        final_stickers = get_final_sticker_html_array(8)
 
-       
+       var sticker_books = {
+
+        type: 'stimuli-presentation',
+        frame_animation: function(){
+
+
+          var html = ""
+
+          return html
+        },
+          //position:absolute;top:28px;left:40px
+            stimuli_animation: function(){
+                var html = final_stickers.join("")
+              return html 
+            },
+            two_stimuli_interval: 0,
+            key_response: [32],
+            minimum_viewing_duration: 500, // daffner2000's info was 600, changed to 200
+            response_ends_trial: true,
+            exposure_type: "self_paced"
+
+
+
+       }
 
         var intro2 = {
           type: 'stimuli-presentation',
@@ -147,7 +170,7 @@ var great_job = {
                     function getRandomInt(max) {
                         return Math.floor(Math.random() * max);
                         }
-                    var width_height = parseFloat(Math.floor(Math.random() * 100) + 100);
+                    var width_height = parseFloat(Math.floor(Math.random() * 10) + 250);
                     var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='" + width_height + "' height = '" + width_height + "' style='position:relative;top:" + Math.random() * (80 - 10) + 10 + "%;left:" +  Math.random() * (80 - 10) + 10  +  "%'></p>"
                     return html
                 },
@@ -223,6 +246,7 @@ var great_job = {
         timeline.push(look_carefully)
         timeline.push(practice_block)
         timeline.push(practice_memory)
+        timeline.push(sticker_books)
         timeline.push(intro3)
         //timeline.push(intro7)
 

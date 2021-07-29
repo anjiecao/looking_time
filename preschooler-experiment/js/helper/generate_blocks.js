@@ -248,13 +248,13 @@ all_block_information.push(block_information)
     // will be replaced by non-hardcoded version 
   //  var forced_long_arr = fillArray("forced_long", 
     //                           num_block_each_exposure_type)
-    var forced_short_arr = fillArray("forced_short", 
+    //var forced_short_arr = fillArray("forced_short", 
+                            //   num_block_each_exposure_type)
+    var self_paced_arr = fillArray("self_paced", 
                                num_block_each_exposure_type)
-    //var self_paced_arr = fillArray("self_paced", 
-      //                         num_block_each_exposure_type)
     
     
-    var exposure_type = forced_short_arr
+    var exposure_type = self_paced_arr
     
     if (show_simple){
         
