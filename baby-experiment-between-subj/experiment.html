@@ -36,7 +36,8 @@
 <body></body>
 <script>
 
-SUBJECT_NUM = 2
+SUBJECT_NUM = 2 // 1,2,3... 30
+SESSION_NUM = 2 // 1 or 2
 COMPLEX = true // true or false
 
 // Experiment setup
@@ -98,7 +99,7 @@ timeline = []
 
 
 if (SHOW_INTRO) {
-  timeline = instructions(timeline)
+  timeline = instructions(timeline, SESSION_NUM)
 }
 
 
@@ -107,8 +108,6 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
 
     block_counter = 0
     block_information = all_blocks_information[block_index]
-    block_type = block_information.block_type
-    console.log('info: ' + block_information['stims_in_order'])
     block_timeline_variable = generate_timeline_variables(block_information)
     console.log('Block Timeline Variable')
     console.log(block_timeline_variable)
@@ -117,7 +116,7 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
   if (block_index > 0) {
     var between_block = {
       type: 'html-keyboard-response',
-      stimulus: '<p><img src="stimuli/images/attngetter_blank.png" width ="640" height = "490" ></p>',
+      stimulus: '<p><img src="stimuli/images/attngetter_blank.png" width ="1000" height = "765" ></p>',
       choices: jsPsych.ALL_KEYS,
       data: {stimulus_type: 'between_block'}
     }
@@ -131,7 +130,7 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
           'stimuli/images/attngetter_quiet.mp4'],
       autoplay: true,
       trial_ends_after_video: true,
-      width: 640,
+      width: 1000,
       data: {stimulus_type: 'attention_getter'}
   }
 
@@ -145,7 +144,7 @@ var test_block = {
                             type: 'html-keyboard-response',
                             stimulus: function(){
                                     var html='<p><img src='+ jsPsych.timelineVariable('inter_trial', true) +' width ="200" height = "200" style="position:absolute;left:85%"></p>' +
-                                    '<p><img src= stimuli/images/blank.png width ="650" height = "650" style="border:5px solid black"></p>'
+                                    '<p><img src= stimuli/images/blank.png width ="1000" height = "1000" style="border:5px solid black"></p>'
                                     return html
                                   },
                             trial_duration: function(){
@@ -164,14 +163,14 @@ var test_block = {
                         {
                             type: 'sequential-stimulus-presentation',
                             wall_animation: function(){
-                                var html = '<p><img src= stimuli/images/blank.png width ="650" height = "650" style="border:5px solid black"></p>'
+                                var html = '<p><img src= stimuli/images/blank.png width ="1000" height = "1000" style="border:5px solid black"></p>'
                                 return html;
                             },
 
                             stimuli_animation: function(){
-                                var width_height = parseFloat(Math.floor(Math.random() * 200) + 300);
+                              var width_height = parseFloat(Math.floor(Math.random() * 250) + 350);
                                 var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='" + width_height + "' height = '" + width_height + "' style='position:absolute;top:" +
-                                (parseFloat(28)+parseFloat(Math.floor(Math.random() * 20) - 10)) + "%;left:" + (parseFloat(40)+parseFloat(Math.floor(Math.random() * 20) - 10)) + "%'></p>" +
+                                parseFloat(Math.floor(Math.random() * 35) + 20) + "%;left:" + parseFloat(Math.floor(Math.random() * 20) + 35) + "%'></p>" +
                                 " <audio autoplay><source src='" + jsPsych.timelineVariable('music', true) + "' type='audio/mpeg'> </audio>"
                                 return html
                             },
@@ -180,7 +179,8 @@ var test_block = {
                             minimum_viewing_duration: 1000, // block responses until stimulus appears
                             response_ends_trial: true,
                             trial_duration: jsPsych.timelineVariable('trial_duration'),
-                            data: {subject_num: SUBJECT_NUM, block_number: block_index, block_type: block_type,  stimulus_type: 'trial', stimulus_displayed: jsPsych.timelineVariable('stimuli'), fam_duration: jsPsych.timelineVariable('fam_duration'), trial_type: jsPsych.timelineVariable('stim_type')},
+                            data: {subject_num: SUBJECT_NUM, block_number: block_index, block_type: jsPsych.timelineVariable('block_type'),  stimulus_type: 'trial',
+                            stimulus_displayed: jsPsych.timelineVariable('stimuli'), fam_duration: jsPsych.timelineVariable('fam_duration'), trial_type: jsPsych.timelineVariable('stim_type')},
                         }
                         ],
                     timeline_variables: block_timeline_variable
@@ -197,15 +197,16 @@ var test_block = {
 
   timeline.push(thank_you)
 
-  function saveData(name, data){
-          var xhr = new XMLHttpRequest();
-          xhr.open('POST', '../../../cgi-bin/pokebaby_infant/write_data.php');
-          //xhr.open('POST', 'write_data.php'); // 'write_data.php' is the path to the php file described above.
-          xhr.setRequestHeader('Content-Type', 'application/json');
-          xhr.send(JSON.stringify({filename: name, filedata: data}));
+  var consent_level = {
+      type: "jspsych-survey-multi-choice",
+      questions: [
+          {prompt: "At what level of privacy would you like us to store your data?", name: 'Vegetables', options: ["Public", "Scientific", "Private"]},
+        ],
       }
 
+  if (SESSION_NUM == 2)
 
+  timeline.push(consent_level)
 
 
 jsPsych.init({
@@ -215,13 +216,10 @@ jsPsych.init({
         preload_images: all_stimuli,
         on_finish: function(){
           jsPsych.data.get().localSave('csv','mydata.csv');
-        },
+        }
         //preload_video: VIDEO,
-        on_trial_finish: function(){
-            saveData("test" + subject_id, jsPsych.data.get().csv());
             //jsPsych.data.displayData();
             //setTimeout(function() { turk.submit(jsPsych.data.get().ignore('external-html').json()); }, 5000);
-      }
     })
 
     </script>

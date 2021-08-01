@@ -32,6 +32,7 @@ for (i = 2; i <= 9; i ++){
       stimulus: "<p><img src=stimuli/intro/intro" + i + ".jpeg width ='900' height = '500'></p>"
   }
 
+    jsPsych.get
      timeline.push(intro)
 
    }

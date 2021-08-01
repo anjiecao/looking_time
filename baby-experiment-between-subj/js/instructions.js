@@ -1,4 +1,4 @@
-function instructions(timeline){
+function instructions(timeline, SESSION_NUM){
 
   timeline.push({
     type: 'fullscreen',
@@ -29,9 +29,14 @@ timeline.push(demog)
 
 
 for (i = 2; i <= 8; i ++){
+
+  // skip consent
+  if (SESSION_NUM == 2 & i == 4){continue}
+
   var intro = {
       type: "html-keyboard-response",
-      stimulus: "<p><img src=stimuli/intro/intro" + i + ".jpeg width ='900' height = '500'></p>"
+      stimulus: "<p><img src=stimuli/intro/intro" + i + ".jpeg width ='900' height = '500'></p>",
+
   }
 
      timeline.push(intro)

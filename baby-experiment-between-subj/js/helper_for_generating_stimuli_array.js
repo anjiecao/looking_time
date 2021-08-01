@@ -126,8 +126,6 @@ function pop_multiple(array, n){
   return popped_array
 }
 
-
-
 // -------- V2 dealing with Stimuli --------- //
 // currently ignoring inter-relationship between stimuli
 // just get all stimuli
@@ -180,12 +178,11 @@ function generate_timeline_variables(block_information){
 
     background_stimuli = block_information.background_stimuli
     deviant_stimuli = block_information.deviant_stimuli
-    block_length = block_information.num_trial
     block_type = block_information.block_type
     fam_duration = block_information.fam_duration
 
-    console.log('block_type')
-    console.log(block_type)
+    console.log('block_information')
+    console.log(block_information)
 
      background_item = {
          stimuli: background_stimuli,
@@ -206,15 +203,15 @@ function generate_timeline_variables(block_information){
      }
 
 
-    block_stimuli = fillArray(background_item, block_length)
+    block_stimuli = fillArray(background_item, fam_duration)
 
 
 
     if (block_type == 'Dev'){
-      block_stimuli[block_length] = deviant_item // replace last with deviant
+      block_stimuli[fam_duration] = deviant_item // replace last with deviant
     }
     else if (block_type = 'Std') {
-      block_stimuli[block_length] = standard_item_last // don't replace but set trial duration to null for indefinite looking
+      block_stimuli[fam_duration] = standard_item_last // don't replace but set trial duration to null for indefinite looking
     }
 
 
@@ -241,37 +238,41 @@ function generate_timeline_variables(block_information){
     shuffleArray(music_fam_array)
     shuffleArray(music_test_array)
 
-
-    block_stimuli = []
-
-    for (i = 0; i < block_length; i++) {
+    for (i = 0; i < fam_duration; i++) {
 
       block_stimuli[i] = {
           stimuli: background_stimuli,
           stim_type: 'background',
           trial_duration: 6000,
           music: music_fam_array[i],
-          inter_trial: 'stimuli/images/blank_fam.png'
+          inter_trial: 'stimuli/images/blank_fam.png',
+          fam_duration: fam_duration,
+          block_type: block_type
         }
       }
 
     if (block_type == 'Dev'){
-      block_stimuli[block_length] = {
+      block_stimuli[fam_duration] = {
           stimuli: deviant_stimuli,
           stim_type: 'deviant',
           trial_duration: null,
           music: music_test_array[1],
-          inter_trial: 'stimuli/images/blank_test.png'
+          inter_trial: 'stimuli/images/blank_test.png',
+          fam_duration: fam_duration,
+          block_type: block_type
       }
     }
 
     else if (block_type = 'Std') {
-      block_stimuli[block_length] = {
+      block_stimuli[fam_duration] = {
           stimuli: background_stimuli,
           stim_type: 'background',
           trial_duration: null,
           music: music_test_array[1],
-          inter_trial: 'stimuli/images/blank_test.png'
+          inter_trial: 'stimuli/images/blank_test.png',
+          fam_duration: fam_duration,
+          block_type: block_type
+
       }
     }
 
@@ -356,6 +357,7 @@ function generate_all_block(subject_num,
   }
 
     console.log(all_block_information)
+    console.log('all_block_information')
 
     return (all_block_information)
 
