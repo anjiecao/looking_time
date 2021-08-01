@@ -10,8 +10,6 @@ function get_feedback(timeline){
         "<p><img src=images/outro/outro4.jpeg width ='900' height = '500'></p>",
         "<p><img src=images/outro/outro5.jpeg width ='900' height = '500'></p>",
         "<p><img src=images/outro/outro6.jpeg width ='900' height = '500'></p>",
-
-
       
     ],
     show_clickable_nav: true
