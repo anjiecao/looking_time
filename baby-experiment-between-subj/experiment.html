@@ -3,32 +3,33 @@
 <head>
   <script src="js/jspsych.js"></script>
   <script src="js/instruction_and_transition.js"></script>
-<script src="js/jspsych-video-sequential-stimulus-presentation.js"></script>
-<script src= "js/jspsych-video-keyboard-response.js"></script>
+  <script src="js/jspsych-video-sequential-stimulus-presentation.js"></script>
+  <script src= "js/jspsych-video-keyboard-response.js"></script>
   <script src = "js/practice_trial_package.js"></script>
   <script src = "js/demog_question_package.js"></script>
   <script src="js/jspsych-pratctice-block.js"></script>
   <script src="js/jspsych-stimulus-presentation.js"></script>
-<script src="js/jspsych-sequential-stimulus-presentation.js"></script>
-<script src = "js/jspsych-multi-stim-multi-response.js"></script>
+  <script src="js/jspsych-sequential-stimulus-presentation.js"></script>
+  <script src = "js/jspsych-multi-stim-multi-response.js"></script>
   <script src="js/jspsych-task-instructions.js"></script>
   <script src="js/jspsych-instructions.js"></script>
   <script src="js/instructions.js"></script>
   <script src= "js/jspsych-survey-text.js"></script>
   <script src= "js/jspsych-survey-likert.js"></script>
-    <script src="js/jspsych-html-slider-response.js"></script>
-    <script src="js/jspsych-html-keyboard-response.js"></script>
-    <script src="js/jspsych-image-keyboard-response.js"></script>
-    <script src= "js/jspsych-survey-text.js"></script>
-    <script src= "js/jspsych-categorize-image.js"></script>
-    <script src= "js/jspsych-fullscreen.js"></script>
-    <script src="js/helper_for_generating_stimuli_array.js"></script>
-    <script src="js/helper_for_checking_duplicate_stimuli.js"></script>
-    <script src= "js/jspsych-demog-age.js"></script>
-    <script src= "js/jspsych-demog-ethnic-US.js"></script>
-    <script src= "js/jspsych-demog-gender-and-education.js"></script>
-    <script src= "js/jspsych-fullscreen.js"></script>
-    <script src= "js/jspsych-audio-keyboard-response.js"></script>
+  <script src= "js/jspsych-survey-multi-choice.js"></script>
+  <script src="js/jspsych-html-slider-response.js"></script>
+  <script src="js/jspsych-html-keyboard-response.js"></script>
+  <script src="js/jspsych-image-keyboard-response.js"></script>
+  <script src= "js/jspsych-survey-text.js"></script>
+  <script src= "js/jspsych-categorize-image.js"></script>
+  <script src= "js/jspsych-fullscreen.js"></script>
+  <script src="js/helper_for_generating_stimuli_array.js"></script>
+  <script src="js/helper_for_checking_duplicate_stimuli.js"></script>
+  <script src= "js/jspsych-demog-age.js"></script>
+  <script src= "js/jspsych-demog-ethnic-US.js"></script>
+  <script src= "js/jspsych-demog-gender-and-education.js"></script>
+  <script src= "js/jspsych-fullscreen.js"></script>
+  <script src= "js/jspsych-audio-keyboard-response.js"></script>
 
 
   <link rel="stylesheet" href="css/jspsych.css"></link>
@@ -37,7 +38,6 @@
 <script>
 
 SUBJECT_NUM = 2 // 1,2,3... 30
-SESSION_NUM = 2 // 1 or 2
 COMPLEX = true // true or false
 
 // Experiment setup
@@ -99,7 +99,7 @@ timeline = []
 
 
 if (SHOW_INTRO) {
-  timeline = instructions(timeline, SESSION_NUM)
+  timeline = instructions(timeline)
 }
 
 
@@ -116,7 +116,7 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
   if (block_index > 0) {
     var between_block = {
       type: 'html-keyboard-response',
-      stimulus: '<p><img src="stimuli/images/attngetter_blank.png" width ="1000" height = "765" ></p>',
+      stimulus: '<p><img src="stimuli/images/attngetter_blank.png" width ="1200" height = "918" ></p>',
       choices: jsPsych.ALL_KEYS,
       data: {stimulus_type: 'between_block'}
     }
@@ -144,7 +144,7 @@ var test_block = {
                             type: 'html-keyboard-response',
                             stimulus: function(){
                                     var html='<p><img src='+ jsPsych.timelineVariable('inter_trial', true) +' width ="200" height = "200" style="position:absolute;left:85%"></p>' +
-                                    '<p><img src= stimuli/images/blank.png width ="1000" height = "1000" style="border:5px solid black"></p>'
+                                    '<p><img src= stimuli/images/blank.png width ="1200" height = "1200" style="border:5px solid black"></p>'
                                     return html
                                   },
                             trial_duration: function(){
@@ -163,14 +163,20 @@ var test_block = {
                         {
                             type: 'sequential-stimulus-presentation',
                             wall_animation: function(){
-                                var html = '<p><img src= stimuli/images/blank.png width ="1000" height = "1000" style="border:5px solid black"></p>'
+                                var html = '<p><img src= stimuli/images/blank.png width ="1200" height = "1200" style="border:5px solid black"></p>'
                                 return html;
                             },
 
                             stimuli_animation: function(){
-                              var width_height = parseFloat(Math.floor(Math.random() * 250) + 350);
+                              if (COMPLEX) {
+                                var width_height = parseFloat(Math.floor(Math.random() * 250) + 350);
+                              }
+                              else {
+                                var width_height = parseFloat(Math.floor(Math.random() * 350) + 500);
+
+                              }
                                 var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='" + width_height + "' height = '" + width_height + "' style='position:absolute;top:" +
-                                parseFloat(Math.floor(Math.random() * 35) + 20) + "%;left:" + parseFloat(Math.floor(Math.random() * 20) + 35) + "%'></p>" +
+                                parseFloat(Math.floor(Math.random() * 30) + 15) + "%;left:" + parseFloat(Math.floor(Math.random() * 20) + 26) + "%'></p>" +
                                 " <audio autoplay><source src='" + jsPsych.timelineVariable('music', true) + "' type='audio/mpeg'> </audio>"
                                 return html
                             },
@@ -197,17 +203,18 @@ var test_block = {
 
   timeline.push(thank_you)
 
+  consent_options = ["<b>Private</b>: Video may only be viewed by authorized scientists. </h1>",
+                      "<b>Scientific</b>: Video may be shared for scientific or educational purposes, e.g. at a conference, a class or a scientific paper.</h1>",
+                      "<b>Public</b>: Like 'Scientific' but also includes public venues such as websites, news articles etc. No commercial use. </h1>"]
+
   var consent_level = {
-      type: "jspsych-survey-multi-choice",
+      type: "survey-multi-choice",
       questions: [
-          {prompt: "At what level of privacy would you like us to store your data?", name: 'Vegetables', options: ["Public", "Scientific", "Private"]},
-        ],
+          {prompt: "<h1 style='font-size:12'> At what level of privacy would you like us to store your data? </h1>", name: 'Consent', options: consent_options},
+        ]
       }
 
-  if (SESSION_NUM == 2)
-
-  timeline.push(consent_level)
-
+timeline.push(consent_level)
 
 jsPsych.init({
         timeline: timeline,
