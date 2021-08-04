@@ -12,7 +12,8 @@ function checking_block_information(all_blocks_information,
 
     used_stimuli = []
     used_new_memory_probe = []
-   
+    novel_memory_stimuli_num = 0
+    fam_memory_stimuli_num = 0
 
     for (var i = 0; i < block_number; i++){
 
@@ -58,8 +59,10 @@ function checking_block_information(all_blocks_information,
          // check if one of the memory probe appears in the stimuli 
          if (!(current_memory_stimuli.includes(current_background) | 
               current_memory_stimuli.includes(current_deviant))){
-                throw "memory probe does not contain current background or current deviant"
-              }
+                novel_memory_stimuli_num = novel_memory_stimuli_num + 1
+            }else{
+                fam_memory_stimuli_num = fam_memory_stimuli_num + 1
+            }
 
         // push the novel memory probe 
         for (var j = 0; j < current_memory_stimuli.length; j++){
@@ -72,7 +75,15 @@ function checking_block_information(all_blocks_information,
                 }
         }  
 
+        all_memory_stimuli = current_memory_stimuli.push(current_memory_stimuli)
+
     }
+
+    // check if memory stimuli are half and half 
+    if (novel_memory_stimuli_num != fam_memory_stimuli_num | fam_memory_stimuli_num != block_number / 2){
+        throw "memory probe numbers do not match"
+    }
+
     console.log("novel memory test probe:")
     console.log(used_new_memory_probe)
     console.log("background and deviant species: ")

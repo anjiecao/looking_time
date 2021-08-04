@@ -72,7 +72,7 @@ jsPsych.init({
         //use_webaudio: true, // this won't work for local testing (CORS), but maybe on server
         preload_images: all_stimuli,
         on_trial_finish: function(){
-            saveData("test" + subject_id, jsPsych.data.get().csv());
+            saveData("simple" + subject_id, jsPsych.data.get().csv());
             //jsPsych.data.displayData();
             //setTimeout(function() { turk.submit(jsPsych.data.get().ignore('external-html').json()); }, 5000);
       }

@@ -1,15 +1,21 @@
 
-function get_all_stimuli(TEST_RUN, SPECIES_NUM, SHOW_SIMILAR, SHOW_SIMPLE){
+function get_all_stimuli(TEST_RUN, SPECIES_NUM, SHOW_SIMILAR, SHOW_SIMPLE, SHOW_COMPLEX){
 
 
     all_stimuli = []
     MAIN_DIR = "images/stimuli/"
 
     // 2 complexity levels
-    if (SHOW_SIMPLE){
+    console.log(SHOW_SIMPLE)
+    console.log(SHOW_COMPLEX)
+    if (SHOW_SIMPLE && SHOW_COMPLEX){
         complexity_levels = ['simple', 'complex']
-    }else{
+    }else if (SHOW_COMPLEX == true & SHOW_SIMPLE == false){
         complexity_levels = ['complex']
+    }else if (SHOW_SIMPLE == true & SHOW_COMPLEX == false){
+      complexity_levels = ['simple']
+    }else{
+      console.log("buggy simplicity setting! neither simple nor complex.")
     }
     
 
@@ -137,7 +143,8 @@ function generate_all_block(num_blocks,
                             num_deviants,
                             num_species,
                             show_similar, 
-                            show_simple){
+                            show_simple, 
+                            show_complex){
 
     // check that number of blocks is divisible by 4
     if (num_blocks % 4 != 0){
@@ -164,14 +171,18 @@ function generate_all_block(num_blocks,
         }
       }
     }
-
-    // get paths to all complex stimuli
-    complex_stims = []
-    for (var i = 0; i < stimuli_array.length; i++) {
-      if (stimuli_array[i].includes('complex')) {
-        complex_stims.push(stimuli_array[i])
+    
+    if (show_complex){
+      // get paths to all complex stimuli
+      complex_stims = []
+      for (var i = 0; i < stimuli_array.length; i++) {
+        if (stimuli_array[i].includes('complex')) {
+          complex_stims.push(stimuli_array[i])
+      }
       }
     }
+
+    
 
     all_block_information = []
 
@@ -181,9 +192,9 @@ function generate_all_block(num_blocks,
     {
       loop_length = num_blocks/4
     }
-    else if (show_simple | show_similar){
+    else if ((show_simple | show_complex) && show_similar){
       loop_length = num_blocks/2
-    } else{
+    } else {
       loop_length = num_blocks
     }
 
@@ -221,7 +232,10 @@ if (show_similar) {
 // DISSIMILAR BLOCKS
 
 // put a loop around this with the number of blocks of this type
+
+used_stimuli = []
 for (i = 0; i < loop_length; i++) {
+
 
   // simple dissimilar blocks
  if (show_simple){
@@ -231,15 +245,80 @@ for (i = 0; i < loop_length; i++) {
  block_information = output[1]
 
  all_block_information.push(block_information)
+
+ used_stimuli.push([block_information.background_stimuli, block_information.deviant_stimuli])
+
+}
+
+if (show_complex){
+  output = generate_dissimilar_block(complex_stims, num_blocks, num_trial_per_block, all_deviant_position_array, num_deviants, block_type = 'complex_dissimilar')
+  complex_stims = output[0]
+  block_information = output[1]
+  all_block_information.push(block_information)
+  used_stimuli.push([block_information.background_stimuli, block_information.deviant_stimuli])
 }
  // complex dissimilar blocks
- output = generate_dissimilar_block(complex_stims, num_blocks, num_trial_per_block, all_deviant_position_array, num_deviants, block_type = 'complex_dissimilar')
+ 
+}
+console.log(used_stimuli)
 
-complex_stims = output[0]
-block_information = output[1]
-
-all_block_information.push(block_information)
+left_over_stimuli = []
+simple_left_over_stimuli = []
+complex_left_over_stimuli = []
+specie_action = ["a", "b"]
+if (show_simple){
+  simple_left_over_stimuli = left_over_stimuli.concat(simple_stims)
+  simple_left_over_specie_info = simple_left_over_stimuli.map(x => x.slice(-10, x.length-8))
+  simple_left_over_specie_info_unique = [...new Set(simple_left_over_specie_info)]
+  for (i = 0; i < simple_left_over_specie_info_unique.length; i++){
+    randomIdx = Math.floor(Math.random() * specie_action.length)
+    specie = simple_left_over_specie_info_unique[i]
+    action = specie_action[randomIdx]
+    stimulus_path = "images/stimuli/simple_" + specie + "_A_" + action + ".gif"
+    left_over_stimuli.push(stimulus_path)
   }
+
+}
+if(show_complex){
+  complex_left_over_stimuli = left_over_stimuli.concat(complex_stims)
+  complex_left_over_specie_info = complex_left_over_stimuli.map(x => x.slice(-10, x.length -8))
+  complex_left_over_specie_info_unique = [... new Set(complex_left_over_specie_info)]
+  for (i = 0; i < complex_left_over_specie_info_unique.length; i++){
+    randomIdx = Math.floor(Math.random() * specie_action.length)
+    specie = complex_left_over_specie_info_unique[i]
+    action = specie_action[randomIdx]
+    stimulus_path = "images/stimuli/complex_" + specie + "_A_" + action + ".gif"
+    left_over_stimuli.push(stimulus_path)
+  }
+}
+
+
+shuffleArray(left_over_stimuli)
+// this is to make sure that the order was not disturbed 
+all_block_index = range(0, loop_length-1)
+block_index_with_false_memory = getRandomSubarray(all_block_index, loop_length/2)
+
+for (i = 0; i < loop_length; i++){
+
+  console.log(i)
+  if (block_index_with_false_memory.includes(i)){
+
+    all_block_information[i].memory_test_stimuli = [left_over_stimuli[i%left_over_stimuli.length]]
+    
+  }else{
+    randomIdx = Math.floor(Math.random() * used_stimuli[i].length)
+    if(all_block_information[i].deviant_position_array.length == 0){
+      all_block_information[i].memory_test_stimuli = [used_stimuli[i][0]]
+    }else{
+      all_block_information[i].memory_test_stimuli = [used_stimuli[i][randomIdx]]
+    }
+  }
+
+
+  
+}
+
+
 
     //  each block type has 3 exposure types 
     
@@ -261,12 +340,18 @@ all_block_information.push(block_information)
         var simple_dissimilar_blocks =  all_block_information.filter(x => x.block_type == "simple_dissimilar") 
         shuffleArray(simple_dissimilar_blocks)
     }
+
+    if (show_complex){
+
+      var complex_dissimilar_blocks = all_block_information.filter(x => x.block_type == "complex_dissimilar") 
+    
+      // first shuffle these two block types
+      shuffleArray(complex_dissimilar_blocks)
+
+    }
  
 
-    var complex_dissimilar_blocks = all_block_information.filter(x => x.block_type == "complex_dissimilar") 
-    
-    // first shuffle these two block types
-    shuffleArray(complex_dissimilar_blocks)
+   
      
     
     for (i = 0; i < loop_length; i++){
@@ -278,9 +363,13 @@ all_block_information.push(block_information)
             current_sd.exposure_type = exposure_type[i]
 
         }
-        var current_cd = complex_dissimilar_blocks[i]
+
+        if (show_complex){
+          var current_cd = complex_dissimilar_blocks[i]
+          current_cd.exposure_type = exposure_type[i]
+
+        }
         
-        current_cd.exposure_type = exposure_type[i]
 
     }
     
@@ -398,6 +487,7 @@ function generate_dissimilar_block(stims, num_blocks, num_trial_per_block, all_d
 
   // and get info about species, modification, movement/rotation
   speciesInfo_1 = background.slice(background.length-10, background.length-8)
+  console.log(speciesInfo_1)
   //modificationInfo_1 = background.slice(background.length-7, background.length-6)
   //movementInfo_1 = background.slice(background.length-5, background.length-1)
 
@@ -496,23 +586,7 @@ function generate_dissimilar_block(stims, num_blocks, num_trial_per_block, all_d
     // the other stimulus will be selected from a pool of stimulus that the participants have never seen before
     // ?: do we need the false stimulus to be very similar to the original one, or keep them very different? 
 
-    if (deviant_position_array.length == 0){
-      var true_stimulus = background
-    }else{
-      var true_stimulus = getRandomSubarray([background, deviant], 1)[0]
-    }
-    
-    
-    // current approach: selecting a completely different creature 
-    var randomIdx = Math.floor(Math.random() * stims.length)
-    var false_stimulus = stims[randomIdx]
-    var speciesInfo_3 = false_stimulus.slice(false_stimulus.length-10, false_stimulus.length-8)
-    stims = stims.filter(x => !(x.includes(speciesInfo_3)))
-
-
-    var memory_test_stimuli = [true_stimulus, false_stimulus]
-    
-    shuffleArray(memory_test_stimuli)
+   
     
       block_information = {
           num_trial_per_block: num_trial_per_block,
@@ -523,9 +597,7 @@ function generate_dissimilar_block(stims, num_blocks, num_trial_per_block, all_d
           first_addend: first_addend,
           second_addend: second_addend,
           result: result,
-          options: options,
-          memory_test_stimuli: memory_test_stimuli 
-
+          options: options
       }
 
 

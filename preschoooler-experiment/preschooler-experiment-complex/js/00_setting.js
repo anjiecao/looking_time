@@ -34,11 +34,12 @@ else {
   SPECIES_NUM = 24
   SHOW_SIMILAR = false
   SHOW_SIMPLE = false 
+  SHOW_COMPLEX = true
 
 }
 
 
-all_stimuli = get_all_stimuli(TEST_RUN, SPECIES_NUM, SHOW_SIMILAR)
+all_stimuli = get_all_stimuli(TEST_RUN, SPECIES_NUM, SHOW_SIMILAR, SHOW_SIMPLE, SHOW_COMPLEX)
 
 all_blocks_information = generate_all_block(num_blocks = NUM_BLOCKS,
                                             num_trial_per_block = NUM_TRIAL_PER_BLOCK,
@@ -47,14 +48,16 @@ all_blocks_information = generate_all_block(num_blocks = NUM_BLOCKS,
                                             num_deviants = NUM_DEVIANTS,
                                             num_species = SPECIES_NUM,
                                             show_similar = SHOW_SIMILAR, 
-                                            show_simple = SHOW_SIMPLE)
+                                            show_simple = SHOW_SIMPLE, 
+                                            show_complex = SHOW_COMPLEX)
 
 
 checking_block_information(all_blocks_information = all_blocks_information, 
                            blcok_number = NUM_BLOCKS, 
                            num_trial_per_block = NUM_TRIAL_PER_BLOCK, 
                            show_similar = SHOW_SIMILAR, 
-                           show_simple = SHOW_SIMPLE
+                           show_simple = SHOW_SIMPLE, 
+                           show_complex = SHOW_COMPLEX
                             )
 
 if (verbose){

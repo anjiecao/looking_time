@@ -10,9 +10,9 @@ function get_all_stimuli(TEST_RUN, SPECIES_NUM, SHOW_SIMILAR, SHOW_SIMPLE, SHOW_
     console.log(SHOW_COMPLEX)
     if (SHOW_SIMPLE && SHOW_COMPLEX){
         complexity_levels = ['simple', 'complex']
-    }else if (SHOW_SIMPLE == false && SHOW_COMPLEX == true){
+    }else if (SHOW_COMPLEX == true & SHOW_SIMPLE == false){
         complexity_levels = ['complex']
-    }else if (SHOW_SIMPLE == true && SHOW_COMPLEX == false){
+    }else if (SHOW_SIMPLE == true & SHOW_COMPLEX == false){
       complexity_levels = ['simple']
     }else{
       console.log("buggy simplicity setting! neither simple nor complex.")
@@ -236,6 +236,7 @@ if (show_similar) {
 used_stimuli = []
 for (i = 0; i < loop_length; i++) {
 
+
   // simple dissimilar blocks
  if (show_simple){
   output = generate_dissimilar_block(simple_stims, num_blocks, num_trial_per_block, all_deviant_position_array, num_deviants,  block_type = 'simple_dissimilar')
@@ -244,6 +245,7 @@ for (i = 0; i < loop_length; i++) {
  block_information = output[1]
 
  all_block_information.push(block_information)
+
  used_stimuli.push([block_information.background_stimuli, block_information.deviant_stimuli])
 
 }
@@ -258,6 +260,7 @@ if (show_complex){
  // complex dissimilar blocks
  
 }
+console.log(used_stimuli)
 
 left_over_stimuli = []
 simple_left_over_stimuli = []
@@ -289,30 +292,31 @@ if(show_complex){
   }
 }
 
-console.log(left_over_stimuli)
-
-console.log(used_stimuli)
 
 shuffleArray(left_over_stimuli)
 // this is to make sure that the order was not disturbed 
 all_block_index = range(0, loop_length-1)
 block_index_with_false_memory = getRandomSubarray(all_block_index, loop_length/2)
-console.log(all_block_index)
-console.log(block_index_with_false_memory)
 
 for (i = 0; i < loop_length; i++){
+
+  console.log(i)
   if (block_index_with_false_memory.includes(i)){
-    all_block_information[i].memory_test_stimuli = left_over_stimuli[i]
+
+    all_block_information[i].memory_test_stimuli = [left_over_stimuli[i%left_over_stimuli.length]]
+    
   }else{
     randomIdx = Math.floor(Math.random() * used_stimuli[i].length)
-    console.log(used_stimuli[i])
-    all_block_information[i].memory_test_stimuli = used_stimuli[i][randomIdx]
+    if(all_block_information[i].deviant_position_array.length == 0){
+      all_block_information[i].memory_test_stimuli = [used_stimuli[i][0]]
+    }else{
+      all_block_information[i].memory_test_stimuli = [used_stimuli[i][randomIdx]]
+    }
   }
 
 
   
 }
-console.log(all_block_information)
 
 
 

@@ -1,3 +1,13 @@
+// create an array of length n that has 1 to n 
+function range(start, end) {
+  var foo = [];
+  for (var i = start; i <= end; i++) {
+      foo.push(i);
+  }
+  return foo;
+}
+
+
 // check if the array has duplicates 
 function hasDuplicates(array) {
   return (new Set(array)).size !== array.length;
