@@ -210,7 +210,7 @@ var great_job = {
                   type: "survey-multi-choice",
                   preamble: '<p><img src= ' +  "images/practice/instructions_example_spore2.gif" + ' width ="400" height = "400"</p>',
                   questions: [
-                    {prompt: 'Have you seen this creature before?', // actually we can request control from the participants 
+                    {prompt: 'Did you look at this monster before?', // actually we can request control from the participants 
                     options: ["Yes", "No"], 
                     required: false, 
                     horizontal: true},
