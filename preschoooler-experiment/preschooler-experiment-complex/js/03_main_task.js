@@ -79,7 +79,7 @@ for (var block_index = 0;
               type: "survey-multi-choice",
               preamble: '<p><img src= ' + memory_question_stimuli[0] + ' width ="400" height = "400"</p>',
               questions: [
-                {prompt: 'Have you seen this creature before?', // actually we can request control from the participants 
+                {prompt: 'Did you look at this monster before?', // actually we can request control from the participants 
                  options: ["Yes", "No"], 
                  required: false, 
                  horizontal: true},

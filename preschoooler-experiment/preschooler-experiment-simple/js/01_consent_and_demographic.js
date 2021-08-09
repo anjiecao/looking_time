@@ -6,14 +6,14 @@ function get_consent_and_demog(timeline){
         "<p>DESCRIPTION: Our studies are designed to be fun, age-appropriate activities for young children, and easily conducted " +
         "online through a web browser or through tablet-based apps with parental guidance. Your child will be asked to play one or " +
         "more short research games. In these games, your child will be introduced to storybooks, pictures, animations, or pre-recorded " +
-        "video clips; in some studies we may present toys and puppets. Afterwards we will ask short questions. Thereare no right or " +
+        "video clips; in some studies we may present toys and puppets. Afterwards we will ask short questions. There are no right or " +
         "wrong answers; we are just interested in what children think.</p>" +
         "<p>RISKS AND BENEFITS: Participation in our research has no foreseeable risks or discomforts to you or your child. If your " +
         "child wants to stop participating for any reason, you can end the session immediately with no penalty. We cannot and do not " +
         "guarantee that you will receive any benefits from participation, apart from the satisfaction of contributing to scientific " +
         "research.</p>" +
         "<p>PAYMENTS: You will not receive a cash payment for your participation in this research.</p>" +
-        "<p>TIME: Each session typically lasts no more than 15 minutes, depending on the nature of the study.  Most studies involve a " +
+        "<p>TIME: Each session typically lasts no more than 30 minutes, depending on the nature of the study.  Most studies involve a " +
         "single session, but in some cases you and your child will be invited to participate in more than one session.</p>" +
         "<p>CONTACT INFORMATION: If you have any questions, concerns, or complaints about this research study, its procedures, risks, " +
         "and benefits, contact the Protocol Director, Dr. Michael C. Frank. Email: <a href='mailto:langcoglab@stanford.edu'>" +
@@ -38,7 +38,7 @@ function get_consent_and_demog(timeline){
   var demog_question_age = {
         type: 'demog-age',
         questions: [
-        {prompt: "How old is your child?", name: "age", required: true}
+        {prompt: "Please enter your child's birth month and year in the format of MM/YY", name: "age", required: true}
         ],
     }
 
