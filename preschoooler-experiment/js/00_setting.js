@@ -73,20 +73,7 @@ all_complex_blocks_information = generate_all_block(num_blocks = NUM_BLOCKS,
                                         show_simple = false, 
                                         show_complex = true
                                         )
-
-
-all_stimuli = get_all_stimuli(TEST_RUN, SPECIES_NUM, SHOW_SIMILAR, SHOW_SIMPLE, SHOW_COMPLEX)
-
-all_blocks_information = generate_all_block(num_blocks = NUM_BLOCKS,
-                                            num_trial_per_block = NUM_TRIAL_PER_BLOCK,
-                                            stimuli_array = all_stimuli,
-                                            all_deviant_position_array = DEVIANT_POSITIONS,
-                                            num_deviants = NUM_DEVIANTS,
-                                            num_species = SPECIES_NUM,
-                                            show_similar = SHOW_SIMILAR, 
-                                            show_simple = SHOW_SIMPLE, 
-                                            show_complex = SHOW_COMPLEX)
-
+                          
 
 checking_block_information(all_blocks_information = all_simple_blocks_information, 
                            blcok_number = NUM_BLOCKS, 

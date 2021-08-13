@@ -219,6 +219,16 @@ var great_job = {
                         memory_block_index: 0 },
           }
 
+
+          var practice_memory = {
+            type: 'html-button-response', 
+            stimulus: '',
+            choices: ["right", "wrong"], 
+            button_html: ['<p><img src= ' +   "images/practice/instructions_example_spore2.gif" + ' width ="400" height = "400"</p>', 
+                        '<p><img src= ' +   "images/practice/practice_memory.gif"  + ' width ="400" height = "400"</p>'
+                        ]
+    }
+
         var intro3 = {
             type: 'stimuli-presentation',
             frame_animation: function(){

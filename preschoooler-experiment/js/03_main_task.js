@@ -31,7 +31,9 @@ for (var block_index = 0;
     block_timeline_variable = generate_timeline_variables(block_information)
     exposure_type = block_information.exposure_type
     memory_question_stimuli = block_information.memory_test_stimuli
+    shuffleArray(memory_question_stimuli)
     
+    memory_question_right_answer = block_information.memory_question_right_answer
     
     if (verbose){
         console.log("Each block time variable: ")
@@ -78,7 +80,7 @@ for (var block_index = 0;
                             forced_long_viewing_duration: forced_long_viewing_duration,
                             response_ends_trial: true,
                             exposure_type: "self_paced", 
-                            data: {block_number: block_index, block_type: block_type,  stimulus_type: 'trial', stimulus_displayed: jsPsych.timelineVariable('stimuli'), trial_type: jsPsych.timelineVariable('stim_type')},
+                            data: {version: version, block_number: block_index, block_type: block_type,  stimulus_type: 'trial', stimulus_displayed: jsPsych.timelineVariable('stimuli'), trial_type: jsPsych.timelineVariable('stim_type')},
                         }
                         ],
                         timeline_variables: block_timeline_variable // need to track of which trial of the block
@@ -88,20 +90,34 @@ for (var block_index = 0;
   
     // to be changed for new version 
     if (block_index < all_blocks_information.length) {
-          var memory_question_A = {
-              type: "survey-multi-choice",
-              preamble: '<p><img src= ' + memory_question_stimuli[0] + ' width ="400" height = "400"</p>',
-              questions: [
-                {prompt: 'Did you look at this monster before?', // actually we can request control from the participants 
-                 options: ["Yes", "No"], 
-                 required: false, 
-                 horizontal: true},
-              ],
-              data: {stimulus_type: 'memory_test',
-                    memory_question_stimuli: memory_question_stimuli[0], 
-                    memory_block_index: block_index },
-              }
 
+
+        if (version != "simple"){
+
+
+       
+        
+        var memory_question = {
+                type: 'html-button-response', 
+                stimulus: '',
+                choices: ["right", "wrong"], 
+                button_html: ['<p><img src= ' +   memory_question_stimuli[0] + ' width ="400" height = "400"</p>', 
+                            '<p><img src= ' +   memory_question_stimuli[1] + ' width ="400" height = "400"</p>'
+                            ],
+                            
+                data: {stimulus_type: "memory_test",
+                    memory_block_index: block_index, 
+                    memory_block_answer: memory_question_right_answer
+
+                    }
+        }
+                test_blocks.push(memory_question)
+
+        }
+
+
+
+        
 
 
             var buffer_page = {
@@ -152,7 +168,6 @@ for (var block_index = 0;
               
     }
 
-        test_blocks.push(memory_question_A)
         test_blocks.push(great_job)
         test_blocks.push(all_sticker_blocks[block_index])
 

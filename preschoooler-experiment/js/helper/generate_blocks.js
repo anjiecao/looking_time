@@ -260,12 +260,12 @@ if (show_complex){
  // complex dissimilar blocks
  
 }
-console.log(used_stimuli)
 
 left_over_stimuli = []
 simple_left_over_stimuli = []
 complex_left_over_stimuli = []
 specie_action = ["a", "b"]
+
 if (show_simple){
   simple_left_over_stimuli = left_over_stimuli.concat(simple_stims)
   simple_left_over_specie_info = simple_left_over_stimuli.map(x => x.slice(-10, x.length-8))
@@ -298,22 +298,19 @@ shuffleArray(left_over_stimuli)
 all_block_index = range(0, loop_length-1)
 block_index_with_false_memory = getRandomSubarray(all_block_index, loop_length/2)
 
-for (i = 0; i < loop_length; i++){
-
-  console.log(i)
-  if (block_index_with_false_memory.includes(i)){
-
-    all_block_information[i].memory_test_stimuli = [left_over_stimuli[i%left_over_stimuli.length]]
-    
-  }else{
-    randomIdx = Math.floor(Math.random() * used_stimuli[i].length)
-    if(all_block_information[i].deviant_position_array.length == 0){
-      all_block_information[i].memory_test_stimuli = [used_stimuli[i][0]]
-    }else{
-      all_block_information[i].memory_test_stimuli = [used_stimuli[i][randomIdx]]
-    }
+for (i = 0; i < all_block_information.length; i++){
+  real_used_stimuli = [all_block_information[i].background_stimuli]
+ 
+  if(all_block_information[i].deviant_position_array.length != 0){
+    real_used_stimuli.push(all_block_information[i].deviant_stimuli)
   }
+  shuffleArray(real_used_stimuli)
+  console.log(real_used_stimuli)
 
+  memory_test_stimuli = [left_over_stimuli[i], real_used_stimuli[0]]
+  all_block_information[i].memory_test_stimuli = memory_test_stimuli
+  all_block_information[i].memory_correct = real_used_stimuli[0]
+  
 
   
 }

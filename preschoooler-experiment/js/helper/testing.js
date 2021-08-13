@@ -14,16 +14,19 @@ function checking_block_information(all_blocks_information,
     used_new_memory_probe = []
     novel_memory_stimuli_num = 0
     fam_memory_stimuli_num = 0
+    all_memory_stimuli = []
 
     for (var i = 0; i < block_number; i++){
 
+        
         current_block = all_blocks_information[i]
-
+       
         current_block_length = current_block.num_trial_per_block[0]
         current_block_type = current_block.block_type
         current_background = current_block.background_stimuli 
         current_deviant = current_block.deviant_stimuli 
         current_memory_stimuli = current_block.memory_test_stimuli 
+        
         
         background_specie_info =  current_background.slice(current_background.length-10, current_background.length-8)
         deviant_specie_info =  current_deviant.slice(current_deviant.length-10, current_deviant.length-8)
@@ -70,25 +73,18 @@ function checking_block_information(all_blocks_information,
             if (current_memory_stimuli[j] != current_background && 
                 current_memory_stimuli[j] != current_deviant){
                     novel_memory_probe = current_memory_stimuli[j]
+                    
                     novel_memory_probe_specie_info = novel_memory_probe.slice(novel_memory_probe.length-10, 
                                                                              novel_memory_probe.length-8)
                     used_new_memory_probe.push(novel_memory_probe_specie_info)
                 }
         }  
 
-        all_memory_stimuli = current_memory_stimuli.push(current_memory_stimuli)
+        all_memory_stimuli = all_memory_stimuli.push(current_memory_stimuli)
 
     }
 
-    // check if memory stimuli are half and half 
-    if (novel_memory_stimuli_num != fam_memory_stimuli_num | fam_memory_stimuli_num != block_number / 2){
-        throw "memory probe numbers do not match"
-    }
-
-    console.log("novel memory test probe:")
-    console.log(used_new_memory_probe)
-    console.log("background and deviant species: ")
-    console.log(used_stimuli)
+    
     
     // check if the novel memory probes have not appeared in other places 
     if (findCommonElement(used_new_memory_probe, used_stimuli)){
