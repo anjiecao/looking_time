@@ -107,8 +107,9 @@ for (var block_index = 0;
                             
                 data: {stimulus_type: "memory_test",
                     memory_block_index: block_index, 
-                    memory_block_answer: memory_question_right_answer
-
+                    memory_block_answer: memory_question_right_answer,
+                    memory_options_left: memory_question_stimuli[0], 
+                    memory_options_right: memory_question_stimuli[1] 
                     }
         }
                 test_blocks.push(memory_question)
