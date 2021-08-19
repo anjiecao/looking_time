@@ -24,6 +24,8 @@ var generic_intro = {
         "<p><img src=images/intro/intro6.jpeg width ='900' height = '500'></p>",
         "<p><img src=images/intro/intro7.jpeg width ='900' height = '500'></p>",
         "<p><img src=images/intro/intro8.jpeg width ='900' height = '500'></p>",
+        "<p><img src=images/intro/intro9.jpg width ='900' height = '500'></p>"
+
     ],
     show_clickable_nav: true
 
