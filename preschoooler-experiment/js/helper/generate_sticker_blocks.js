@@ -5,7 +5,7 @@ function get_initial_sticker_html_array(n_sticker){
 
     for (var i = 0; i < n_sticker; i++){
       sticker_path = STICKER_DIR + (i+1) + ".png"
-      sticker_html_str = "<img src =" + sticker_path + " style = 'opacity:0;'>"
+      sticker_html_str = "<img src =" + sticker_path + " width ='300' height = '300' style = 'opacity:0;'>"
       STICKER_ARRAY.push(sticker_html_str)
     }
 
@@ -22,7 +22,7 @@ function get_final_sticker_html_array(n_sticker){
 
     for (var i = 0; i < n_sticker; i++){
       sticker_path = STICKER_DIR + (i+1) + ".png"
-      sticker_html_str = "<img src =" + sticker_path + " style = 'opacity:1;'>"
+      sticker_html_str = "<img src =" + sticker_path + " width ='300' height = '300' style = 'opacity:1;'>"
       STICKER_ARRAY.push(sticker_html_str)
     }
 
@@ -45,26 +45,15 @@ function get_all_stickers_blocks_array(initial_stickers_array, final_stickers_ar
             block_html_string[j] = final_stickers_array[j]
         }
 
-
         sticker_block = {
+          type: 'instructions',
+          pages: [
+            block_html_string.join("")
+          ],
+          show_clickable_nav: true
+      
 
-            type: 'stimuli-presentation',
-            frame_animation: function(){
-  
-  
-              var html = ""
-  
-              return html
-            },
-              //position:absolute;top:28px;left:40px
-                stimuli_animation: block_html_string.join(""),
-                two_stimuli_interval: 0,
-                key_response: [32],
-                minimum_viewing_duration: 500, // daffner2000's info was 600, changed to 200
-                response_ends_trial: true,
-                exposure_type: "self_paced"
-  
-  
+
         }
 
         FINAL_STICKER_BLOCKS.push(sticker_block)

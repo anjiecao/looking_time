@@ -101,6 +101,7 @@ for (var block_index = 0;
                 type: 'html-button-response', 
                 stimulus: '',
                 choices: ["right", "wrong"], 
+                margin_horizontal: 20,
                 button_html: ['<p><img src= ' +   memory_question_stimuli[0] + ' width ="400" height = "400"</p>', 
                             '<p><img src= ' +   memory_question_stimuli[1] + ' width ="400" height = "400"</p>'
                             ],
@@ -118,53 +119,19 @@ for (var block_index = 0;
 
 
 
-        
-
-
-            var buffer_page = {
-                type: 'stimuli-presentation',
-                frame_animation: function(){
-                  var html = ""
-               return html
-             },
-                stimuli_animation: function(){
-                    var html = 
-                 
-                   "<img src='images/spacebar.jpg'>"
-                    return html
-                },
-                key_response: [32],
-                minimum_viewing_duration: 500, // daffner2000's info was 600, changed to 200
-                response_ends_trial: true,
-                  exposure_type: "self_paced",
-                 data: {stimulus_type: 'buffer_page'}
-              }
-
-            
         var great_job = {
+            type: 'instructions',
+            pages: [
+                "<p><img src=images/greatjob.gif width ='500' height = '500'></p>"
+            ],
+            show_clickable_nav: true
+        
+        
+         }   
+        
 
-            type: 'stimuli-presentation',
-                    frame_animation: function(){
-        
-        
-                    var html =
-                    ""
-        
-                    return html
-                    },
-                    //position:absolute;top:28px;left:40px
-                        stimuli_animation: function(){
-                            var html = "<img src='images/greatjob.gif'>"
-                        return html 
-                        },
-                        two_stimuli_interval: 0,
-                        key_response: [32],
-                        minimum_viewing_duration: 500, // daffner2000's info was 600, changed to 200
-                        response_ends_trial: true,
-                        exposure_type: "self_paced"
-        
-        
-            }
+
+          
           
               
     }
@@ -172,10 +139,6 @@ for (var block_index = 0;
         test_blocks.push(great_job)
         test_blocks.push(all_sticker_blocks[block_index])
 
-        if(block_index < all_blocks_information.length-1){
-            test_blocks.push(buffer_page)
-        }
-        
      
   }
 // putting everything together 
@@ -193,6 +156,7 @@ var set_up_stimuli_version = {
     type: 'html-button-response', 
     stimulus: '<p><img src= ' +  "images/seemore.gif" + ' width ="400" height = "400"</p>',
     choices: ["complex", "simple"], 
+    margin_horizontal: 100,
     button_html: ['<p><img src= ' +  "images/smiley.png" + ' width ="150" height = "150"</p>', 
                   '<p><img src= ' +  "images/frowny.png" + ' width ="150" height = "150"</p>'
                 ]

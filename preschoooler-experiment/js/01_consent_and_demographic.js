@@ -11,13 +11,6 @@ function get_consent_and_demog(timeline){
     }
 
 
-    var demog_education = {
-        type: "demog-gender-and-education",
-        button_label: "Done",
-        questions: [
-            {prompt: "What is the highest degree or the higest level of school your child's mother has completed?", name: "education", options: ["Some high school", "High school diploma", "Associate Degree/Technical certification", "Bachelor's Degree",  "Master's Degree", "Doctorate/Professional degree", "Other"], required: true}
-        ]
-    }
 
 
     
@@ -41,7 +34,6 @@ var generic_intro = {
 
 timeline.push(generic_intro)
 timeline.push(demog_red_cap_ID)
-timeline.push(demog_education)
 
 
 

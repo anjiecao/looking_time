@@ -98,6 +98,8 @@
 
 /* custom style for input[type="range] (slider) to improve alignment between positions and labels */
 
+
+
 .jspsych-slider {
   appearance: none;
   -webkit-appearance: none; 

@@ -39,6 +39,14 @@ jsPsych.data.addProperties({ subject: subject_id });
 
 document.body.style.backgroundColor = '#B0E0E6'
 
+window.addEventListener('keydown', function(e) {
+  if(e.keyCode == 32 && e.target == document.body) {
+    e.preventDefault();
+  }
+});
+
+
+
 // initialize timeline
 var timeline = []
 var instruction_and_practice = get_instructions_and_practice()
@@ -60,7 +68,8 @@ timeline.push({
    
 
   timeline = get_consent_and_demog(timeline)
-  
+
+
   timeline.push(set_up_stimuli_version)
 
   var show_complex_node = {

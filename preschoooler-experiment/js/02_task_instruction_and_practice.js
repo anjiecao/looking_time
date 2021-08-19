@@ -29,6 +29,8 @@ var find_space_bar = {
     }
 
 
+
+
 var great_job = {
 
   type: 'stimuli-presentation',
@@ -54,7 +56,15 @@ var great_job = {
 
     }
 
-    
+ var great_job = {
+    type: 'instructions',
+    pages: [
+        "<p><img src=images/greatjob.gif width ='500' height = '500'></p>"
+    ],
+    show_clickable_nav: true
+
+
+ }   
 
       
 
@@ -79,53 +89,33 @@ var great_job = {
               exposure_type: "self_paced"
         }
 
+
+
         var look_carefully = {
-          type: 'stimuli-presentation',
-          frame_animation: function(){
-            var html =""
-            return html
-          },
-            //position:absolute;top:28px;left:40px
-              stimuli_animation: function(){
-                  var html = 
-                 
-                  "<img src='images/look.png'>"
-                  return html
-              },
-              two_stimuli_interval: 0,
-              key_response: [32],
-              minimum_viewing_duration: 500, // daffner2000's info was 600, changed to 200
-              response_ends_trial: true,
-              exposure_type: "self_paced"
-        }
+          type: 'instructions',
+          pages: [
+              "<p><img src='images/look.png' width ='500' height = '500'></p>"
+          ],
+          show_clickable_nav: true
+      
+      
+       }   
 
 
         final_stickers = get_final_sticker_html_array(8)
 
-       var sticker_books = {
-
-        type: 'stimuli-presentation',
-        frame_animation: function(){
-
-
-          var html = ""
-
-          return html
-        },
-          //position:absolute;top:28px;left:40px
-            stimuli_animation: function(){
-                var html = final_stickers.join("")
-              return html 
-            },
-            two_stimuli_interval: 0,
-            key_response: [32],
-            minimum_viewing_duration: 500, // daffner2000's info was 600, changed to 200
-            response_ends_trial: true,
-            exposure_type: "self_paced"
+        var sticker_books = {
+          type: 'instructions',
+          pages: [
+              final_stickers.join("")
+          ],
+          show_clickable_nav: true
+      
 
 
+        }
 
-       }
+      
 
         var intro2 = {
           type: 'stimuli-presentation',
@@ -224,6 +214,7 @@ var great_job = {
             type: 'html-button-response', 
             stimulus: '',
             choices: ["right", "wrong"], 
+            margin_horizontal: 20,
             button_html: ['<p><img src= ' +   "images/practice/instructions_example_spore2.gif" + ' width ="400" height = "400"</p>', 
                         '<p><img src= ' +   "images/practice/practice_memory.gif"  + ' width ="400" height = "400"</p>'
                         ]

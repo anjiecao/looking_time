@@ -13,6 +13,9 @@ jsPsych.plugins["stimuli-presentation"] = (function() {
 
   var plugin = {};
 
+  jsPsych.pluginAPI.registerPreload('audio', 'sound_effect');
+
+
   plugin.info = {
     name: 'stimuli-presentation',
     description: '',
@@ -147,10 +150,20 @@ jsPsych.plugins["stimuli-presentation"] = (function() {
          
          
          
+     }, 
+     sound_effect: {
+      type: jsPsych.plugins.parameterType.AUDIO,
+      pretty_name: 'Stimulus',
+      default: "sound/keypress.wav",
+      description: 'The audio to be played.'
      }
   }
   }
   plugin.trial = function(display_element, trial) {
+
+    
+   
+
 
     if (trial.first_trial){ 
         if (trial.exposure_type == "self_paced"){
@@ -178,8 +191,12 @@ jsPsych.plugins["stimuli-presentation"] = (function() {
     var html_string = '<div id="stimuli-animation">' + trial.stimuli_animation + '</div>' + '<div id="wall">'+ trial.frame_animation+'</div>';
 
     display_element.innerHTML = html_string;
+    audio_string = '<audio id="audio" ccontrols style="display:none"> <source src="' + 
+    trial.sound_effect + '"</audio>'
 
-    
+    display_element.innerHTML  =  display_element.innerHTML  + audio_string
+    console.log(display_element.querySelector('#audio'))
+
     
     if (trial.exposure_type == "forced_short" && trial.first_trial){
         jsPsych.pluginAPI.setTimeout(function() {
@@ -205,7 +222,6 @@ jsPsych.plugins["stimuli-presentation"] = (function() {
 
     // function to end trial when it is time
     var end_trial = function() {
-
       // kill any remaining setTimeout handlers
       jsPsych.pluginAPI.clearAllTimeouts();
 
@@ -240,8 +256,9 @@ jsPsych.plugins["stimuli-presentation"] = (function() {
    var after_response = function(info) {
       // after a valid response, the stimulus will have the CSS class 'responded'
       // which can be used to provide visual feedback that a response was recorded
+      //console.log( display_element.querySelector('#audio'))
+      display_element.querySelector('#audio').play()
       display_element.querySelector('#stimuli-animation').className += ' responded';
-
 
 
 
@@ -252,7 +269,9 @@ jsPsych.plugins["stimuli-presentation"] = (function() {
        jsPsych.pluginAPI.cancelAllKeyboardResponses()
         if(trial.response_ends_trial) {
 
+          jsPsych.pluginAPI.setTimeout(function() {
             end_trial();
+          }, 400); 
         }
       // if pressed the space bar
 
@@ -266,13 +285,17 @@ jsPsych.plugins["stimuli-presentation"] = (function() {
 if (trial.key_response != jsPsych.NO_KEYS){
 
         jsPsych.pluginAPI.setTimeout(function() {
-        var keyboardListener = jsPsych.pluginAPI.getKeyboardResponse({
-        callback_function: after_response,
-        valid_responses: trial.key_response,
-        rt_method: 'performance',
-        persist: true,
-        allow_held_key: false
-      });
+
+          
+            var keyboardListener = jsPsych.pluginAPI.getKeyboardResponse({
+            callback_function: after_response,
+            valid_responses: trial.key_response,
+            rt_method: 'performance',
+            persist: true,
+            allow_held_key: false
+          });
+          
+         
 
       }, minimum_viewing_duration)
 

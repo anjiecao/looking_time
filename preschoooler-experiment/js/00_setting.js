@@ -41,7 +41,7 @@ else {
 
 
 
-all_simple_stimuli = get_all_stimuli(TEST_RUN, SPECIES_NUM, 
+all_simple_stimuli = get_all_stimuli(TEST_RUN, 20, 
                                     show_similar = false, 
                                     show_simple = true,
                                     show_complex = false, 
