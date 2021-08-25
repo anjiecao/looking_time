@@ -136,7 +136,7 @@ for (var block_index = 0;
               
     }
 
-        test_blocks.push(great_job)
+        //test_blocks.push(great_job)
         test_blocks.push(all_sticker_blocks[block_index])
 
      
