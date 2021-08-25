@@ -49,6 +49,7 @@ window.addEventListener('keydown', function(e) {
 
 // initialize timeline
 var timeline = []
+var audio_files = ["sound/keypress.wav"]
 var instruction_and_practice = get_instructions_and_practice()
 var instruction_and_complex_blocks = instruction_and_practice.concat(main_task_complex)
 var instruction_and_simple_blocks = instruction_and_practice.concat(main_task_simple)
@@ -68,7 +69,7 @@ timeline.push({
 
 
 
-  timeline = get_consent_and_demog(timeline)
+timeline = get_consent_and_demog(timeline)
 
 
   timeline.push(set_up_stimuli_version)
@@ -138,6 +139,8 @@ function saveData(name, data){
 jsPsych.init({
         timeline: timeline,
         show_progress_bar: false,
+        preload_audio:audio_files,
+        use_webaudio: true,
         //use_webaudio: true, // this won't work for local testing (CORS), but maybe on server
         preload_images: all_stimuli,
         on_trial_finish: function(){

@@ -13,9 +13,6 @@ jsPsych.plugins["stimuli-presentation"] = (function() {
 
   var plugin = {};
 
-  jsPsych.pluginAPI.registerPreload('audio', 'sound_effect');
-
-
   plugin.info = {
     name: 'stimuli-presentation',
     description: '',
@@ -162,7 +159,8 @@ jsPsych.plugins["stimuli-presentation"] = (function() {
   plugin.trial = function(display_element, trial) {
 
     
-   
+  var context = new AudioContext();
+  
 
 
     if (trial.first_trial){ 
@@ -191,11 +189,10 @@ jsPsych.plugins["stimuli-presentation"] = (function() {
     var html_string = '<div id="stimuli-animation">' + trial.stimuli_animation + '</div>' + '<div id="wall">'+ trial.frame_animation+'</div>';
 
     display_element.innerHTML = html_string;
-    audio_string = '<audio id="audio" ccontrols style="display:none"> <source src="' + 
+    audio_string = '<audio id="audio" controls style="display:none"> <source src="' + 
     trial.sound_effect + '"</audio>'
 
     display_element.innerHTML  =  display_element.innerHTML  + audio_string
-    console.log(display_element.querySelector('#audio'))
 
     
     if (trial.exposure_type == "forced_short" && trial.first_trial){
@@ -257,7 +254,13 @@ jsPsych.plugins["stimuli-presentation"] = (function() {
       // after a valid response, the stimulus will have the CSS class 'responded'
       // which can be used to provide visual feedback that a response was recorded
       //console.log( display_element.querySelector('#audio'))
-      display_element.querySelector('#audio').play()
+      
+       context.resume().then(() => {
+          display_element.querySelector('#audio').play()
+  });
+       
+       
+      //display_element.querySelector('#audio').play()
       display_element.querySelector('#stimuli-animation').className += ' responded';
 
 
