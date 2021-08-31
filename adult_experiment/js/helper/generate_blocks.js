@@ -59,57 +59,37 @@ function generate_timeline_variables(block_information){
 
     background_stimuli = block_information.background_stimuli
     deviant_stimuli = block_information.deviant_stimuli
-    deviant_position_array = block_information.deviant_position_array
+    num_deviants = block_information.num_deviants
+    deviant_position = block_information.deviant_position
     block_length = block_information.num_trial_per_block
     block_type = block_information.block_type
-    exposure_type = block_information.exposure_type
-
 
     block_stimuli = []
     
-    // because some copy-making issue, somewhat hacky solution
-    // the first trial is always background 
     
-    var first_trial = {
-         stimuli: background_stimuli,
-         stim_type: 'background', 
-         exposure_type: exposure_type, 
-         first_trial: true
-     }
-    block_stimuli.push(first_trial)
-    for (var i = 0; i < block_length-1; i++){
+    for (var i = 0; i < block_length; i++){
         
         var background_item = {
          stimuli: background_stimuli,
-         stim_type: 'background', 
-         exposure_type: exposure_type, 
-         first_trial: false
+         stim_type: 'background'
         }
-        
-        
-        
+      
         block_stimuli.push(background_item)
-        
-        
+      
     }
 
-     
-
-    
-    // replace background with deviant
-    for (var i = 0; i < deviant_position_array.length; i++){
-         var deviant_item = {
-         stimuli: deviant_stimuli,
-         stim_type: 'deviant', 
-         exposure_type: exposure_type, 
-         first_trial: false
-            }
-        deviant_position = deviant_position_array[i]
-        block_stimuli[deviant_position] = deviant_item
+    if (num_deviants[0] > 0){
+      for (var i = 0; i < deviant_position.length; i++){
+        var deviant_item = {
+          stimuli: deviant_stimuli,
+          stim_type: 'deviant'
+           }
+       deviant_position = deviant_position[i]
+       block_stimuli[deviant_position] = deviant_item
     }
-    
+  }
 
-
+  
     return (block_stimuli)
     //return (block_stimuli)
 

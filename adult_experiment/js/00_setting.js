@@ -13,7 +13,7 @@
 
 
 ALL_TASKS =  ["math", "memory", "curiosity"]
-//ALL_TASKS =  ["math"]
+ALL_TASKS =  ["curiosity"]
 
 SHOW_INTRO = true
 NUM_BLOCKS = 8

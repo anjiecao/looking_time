@@ -58,3 +58,64 @@ function get_task_info(basic_block_information, stimuli_array, task_type){
 
 
 }
+
+
+function generate_task_block(block_task_information, block_index){
+
+    if (block_task_information.task_type == "math"){
+
+        var task_variable = {
+            type: 'survey-multi-choice',
+            questions: [
+              {prompt: "What is " + block_task_information.first_addend + "+" + block_task_information.second_addend + "?", options: block_task_information.options, required: true, horizontal: true},
+            ],
+            data: {stimulus_type: 'math_question',
+                  math_correct_answer: block_task_information.first_addend + block_task_information.second_addend},
+                  block_index: block_index
+            }
+
+
+    }else if (block_task_information.task_type == "memory"){
+        var task_variable = {
+            type: "survey-multi-choice",
+            preamble: '<p><img src= ' + block_task_information.presenting_item + ' width ="200" height = "200"</p>',
+            questions: [
+              {prompt:
+                      'Have you seen this creature before?', 
+               options: ["Yes", "No"], 
+               required: true, 
+               horizontal: true},
+            ],
+            data: {stimulus_type: 'memory_test',
+                  question_stimuli: block_task_information.presenting_item, 
+                  block_index: block_index },
+            }
+
+
+
+
+    }else if (block_task_information.task_type == "curiosity"){
+        var task_variable = {
+              type: "survey-likert",
+              preamble: '<p><img src= ' + block_task_information.presenting_item + ' width ="200" height = "200"</p>',
+              questions: [
+                {prompt:
+                        ' <p>How curiou are you about this creature? </p> <p> 1 = Not curious at all; 7 = Very curious</p>', 
+                labels: ["1", "2", "3", "4", "5", "6", "7"
+                         ],
+                 required: true,
+                        }],
+              data: {stimulus_type: 'curiousity',
+                    question_stimuli: block_task_information.presenting_item, 
+                    block_index: block_index },
+              }
+
+
+
+    }
+
+    return (task_variable)
+
+
+
+}
