@@ -76,6 +76,8 @@ function generate_task_block(block_task_information, block_index){
 
 
     }else if (block_task_information.task_type == "memory"){
+
+        
         var task_variable = {
             type: "survey-multi-choice",
             preamble: '<p><img src= ' + block_task_information.presenting_item + ' width ="200" height = "200"</p>',

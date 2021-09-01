@@ -15,6 +15,21 @@ timeline = timeline.concat(instruction_package)
 return timeline
 }
 
+function get_consent_and_instructions_for_demo(task_type){
+
+  if (task_type == "memory"){
+    instruction_package = get_memory_instruction()
+  }else if(task_type == "curiosity"){
+    instruction_package = get_curiosity_instruction()
+  }else if(task_type == "math"){
+    instruction_package = get_math_instruction()
+  }
+  
+  
+        
+  return (instruction_package)
+  }
+  
 
 function get_curiosity_instruction(){
 

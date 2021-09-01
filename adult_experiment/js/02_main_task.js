@@ -48,6 +48,13 @@ var scale_complexity = [
 
 
 
+function get_main_task(all_blocks_information){
+
+
+console.log(all_blocks_information)
+main_task = []
+test_blocks = []
+
 // setting up the main task package 
 for (var block_index = 0; 
      block_index < all_blocks_information.length; 
@@ -61,11 +68,6 @@ for (var block_index = 0;
     block_task_information = block_information.task_information
 
     
-    if (verbose){
-        console.log("Each block time variable: ")
-        console.log(block_timeline_variable)
-     
-    }
 
 
     var test_block = {
@@ -113,7 +115,7 @@ for (var block_index = 0;
         test_blocks.push(test_block)
 
         task_block = generate_task_block(block_task_information, block_index)
-
+       
   
         test_blocks.push(task_block)     
      
@@ -167,4 +169,5 @@ main_task = main_task.concat(similarity_stims)
 main_task.push(complexity_instruction)
 main_task = main_task.concat(complexity_stims)
 
-
+return (main_task)
+}

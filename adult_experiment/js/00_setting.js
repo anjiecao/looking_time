@@ -13,7 +13,6 @@
 
 
 ALL_TASKS =  ["math", "memory", "curiosity"]
-ALL_TASKS =  ["curiosity"]
 
 SHOW_INTRO = true
 NUM_BLOCKS = 8
@@ -53,12 +52,42 @@ all_blocks_information = generate_all_block(num_blocks = NUM_BLOCKS,
                                             show_simple = SHOW_SIMPLE)
 
 
-                                            
 
+// below is for demo 
+
+ curiosity_all_blocks =  generate_all_block(num_blocks = NUM_BLOCKS,
+                                            num_trial_per_block = NUM_TRIAL_PER_BLOCK,
+                                            stimuli_array = all_stimuli,
+                                            all_deviant_position_array = DEVIANT_POSITIONS,
+                                            num_deviants = NUM_DEVIANTS,
+                                            task_name = "curiosity", 
+                                            show_simple = SHOW_SIMPLE)                           
+math_all_blocks =  generate_all_block(num_blocks = NUM_BLOCKS,
+    num_trial_per_block = NUM_TRIAL_PER_BLOCK,
+    stimuli_array = all_stimuli,
+    all_deviant_position_array = DEVIANT_POSITIONS,
+    num_deviants = NUM_DEVIANTS,
+    task_name = "math", 
+    show_simple = SHOW_SIMPLE)    
+
+memory_all_blocks =   generate_all_block(num_blocks = NUM_BLOCKS,
+    num_trial_per_block = NUM_TRIAL_PER_BLOCK,
+    stimuli_array = all_stimuli,
+    all_deviant_position_array = DEVIANT_POSITIONS,
+    num_deviants = NUM_DEVIANTS,
+    task_name = "memory", 
+    show_simple = SHOW_SIMPLE)            
+    
+console.log(math_all_blocks)
+console.log(curiosity_all_blocks)
+
+
+/*
 checking_block_information(all_blocks_information = all_blocks_information, 
                            blcok_number = NUM_BLOCKS, 
                            num_trial_per_block = NUM_TRIAL_PER_BLOCK
                             )
+*/
 
 if (verbose){
 console.log("All stimuli path: ")
