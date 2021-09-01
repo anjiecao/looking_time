@@ -14,6 +14,8 @@ function checking_block_information(all_blocks_information,
     used_stimuli = []
     used_novel_stimuli = []
 
+    
+
     all_deviant_positions = []
 
     for (var i = 0; i < block_number; i++){
@@ -28,22 +30,22 @@ function checking_block_information(all_blocks_information,
         all_deviant_positions.push(current_deviant_position)
 
         current_trial_per_block = current_block.num_trial_per_block[0]
-        background_specie_info =  current_background.slice(current_background.length-10, current_background.length-8)
-        deviant_specie_info =  current_deviant.slice(current_deviant.length-10, current_deviant.length-8)
-
+    
         if (current_block_type.includes("complex")){
+
+
             complex_blocks_num += 1
         } else if (current_block_type.includes("simple")){
             simple_blocks_num += 1
         }
 
-        used_stimuli.push(background_specie_info)
-        used_stimuli.push(deviant_specie_info)
+        used_stimuli.push(current_background)
+        used_stimuli.push(current_deviant)
 
         if (current_task_info.task_type != "math"){
             novel_item = current_task_info.presenting_item
-            novel_item_specie_info = novel_item.slice(current_deviant.length-10, current_deviant.length-8)
-            used_novel_stimuli.push(novel_item_specie_info)
+           
+            used_novel_stimuli.push(novel_item)
         }
 
         if (current_trial_per_block != num_trial_per_block){
