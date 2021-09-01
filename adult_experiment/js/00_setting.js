@@ -54,15 +54,12 @@ all_blocks_information = generate_all_block(num_blocks = NUM_BLOCKS,
 
 
                                             
-/*
+
 checking_block_information(all_blocks_information = all_blocks_information, 
                            blcok_number = NUM_BLOCKS, 
-                           num_trial_per_block = NUM_TRIAL_PER_BLOCK, 
-                           show_similar = SHOW_SIMILAR, 
-                           show_simple = SHOW_SIMPLE
+                           num_trial_per_block = NUM_TRIAL_PER_BLOCK
                             )
 
-                            */
 if (verbose){
 console.log("All stimuli path: ")
 console.log(all_stimuli)

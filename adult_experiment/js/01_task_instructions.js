@@ -1,11 +1,5 @@
 function get_consent_and_instructions(timeline, task_type){
 
-
-var forced_short_viewing_duration = 500
-var forced_long_viewing_duration = 15 * 1000
-
-
-
 if (task_type == "memory"){
   instruction_package = get_memory_instruction()
 }else if(task_type == "curiosity"){
