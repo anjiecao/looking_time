@@ -101,9 +101,12 @@ function generate_task_block(block_task_information, block_index){
               type: "survey-likert",
               preamble: '<p><img src= ' + block_task_information.presenting_item + ' width ="200" height = "200"</p>',
               questions: [
+
+              
+
                 {prompt:
-                        ' <p>How curious are you about this creature? </p> <p> 1 = Not curious at all; 7 = Very curious</p>', 
-                labels: ["1", "2", "3", "4", "5", "6", "7"
+                        'How curious are you about this creature?', 
+                labels: ["Not at all curious", "A little curious", "Somewhat curious", "Pretty curious", "Very Curious"
                          ],
                  required: true,
                         }],
