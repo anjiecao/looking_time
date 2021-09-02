@@ -18,6 +18,7 @@
     <!-- helper function -->
     <script src= "js/helper/array.js"></script>
     <script src= "js/helper/generate_blocks.js"></script>
+    <script src= "js/helper/generate_task.js"></script>
     <script src= "js/helper/testing.js"></script>
     
     <!-- task module -->
@@ -41,11 +42,13 @@ timeline.push({
   type: 'fullscreen',
   fullscreen_mode: true
   });
-
+  timeline = get_consent_and_instructions(timeline, CURRENT_TASK)
+  /*
   if (SHOW_INTRO) {
     timeline = get_consent_and_instructions(timeline)
   }
-  
+  */
+  main_task = get_main_task(all_blocks_information)
   timeline = timeline.concat(main_task)
 
   timeline.push({

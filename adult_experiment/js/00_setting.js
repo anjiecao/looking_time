@@ -10,52 +10,84 @@
     var subject_id = 'SS' + timenum;
     var survey_code = 'SS' + timenum
 
-TEST_RUN = 0//test run with smaller number of species etc.
-
-if (TEST_RUN == 1) {
-  SHOW_INTRO = false
-  NUM_BLOCKS = 12
-  NUM_TRIAL_PER_BLOCK = [1]
-  DEVIANT_POSITIONS = [1]
-  BREAK_EVERY_N_BLOCKS = 1
-  // number of species per complexity level
-  SPECIES_NUM = 4
-  NUM_DEVIANTS = [0]
-  SHOW_SIMILAR = 0
 
 
-}
-else {
-  SHOW_INTRO = true
-  NUM_BLOCKS = 8
-  NUM_TRIAL_PER_BLOCK = [6,7,8]
-  DEVIANT_POSITIONS = [1, 2,3,4,5, 6, 7]
-  NUM_DEVIANTS = [0,1,2]
-  SPECIES_NUM = 24
-  SHOW_SIMILAR = false
-  SHOW_SIMPLE = false 
+ALL_TASKS =  ["math", "memory", "curiosity"]
 
-}
+SHOW_INTRO = true
+NUM_BLOCKS = 8
+NUM_TRIAL_PER_BLOCK = [6]
+DEVIANT_POSITIONS = [1, 3, 5] // don't forget adding the no deviant condition 
+NUM_DEVIANTS = [1]
+
+SPECIES_NUM = 24
+SHOW_SIMPLE = true 
+CURRENT_TASK = ALL_TASKS[Math.floor(Math.random()*ALL_TASKS.length)]
 
 
-all_stimuli = get_all_stimuli(TEST_RUN, SPECIES_NUM, SHOW_SIMILAR)
+
+
+
+// current stimuli: 24 complex, 20 simple 
+NUM_COMPLEX_CREATURES = 24
+NUM_SIMPLE_CREATURES = 20
+
+// math version: 
+// 8 complex 8 simple creature in total
+// memory question version: 
+// 12 complex 12 simple creature in total 
+// curiosity question version: 
+// 12 complex 12 simple creature in total 
+
+
+all_stimuli = get_all_stimuli(NUM_COMPLEX_CREATURES, NUM_SIMPLE_CREATURES)
+
 
 all_blocks_information = generate_all_block(num_blocks = NUM_BLOCKS,
                                             num_trial_per_block = NUM_TRIAL_PER_BLOCK,
                                             stimuli_array = all_stimuli,
                                             all_deviant_position_array = DEVIANT_POSITIONS,
                                             num_deviants = NUM_DEVIANTS,
-                                            num_species = SPECIES_NUM,
-                                            show_similar = SHOW_SIMILAR, 
+                                            task_name = CURRENT_TASK, 
                                             show_simple = SHOW_SIMPLE)
 
 
+
+// below is for demo 
+
+ curiosity_all_blocks =  generate_all_block(num_blocks = NUM_BLOCKS,
+                                            num_trial_per_block = NUM_TRIAL_PER_BLOCK,
+                                            stimuli_array = all_stimuli,
+                                            all_deviant_position_array = DEVIANT_POSITIONS,
+                                            num_deviants = NUM_DEVIANTS,
+                                            task_name = "curiosity", 
+                                            show_simple = SHOW_SIMPLE)                           
+math_all_blocks =  generate_all_block(num_blocks = NUM_BLOCKS,
+    num_trial_per_block = NUM_TRIAL_PER_BLOCK,
+    stimuli_array = all_stimuli,
+    all_deviant_position_array = DEVIANT_POSITIONS,
+    num_deviants = NUM_DEVIANTS,
+    task_name = "math", 
+    show_simple = SHOW_SIMPLE)    
+
+memory_all_blocks =   generate_all_block(num_blocks = NUM_BLOCKS,
+    num_trial_per_block = NUM_TRIAL_PER_BLOCK,
+    stimuli_array = all_stimuli,
+    all_deviant_position_array = DEVIANT_POSITIONS,
+    num_deviants = NUM_DEVIANTS,
+    task_name = "memory", 
+    show_simple = SHOW_SIMPLE)            
+    
+console.log(math_all_blocks)
+console.log(curiosity_all_blocks)
+
+
+/*
 checking_block_information(all_blocks_information = all_blocks_information, 
                            blcok_number = NUM_BLOCKS, 
-                           num_trial_per_block = NUM_TRIAL_PER_BLOCK, 
-                           show_similar = SHOW_SIMILAR, 
-                           show_simple = SHOW_SIMPLE
+                           num_trial_per_block = NUM_TRIAL_PER_BLOCK
                             )
+*/
 
 if (verbose){
 console.log("All stimuli path: ")

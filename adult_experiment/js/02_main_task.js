@@ -48,25 +48,26 @@ var scale_complexity = [
 
 
 
+function get_main_task(all_blocks_information){
+
+
+console.log(all_blocks_information)
+main_task = []
+test_blocks = []
+
 // setting up the main task package 
 for (var block_index = 0; 
      block_index < all_blocks_information.length; 
      block_index ++){
 
     block_information = all_blocks_information[block_index]
+
+  
     block_type = block_information.block_type
     block_timeline_variable = generate_timeline_variables(block_information)
-    exposure_type = block_information.exposure_type
-    memory_question_stimuli = block_information.memory_test_stimuli
-    deviant_position_array = block_information.deviant_position_array
+    block_task_information = block_information.task_information
+
     
-    if (verbose){
-        console.log("Each block time variable: ")
-        console.log(block_timeline_variable)
-        console.log('info: ' + block_information['stims_in_order'])
-        console.log("memory question stimuli for the block:")
-        console.log(memory_question_stimuli)
-    }
 
 
     var test_block = {
@@ -104,7 +105,7 @@ for (var block_index = 0;
                             forced_short_viewing_duration: 10 * (getRandomInt(forced_short_viewing_duration_base, 100)), //50 ~ 1000 with 10 interval random
                             forced_long_viewing_duration: forced_long_viewing_duration,
                             response_ends_trial: true,
-                            exposure_type: exposure_type, 
+                            exposure_type: "self_paced", 
                             data: {block_number: block_index, block_type: block_type,  stimulus_type: 'trial', stimulus_displayed: jsPsych.timelineVariable('stimuli'), trial_type: jsPsych.timelineVariable('stim_type')},
                         }
                         ],
@@ -112,44 +113,11 @@ for (var block_index = 0;
                   }
     
         test_blocks.push(test_block)
-  
-    // to be changed for new version 
-    if (block_index < all_blocks_information.length) {
-          var memory_question_A = {
-              type: "survey-multi-choice",
-              preamble: '<p><img src= ' + memory_question_stimuli[0] + ' width ="200" height = "200"</p>',
-              questions: [
-                {prompt:
-                        'Have you seen this creature before?', 
-                 options: ["Yes", "No"], 
-                 required: true, 
-                 horizontal: true},
-              ],
-              data: {stimulus_type: 'memory_test',
-                    memory_question_stimuli: memory_question_stimuli[0], 
-                    memory_block_index: block_index },
-              }
-          
-              var memory_question_B = {
-                type: "survey-multi-choice",
-                preamble: '<p><img src= ' + memory_question_stimuli[1] + ' width ="200" height = "200"</p>',
-                questions: [
-                  {prompt:
-                          'Have you seen this creature before?', 
-                   options: ["Yes", "No"], 
-                   required: true, 
-                   horizontal: true},
-                ],
-                data: {stimulus_type: 'memory_test',
-                      memory_question_stimuli: memory_question_stimuli[1], 
-                      memory_block_index: block_index },
-                }
-              
-    }
 
-        test_blocks.push(memory_question_A)
-        test_blocks.push(memory_question_B)
-     
+        task_block = generate_task_block(block_task_information, block_index)
+       
+  
+        test_blocks.push(task_block)     
      
 
 
@@ -201,4 +169,5 @@ main_task = main_task.concat(similarity_stims)
 main_task.push(complexity_instruction)
 main_task = main_task.concat(complexity_stims)
 
-
+return (main_task)
+}
