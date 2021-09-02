@@ -16,6 +16,16 @@ library(janitor)
 library(nlme)
 library(DescTools)
 ```
+
+## toggles
+```{r}
+# if TRUE, it takes output.xlsx in the data folder and concatenates everything from scratch
+# if FALSE, it takes the full data table that's been stored and goes from there
+reload_files = FALSE
+save_full_data = TRUE
+```
+
+
 ## helper functions
 ```{r}
 read_excel_allsheets <- function(filename, single_frame = TRUE) {
@@ -40,7 +50,8 @@ shifter <- function(x, n = 1) {
 
 ```{r, include=FALSE}
 
-# jspsych files
+if (reload_files) {
+  # jspsych files
 looking_list <- read_excel_allsheets(here::here("data", "output.xlsx"))
 
 # jspsych files
@@ -48,10 +59,7 @@ jspsych_files <- list.files("data/jspsych")
 setwd(here::here("data", "jspsych"))
 jspsych_list <- lapply(jspsych_files, read.csv)
 
-```
-
 ## reshape dfs
-```{r}
 looking_df <- map_dfr(looking_list, ~ .x, .id = 'subject') %>% 
   clean_names() %>% separate(sheet_name, into = c("subject", "coder")) %>%
   mutate(subject = as.numeric(subject), coder = as.numeric(coder))
@@ -143,6 +151,13 @@ complete_df <- left_join(looking_df, trial_df, by = 'temp_id')  %>%
 # pivot wider to have coders next to each other
 complete_df <- complete_df %>% pivot_wider(names_from = coder, values_from = starts_with('look'))
 
+  if (save_full_data){
+    setwd('..')
+    write.csv(complete_df, 'full_data_table.csv', row.names = FALSE)
+  }
+}  else if (!reload_files) {
+      complete_df <- read.csv('data/full_data_table.csv')
+}
 
 ```
 
@@ -303,23 +318,12 @@ best_combos <- all_combs[which.min(all_sds),]
 
 ```
 
-# Evaluate within subject vs between subject design: The motivation is that we benefit from within subjects design statistically, but we also possibly lose trials at the end of the experiment due to attrition so we need to check: how strong are effects of interests if we take 50% of the subjects and take all their data to evaluate the effect of std vs deviant compared to when we use all the subjects but only take their data early in the experiment, and use some people's standard trials, and other people's deviant trials.
-
-```{r}
-test_df <- complete_df %>% filter(trial_type == 'test') 
-
-
-
-```
-
-
 
 # Visualize
 
 ## Raw data 
 ```{r}
 ggplot(complete_df) + geom_histogram(aes(x=looking_time_2000_1), bins = 20) + xlab('Looking time in (s)')
-
 ```
 
 
@@ -339,7 +343,6 @@ ggplot(test_df %>% filter(fam_or_test == 'test'), aes(x=block_number, y = lookin
 
 ## Main effect
 ```{r}
-
 # calculate means
 mean_df <- summarySE(test_df, measurevar="looking_time_2000_1", groupvars=c("block_type"))
 
@@ -352,7 +355,6 @@ ggplot(test_df, aes(x=block_type, y=looking_time_2000_1)) + geom_jitter(width = 
 ggplot(test_df, aes(x=fam_duration, y=normalized_LT, color = fam_duration)) + geom_jitter(width = 0.1, alpha = 0.2)  + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) +  xlab('# of Fam Trials') + ylab('Looking Time (s)') + labs(color = '# of Fam Trials') + theme_grey(base_size = 14) +
   theme(legend.position="none",
         axis.text=element_text(size=15))
-
 ```
 
 ## Habituation curves
@@ -432,7 +434,6 @@ ggplot(test_df,
   geom_smooth(method = "lm")+
   facet_wrap(~fam_duration)
 ```
-that was not too informative, can we just count how many data point we have in each category? 
 
 ```{r}
 test_df %>% 
@@ -445,7 +446,7 @@ test_df %>%
 
 ```
 
-## Model pplot
+## Model plot
 ```{r}
 
 ggplot(test_df, aes(x=block_number, y=log(looking_time_2000_1), group=block_type, color = block_type)) + geom_point(alpha=0.2, position = position_dodge(width = .1)) + 
@@ -453,7 +454,6 @@ ggplot(test_df, aes(x=block_number, y=log(looking_time_2000_1), group=block_type
   stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + facet_wrap(~fam_duration) + xlab('block number') + ylab('LT (log secs)') + labs(color = 'Test type') + theme_classic() + 
   theme(strip.text.x = element_text(size = 14, colour = "black")) + ggtitle('Model plot')
   
-
 ```
 
 ## Models

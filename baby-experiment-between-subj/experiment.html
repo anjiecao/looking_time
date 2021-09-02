@@ -37,8 +37,8 @@
 <body></body>
 <script>
 
-SUBJECT_NUM = 2 // 1,2,3... 30
-COMPLEX = true // true or false
+SUBJECT_NUM = 4 // 1,2,3... 30
+COMPLEX = false // true or false
 
 // Experiment setup
     var verbose = false
@@ -144,7 +144,7 @@ var test_block = {
                             type: 'html-keyboard-response',
                             stimulus: function(){
                                     var html='<p><img src='+ jsPsych.timelineVariable('inter_trial', true) +' width ="200" height = "200" style="position:absolute;left:85%"></p>' +
-                                    '<p><img src= stimuli/images/blank.png width ="1200" height = "1200" style="border:5px solid black"></p>'
+                                    '<p><img src= stimuli/images/blank.png width ="1100" height = "1100" style="border:5px solid black"></p>'
                                     return html
                                   },
                             trial_duration: function(){
@@ -163,7 +163,7 @@ var test_block = {
                         {
                             type: 'sequential-stimulus-presentation',
                             wall_animation: function(){
-                                var html = '<p><img src= stimuli/images/blank.png width ="1200" height = "1200" style="border:5px solid black"></p>'
+                                var html = '<p><img src= stimuli/images/blank.png width ="1100" height = "1100" style="border:5px solid black"></p>'
                                 return html;
                             },
 
