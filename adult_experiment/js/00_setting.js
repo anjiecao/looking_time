@@ -28,8 +28,8 @@ CURRENT_TASK = ALL_TASKS[Math.floor(Math.random()*ALL_TASKS.length)]
 
 
 
-// current stimuli: 24 complex, 20 simple 
-NUM_COMPLEX_CREATURES = 24
+// current stimuli: 20 complex (total 24), 20 simple 
+NUM_COMPLEX_CREATURES = 20
 NUM_SIMPLE_CREATURES = 20
 
 // math version: 

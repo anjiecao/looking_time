@@ -36,8 +36,18 @@
 jsPsych.data.addProperties({ subject: subject_id });
 
 
+var prolific_id = {
+  type: 'survey-text', 
+  questions: [
+    {prompt: "What is your Prolific ID?", name: "p_id", required: true}
+  ]
+}
+
+
 // initialize timeline
 var timeline = []
+timeline.push(prolific_id)
+
 timeline.push({
   type: 'fullscreen',
   fullscreen_mode: true
