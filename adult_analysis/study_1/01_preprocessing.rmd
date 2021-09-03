@@ -1,0 +1,23 @@
+---
+title: "00_preprocessing.rmd"
+author: "anjie"
+date: "9/2/2021"
+output: html_document
+---
+```{r}
+library(tidyverse)
+library(here)
+
+```
+
+# set up paths 
+## merge and i
+```{r}
+RAW_DATA_DIRECTORY <- here("data/00_raw_data/")
+
+MIN_ROW <- 150  #subject to change 
+MERGED_DATA_PATH <- here("data/01_merged_data/merged_data.csv")
+
+read_csv(MERGED_DATA_PATH)
+```
+

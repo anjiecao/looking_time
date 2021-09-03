@@ -1,0 +1,4 @@
+"success","trial_type","trial_index","time_elapsed","internal_node_id","subject","view_history","rt","stimulus_type"
+"true","fullscreen","0","4777","0.0-0.0","SS1627326539530","","",""
+"","instructions","1","48808","0.0-1.0","SS1627326539530","[{""page_index"":0,""viewing_time"":44015.00000000001}]","44017",""
+"","instructions","2","77921","0.0-2.0","SS1627326539530","[{""page_index"":0,""viewing_time"":21775},{""page_index"":1,""viewing_time"":5333}]","27109","instructions"
