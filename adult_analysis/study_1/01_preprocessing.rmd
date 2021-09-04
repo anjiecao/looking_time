@@ -7,7 +7,9 @@ output: html_document
 ```{r}
 library(tidyverse)
 library(here)
+library(jsonlite)
 
+source(here("helper/tidy_rt_task_data.r"))
 ```
 
 # set up paths 
@@ -18,6 +20,15 @@ RAW_DATA_DIRECTORY <- here("data/00_raw_data/")
 MIN_ROW <- 150  #subject to change 
 MERGED_DATA_PATH <- here("data/01_merged_data/merged_data.csv")
 
-read_csv(MERGED_DATA_PATH)
 ```
+
+
+# first get the task type for each participant
+```{r}
+
+raw_data <- read_csv(MERGED_DATA_PATH)
+tidy_all_rt_task_data(raw_data) 
+
+```
+
 
