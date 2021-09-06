@@ -45,6 +45,7 @@ tidy_all_rt_task_data <- function(raw_data){
                 filter(stimulus_type == "curiousity") %>% 
                 select(subject, block_number, question_stimuli, responses), 
               by = c("subject", "block_number")) %>% 
+    filter(deviant_trial_type == "one_deviant") %>% 
     mutate(
       task_question_type = case_when(
         deviant_trial_type == "one_deviant" & question_stimuli == block_background ~ "curiosity_background", 
