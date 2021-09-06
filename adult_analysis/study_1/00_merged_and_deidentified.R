@@ -11,7 +11,7 @@ library(tidyverse)
 
 RAW_DATA_DIRECTORY <- here("data/00_raw_data/")
 
-MIN_ROW <- 100  #subject to change 
+MIN_ROW <- 110  #subject to change 
 MERGED_DATA_PATH <- here("data/01_merged_data/merged_data.csv")
 
 merge_and_deidentify_data <- function(raw_data_directory, 
