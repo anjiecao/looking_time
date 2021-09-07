@@ -72,44 +72,11 @@ timeline.push({
 timeline = get_consent_and_demog(timeline)
 
 
-  timeline.push(set_up_stimuli_version)
-
-  var show_complex_node = {
-    timeline: instruction_and_complex_blocks,
-    conditional_function: function(){
-        // get the data from the previous trial,
-        // and check which key was pressed
-        var data = jsPsych.data.get().last(1).values()[0];
-        console.log(data)
-        if(data.button_pressed == 0){
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-}
-
-var show_simple_node = {
-    timeline: instruction_and_simple_blocks,
-    conditional_function: function(){
-        // get the data from the previous trial,
-        // and check which key was pressed
-        var data = jsPsych.data.get().last(1).values()[0];
-        console.log(data)
-        if(data.button_pressed == 1){
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-}
-
-timeline.push(show_complex_node)
-timeline.push(show_simple_node)
-
   
+  timeline = timeline.concat(instruction_and_complex_blocks)
+
+ 
+
 
 
 
