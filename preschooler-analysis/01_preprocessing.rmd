@@ -1,0 +1,122 @@
+---
+title: "01_preprocessing.rmd"
+author: "anjie"
+date: "9/16/2021"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(here)
+
+MERGED_DATA_PATH <- here("data/01_merged_data/merged_data.csv")
+```
+
+
+
+```{r}
+raw_df <- read_csv(MERGED_DATA_PATH)
+```
+
+```{r}
+raw_df %>% 
+  filter(stimulus_type == "trial") %>% 
+  group_by(subject, block_number) %>% 
+  mutate(trial_number = row_number()) %>% 
+  mutate(item_type = case_when(
+    stimulus_displayed == block_background ~ "background", 
+    stimulus_displayed == block_deviant ~ "deviant"
+  )) %>% 
+  ggplot(aes(x = trial_number, y = log(trial_looking_time), color = item_type)) +
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+   theme_classic()+
+  langcog::scale_color_solarized(name = "Trial Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("log RT (seconds)") + 
+  xlab("Trial Number")
+```
+Trial based exclusion:
+We exclude a trial if it is three absolute deviations away from the median in the log-transformed space across all participants. If the participant fails to complete more than 50 percent of the study they will be excluded.
+Participant-based exclusion:
+We exclude participants if either (a) the standard deviation of log transformed of their reaction times on all trials is less than 0.15 or (b) they answer 3 out of 8 the memory task questions incorrectly.
+
+```{r}
+
+
+memory_score <- raw_df %>% 
+  filter(stimulus_type == "memory_test") %>% 
+  select(subject, button_pressed, memory_options_left, memory_options_right) %>% 
+  group_by(subject) %>% 
+  mutate(block_id = row_number()) %>% 
+  left_join(
+    raw_df %>% 
+  filter(stimulus_type == "trial") %>% 
+  select(subject, block_number, block_deviant, block_background) %>% 
+  distinct(subject, block_number, block_deviant, block_background) %>% 
+  mutate(block_id = block_number + 1) %>% 
+  select(-block_number), 
+  by = c("subject", "block_id")
+  ) %>% 
+  ungroup() %>% 
+  mutate(
+    corret_response = case_when(
+      memory_options_left == block_deviant | memory_options_left == block_background ~ 0, 
+       memory_options_right == block_deviant | memory_options_right == block_background ~ 1
+    )
+  ) %>% 
+  mutate(
+    response_correct = (button_pressed == corret_response)
+  ) %>% 
+  select(subject, button_pressed, block_id, response_correct) %>% 
+  group_by(subject) %>% 
+  summarise(
+    memory_total = sum(response_correct)
+  )
+  
+memory_score
+
+super_kid_id <- memory_score %>% 
+  filter(memory_total > 5) %>% 
+  select(subject) %>% 
+  pull()
+```
+
+```{r}
+raw_df %>% 
+  filter(stimulus_type == "trial") %>% 
+  filter(subject %in% super_kid_id) %>% 
+  group_by(subject, block_number) %>% 
+  mutate(trial_number = row_number()) %>% 
+  mutate(item_type = case_when(
+    stimulus_displayed == block_background ~ "background", 
+    stimulus_displayed == block_deviant ~ "deviant"
+  )) %>% 
+  ggplot(aes(x = trial_number, y = log(trial_looking_time), color = item_type)) +
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+   theme_classic()+
+  langcog::scale_color_solarized(name = "Trial Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("log RT (seconds)") + 
+  xlab("Trial Number")
+```
+
+
+
+```{r}
+rt_summary <- raw_df %>% 
+  filter(stimulus_type == "trial") %>% 
+  summarise(
+    median = median(log(trial_looking_time)),
+    mad = mad(log(trial_looking_time)), 
+    upper = median + 3 * mad, 
+    lower = median - 3 * mad)
+  
+trimmed_raw_df_task <- raw_df %>% 
+   filter(stimulus_type == "trial") %>% 
+  filter(!(log(trial_looking_time) > rt_summary$upper | log(trial_looking_time) < rt_summary$lower))
+```
+
