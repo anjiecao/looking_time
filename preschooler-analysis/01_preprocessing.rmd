@@ -84,6 +84,20 @@ super_kid_id <- memory_score %>%
 ```
 
 ```{r}
+memory_score 
+included_participants_df
+include_sbj_id %>% 
+  left_join(memory_score, by = "subject") %>% 
+  left_join(included_participants_df %>% rename(responses = `RedCAP ID`), 
+            by ="responses") %>% 
+  separate(`Subject ID`, into = c("age_group", "id"), sep = "_") %>% 
+  ggplot(aes(x = memory_total)) + 
+  geom_histogram() + 
+  facet_wrap(~age_group)
+```
+
+
+```{r}
 raw_df %>% 
   filter(stimulus_type == "trial") %>% 
   filter(subject %in% super_kid_id) %>% 

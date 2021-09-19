@@ -30,17 +30,15 @@ for (var block_index = 0;
     block_type = block_information.block_type
     block_timeline_variable = generate_timeline_variables(block_information)
     exposure_type = block_information.exposure_type
-    memory_question_stimuli = block_information.memory_test_stimuli
-    shuffleArray(memory_question_stimuli)
-    
-    memory_question_right_answer = block_information.memory_question_right_answer
+    memory_item = block_information.memory_item
+    memory_test_type = block_information.memory_test_type
     
     if (verbose){
         console.log("Each block time variable: ")
         console.log(block_timeline_variable)
         console.log('info: ' + block_information['stims_in_order'])
         console.log("memory question stimuli for the block:")
-        console.log(memory_question_stimuli)
+        console.log(memory_item)
     }
 
 
@@ -100,17 +98,15 @@ for (var block_index = 0;
         var memory_question = {
                 type: 'html-button-response', 
                 stimulus: '',
-                choices: ["right", "wrong"], 
+                choices: ["option"], 
                 margin_horizontal: 20,
-                button_html: ['<p><img src= ' +   memory_question_stimuli[0] + ' width ="400" height = "400"</p>', 
-                            '<p><img src= ' +   memory_question_stimuli[1] + ' width ="400" height = "400"</p>'
+                button_html: ['<p><img src= ' +  memory_item + ' width ="400" height = "400"</p>'
                             ],
                             
                 data: {stimulus_type: "memory_test",
                     memory_block_index: block_index, 
-                    memory_block_answer: memory_question_right_answer,
-                    memory_options_left: memory_question_stimuli[0], 
-                    memory_options_right: memory_question_stimuli[1] 
+                    memory_test_type: memory_test_type,
+                    memory_options_left: memory_item
                     }
         }
                 test_blocks.push(memory_question)

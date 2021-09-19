@@ -15,6 +15,8 @@ function checking_block_information(all_blocks_information,
     novel_memory_stimuli_num = 0
     fam_memory_stimuli_num = 0
     all_memory_stimuli = []
+    all_deviant_positions = []
+    all_novel_memory_stimuli = []
 
     for (var i = 0; i < block_number; i++){
 
@@ -25,8 +27,11 @@ function checking_block_information(all_blocks_information,
         current_block_type = current_block.block_type
         current_background = current_block.background_stimuli 
         current_deviant = current_block.deviant_stimuli 
-        current_memory_stimuli = current_block.memory_test_stimuli 
-        
+        current_memory_stimuli = current_block.memory_item 
+        current_memory_test_type = current_block.memory_test_type
+
+        current_deviant_position = current_block.deviant_position_array[0]
+        all_deviant_positions.push(current_deviant_position)
         
         background_specie_info =  current_background.slice(current_background.length-10, current_background.length-8)
         deviant_specie_info =  current_deviant.slice(current_deviant.length-10, current_deviant.length-8)
@@ -60,46 +65,34 @@ function checking_block_information(all_blocks_information,
          used_stimuli.push(deviant_specie_info)
          
 
-         // check if one of the memory probe appears in the stimuli 
-         if (!(current_memory_stimuli.includes(current_background) | 
-              current_memory_stimuli.includes(current_deviant))){
-                novel_memory_stimuli_num = novel_memory_stimuli_num + 1
-            }else{
-                fam_memory_stimuli_num = fam_memory_stimuli_num + 1
-            }
+         if (current_memory_test_type == "novel"){
+            all_novel_memory_stimuli.push(current_memory_stimuli)
+         }
 
-        // push the novel memory probe 
-        for (var j = 0; j < current_memory_stimuli.length; j++){
-            if (current_memory_stimuli[j] != current_background && 
-                current_memory_stimuli[j] != current_deviant){
-                    novel_memory_probe = current_memory_stimuli[j]
-                    
-                    novel_memory_probe_specie_info = novel_memory_probe.slice(novel_memory_probe.length-10, 
-                                                                             novel_memory_probe.length-8)
-                    used_new_memory_probe.push(novel_memory_probe_specie_info)
-                }
-        }  
 
-        all_memory_stimuli = all_memory_stimuli.push(current_memory_stimuli)
+        
 
     }
 
+    console.log(all_novel_memory_stimuli)
+    console.log(used_stimuli)
     
     
     // check if the novel memory probes have not appeared in other places 
-    if (findCommonElement(used_new_memory_probe, used_stimuli)){
+    if (findCommonElement(all_novel_memory_stimuli, used_stimuli)){
         throw "the novel memory probes have overlap with the stimuli used"
     }
     // check if neither novel memory probes nor the used stimuli have duplicate stimuli 
-    if (hasDuplicates(used_new_memory_probe)){
+    if (hasDuplicates(used_stimuli)){
         throw "the used new memory probe has duplicates"
     }
 
-    if(hasDuplicates(used_stimuli)){
+    if(hasDuplicates(all_novel_memory_stimuli)){
        throw "the stimuli have duplicates"
     }
 
 
+    console.log(all_deviant_positions)
     console.log("Passed all tests! congrats!")
 
 

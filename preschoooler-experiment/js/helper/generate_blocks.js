@@ -19,7 +19,7 @@ function get_all_stimuli(TEST_RUN, SPECIES_NUM, SHOW_SIMILAR, SHOW_SIMPLE, SHOW_
     }
     
 
-    if (TEST_RUN == 1) {
+    if (TEST_RUN == 1) {    
       // 30 species
       species = Array.from({length: SPECIES_NUM}, (_, i) => i + 1)
 
@@ -89,20 +89,13 @@ function generate_timeline_variables(block_information){
     // because some copy-making issue, somewhat hacky solution
     // the first trial is always background 
     
-    var first_trial = {
-         stimuli: background_stimuli,
-         stim_type: 'background', 
-         exposure_type: exposure_type, 
-         first_trial: true
-     }
-    block_stimuli.push(first_trial)
-    for (var i = 0; i < block_length-1; i++){
+
+    for (var i = 0; i < block_length; i++){
         
         var background_item = {
          stimuli: background_stimuli,
          stim_type: 'background', 
-         exposure_type: exposure_type, 
-         first_trial: false
+         exposure_type: exposure_type
         }
         
         
@@ -113,22 +106,22 @@ function generate_timeline_variables(block_information){
     }
 
      
+    if (deviant_position_array[0] != null){
 
-    
-    // replace background with deviant
+      // replace background with deviant
     for (var i = 0; i < deviant_position_array.length; i++){
-         var deviant_item = {
-         stimuli: deviant_stimuli,
-         stim_type: 'deviant', 
-         exposure_type: exposure_type, 
-         first_trial: false
-            }
-        deviant_position = deviant_position_array[i]
-        block_stimuli[deviant_position] = deviant_item
+      var deviant_item = {
+      stimuli: deviant_stimuli,
+      stim_type: 'deviant', 
+      exposure_type: exposure_type, 
+      first_trial: false
+         }
+     deviant_position = deviant_position_array[i]
+     block_stimuli[deviant_position] = deviant_item
+      }
     }
     
-
-
+  
     return (block_stimuli)
     //return (block_stimuli)
 
@@ -140,7 +133,6 @@ function generate_all_block(num_blocks,
                             num_trial_per_block,
                             stimuli_array,
                             all_deviant_position_array,
-                            num_deviants,
                             num_species,
                             show_similar, 
                             show_simple, 
@@ -198,35 +190,6 @@ function generate_all_block(num_blocks,
       loop_length = num_blocks
     }
 
-if (show_similar) {
-
-  // SIMILAR BLOCKS
-  // put a loop around this with the number of blocks of this type
-  for (i = 0; i < loop_length; i++) {
-
-  // simple similar blocks
-      
-      if(show_simple){
-   output = generate_similar_block(simple_stims, num_blocks, num_trial_per_block, all_deviant_position_array, num_deviants, num_species, block_type = 'simple_similar')
-
-   simple_stims = output[0]
-   block_information = output[1]
-
-
-   all_block_information.push(block_information)
-          
-
-      }
-      
-   // complex similar blocks
-  output = generate_similar_block(complex_stims, num_blocks, num_trial_per_block, all_deviant_position_array, num_deviants, num_species, block_type = 'complex_similar')
-
-  complex_stims = output[0]
-  block_information = output[1]
-
-  all_block_information.push(block_information)
-  }
-}
 
 
 // DISSIMILAR BLOCKS
@@ -234,12 +197,19 @@ if (show_similar) {
 // put a loop around this with the number of blocks of this type
 
 used_stimuli = []
+
+// eight blocks: two no deviant, two w/ deviant at 2nd, two at 4th, two at 6th 
+
+
 for (i = 0; i < loop_length; i++) {
+
+  
+current_deivant_position = all_deviant_position_array[i]
 
 
   // simple dissimilar blocks
  if (show_simple){
-  output = generate_dissimilar_block(simple_stims, num_blocks, num_trial_per_block, all_deviant_position_array, num_deviants,  block_type = 'simple_dissimilar')
+  output = generate_dissimilar_block(simple_stims, num_blocks, num_trial_per_block, current_deivant_position,   block_type = 'simple_dissimilar')
 
  simple_stims = output[0]
  block_information = output[1]
@@ -251,7 +221,7 @@ for (i = 0; i < loop_length; i++) {
 }
 
 if (show_complex){
-  output = generate_dissimilar_block(complex_stims, num_blocks, num_trial_per_block, all_deviant_position_array, num_deviants, block_type = 'complex_dissimilar')
+  output = generate_dissimilar_block(complex_stims, num_blocks, num_trial_per_block, current_deivant_position,  block_type = 'complex_dissimilar')
   complex_stims = output[0]
   block_information = output[1]
   all_block_information.push(block_information)
@@ -466,135 +436,55 @@ function generate_similar_block(stims, num_blocks, num_trial_per_block, all_devi
 return ([stims, block_information])
 }
 
-function generate_dissimilar_block(stims, num_blocks, num_trial_per_block, all_deviant_position_array, num_deviants, block_type){
+function generate_dissimilar_block(stims, num_blocks, num_trial_per_block, current_deivant_position, block_type){
 
   // generate dissimilar blocks:
   // -> get random creature,
   // and choose another creature that differs in species and movement
 
   // choose random creature as background
+
   var randomIdx = Math.floor(Math.random() * stims.length)
   var background = stims[randomIdx];
-
-  //console.log('stims')
-  // console.log(stims)
-
-  //console.log('background')
-  //console.log(background)
-
   // and get info about species, modification, movement/rotation
   speciesInfo_1 = background.slice(background.length-10, background.length-8)
-  console.log(speciesInfo_1)
-  //modificationInfo_1 = background.slice(background.length-7, background.length-6)
-  //movementInfo_1 = background.slice(background.length-5, background.length-1)
-
-  //console.log(speciesInfo_1)
-  //console.log(modificationInfo_1)
-  //console.log(movementInfo_1)
- // console.log('stims0:')
-  //console.log(stims)
-
-  // remove these creatures from the list for next iteration (not including their modification)
-  //stims.splice(randomIdx, 1)
- 
   stims = stims.filter(x => !(x.includes(speciesInfo_1)))
 
-  //console.log('stims:')
-  //console.log(stims)
 
-  // stimuli to sample from, which don't come from the same species or movement
-
-  // console.log('stims2:')
-  // console.log(stims)
-
-  //console.log('sampleFrom:')
-  //console.log(sampleFrom)
-
-  // choose random index to get deviant stim
   
   var randomIdx = Math.floor(Math.random() * stims.length)
   var deviant = stims[randomIdx]
 
-  // get relevant info about deviant to exclude that species
   speciesInfo_2 = deviant.slice(deviant.length-10, deviant.length-8)
-  //modificationInfo_2 = deviant.slice(deviant.length-7, deviant.length-6)
-  //movementInfo_2 = deviant.slice(background.length-5, background.length-1)
-  //
-  // console.log('stims3:')
-  // console.log(stims)
-
-
-  // remove these creatures from the list for next iteration (not including their modification)
-  //stims.splice(randomIdx, 1)
-
-  // console.log('stims4:')
-  // console.log(stims)
-
+  
   stims = stims.filter(x => !(x.includes(speciesInfo_2)))
 
-  // get random trial number
-  num_trial_per_block = getRandomSubarray(num_trial_per_block, 1)
 
-  // random number of deviants
-  num_deviants = getRandomSubarray(num_deviants, 1)
+  var randomIdx = Math.floor(Math.random() * stims.length)
+  var novel = stims[randomIdx]
+  
+  speciesInfo_3 = novel.slice(novel.length-10, novel.length-8)
+  
+  stims = stims.filter(x => !(x.includes(speciesInfo_3)))
 
-  // make all deviant position array smaller such that it doesn't exceed the block length
-  all_deviant_position_array = all_deviant_position_array.filter(function(item) {return item <= num_trial_per_block});
 
-  // get the position in which deviant trial appears
-  deviant_position_array = getRandomSubarray(all_deviant_position_array, num_deviants)
+  var memory_items = [background, novel]
+  var memory_item = memory_items[Math.floor(Math.random() * memory_items.length)]
 
-  // generate random math question
-
-    first_addend = Math.floor(Math.random() * 9) + 1;
-
-    second_addend = Math.floor(Math.random() * 9) + 1;
-
-    result = first_addend + second_addend;
-
-    offset_array = [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
-
-    shuffleArray(offset_array)
-
-    // pop off to make sure offset2 is different from offset1
-    offset1 = offset_array.pop()
-
-    offset2 = offset_array.pop()
-
-    //console.log('offset1:')
-    //console.log(offset1)
-    //console.log('offset2:')
-    //console.log(offset2)
-
-    var option1 = parseFloat(result) + parseFloat(offset1)
-
-    var option2 = parseFloat(result) + parseFloat(offset2)
-
-    options = [result, option1, option2]
-
-    //console.log(result)
-    //console.log(options)
-
-    shuffleArray(options)
-
-    
-    // get stimuli for the memory test purpose 
-    // one stimulus will be the actual stimulus that we use, randomly selected from background or deviant 
-    // the other stimulus will be selected from a pool of stimulus that the participants have never seen before
-    // ?: do we need the false stimulus to be very similar to the original one, or keep them very different? 
-
-   
-    
+  if (memory_item == background){
+    memory_test_type = "background"
+  }else{
+    memory_test_type = "novel"
+  }
+  
       block_information = {
           num_trial_per_block: num_trial_per_block,
           background_stimuli: background,
           deviant_stimuli: deviant,
-          deviant_position_array: deviant_position_array,
-          block_type: block_type,
-          first_addend: first_addend,
-          second_addend: second_addend,
-          result: result,
-          options: options
+          deviant_position_array: [current_deivant_position],
+          block_type: block_type, 
+          memory_item: memory_item, 
+          memory_test_type: memory_test_type
       }
 
 

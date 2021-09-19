@@ -28,9 +28,8 @@ if (TEST_RUN == 1) {
 else {
   SHOW_INTRO = true
   NUM_BLOCKS = 8
-  NUM_TRIAL_PER_BLOCK = [4,5,6]
-  DEVIANT_POSITIONS = [1, 2,3,4,5]
-  NUM_DEVIANTS = [0,1,2]
+  NUM_TRIAL_PER_BLOCK = [6]
+  DEVIANT_POSITIONS = [null, null, 1, 1, 3, 3, 5, 5]
   SPECIES_NUM = 24
   SHOW_SIMILAR = false
   SHOW_SIMPLE = false 
@@ -41,7 +40,7 @@ else {
 
 
 
-all_simple_stimuli = get_all_stimuli(TEST_RUN, 20, 
+all_simple_stimuli = get_all_stimuli(TEST_RUN, 24, 
                                     show_similar = false, 
                                     show_simple = true,
                                     show_complex = false, 
@@ -50,7 +49,6 @@ all_simple_blocks_information = generate_all_block(num_blocks = NUM_BLOCKS,
                                       num_trial_per_block = NUM_TRIAL_PER_BLOCK,
                                       stimuli_array = all_stimuli,
                                       all_deviant_position_array = DEVIANT_POSITIONS,
-                                      num_deviants = NUM_DEVIANTS,
                                       num_species = SPECIES_NUM,
                                       show_similar = false, 
                                       show_simple = true, 
@@ -67,21 +65,12 @@ all_complex_blocks_information = generate_all_block(num_blocks = NUM_BLOCKS,
                                         num_trial_per_block = NUM_TRIAL_PER_BLOCK,
                                         stimuli_array = all_stimuli,
                                         all_deviant_position_array = DEVIANT_POSITIONS,
-                                        num_deviants = NUM_DEVIANTS,
                                         num_species = SPECIES_NUM,
                                         show_similar = false, 
                                         show_simple = false, 
                                         show_complex = true
                                         )
-                          
 
-checking_block_information(all_blocks_information = all_simple_blocks_information, 
-                           blcok_number = NUM_BLOCKS, 
-                           num_trial_per_block = NUM_TRIAL_PER_BLOCK, 
-                           show_similar = false, 
-                                        show_simple = true, 
-                                        show_complex = false
-                            )
 
 checking_block_information(all_blocks_information = all_complex_blocks_information, 
                               blcok_number = NUM_BLOCKS, 
