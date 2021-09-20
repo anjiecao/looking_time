@@ -10,6 +10,12 @@ function get_consent_and_demog(timeline){
         ],
     }
 
+    var demog_subject_ID = {
+        type: 'demog-age',
+        questions: [
+        {prompt: "Please enter the subject ID below", name: "redcap_id", required: true}
+        ],
+    }
 
 
 
@@ -35,6 +41,7 @@ var generic_intro = {
     
 
 timeline.push(generic_intro)
+timeline.push(demog_subject_ID)
 timeline.push(demog_red_cap_ID)
 
 
