@@ -79,7 +79,7 @@ var great_job = {
               stimuli_animation: function(){
                   var html = 
                  
-                  "<img src='images/practice/instructions_example_spore1.gif' width ='400' height = '400' style='border:5px solid black'>"
+                  "<img src='images/practice/instruction_example.gif' width ='400' height = '400' style='border:5px solid black'>"
                   return html
               },
               two_stimuli_interval: 0,
