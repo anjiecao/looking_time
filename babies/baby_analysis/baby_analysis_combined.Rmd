@@ -1,0 +1,39 @@
+---
+title: "baby_analysis_combined.Rmd"
+author: "Gal"
+date: "1/11/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+load data
+```{r}
+exp1_data <- readRDS('exp1_data')
+exp2_data <- readRDS('exp2_data')
+
+exp1_data = exp1_data %>% mutate(session_number = 1, experiment = 1, complexity = 'simple', subject_num = subject_id) 
+exp2_data = exp2_data %>% mutate(experiment = 2, subject_num = as.numeric(subject_num)) 
+
+all_data <- rbind(exp1_data %>% select(intersect(colnames(exp1_data), colnames(exp2_data))), exp2_data %>% select(intersect(colnames(exp1_data), colnames(exp2_data)))) %>% mutate(experiment = as.factor(experiment))
+
+test_df <- all_data %>% filter(fam_or_test == 'test') %>% dplyr::group_by(subject_num) %>% dplyr::mutate(normLT = (looking_time_2000_1-mean(looking_time_2000_1))/sd(looking_time_2000_1)) %>% select(c(session_number, subject_num, block_number, block_type, fam_duration), everything())
+
+```
+
+
+replication
+```{r}
+
+ggplot(test_df %>% filter(complexity == 'simple'), aes(x=block_type, y=log(looking_time_2000_1), group=experiment, color = experiment)) + geom_point(alpha=0.2, position = position_dodge(width = .1)) + 
+    stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1))  + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + facet_wrap(~fam_duration) + xlab('Trial type') + ylab('normalized LT') + labs(color = 'Study') + theme_classic() + 
+  theme(strip.text.x = element_text(size = 14, colour = "black"),
+        axis.text=element_text(size=13),
+        axis.title= element_text(size = 14)) + ggtitle('study 1 vs study 2') 
+
+```
+

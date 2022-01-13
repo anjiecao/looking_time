@@ -21,8 +21,8 @@ library(DescTools)
 ```{r}
 # if TRUE, it takes output.xlsx in the data folder and concatenates everything from scratch
 # if FALSE, it takes the full data table that's been stored and goes from there
-reload_files = FALSE
-save_full_data = TRUE
+reload_files = TRUE
+save_full_data = FALSE
 ```
 
 
@@ -52,7 +52,7 @@ shifter <- function(x, n = 1) {
 
 if (reload_files) {
   # jspsych files
-looking_list <- read_excel_allsheets(here::here("data", "output.xlsx"))
+looking_list <- read_excel_allsheets(here::here("data", "exp1", "output.xlsx"))
 
 # jspsych files
 jspsych_files <- list.files("data/jspsych")
@@ -167,8 +167,6 @@ complete_df <- complete_df %>% pivot_wider(names_from = coder, values_from = sta
 
 # check how many are removed with 2 sec looking criterion
 complete_df %>% filter(looking_time_2000_1 < 2) %>% dplyr::group_by(block_number) %>% dplyr::summarize(n = n())
- 
-
 
 # remove looking times less than 2 sec according to coder 1
 complete_df <- complete_df  %>% filter(looking_time_2000_1 > 2) %>%
@@ -203,7 +201,6 @@ length(unique(complete_df$subject_id))
 
 # check distribution of standard vs deviant trials (MUCH FEWER STANDARD TRIALS)
 #full_df %>% dplyr::group_by(block_type) %>% dplyr::summarize(n=sum(n_trial))
-
 
 # check out distribution of block types and fam duration across block
 block_dist <- complete_df %>% filter(fam_or_test == 'test') %>% 
@@ -323,7 +320,7 @@ best_combos <- all_combs[which.min(all_sds),]
 
 ## Raw data 
 ```{r}
-ggplot(complete_df) + geom_histogram(aes(x=looking_time_2000_1), bins = 20) + xlab('Looking time in (s)')
+ggplot(complete_df) + geom_histogram(aes(x=looking_time_2000_1), bins = 20) + xlab('Looking time in s')
 ```
 
 
@@ -389,10 +386,12 @@ ggplot(old, aes(x=block_type, y=looking_time_2000_1, group=fam_duration, color =
   theme(strip.text.x = element_text(size = 14, colour = "black")) + ggtitle('old')
   
 
-ggplot(test_df, aes(x=block_type, y=normalized_LT, group=fam_duration, color = fam_duration)) + geom_point(alpha=0.2, position = position_dodge(width = .1)) + 
+ggplot(test_df, aes(x=block_type, y=normalized_LT, group=fam_duration)) + geom_point(alpha=0.2, position = position_dodge(width = .1)) + 
     stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1))  + 
   stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + facet_wrap(~fam_duration) + xlab('Trial type') + ylab('normalized LT') + labs(color = '# of Fam Trials') + theme_classic() + 
-  theme(strip.text.x = element_text(size = 14, colour = "black")) + ggtitle('all')
+  theme(strip.text.x = element_text(size = 14, colour = "black")) + theme(strip.text.x = element_text(size = 14, colour = "black"),
+        axis.text=element_text(size=13),
+        axis.title= element_text(size = 14)) +ggtitle('study 1')
   
 
   
@@ -441,7 +440,7 @@ test_df %>%
    dplyr::summarize(n_trial = n()) %>% 
   ggplot(aes(x=block_number, y=n_trial, group=block_type, color = block_type)) + 
   geom_point(alpha=.8, position = position_dodge(width = .1))  + 
-  geom_line()+
+  geom_line() +
   facet_wrap(~fam_duration)
 
 ```
