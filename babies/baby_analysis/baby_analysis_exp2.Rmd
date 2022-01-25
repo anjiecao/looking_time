@@ -158,7 +158,8 @@ Exclusions
 # remove looking times less than 1 sec 
 complete_df <- complete_df  %>% 
   filter(
-    looks_error_2000_s == 0, # remove looking times less than 1 sec
+    looks_error_2000_s == 0, # remove error looks
+    looking_time_2000 > 1, # remove looking times less than 1 sec
     valid,
     !(subject_num ==  '6' & session_num == "1" & trial_num >= 4), # subj 6, sess 1 exclude trials 4,5,6
     !(subject_num ==  '9' & session_num == "1"), # subj 9, sess 1 exclude completely
@@ -237,17 +238,16 @@ ggplot(test_df, aes(x=looking_time_2000)) + geom_histogram(bins = 20) + xlab('Lo
 # calculate means
 mean_df <- summarySE(test_df, measurevar="looking_time_2000", groupvars=c("block_number"))
 
-ggplot(test_df, aes(x=block_number, y = looking_time_2000)) + 
-  geom_jitter(alpha = 0.2, width = 0.1) + stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1))  + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + xlab('Block Number') + ylab('LT in sec') + theme_classic(base_size = 15)
-
 ggplot(test_df, aes(x=block_type, y=looking_time_2000)) + geom_jitter(width = 0.1, alpha = 0.2)  + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + xlab('Test trial type') + ylab('Looking Time (s)') + theme_classic(base_size = 15)
 
 ggplot(test_df, aes(x=fam_duration, y=looking_time_2000, color = fam_duration)) + geom_jitter(width = 0.1, alpha = 0.2)  + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) +  xlab('# of Fam Trials') + ylab('Looking Time (s)') + labs(color = '# of Fam Trials') + theme_grey(base_size = 14) + theme(legend.position="none", axis.text=element_text(size=15))
 
-ggplot(test_df %>% filter(session_num == 1), aes(x=block_type, y=normLT, group=complexity, color = complexity)) + geom_point(alpha=0.2, position = position_dodge(width = .1)) + facet_grid(~fam_duration) + xlab('Trial type') + ylab('normalized LT') + labs(color = 'Complexity') + theme_classic() + theme(strip.text.x = element_text(size = 14, colour = "black"),
+ggplot(test_df, aes(x=block_type, y=looking_time_2000, group=complexity, color = complexity)) + geom_point(alpha=0.2, position = position_dodge(width = .1)) + facet_grid(~fam_duration) + xlab('Trial type') + ylab('LT in sec') + labs(color = 'Complexity') + theme_classic() + theme(strip.text.x = element_text(size = 14, colour = "black"),
         axis.text=element_text(size=13),
-        axis.title= element_text(size = 14)) + stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1)) + 
-  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) +ggtitle('session 1 only') 
+        axis.title= element_text(size = 14)) + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1)) + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) +
+  ggtitle('') 
 ```
 
 
@@ -255,17 +255,16 @@ Familiarization
 ```{r}
 fam_df <- complete_df %>% filter(fam_or_test == 'fam')
 
-
-ggplot(fam_df, aes(x=fam_duration, y=looking_time_2000, group=complexity, color = complexity)) + geom_point(alpha=0.2, position = position_dodge(width = .1)) + xlab('Trial type') + ylab('LT in sec') + labs(color = 'Complexity') + theme_classic() + theme(strip.text.x = element_text(size = 14, colour = "black"),
+ggplot(fam_df %>% filter(!is.na(fam_duration)), aes(x=fam_duration, y=looking_time_total, group=complexity, color = complexity)) + geom_point(alpha=0.2, position = position_dodge(width = .1)) + xlab('Fam duration') + geom_line(aes(group = interaction(as.numeric(subject_num), complexity))) + ylab('LT in sec') + labs(color = 'Complexity') + theme_classic() + theme(strip.text.x = element_text(size = 14, colour = "black"),
         axis.text=element_text(size=13),
         axis.title= element_text(size = 14))  + stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1)) + 
-  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) +ggtitle('looking duration familiarization') 
+  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) +ggtitle('exp 2') 
 
 ```
 
 Models
 ```{r}
-model1 <- lme(log(looking_time_2000+0.01) ~ block_type * fam_duration + fam_duration * complexity + block_number, random = ~1|subject_num, data = test_df %>% mutate(fam_duration = as.numeric(fam_duration), subject_num = as.numeric(subject_num)))
+model1 <- lme(looking_time_2000+0.01 ~ block_number + session_number, random = ~1|subject_num, data = test_df %>% mutate(fam_duration = as.numeric(fam_duration), subject_num = as.numeric(subject_num)))
 
 
 model1 <- lme(log(looking_time_2000+0.01) ~ block_type + fam_duration +  complexity + block_number, random = ~1|subject_num, data = test_df %>% mutate(fam_duration = as.numeric(fam_duration), subject_num = as.numeric(subject_num)))
@@ -273,6 +272,20 @@ model1 <- lme(log(looking_time_2000+0.01) ~ block_type + fam_duration +  complex
 
 summary(model1)
 
+```
 
+Inter-session correlation
+
+```{r}
+wide_df <- test_df %>% pivot_wider(names_from = complexity, values_from = looking_time_2000) %>% dplyr::group_by(subject_num) %>% dplyr::summarise(simple = mean(simple, na.rm = TRUE), complex = mean(complex, na.rm = TRUE)) 
+
+ggplot(wide_df, aes(x = log(simple), y = log(complex))) + geom_point(size =4) + theme_classic()
+
+cor(wide_df$simple, wide_df$complex, use = 'na.or.complete')
+
+cor.test(log(wide_df$simple), log(wide_df$complex), use = 'na.or.complete')
+
+mean(log(wide_df$simple), na.rm = TRUE)
+mean(log(wide_df$complex), na.rm = TRUE)
 
 ```
