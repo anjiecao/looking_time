@@ -1,0 +1,463 @@
+---
+title: "baby_analysis"
+author: "Gal"
+date: "6/14/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(Rmisc)
+library(dplyr)
+library(here)
+library(readxl)
+library(janitor)
+library(nlme)
+library(DescTools)
+```
+
+## toggles
+```{r}
+# if TRUE, it takes output.xlsx in the data folder and concatenates everything from scratch
+# if FALSE, it takes the full data table that's been stored and goes from there
+reload_files = TRUE
+save_full_data = FALSE
+```
+
+
+## helper functions
+```{r}
+read_excel_allsheets <- function(filename, single_frame = TRUE) {
+  sheets <- readxl::excel_sheets(filename)
+  ldf <- lapply(sheets, function(X) readxl::read_excel(filename, sheet = X))
+  names(ldf) <- sheets
+  if(single_frame == TRUE){ # Creates a single data frame with all sheets combined together
+    ldf <- ldf %>% dplyr::bind_rows(.id = 'sheet_name') %>% tibble::as_tibble()
+  } else{ # Creates a separate data frame for each sheet, with each data frame being called the name of that sheet
+    list2env(ldf, envir = .GlobalEnv)
+  }
+  return(ldf)
+}
+
+shifter <- function(x, n = 1) {
+  if (n == 0) x else c(tail(x, -n), head(x, n))
+}
+```
+
+
+## load files
+
+```{r, include=FALSE}
+
+if (reload_files) {
+  # jspsych files
+looking_list <- read_excel_allsheets(here::here("data", "exp1", "output.xlsx"))
+
+# jspsych files
+jspsych_files <- list.files("data/jspsych")
+setwd(here::here("data", "jspsych"))
+jspsych_list <- lapply(jspsych_files, read.csv)
+
+## reshape dfs
+looking_df <- map_dfr(looking_list, ~ .x, .id = 'subject') %>% 
+  clean_names() %>% separate(sheet_name, into = c("subject", "coder")) %>%
+  mutate(subject = as.numeric(subject), coder = as.numeric(coder))
+
+jspsych_df <- map_dfr(jspsych_list, ~ .x, .id = 'subjectid') 
+
+# get age and gender
+age_and_gender <- jspsych_df %>% select(responses) %>%
+  filter(responses != "") %>%
+  separate(responses, into = c('age', 'gender'), sep=',') %>% 
+    separate(age, into = c('del', 'age'), sep=':') %>% 
+    separate(gender, into = c('del2', 'gender'), sep=':') %>%
+  tidyr::extract(age, "age") %>% tidyr::extract(gender, "gender") %>%
+  select(age, gender) %>% dplyr::mutate(subject_id = row_number())
+
+# get trials
+trial_df <- jspsych_df %>%
+  filter(stimulus_type == 'trial') %>% 
+  select(subject, rt, stimulus_displayed, block_number, block_type) %>%
+  group_by(subject) %>% dplyr::mutate(subject_id = cur_group_id(),
+                                      stimulus_displayed = as.character(stimulus_displayed),
+                                      stimulus = str_match(stimulus_displayed, "simple_(.*?)_A.gif")[,2],
+                                      stimulus = as.numeric(stimulus)) %>%
+  group_by(subject_id, block_number) %>% 
+  dplyr::mutate(trial_num = 1:n(),
+                valid = case_when(    
+                #mark blocks with uneven trial num or less than 4 (ended prematurely)  
+                n() %% 2 != 0 ~ FALSE, 
+                n() < 4 ~ FALSE,
+                TRUE ~ TRUE),
+                fam_or_test = case_when( # last trial is test, rest if familiarization
+                trial_num < n() ~ 'fam',
+                trial_num == n() ~ 'test'
+        ),
+        fam_duration = max(trial_num) - 1, # how many fam trials in this block
+        block_number = block_number + 1) %>%
+  group_by(subject_id, block_number, fam_or_test) %>%
+  # remove fam trials except last, because this is the format of the looking data (one row for all fam trials)
+  dplyr::filter(!(fam_or_test == 'fam' & trial_num < n())) %>%
+  ungroup() %>%
+  left_join(age_and_gender, by= 'subject_id')  # add age & gender info
+  
+  
+  # check for subjects with missing blocks (when experiment was ended prematurely)
+incomplete_subjects <-  trial_df %>% 
+                        group_by(subject_id) %>% 
+                        dplyr::summarise(count = n_distinct(block_number)) %>% 
+                        filter(count<6) %>% 
+                        pull(subject_id)
+
+# complete missing blocks (for experiments that ended prematurely)
+trial_df <- trial_df %>% complete(subject_id, nesting(block_number, fam_or_test)) %>%
+   # make these trials invalid
+  # add temp_id
+  mutate(valid = case_when(
+         is.na(valid) ~ FALSE,
+         TRUE ~ valid)) %>%
+  slice(rep(1:n(), each = 2))  %>% # duplicate for each coder
+  dplyr::mutate(coder = rep_len(c(1,2), n()), 
+        temp_id = paste0(subject_id, block_number, fam_or_test, coder)) %>%
+  select(-c("coder"))
+
+
+# add temp id to looking df
+looking_df <- looking_df %>% filter(trial_type != 'a') %>% 
+  mutate(
+    trial_type = case_when(
+                  trial_type == 'f' ~ 'fam',
+                  trial_type == 't' ~ 'test'),
+  ) %>%
+  group_by(subject, trial_type, coder) %>%
+  dplyr::mutate(block_number = row_number(),
+         temp_id = paste0(subject, block_number, trial_type, coder)) %>%
+  dplyr::rename(looking_time_total = looks_on_total_s,
+                looking_time_1500 = looks_on_1500_s,
+                looking_time_2000 = looks_on_2000_s,
+                looking_time_2500 = looks_on_2500_s,
+                looking_time_3000 = looks_on_3000_s) %>%
+  select(-c("block_number", "x1", "trial_number"))
+
+# join trials and looking times
+complete_df <- left_join(looking_df, trial_df, by = 'temp_id')  %>%
+  select(-c("temp_id", "subject.x", "subject.y")) %>% 
+  group_by(subject_id, block_number, trial_type) %>%
+  dplyr::mutate(coder_num = n()) %>% # add column saying how many coders this trial has
+  mutate(fam_duration = factor(fam_duration, levels = c(3,5,7))) %>%
+  ungroup() %>% group_by(subject_id)
+
+# pivot wider to have coders next to each other
+complete_df <- complete_df %>% pivot_wider(names_from = coder, values_from = starts_with('look'))
+
+  if (save_full_data){
+    setwd('..')
+    write.csv(complete_df, 'full_data_table.csv', row.names = FALSE)
+  }
+}  else if (!reload_files) {
+      complete_df <- read.csv('data/full_data_table.csv')
+}
+
+```
+
+# Exclusions
+
+```{r}
+
+# check how many are removed with 2 sec looking criterion
+complete_df %>% filter(looking_time_2000_1 < 2) %>% dplyr::group_by(block_number) %>% dplyr::summarize(n = n())
+
+# remove looking times less than 2 sec according to coder 1
+complete_df <- complete_df  %>% filter(looking_time_2000_1 > 2) %>%
+  # remove babies that were fussy or notificaitons went off etc. (Babies: 23,24,25)
+  filter(subject_id !=  '23' & subject_id != '24' & subject_id != '25')
+  
+```
+
+# Inter-coder reliability
+```{r}
+# only those were both coders 
+reliability_df <-  complete_df %>% filter(coder_num == 2)
+
+# Correlation
+coder_1 <- reliability_df$looking_time_2000_1
+coder_2 <- reliability_df$looking_time_2000_2
+  
+cor(coder_1, coder_2)
+
+plot(coder_1, coder_2)
+
+
+```
+
+
+# Check for sampling imbalance
+
+## We want how uneven the sampling was and which assignments would make it even again (out of the possible assignments)
+```{r}
+# check how many subjects are left
+length(unique(complete_df$subject_id))
+
+# check distribution of standard vs deviant trials (MUCH FEWER STANDARD TRIALS)
+#full_df %>% dplyr::group_by(block_type) %>% dplyr::summarize(n=sum(n_trial))
+
+# check out distribution of block types and fam duration across block
+block_dist <- complete_df %>% filter(fam_or_test == 'test') %>% 
+  dplyr::group_by(block_number, block_type, fam_duration) %>% 
+  dplyr::summarize(n_trial = n()) %>% ungroup() %>% droplevels() 
+
+# expand to account for cases that didn't appear in the data at all  
+expanded_df <- block_dist %>% expand(block_number, block_type, fam_duration) 
+
+#join expanded with original
+full_df <- block_dist %>% right_join(expanded_df) 
+
+# replace nans with 0
+full_df$n_trial[is.na(full_df$n_trial)] = 0 
+
+# plot distribution
+full_df %>% ggplot(aes(x=block_number, y=n_trial, group=block_type, color = block_type)) + geom_point(alpha=.8, position = position_dodge(width = .1))  + 
+  geom_line() + facet_wrap(~fam_duration)
+
+
+```
+
+# simulate hypothetical babies
+
+## check what happens if we just put back the 5 babies that dropped out 
+```{r}
+missing_subjects <- c(8,23,24,25,29)
+
+missing_df <- trial_df %>% 
+  filter(subject_id %in% missing_subjects & fam_or_test == 'test') %>% 
+  mutate(fam_duration = case_when(  # prematurely ended trials: 2->3 and 1->7
+    fam_duration == 2 ~ 3,
+    fam_duration == 1 ~ 7,
+    TRUE ~ fam_duration)) %>% mutate(fam_duration = as.factor(fam_duration)) %>%
+   select(c(subject_id, block_number, block_type, fam_duration)) %>% unique() # gotta do unique because otherwise duplicates remain from repeating each thing twice for each coder
+
+# non missing df
+full_df <- complete_df %>% 
+  filter(fam_or_test == 'test') %>% 
+  select(c(subject_id, block_number, block_type, fam_duration)) %>% 
+  bind_rows(missing_df) %>% dplyr::group_by(block_number, block_type, fam_duration) %>% 
+  dplyr::summarize(n_trial = n()) %>% ungroup() %>% droplevels()
+
+
+full_df %>% ggplot(aes(x=block_number, y=n_trial, group=block_type, color = block_type)) + geom_point(alpha=.8, position = position_dodge(width = .1))  + 
+  geom_line() + facet_wrap(~fam_duration) + ggtitle('with missing babies') 
+
+```
+
+
+## check what happens if we put back 5 babies in the best conditions
+```{r, eval = FALSE, echo = FALSE}
+# get sd's, which we want to minimze with the new assignments
+full_df <- full_df %>% 
+  dplyr::group_by(fam_duration, block_number) %>% 
+  dplyr::mutate(stddev = sd(n_trial))
+
+# check which rotation of 3,5,7,7,5,3 would balance order the best
+fam_durations = c(3,7,5,5,7,3)
+block_types = c("Std", "Dev", "Dev", "Std", "Std", "Dev")
+
+# all unordered lists of 1 to 6 with replacement
+all_combs <- CombSet(1:6, 5, repl=TRUE, ord=FALSE)
+
+# preallocate all sds
+all_sds = c()
+
+  
+  #complete_df %>% dplyr::filter(fam_or_test == 'test') %>%   dplyr::select(c(fam_duration,block_number,block_type)) %>% ungroup()
+
+# go through each possible permutation of subjects
+for (i in 1:nrow(all_combs)) {
+  # starting df
+  hypothetical_df <- full_df
+  
+  # got through each subject
+  for (j in 1:ncol(all_combs)) {
+    # rotation scheme
+    shift_by = all_combs[i,j]
+    fam_durations_new = as.factor(shifter(fam_durations, shift_by))
+    block_types_new = as.factor(shifter(block_types, shift_by))
+    
+    # got through each block in each subject
+    for (k in 1:length(fam_durations_new)) {
+
+        # increment by one
+          hypothetical_df$n_trial[
+              hypothetical_df$fam_duration == fam_durations_new[k] & 
+              hypothetical_df$block_type == block_types_new[k] & 
+              hypothetical_df$block_number == k] <-
+                      hypothetical_df$n_trial[
+              hypothetical_df$fam_duration == fam_durations_new[k] & 
+              hypothetical_df$block_type == block_types_new[k] & 
+              hypothetical_df$block_number == k] + 1
+          
+    }
+  }
+  
+  # get stddev of std vs dev for each fam duration & block_number
+  cur_stdev <- hypothetical_df %>% 
+    dplyr::group_by(fam_duration, block_number) %>%
+    dplyr::mutate(stddev = sd(n_trial)) %>% 
+    pull(stddev)
+  
+  all_sds <- append(all_sds, sum(cur_stdev))
+
+}
+
+
+best_combos <- all_combs[which.min(all_sds),]
+
+
+```
+
+
+# Visualize
+
+## Raw data 
+```{r}
+ggplot(complete_df) + geom_histogram(aes(x=looking_time_2000_1), bins = 20) + xlab('Looking time in s')
+```
+
+
+## Looking time by block number 
+```{r pressure, echo=FALSE}
+#visualize test looking times
+test_df <- complete_df %>% filter(fam_or_test == 'test') %>% dplyr::group_by(subject_id) %>% 
+  dplyr::mutate(normalized_LT = (looking_time_2000_1-mean(looking_time_2000_1))/sd(looking_time_2000_1))
+
+
+# calculate means
+mean_df <- summarySE(test_df, measurevar="looking_time_2000_1", groupvars=c("block_number"))
+
+ggplot(test_df %>% filter(fam_or_test == 'test'), aes(x=block_number, y = looking_time_2000_1)) + 
+  geom_jitter(alpha = 0.2, width = 0.1) + stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1))  + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + xlab('Block Number') + ylab('LT in sec') + theme_classic(base_size = 15)
+```
+
+## Main effect
+```{r}
+# calculate means
+mean_df <- summarySE(test_df, measurevar="looking_time_2000_1", groupvars=c("block_type"))
+
+ggplot(test_df, aes(x=block_type, y=looking_time_2000_1)) + geom_jitter(width = 0.1, alpha = 0.2)  + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + xlab('Test trial type') + ylab('Looking Time (s)') + theme_classic(base_size = 15)
+```
+
+## Looking time by familiarization duration
+```{r}
+
+ggplot(test_df, aes(x=fam_duration, y=normalized_LT, color = fam_duration)) + geom_jitter(width = 0.1, alpha = 0.2)  + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) +  xlab('# of Fam Trials') + ylab('Looking Time (s)') + labs(color = '# of Fam Trials') + theme_grey(base_size = 14) +
+  theme(legend.position="none",
+        axis.text=element_text(size=15))
+```
+
+## Habituation curves
+```{r}
+
+ggplot(test_df %>% filter(block_type == 'Std'), aes(x=fam_duration, y=looking_time_2000_1, color = fam_duration)) + geom_jitter(width = 0.1, alpha = 0.3)  + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1), size = 1) +  xlab('# of Fam Trials') + ylab('Looking Time (s)') + labs(color = '# of Fam Trials') + theme_light(base_size = 14) +
+  theme(legend.position="none",
+        axis.text=element_text(size=15)) + ggtitle('only standard test trials')
+
+```
+
+
+## Main effect by fam duration
+```{r}
+# calculate means
+
+late <- test_df %>% filter(block_number >= 3)
+early <- test_df %>% filter(block_number <= 3)
+
+young <- test_df[test_df$age < median(unique(test_df$age)),]
+old <- test_df[test_df$age > median(unique(test_df$age)),]
+
+ggplot(young, aes(x=block_type, y=looking_time_2000_1, group=fam_duration, color = fam_duration)) + geom_point(alpha=0.2, position = position_dodge(width = .1)) + 
+    stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1))  + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + facet_wrap(~fam_duration) + xlab('Trial type') + ylab('LT in s') + labs(color = '# of Fam Trials') + theme_classic() + 
+  theme(strip.text.x = element_text(size = 14, colour = "black")) + ggtitle('young')
+
+
+ggplot(old, aes(x=block_type, y=looking_time_2000_1, group=fam_duration, color = fam_duration)) + geom_point(alpha=0.2, position = position_dodge(width = .1)) + 
+    stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1))  + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + facet_wrap(~fam_duration) + xlab('Trial type') + ylab('LT in s') + labs(color = '# of Fam Trials') + theme_classic() + 
+  theme(strip.text.x = element_text(size = 14, colour = "black")) + ggtitle('old')
+  
+
+ggplot(test_df, aes(x=block_type, y=normalized_LT, group=fam_duration)) + geom_point(alpha=0.2, position = position_dodge(width = .1)) + 
+    stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1))  + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + facet_wrap(~fam_duration) + xlab('Trial type') + ylab('normalized LT') + labs(color = '# of Fam Trials') + theme_classic() + 
+  theme(strip.text.x = element_text(size = 14, colour = "black")) + theme(strip.text.x = element_text(size = 14, colour = "black"),
+        axis.text=element_text(size=13),
+        axis.title= element_text(size = 14)) +ggtitle('study 1')
+  
+
+  
+  # geom_point(data=mean_df, aes(x = block_type, y=looking_time_until_lookaway, color = fam_duration), shape=24, size=3, position = position_jitter(width = 0.25, seed = 123)) + geom_errorbar(data=mean_df, aes(ymin=looking_time_until_lookaway-ci/2, ymax=looking_time_until_lookaway+ci/2, color = fam_duration), width=0, size=0.0, position = position_jitter(width = 0.25, seed = 123)) 
+
+```
+
+## Block
+
+```{r}
+
+ggplot(test_df, aes(x=block_type, y=block_number, group=fam_duration, color = fam_duration)) + geom_point(alpha=0.2, position = position_dodge(width = .1)) + 
+    stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1))  + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + facet_wrap(~fam_duration) + xlab('Trial type') + ylab('block number') + labs(color = '# of Fam Trials') + theme_classic() + 
+  theme(strip.text.x = element_text(size = 14, colour = "black")) + ggtitle('')
+  
+
+ggplot(young, aes(x=block_type, y=block_number, group=fam_duration, color = fam_duration)) + geom_point(alpha=0.2, position = position_dodge(width = .1)) + 
+    stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1))  + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + facet_wrap(~fam_duration) + xlab('Trial type') + ylab('block number') + labs(color = '# of Fam Trials') + theme_classic() + 
+  theme(strip.text.x = element_text(size = 14, colour = "black")) + ggtitle('young')
+  
+
+ggplot(old, aes(x=block_type, y=block_number, group=fam_duration, color = fam_duration)) + geom_point(alpha=0.2, position = position_dodge(width = .1)) + 
+    stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1))  + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + facet_wrap(~fam_duration) + xlab('Trial type') + ylab('block number') + labs(color = '# of Fam Trials') + theme_classic() + 
+  theme(strip.text.x = element_text(size = 14, colour = "black")) + ggtitle('old')
+  
+  # geom_point(data=mean_df, aes(x = block_type, y=looking_time_until_lookaway, color = fam_duration), shape=24, size=3, position = position_jitter(width = 0.25, seed = 123)) + geom_errorbar(data=mean_df, aes(ymin=looking_time_until_lookaway-ci/2, ymax=looking_time_until_lookaway+ci/2, color = fam_duration), width=0, size=0.0, position = position_jitter(width = 0.25, seed = 123)) 
+
+```
+
+## order effect? 
+
+```{r}
+ggplot(test_df, 
+       aes(x=block_number, y=normalized_LT, group=block_type, color = block_type)) + geom_point(alpha=0.2, position = position_dodge(width = .1))  + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .3)) +
+  geom_smooth(method = "lm")+
+  facet_wrap(~fam_duration)
+```
+
+```{r}
+test_df %>% 
+  group_by(block_number, block_type, fam_duration) %>% 
+   dplyr::summarize(n_trial = n()) %>% 
+  ggplot(aes(x=block_number, y=n_trial, group=block_type, color = block_type)) + 
+  geom_point(alpha=.8, position = position_dodge(width = .1))  + 
+  geom_line() +
+  facet_wrap(~fam_duration)
+
+```
+
+## Model plot
+```{r}
+
+ggplot(test_df, aes(x=block_number, y=log(looking_time_2000_1), group=block_type, color = block_type)) + geom_point(alpha=0.2, position = position_dodge(width = .1)) + 
+    stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1))  + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + facet_wrap(~fam_duration) + xlab('block number') + ylab('LT (log secs)') + labs(color = 'Test type') + theme_classic() + 
+  theme(strip.text.x = element_text(size = 14, colour = "black")) + ggtitle('Model plot')
+  
+```
+
+## Models
+```{r}
+# log transform once figuring out how to deal with 0's
+model1 <- lme(log(looking_time_2000_1+0.01) ~ block_type * fam_duration + block_number, random = ~1|subject_id, data = test_df %>% mutate(fam_duration = as.numeric(fam_duration)))
+summary(model1)
+```

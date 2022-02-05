@@ -37,8 +37,9 @@
 <body></body>
 <script>
 
-SUBJECT_NUM = 4 // 1,2,3... 30
+SUBJECT_NUM = 0 // 1,2,3... 30
 COMPLEX = false // true or false
+LAPTOP = true
 
 // Experiment setup
     var verbose = false
@@ -52,6 +53,35 @@ COMPLEX = false // true or false
 
 // Stimuli setup
 TEST_RUN = false //test run with smaller number of species etc.
+
+//set size of stims
+if (LAPTOP) {
+
+    var boxsize = 800
+    if (COMPLEX) {
+      var width_height = parseFloat(Math.floor(Math.random() * 250) + 300);
+    }
+    else {
+      var width_height = parseFloat(Math.floor(Math.random() * 350) + 350);
+
+    }
+
+}
+else {
+
+  var boxsize = 1100
+  if (COMPLEX) {
+    var width_height = parseFloat(Math.floor(Math.random() * 250) + 350);
+  }
+  else {
+    var width_height = parseFloat(Math.floor(Math.random() * 350) + 500);
+
+  }
+
+
+}
+
+
 
 
 if (TEST_RUN) {
@@ -116,7 +146,7 @@ for (var block_index = 0; block_index < all_blocks_information.length; block_ind
   if (block_index > 0) {
     var between_block = {
       type: 'html-keyboard-response',
-      stimulus: '<p><img src="stimuli/images/attngetter_blank.png" width ="1200" height = "918" ></p>',
+      stimulus: '<p><img src="stimuli/images/attngetter_blank.png"></p>',
       choices: jsPsych.ALL_KEYS,
       data: {stimulus_type: 'between_block'}
     }
@@ -144,7 +174,7 @@ var test_block = {
                             type: 'html-keyboard-response',
                             stimulus: function(){
                                     var html='<p><img src='+ jsPsych.timelineVariable('inter_trial', true) +' width ="200" height = "200" style="position:absolute;left:85%"></p>' +
-                                    '<p><img src= stimuli/images/blank.png width ="1100" height = "1100" style="border:5px solid black"></p>'
+                                    '<p><img src= stimuli/images/blank.png width ="'+ boxsize +'" height = "' + boxsize + '" style="border:5px solid black"></p>'
                                     return html
                                   },
                             trial_duration: function(){
@@ -163,20 +193,14 @@ var test_block = {
                         {
                             type: 'sequential-stimulus-presentation',
                             wall_animation: function(){
-                                var html = '<p><img src= stimuli/images/blank.png width ="1100" height = "1100" style="border:5px solid black"></p>'
+                                var html = '<p><img src= stimuli/images/blank.png width ="' + boxsize + '" height = "' + boxsize + '" style="border:5px solid black"></p>'
                                 return html;
                             },
 
                             stimuli_animation: function(){
-                              if (COMPLEX) {
-                                var width_height = parseFloat(Math.floor(Math.random() * 250) + 350);
-                              }
-                              else {
-                                var width_height = parseFloat(Math.floor(Math.random() * 350) + 500);
 
-                              }
                                 var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='" + width_height + "' height = '" + width_height + "' style='position:absolute;top:" +
-                                parseFloat(Math.floor(Math.random() * 30) + 15) + "%;left:" + parseFloat(Math.floor(Math.random() * 20) + 26) + "%'></p>" +
+                                parseFloat(Math.floor(Math.random() * 30) + 8) + "%;left:" + parseFloat(Math.floor(Math.random() * 20) + 26) + "%'></p>" +
                                 " <audio autoplay><source src='" + jsPsych.timelineVariable('music', true) + "' type='audio/mpeg'> </audio>"
                                 return html
                             },

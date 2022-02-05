@@ -1,0 +1,291 @@
+---
+title: "baby_analysis_exp2"
+author: "Gal"
+date: "9/29/2021"
+output: html_document
+code_folding: hide
+---
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(Rmisc)
+library(dplyr)
+library(here)
+library(readxl)
+library(janitor)
+library(nlme)
+library(sjmisc)
+library(DescTools)
+```
+
+## helper functions (hidden)
+```{r, include = FALSE}
+read_excel_allsheets <- function(filename, single_frame = TRUE) {
+  sheets <- readxl::excel_sheets(filename)
+  ldf <- lapply(sheets, function(X) readxl::read_excel(filename, sheet = X))
+  names(ldf) <- sheets
+  if(single_frame == TRUE){ # Creates a single data frame with all sheets combined together
+    ldf <- ldf %>% dplyr::bind_rows(.id = 'sheet_name') %>% tibble::as_tibble()
+  } else{ # Creates a separate data frame for each sheet, with each data frame being called the name of that sheet
+    list2env(ldf, envir = .GlobalEnv)
+  }
+  return(ldf)
+}
+
+shifter <- function(x, n = 1) {
+  if (n == 0) x else c(tail(x, -n), head(x, n))
+}
+```
+
+## load files (hidden)
+```{r, include=FALSE}
+
+# looking times
+looking_list <- read_excel_allsheets(here("data", "exp2", "output.xlsx"))
+looking_df <- map_dfr(looking_list, ~ .x, .id = 'subject') %>% 
+  clean_names() %>% separate(sheet_name, into = c("subject", "coder")) %>%
+  mutate(subject = as.numeric(subject), coder = as.numeric(coder)) %>%
+  select_if(function(col) !all(is.na(col)))
+
+# jspsych files
+jspsych_path = "data/exp2/jspsych"
+
+jspsych_files <- list.files(jspsych_path)
+
+# grab subject and session numbers
+subject_num <- lapply(jspsych_files, function(x) {x %>% substring(6,7) %>% as.numeric()})
+session_num <- lapply(jspsych_files, function(x) {x %>% substring(9,9) %>% as.numeric()})
+
+# convert jspsych files to big dataframe
+jspsych_list <- lapply(jspsych_files %>% lapply(function(x) {paste(jspsych_path, x, sep='/')}), read.csv)
+
+# expand subject and session num to concatenate
+subject_num_expanded <- rep(subject_num, lapply(jspsych_list, function(x) {nrow(x)}))
+session_num_expanded <- rep(session_num, lapply(jspsych_list, function(x) {nrow(x)}))
+
+jspsych_list <- lapply(jspsych_list, function(x) {x['success'] = NULL; x}) # remove success field because it caused merging issue
+jspsych_df <- map_dfr(jspsych_list, ~ .x) %>% mutate(subject_num = subject_num_expanded, session_num = as.character(session_num_expanded))
+```
+
+# reformat and merge looking times with jspsych output (hidden)
+```{r, include = FALSE}
+# get age and gender
+age_and_gender <- jspsych_df %>% select(responses) %>%
+  filter(responses != "") %>%
+  separate(responses, into = c('age', 'gender', 'session_num'), sep=',') %>% 
+    separate(age, into = c('del', 'age'), sep=':') %>% 
+    separate(gender, into = c('del2', 'gender'), sep=':') %>%
+   separate(session_num, into = c('del3', 'session_num'), sep=':') %>%
+  tidyr::extract(age, "age") %>% tidyr::extract(gender, "gender") %>% tidyr::extract(session_num, "session_num") %>%
+  select(age, gender, session_num) %>% dplyr::mutate(subject_num = subject_num)
+
+# get trials
+trial_df <- jspsych_df %>%
+  filter(stimulus_type == 'trial') %>% 
+  select(subject, rt, stimulus_displayed, block_number, block_type, subject_num, session_num) %>%
+  mutate(complexity = case_when(
+                       str_detect(stimulus_displayed, 'simple') ~ 'simple',
+                       str_detect(stimulus_displayed, 'complex') ~ 'complex'
+                     ),
+         stimulus_num = case_when(
+           complexity == 'simple' ~  str_match(stimulus_displayed, "simple_(.*?)_A.gif")[,2],
+           complexity == 'complex' ~  str_match(stimulus_displayed, "complex_(.*?)_A.gif")[,2]
+         ),
+         stimulus_num = as.numeric(stimulus_num)
+         ) %>%
+  group_by(subject_num, session_num, block_number) %>% 
+  dplyr::mutate(trial_num = 1:n(),
+                valid = case_when(    
+                #mark blocks with uneven trial num or less than 4 (ended prematurely)  
+                n() %% 2 != 0 ~ FALSE, 
+                n() < 4 ~ FALSE,
+                TRUE ~ TRUE),
+                fam_or_test = case_when( # last trial is test, rest if familiarization
+                trial_num < n() ~ 'fam',
+                trial_num == n() ~ 'test'
+        ),
+        fam_duration = max(trial_num) - 1, # how many fam trials in this block
+        block_number = block_number + 1) %>% 
+  filter(!(fam_or_test == 'fam' & trial_num < (n()-1))) %>% # remove fam trials except last, because this is the format of the looking data (one row for all fam trials)
+  ungroup() %>% left_join(age_and_gender, by = c('subject_num', 'session_num'))
+
+# complete missing blocks (for experiments that ended prematurely)
+trial_df <- trial_df %>% complete(subject_num, nesting(block_number, fam_or_test)) %>%
+   # make these trials invalid
+  # add temp_id
+  mutate(valid = case_when(
+         is.na(valid) ~ FALSE,
+         TRUE ~ valid)) %>%
+  slice(rep(1:n(), each = 2))  %>% # duplicate for each coder
+  dplyr::mutate(coder = rep_len(c(1,2), n()), 
+        temp_id = paste0(subject_num, block_number, session_num, fam_or_test, coder)) %>%
+  select(-c("coder"))
+
+# add temp id to looking df
+looking_df <- looking_df %>% filter(trial_type != 'a') %>% 
+  mutate(
+    trial_type = case_when(
+                  trial_type == 'f' ~ 'fam',
+                  trial_type == 't' ~ 'test'),
+  ) %>%
+  group_by(subject, session_number, trial_type, coder) %>%
+  dplyr::mutate(block_number = row_number(),
+         temp_id = paste0(subject, block_number, session_number, trial_type, coder)) %>%
+  dplyr::rename(looking_time_total = looks_on_total_s,
+                looking_time_1500 = looks_on_1500_s,
+                looking_time_2000 = looks_on_2000_s,
+                looking_time_2500 = looks_on_2500_s,
+                looking_time_3000 = looks_on_3000_s) %>%
+  select(-c("block_number", "x1", "trial_number"))
+
+# join trials and looking times
+complete_df <- left_join(looking_df, trial_df, by = 'temp_id')  %>%
+  select(-c("temp_id", "subject.x", "subject.y")) %>% 
+  group_by(subject_num, session_num, block_number, trial_type) %>%
+  dplyr::mutate(coder_num = n()) %>% # add column saying how many coders this trial has
+  mutate(fam_duration = factor(fam_duration, levels = c(3,5,7))) %>%
+  ungroup() %>% group_by(subject_num)
+
+# pivot wider to have coders next to each other
+#complete_df <- complete_df %>% pivot_wider(names_from = coder, values_from = #starts_with('look'))
+
+
+```
+
+Exclusions
+```{r}
+
+# remove looking times less than 1 sec 
+complete_df <- complete_df  %>% 
+  filter(
+    looks_error_2000_s == 0, # remove error looks
+    looking_time_2000 > 1, # remove looking times less than 1 sec
+    valid,
+    !(subject_num ==  '6' & session_num == "1" & trial_num >= 4), # subj 6, sess 1 exclude trials 4,5,6
+    !(subject_num ==  '9' & session_num == "1"), # subj 9, sess 1 exclude completely
+    !(subject_num ==  '13' & session_num == "1"), # subj 13, session 1 exclude completely
+    !(subject_num ==  '17' & session_num == "1" & trial_num == 6), # subj 17 sess 1 exclude trial 6
+    !(subject_num ==  '18' & session_num == "1" & trial_num == 3), # subj 18 sess 1 exclude trial 3
+    !(subject_num ==  '22' & session_num == "1" & trial_num == 6), # subj 22 sess 1 exclude trial 6
+    !(subject_num ==  '27' & session_num == "1" & trial_num == 4), # subj 27 sess 1 exclude trial 4
+    !(subject_num ==  '4' & session_num == "2" & trial_num == 6), # subj 4, sess 2 exclude trial 6
+    !(subject_num ==  '6' & session_num == "2"), # subj 6, sess 2 exclude completely
+    !(subject_num ==  '10' & session_num == "2" & trial_num == 5),# subj 10 sess 2 exclude trial 5
+    !(subject_num ==  '12' & session_num == "2" & trial_num == 6), # subj 12 sess 2 exclude trial 6
+    !(subject_num ==  '19' & session_num == "2" & trial_num == 6), # subj 19 sess 2 exclude trial 6
+   !(subject_num ==  '16' & session_num == "2" & trial_num >= 4), # subj 16 sess 2 exclude trial 4,5,6
+  !(subject_num ==  '34' & session_num == "2" & trial_num >= 5)# subj 34 sess 2 exclude trial 5,6
+  )
+```
+
+Descriptives on test trials
+
+```{r}
+
+# only test trials (and reorder some stuff)
+test_df <- complete_df %>% filter(fam_or_test == 'test') %>% dplyr::group_by(subject_num) %>% dplyr::mutate(normLT = (looking_time_2000-mean(looking_time_2000))/sd(looking_time_2000)) %>% select(c(session_number, subject_num, block_number, block_type, fam_duration), everything())
+
+# check how many subjects are left
+length(unique(complete_df$subject_num))
+
+# number of sessions with at least one valid trial
+test_df %>% group_by(subject_num, session_num) %>% dplyr::summarise() %>% nrow()
+
+# check distribution of standard vs deviant trials 
+test_df %>% group_by(block_type) %>% dplyr::summarise(n=n())
+
+# how many trials per fam duration
+test_df %>% group_by(fam_duration) %>% dplyr::summarise(n_trial = n()) 
+
+# number of trials by complexity
+test_df %>% group_by(complexity) %>% dplyr::summarise(n = n())
+
+# number of trials by session
+test_df %>% group_by(session_number) %>% dplyr::summarise(n = n())
+
+# number of trials by block number
+test_df %>% group_by(block_number) %>% dplyr::summarise(n = n())
+
+```
+
+check for sampling imbalance
+
+```{r, echo = FALSE}
+# check out distribution of block types and fam duration across block
+block_dist <- test_df %>% 
+  dplyr::group_by(block_number, block_type, fam_duration, complexity) %>% 
+  dplyr::summarise(n_trial = n()) %>% ungroup() %>% droplevels() 
+
+# expand to account for cases that didn't appear in the data at all  
+expanded_df <- block_dist %>% expand(block_number, block_type, fam_duration, complexity) 
+
+#join expanded with original
+full_df <- block_dist %>% right_join(expanded_df) 
+
+# replace nans with 0
+full_df$n_trial[is.na(full_df$n_trial)] = 0 
+
+# plot distribution
+full_df %>% ggplot(aes(x=block_number, y=n_trial, group=block_type, color = block_type)) + geom_point(alpha=.8, position = position_dodge(width = .1))  + 
+  geom_line() + facet_grid(complexity~fam_duration)
+
+```
+
+Plot results
+```{r}
+ggplot(test_df, aes(x=looking_time_2000)) + geom_histogram(bins = 20) + xlab('Looking time in s')
+
+# calculate means
+mean_df <- summarySE(test_df, measurevar="looking_time_2000", groupvars=c("block_number"))
+
+ggplot(test_df, aes(x=block_type, y=looking_time_2000)) + geom_jitter(width = 0.1, alpha = 0.2)  + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + xlab('Test trial type') + ylab('Looking Time (s)') + theme_classic(base_size = 15)
+
+ggplot(test_df, aes(x=fam_duration, y=looking_time_2000, color = fam_duration)) + geom_jitter(width = 0.1, alpha = 0.2)  + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) +  xlab('# of Fam Trials') + ylab('Looking Time (s)') + labs(color = '# of Fam Trials') + theme_grey(base_size = 14) + theme(legend.position="none", axis.text=element_text(size=15))
+
+ggplot(test_df, aes(x=block_type, y=looking_time_2000, group=complexity, color = complexity)) + geom_point(alpha=0.2, position = position_dodge(width = .1)) + facet_grid(~fam_duration) + xlab('Trial type') + ylab('LT in sec') + labs(color = 'Complexity') + theme_classic() + theme(strip.text.x = element_text(size = 14, colour = "black"),
+        axis.text=element_text(size=13),
+        axis.title= element_text(size = 14)) + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1)) + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) +
+  ggtitle('') 
+```
+
+
+Familiarization
+```{r}
+fam_df <- complete_df %>% filter(fam_or_test == 'fam')
+
+ggplot(fam_df %>% filter(!is.na(fam_duration)), aes(x=fam_duration, y=looking_time_total, group=complexity, color = complexity)) + geom_point(alpha=0.2, position = position_dodge(width = .1)) + xlab('Fam duration') + geom_line(aes(group = interaction(as.numeric(subject_num), complexity))) + ylab('LT in sec') + labs(color = 'Complexity') + theme_classic() + theme(strip.text.x = element_text(size = 14, colour = "black"),
+        axis.text=element_text(size=13),
+        axis.title= element_text(size = 14))  + stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1)) + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) +ggtitle('exp 2') 
+
+```
+
+Models
+```{r}
+model1 <- lme(looking_time_2000+0.01 ~ block_number + session_number, random = ~1|subject_num, data = test_df %>% mutate(fam_duration = as.numeric(fam_duration), subject_num = as.numeric(subject_num)))
+
+
+model1 <- lme(log(looking_time_2000+0.01) ~ block_type + fam_duration +  complexity + block_number, random = ~1|subject_num, data = test_df %>% mutate(fam_duration = as.numeric(fam_duration), subject_num = as.numeric(subject_num)))
+
+
+summary(model1)
+
+```
+
+Inter-session correlation
+
+```{r}
+wide_df <- test_df %>% pivot_wider(names_from = complexity, values_from = looking_time_2000) %>% dplyr::group_by(subject_num) %>% dplyr::summarise(simple = mean(simple, na.rm = TRUE), complex = mean(complex, na.rm = TRUE)) 
+
+ggplot(wide_df, aes(x = log(simple), y = log(complex))) + geom_point(size =4) + theme_classic()
+
+cor(wide_df$simple, wide_df$complex, use = 'na.or.complete')
+
+cor.test(log(wide_df$simple), log(wide_df$complex), use = 'na.or.complete')
+
+mean(log(wide_df$simple), na.rm = TRUE)
+mean(log(wide_df$complex), na.rm = TRUE)
+
+```

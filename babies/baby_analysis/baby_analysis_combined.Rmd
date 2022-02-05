@@ -1,0 +1,169 @@
+---
+title: "baby_analysis_combined.Rmd"
+author: "Gal"
+date: "1/11/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+
+library(tidyverse)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+load data
+```{r}
+exp1_data <- readRDS('exp1_data')
+exp2_data <- readRDS('exp2_data')
+
+exp1_data = exp1_data %>% mutate(session_number = 1, experiment = 1, complexity = 'simple', subject_num = subject_id) 
+exp2_data = exp2_data %>% mutate(experiment = 2, subject_num = as.numeric(subject_num)) 
+
+all_data <- rbind(exp1_data %>% select(intersect(colnames(exp1_data), colnames(exp2_data))), exp2_data %>% select(intersect(colnames(exp1_data), colnames(exp2_data)))) %>% mutate(experiment = as.factor(experiment))
+
+test_df <- all_data %>% filter(fam_or_test == 'test') %>% dplyr::group_by(subject_num) %>% dplyr::mutate(normLT = (looking_time_2000_1-mean(looking_time_2000_1))/sd(looking_time_2000_1)) %>% select(c(session_number, subject_num, block_number, block_type, fam_duration), everything())
+
+```
+
+
+replication
+```{r}
+
+ggplot(test_df  %>% filter(complexity == 'simple', experiment == 1), aes(x=block_type, y=normLT, group=fam_duration)) + geom_point(alpha=0.2, position = position_dodge(width = .1)) + facet_grid(~fam_duration) + xlab('Trial type') + ylab('normalized LT') + labs(color = 'Complexity') + theme_classic() + theme(strip.text.x = element_text(size = 14, colour = "black"),
+        axis.text=element_text(size=13),
+        axis.title= element_text(size = 14)) + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1)) + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) +
+  ggtitle('exp1') 
+
+ggplot(test_df  %>% filter(complexity == 'simple', experiment == 2), aes(x=block_type, y=normLT, group=fam_duration)) + geom_point(alpha=0.2, position = position_dodge(width = .1)) + facet_grid(~fam_duration) + xlab('Trial type') + ylab('normalized LT') + labs(color = 'Complexity') + theme_classic() + theme(strip.text.x = element_text(size = 14, colour = "black"),
+        axis.text=element_text(size=13),
+        axis.title= element_text(size = 14)) + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1)) + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) +
+  ggtitle('exp2 (simple only)') 
+
+ggplot(test_df  %>% filter(complexity == 'simple'), aes(x=block_type, y=normLT, group=fam_duration)) + geom_point(alpha=0.2, position = position_dodge(width = .1)) + facet_grid(~fam_duration) + xlab('Trial type') + ylab('normalized LT') + labs(color = 'Complexity') + theme_classic() + theme(strip.text.x = element_text(size = 14, colour = "black"),
+        axis.text=element_text(size=13),
+        axis.title= element_text(size = 14)) + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1)) + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) +
+  ggtitle('exp1 and exp2 (simple only)') 
+
+```
+```{r}
+
+model1 <- lme(log(looking_time_2000_1) ~ block_number + session_number + experiment + block_type * fam_duration, random = ~1|subject_num, data = test_df %>% filter(complexity == 'simple') %>% mutate(fam_duration = as.numeric(fam_duration), subject_num = as.numeric(subject_num)))
+
+summary(model1)
+```
+
+
+
+```{r}
+fam_df <- exp1_data %>% filter(fam_or_test == 'fam')
+
+ggplot(fam_df, aes(x=fam_duration, y=looks_off_total_s_1, group=complexity)) + geom_point(alpha=0.2, position = position_dodge(width = .1)) + xlab('Trial type') + ylab('LT in sec') + labs(color = 'Complexity') + theme_classic() + theme(strip.text.x = element_text(size = 14, colour = "black"),
+        axis.text=element_text(size=13),
+        axis.title= element_text(size = 14))  + stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1)) + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) +ggtitle('exp 1') 
+
+```
+Subsampling exp 2
+```{r}
+
+
+test_df = test_df %>% filter(experiment == 2)
+
+test_df$block_type <- test_df$block_type %>% droplevels()
+
+block_dist <- test_df %>% filter(experiment == 2) %>%
+  dplyr::group_by(block_number, block_type, fam_duration, complexity) %>% 
+  dplyr::summarise(n_trial = n())
+
+# expand to account for cases that didn't appear in the data at all  
+expanded_df <- block_dist %>% expand(block_number, block_type, fam_duration, complexity) 
+
+#join expanded with original
+full_df <- block_dist %>% right_join(expanded_df) 
+
+# replace nans with 0
+full_df$n_trial[is.na(full_df$n_trial)] = 0 
+
+# plot distribution
+full_df %>% ggplot(aes(x=block_number, y=n_trial, group=block_type, color = block_type)) + geom_point(alpha=.8, position = position_dodge(width = .1))  + 
+  geom_line() + facet_grid(complexity~fam_duration)
+
+n_std = vector(mode = "numeric", length = 36)
+n_dev = vector(mode = "numeric", length = 36)
+std_minus_dev = vector(mode = "numeric", length = 36)
+
+idx = 1
+for (i in c("simple", "complex")) {
+  for (j in c(3,5,7)) {
+    for (k in 1:6) {
+      
+      n_std = block_dist %>% filter(block_number == k, fam_duration == j, complexity == i, block_type == 'Std') %>% pull(n_trial)
+      
+      n_dev = block_dist %>% filter(block_number == k, fam_duration == j, complexity == i, block_type == 'Dev') %>% pull(n_trial)
+    
+      n_retain = min(c(n_std, n_dev))
+      
+      all_stds = test_df %>% filter(block_number == k, fam_duration == j, complexity == i, block_type == 'Std')
+      all_devs = test_df %>% filter(block_number == k, fam_duration == j, complexity == i, block_type == 'Dev')
+      
+      all_stds = all_stds[sample(nrow(all_stds), n_retain, replace=F),]
+      
+      all_devs = all_devs[sample(nrow(all_devs), n_retain, replace=F),]
+    
+      if (idx == 1){
+        subsampled_df <- bind_rows(all_stds, all_devs)
+      }
+      else {
+        subsampled_df <- bind_rows(subsampled_df, rbind(all_stds, all_devs))
+      }
+      
+      idx = idx + 1
+    }
+    
+  }
+}
+
+block_dist <- subsampled_df %>% filter(experiment == 2) %>%
+  dplyr::group_by(block_number, block_type, fam_duration, complexity) %>% 
+  dplyr::summarise(n_trial = n())
+
+# expand to account for cases that didn't appear in the data at all  
+expanded_df <- block_dist %>% expand(block_number, block_type, fam_duration, complexity) 
+
+#join expanded with original
+full_df <- block_dist %>% right_join(expanded_df) 
+
+# replace nans with 0
+full_df$n_trial[is.na(full_df$n_trial)] = 0 
+
+# plot distribution
+full_df %>% ggplot(aes(x=block_number, y=n_trial, group=block_type, color = block_type)) + geom_point(alpha=.8, position = position_dodge(width = .4))  + 
+  geom_line() + facet_grid(complexity~fam_duration)
+
+ggplot(subsampled_df, aes(x=block_type, y=normLT, group=complexity, color = complexity)) + geom_point(alpha=0.2, position = position_dodge(width = .1)) + facet_grid(~fam_duration) + xlab('Trial type') + ylab('normalized LT') + labs(color = 'Complexity') + theme_classic() + theme(strip.text.x = element_text(size = 14, colour = "black"),
+        axis.text=element_text(size=13),
+        axis.title= element_text(size = 14)) + stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1)) + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) +ggtitle('subsampled') 
+
+
+```
+
+Check how to reach experiment 2
+
+```{r}
+
+ggplot(test_df %>% filter(experiment == 2, subject_num == 5), aes(x=block_type, y=looking_time_2000_1, color=complexity)) + geom_point(alpha=0.8, position = position_dodge(width = .1), size = 5) +
+facet_grid(~fam_duration) + xlab('Trial type') + ylab('Looking time in sec') + theme_classic() +
+theme(strip.text.x = element_text(size = 14, colour = "black"),
+axis.text=element_text(size=13),
+axis.title= element_text(size = 14)) + 
+  scale_x_discrete(labels = c ('Novel', 'Familiar'))
+
+```

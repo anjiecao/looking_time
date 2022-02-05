@@ -304,12 +304,6 @@ function generate_all_block(subject_num,
     fam_orders = counterbalancing_table[subject_num].fam_duration
     block_orders = counterbalancing_table[subject_num].block_type
 
-    console.log('block_orders')
-    console.log(block_orders)
-
-    console.log('fam_orders')
-    console.log(fam_orders)
-
     // random order of pairs
     pairs = [0,1,2,3,4,5]
     shuffleArray(pairs)

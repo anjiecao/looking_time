@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="bc6c7f6e-4eeb-49ab-bd3d-0c1f0d8f0015" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/../baby_analysis/Rplot01.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../baby_analysis/baby_analysis.Rmd" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../baby_analysis/baby_analysis_combined.Rmd" beforeDir="false" afterPath="$PROJECT_DIR$/../baby_analysis/baby_analysis_combined.Rmd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../baby_analysis/baby_analysis_exp2.Rmd" beforeDir="false" afterPath="$PROJECT_DIR$/../baby_analysis/baby_analysis_exp2.Rmd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../baby_analysis/data/exp2/~$output.xlsx" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+  </component>
+  <component name="ProjectId" id="23tMiyYY72EJGwkqSDlBibJuWWq" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showExcludedFiles" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="RunManager">
+    <configuration name="adaptive_sampling" type="PythonConfigurationType" factoryName="Python">
+      <module name="adaptive_sampling" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="/usr/local/bin/python3.8" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/.." />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="ServiceViewManager">
+    <option name="viewStates">
+      <list>
+        <serviceView>
+          <treeState>
+            <expand />
+            <select />
+          </treeState>
+        </serviceView>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="bc6c7f6e-4eeb-49ab-bd3d-0c1f0d8f0015" name="Default Changelist" comment="" />
+      <created>1642549060843</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1642549060843</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="424" y="259" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1643134622875">
+      <screen x="0" y="0" width="1920" height="1200" />
+    </state>
+    <state x="424" y="259" key="#com.intellij.execution.impl.EditConfigurationsDialog/-1440.0.1440.900/0.0.1920.1200@0.0.1920.1200" timestamp="1643134149529" />
+    <state x="424" y="259" key="#com.intellij.execution.impl.EditConfigurationsDialog/-1440.25.1440.875/0.0.1920.1200@0.0.1920.1200" timestamp="1643134622875" />
+    <state x="546" y="522" key="FileChooserDialogImpl" timestamp="1643135129557">
+      <screen x="0" y="0" width="1920" height="1200" />
+    </state>
+    <state x="546" y="522" key="FileChooserDialogImpl/-1440.0.1440.900/0.0.1920.1200@0.0.1920.1200" timestamp="1643135129557" />
+    <state x="268" y="399" key="SettingsEditor" timestamp="1643135197505">
+      <screen x="0" y="0" width="1920" height="1200" />
+    </state>
+    <state x="268" y="399" key="SettingsEditor/-1440.0.1440.900/0.0.1920.1200@0.0.1920.1200" timestamp="1643135197505" />
+    <state x="469" y="236" key="SettingsEditor/-1440.25.1440.875/0.0.1920.1200@0.0.1920.1200" timestamp="1643134788353" />
+    <state x="399" y="279" key="com.intellij.ide.util.TipDialog" timestamp="1643134243416">
+      <screen x="0" y="0" width="1920" height="1200" />
+    </state>
+    <state x="399" y="279" key="com.intellij.ide.util.TipDialog/-1440.0.1440.900/0.0.1920.1200@0.0.1920.1200" timestamp="1643134243416" />
+  </component>
+</project>
