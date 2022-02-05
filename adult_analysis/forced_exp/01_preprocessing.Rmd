@@ -1,0 +1,633 @@
+---
+title: "01_preprocessing.rmd"
+author: "anjie & gal"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: no
+---
+
+```{r message=FALSE, warning=FALSE}
+library(here)
+library(tidyverse)
+library(stringr) # for parsing r string 
+library(jsonlite) # for parsing r string 
+
+ d_path <- here("data/01_merged_data/fs_only_merged_data.csv")
+#MERGED_DATA_PATH <- here("data/platform_comparison_data/prolific/merged_data/merged_data.csv")
+
+rt_path <- here("data/02_processed_data/trimmed_fs_rt_data.csv")
+
+
+#d_path <- here("data/merged_data/sample_1/merged_data.csv")
+df.raw <- read_csv(d_path)
+```
+
+
+
+
+# RT data 
+
+```{r}
+TEST_TRIAL <- c("pref_reveal", "trial")
+# do we want to go w/ the data wrangling route or the jspsych route? 
+
+
+df.processed <- df.raw %>% 
+  filter(stimulus_type == "trial") %>% 
+  # select(subject, rt,
+  #        block_number, block_type, stimulus_displayed, 
+  #         block_deviant, block_background) %>% 
+  select(subject, rt,
+          block_number, block_type, stimulus_displayed, 
+          block_deviant, block_background, forced_exposure_time,
+          exposure_type) %>% 
+  group_by(subject, block_number) %>% 
+  mutate(
+    trial_number = row_number()) %>% 
+  mutate(
+    trial_type = case_when(
+     stimulus_displayed == block_deviant ~ "deviant", 
+     TRUE ~ "background"
+    ),
+    trial_complexity = case_when(
+      grepl("simple", stimulus_displayed) ~ "simple", 
+      grepl("complex", stimulus_displayed) ~ "complex"
+    )
+  ) %>%   
+  mutate(trial_complexity = factor(trial_complexity, levels = c("simple", "complex"))) %>% 
+  mutate(block_similarity = case_when(
+      grepl("_similar", block_type) ~ "similar", 
+      grepl("_dissimilar", block_type) ~ "dissimilar"
+    )
+  ) %>% 
+  mutate(item_type = case_when(
+    trial_type == 'background' ~ trial_type,
+    trial_type == 'deviant' ~ paste(block_similarity, 'deviant')
+    )
+  ) %>%   
+  mutate(item_type = factor(
+    item_type, 
+    levels = c("background",
+               "similar deviant", 
+               "dissimilar deviant")
+      )
+    )  %>% 
+    mutate(item_id = 
+             str_match(stimulus_displayed, "spore_stims/\\s*(.*?)..\\s*.gif")[,2]
+    )  %>% 
+  # select(subject, block_number, block_type, trial_number, item_type, trial_type, trial_complexity, item_id, rt) %>% 
+ select(subject, block_number, block_type, forced_exposure_time, trial_number, item_type, trial_type, trial_complexity, item_id, rt, exposure_type) %>% 
+  transform(rt = as.numeric(rt)) %>%
+        mutate(half = case_when(
+     block_number <= max(block_number)/2 ~ 'first half' , 
+     block_number > max(block_number)/2 ~ 'second half', 
+      )
+    ) 
+
+################# Calculate number of deviants per block ################# 
+
+temp_block_number <- df.processed %>% 
+  group_by(subject, block_number) %>% 
+  summarise(
+    block_length = n()
+  ) %>% 
+  mutate(
+    temp_id = paste0(subject, block_number)
+  ) %>% 
+  ungroup() %>% 
+  select(subject, block_number, temp_id, block_length)
+
+# calculate background trial number and do substraction to know the # of deviants
+temp_background_number <- df.processed %>% 
+  group_by(subject, trial_type, block_number) %>% 
+  summarise(
+    trial_type_number = n()
+  ) %>% 
+  filter(trial_type == "background") %>% 
+  mutate(
+    temp_id = paste0(subject, block_number)
+  ) %>% 
+  rename(background_number = trial_type_number) %>% 
+  ungroup() %>% 
+  select(temp_id, background_number)
+ 
+temp_deviant <- left_join(temp_block_number, temp_background_number, 
+          by = "temp_id") %>% 
+  mutate(
+    block_deviant_number = block_length - background_number
+  ) %>% 
+  ungroup() %>% 
+  select(temp_id, block_deviant_number)
+
+
+df.processed <- df.processed %>% 
+  mutate(temp_id = paste0(subject, block_number)) %>% 
+  left_join(temp_deviant, by = "temp_id") %>% 
+  select(-temp_id)
+
+
+################# Add first_deviant second_deviant ################# 
+
+temp_deviant_order <- df.processed %>% 
+  filter(trial_type == "deviant") %>% 
+  select(subject, block_number, trial_number, trial_type) %>% 
+  group_by(subject, block_number) %>% 
+  mutate(
+    index = row_number(),
+    trial_type_index = case_when(
+      index == 1 ~ "first_deviant", 
+      index == 2 ~ "second_deviant"
+    ), 
+    temp_id = paste0(subject, block_number, trial_number)
+  ) %>% 
+  ungroup() %>% 
+  select(temp_id, trial_type_index)
+
+
+df.processed <- df.processed %>% 
+  mutate(
+    temp_id = paste0(subject, block_number, trial_number)
+  ) %>% 
+  left_join(temp_deviant_order, by = "temp_id") %>% 
+  mutate(
+    trial_type_index = if_else(is.na(trial_type_index), 
+                               "background", 
+                               trial_type_index)
+  ) %>% 
+  select(- temp_id)
+
+
+
+################# Add first_deviant second_deviant position ################# 
+first_dev_pos_df <- df.processed %>% 
+  filter(trial_type_index == "first_deviant") %>% 
+  select(subject, block_number, trial_type_index, trial_number) %>% 
+  mutate(
+    temp_id = paste0(subject, block_number), 
+    first_dev_position = trial_number
+  ) %>% 
+  select(temp_id, first_dev_position)
+  
+df.processed <- df.processed %>% 
+  mutate(
+    temp_id = paste0(subject, block_number)) %>% 
+  left_join(first_dev_pos_df, by = "temp_id") %>% 
+  select(-temp_id)
+
+
+second_dev_pos_df <- df.processed %>% 
+  filter(trial_type_index == "second_deviant") %>% 
+  select(subject, block_number, trial_type_index, trial_number) %>% 
+  mutate(
+    temp_id = paste0(subject, block_number), 
+    second_dev_position = trial_number
+  ) %>% 
+  select(temp_id, second_dev_position)
+  
+df.processed <- df.processed %>% 
+  mutate(
+    temp_id = paste0(subject, block_number)) %>% 
+  left_join(second_dev_pos_df, by = "temp_id") %>% 
+  select(-temp_id)
+
+  
+
+#write_csv(df.processed, here('data/processed_data/processed_RTdata.csv'))
+
+df.processed
+```
+
+# RT data for mixed task 
+
+```{r}
+
+TEST_TRIAL <- c("pref_reveal", "trial")
+# do we want to go w/ the data wrangling route or the jspsych route? 
+
+
+df.processed <- df.raw %>% 
+  filter(stimulus_type == "trial") %>% 
+  # select(subject, rt,
+  #        block_number, block_type, stimulus_displayed, 
+  #         block_deviant, block_background) %>% 
+  select(subject, rt,
+          block_number, block_type, stimulus_displayed, 
+          block_deviant, block_background, 
+          exposure_type) %>% 
+  group_by(subject, block_number) %>% 
+  mutate(
+    trial_number = row_number()) %>% 
+  mutate(
+    trial_type = case_when(
+     stimulus_displayed == block_deviant ~ "deviant", 
+     TRUE ~ "background"
+    ),
+    trial_complexity = case_when(
+      grepl("simple", stimulus_displayed) ~ "simple", 
+      grepl("complex", stimulus_displayed) ~ "complex"
+    )
+  ) %>%   
+  mutate(trial_complexity = factor(trial_complexity, levels = c("simple", "complex"))) %>% 
+  mutate(block_similarity = case_when(
+      grepl("_similar", block_type) ~ "similar", 
+      grepl("_dissimilar", block_type) ~ "dissimilar"
+    )
+  ) %>% 
+  mutate(item_type = case_when(
+    trial_type == 'background' ~ trial_type,
+    trial_type == 'deviant' ~ paste(block_similarity, 'deviant')
+    )
+  ) %>%   
+  mutate(item_type = factor(
+    item_type, 
+    levels = c("background",
+               "similar deviant", 
+               "dissimilar deviant")
+      )
+    )  %>% 
+    mutate(item_id = 
+             str_match(stimulus_displayed, "spore_stims/\\s*(.*?)..\\s*.gif")[,2]
+    )  %>% 
+  # select(subject, block_number, block_type, trial_number, item_type, trial_type, trial_complexity, item_id, rt) %>% 
+ select(subject, block_number, block_type, trial_number, item_type, trial_type, trial_complexity, item_id, rt, exposure_type) %>% 
+  transform(rt = as.numeric(rt)) %>%
+        mutate(half = case_when(
+     block_number <= max(block_number)/2 ~ 'first half' , 
+     block_number > max(block_number)/2 ~ 'second half', 
+      )
+    ) 
+
+################# Calculate number of deviants per block ################# 
+
+temp_block_number <- df.processed %>% 
+  group_by(subject, block_number) %>% 
+  summarise(
+    block_length = n()
+  ) %>% 
+  mutate(
+    temp_id = paste0(subject, block_number)
+  ) %>% 
+  ungroup() %>% 
+  select(subject, block_number, temp_id, block_length)
+
+# calculate background trial number and do substraction to know the # of deviants
+temp_background_number <- df.processed %>% 
+  group_by(subject, trial_type, block_number) %>% 
+  summarise(
+    trial_type_number = n()
+  ) %>% 
+  filter(trial_type == "background") %>% 
+  mutate(
+    temp_id = paste0(subject, block_number)
+  ) %>% 
+  rename(background_number = trial_type_number) %>% 
+  ungroup() %>% 
+  select(temp_id, background_number)
+ 
+temp_deviant <- left_join(temp_block_number, temp_background_number, 
+          by = "temp_id") %>% 
+  mutate(
+    block_deviant_number = block_length - background_number
+  ) %>% 
+  ungroup() %>% 
+  select(temp_id, block_deviant_number)
+
+
+df.processed <- df.processed %>% 
+  mutate(temp_id = paste0(subject, block_number)) %>% 
+  left_join(temp_deviant, by = "temp_id") %>% 
+  select(-temp_id)
+
+
+################# Add first_deviant second_deviant ################# 
+
+temp_deviant_order <- df.processed %>% 
+  filter(trial_type == "deviant") %>% 
+  select(subject, block_number, trial_number, trial_type) %>% 
+  group_by(subject, block_number) %>% 
+  mutate(
+    index = row_number(),
+    trial_type_index = case_when(
+      index == 1 ~ "first_deviant", 
+      index == 2 ~ "second_deviant"
+    ), 
+    temp_id = paste0(subject, block_number, trial_number)
+  ) %>% 
+  ungroup() %>% 
+  select(temp_id, trial_type_index)
+
+
+df.processed <- df.processed %>% 
+  mutate(
+    temp_id = paste0(subject, block_number, trial_number)
+  ) %>% 
+  left_join(temp_deviant_order, by = "temp_id") %>% 
+  mutate(
+    trial_type_index = if_else(is.na(trial_type_index), 
+                               "background", 
+                               trial_type_index)
+  ) %>% 
+  select(- temp_id)
+
+
+
+################# Add first_deviant second_deviant position ################# 
+first_dev_pos_df <- df.processed %>% 
+  filter(trial_type_index == "first_deviant") %>% 
+  select(subject, block_number, trial_type_index, trial_number) %>% 
+  mutate(
+    temp_id = paste0(subject, block_number), 
+    first_dev_position = trial_number
+  ) %>% 
+  select(temp_id, first_dev_position)
+  
+df.processed <- df.processed %>% 
+  mutate(
+    temp_id = paste0(subject, block_number)) %>% 
+  left_join(first_dev_pos_df, by = "temp_id") %>% 
+  select(-temp_id)
+
+
+second_dev_pos_df <- df.processed %>% 
+  filter(trial_type_index == "second_deviant") %>% 
+  select(subject, block_number, trial_type_index, trial_number) %>% 
+  mutate(
+    temp_id = paste0(subject, block_number), 
+    second_dev_position = trial_number
+  ) %>% 
+  select(temp_id, second_dev_position)
+  
+df.processed <- df.processed %>% 
+  mutate(
+    temp_id = paste0(subject, block_number)) %>% 
+  left_join(second_dev_pos_df, by = "temp_id") %>% 
+  select(-temp_id)
+
+  
+
+#write_csv(df.processed, here('data/processed_data/processed_RTdata.csv'))
+
+df.processed
+
+```
+
+
+# memory test
+
+```{r}
+df.temp_memory <- df.raw %>% 
+   mutate(subject_block = paste0(subject, block_number)) %>% 
+   select(subject, responses, memory_question_stimuli, memory_block_index) %>% 
+  filter(!is.na(memory_question_stimuli)) %>% 
+  filter(!grepl("practice", memory_question_stimuli)) %>% 
+   mutate(subject_block = paste0(subject, memory_block_index))%>% 
+  select(-subject)
+  
+df.temp_processed <-  df.raw %>% 
+ mutate(subject_block = paste0(subject, block_number)) %>%
+ select(subject, block_number, block_background, block_deviant, subject_block) %>% 
+ filter(!is.na(block_number)) 
+
+
+df.temp_memory_answer <- left_join(df.temp_processed, df.temp_memory, by = "subject_block") %>% 
+  mutate(
+    memory_question_type = case_when(
+     (memory_question_stimuli == block_background  | memory_question_stimuli == block_deviant) ~ "memory_true_stimulus",
+       (memory_question_stimuli != block_background  && memory_question_stimuli != block_deviant) ~ "memory_false_stimulus", 
+     TRUE ~ "error!"
+    ),
+    memory_response = case_when(
+      (memory_question_stimuli == block_background  | memory_question_stimuli == block_deviant) & grepl("Yes", responses) ~ TRUE, 
+      (memory_question_stimuli != block_background  && memory_question_stimuli != block_deviant) & grepl("No", responses) ~ TRUE, 
+      TRUE ~ FALSE
+    )
+  ) %>% 
+  select(
+    subject_block, memory_question_type, memory_response
+  ) %>% 
+  distinct(subject_block, memory_question_type, .keep_all = TRUE) %>% 
+  pivot_wider(names_from = memory_question_type, values_from = memory_response)
+df.temp_memory_answer
+
+df.processed <- df.processed %>% 
+  mutate(subject_block =  paste0(subject, block_number)) %>% 
+  left_join(df.temp_memory_answer, by = "subject_block") %>% 
+  select(-subject_block)
+# 
+# df.temp_pref <- df.raw %>% 
+#   filter(stimulus_type == "pref_reveal") %>% 
+#   filter(!is.na(block_number)) %>% 
+#   mutate(
+#     subject_block = paste0(subject, block_number)
+#   ) %>% 
+#   select(trial_looking_time, subject, subject_block, block_number, stim_type_selected)
+# 
+# df.pref <- df.temp_pref %>% 
+#   left_join(df.temp_rt, by = "subject_block") %>% 
+#   select(subject, trial_looking_time, block_number, block_type, stim_type_selected) 
+# 
+# write_csv(df.pref, here('data/processed_data/processed_prefdata.csv'))
+
+```
+
+# Math task 
+
+```{r}
+df.attention_check <- df.raw %>% 
+  filter(stimulus_type == "math_question") %>% 
+  select(subject, responses, math_correct_answer) %>% 
+  toJSON() %>% 
+  fromJSON() %>% 
+    mutate(
+      math_response = map(responses, ~ fromJSON(.) %>% as.data.frame())) %>% 
+    unnest(math_response) %>% 
+  mutate(
+    math_correct_answer = as.numeric(math_correct_answer), 
+    math_response = as.numeric(as.character(Q0))
+  ) %>% 
+  mutate(
+    correct_response = (math_correct_answer == math_response)
+  ) %>% 
+  group_by(subject) %>% 
+  summarize(
+    total_question = n(),
+    correct_question = sum(correct_response), 
+    percent_correct = correct_question / total_question
+  )
+```
+
+
+
+# Norming Data 
+## similarity 
+```{r}
+# complexity doesn't have trial type
+df.similarity <- df.raw %>% 
+  filter(trial_type == "survey-likert") %>% 
+  mutate(
+    question_type = case_when(
+      stimulus_type == "similarity_question" ~ "similarity", 
+      TRUE ~ "complexity" 
+    )
+  ) %>% 
+  filter(question_type =="similarity") %>% 
+  select(subject, question_type, rt, responses, stimulus_left, stimulus_right) %>% 
+  # a dumb way to extrat the rating
+  separate(responses, into = c("question", "raw_answer"), sep = ":") %>% 
+  mutate(
+    rating = as.numeric(str_extract(raw_answer, "[[:digit:]]+"))) %>% 
+  select(subject, question_type, stimulus_left, stimulus_right, rating)
+
+#write_csv(df.similarity, here('data/processed_data/processed_similaritydata.csv'))
+```
+
+## complexity 
+```{r}
+df.complexity <- df.raw %>% 
+  filter(trial_type == "survey-likert") %>% 
+  mutate(
+    question_type = case_when(
+      stimulus_type == "similarity_question" ~ "similarity", 
+      TRUE ~ "complexity" 
+    )
+  ) %>% 
+  filter(question_type =="complexity") %>% 
+  select(subject, question_type, rt, responses, stimulus) %>% 
+  # a dumb way to extrat the rating
+  separate(responses, into = c("question", "raw_answer"), sep = ":") %>% 
+  mutate(
+    rating = as.numeric(str_extract(raw_answer, "[[:digit:]]+"))) %>% 
+  select(subject, question_type, stimulus, rating)
+
+
+#write_csv(df.complexity, here('data/processed_data/processed_complexitydata.csv'))
+```
+
+# Demographic information 
+
+```{r}
+df.demog <- df.raw  %>% 
+  filter(grepl("demog", trial_type)) %>% 
+  select(subject, trial_type, responses) %>% 
+  toJSON() %>% 
+  fromJSON() %>% 
+    mutate(
+      demog_question = map(responses, ~ fromJSON(.) %>% as.data.frame())) %>% 
+    unnest(demog_question)  %>% 
+  group_by(subject) %>%
+  mutate_at(vars(-group_cols()), function(x) {x[!is.na(x)][1]}) %>%
+  distinct() %>% 
+  select(-responses, -trial_type)
+
+#write_csv(df.demog, here('data/processed_data/processed_demogdata.csv'))
+```
+
+# trimmed data 
+
+
+
+## participant level exclusion 
+
+### Memory 
+
+```{r}
+ df.attention_check <- df.processed %>% 
+  group_by(subject) %>% 
+  distinct(subject, block_number, .keep_all = TRUE) %>% 
+  select(subject, block_number, memory_false_stimulus, memory_true_stimulus) %>% 
+  group_by(subject) %>% 
+  summarise(
+    false_stimulus_right_num = sum(memory_false_stimulus), 
+    true_stimulus_right_num = sum(memory_true_stimulus)
+  ) %>% 
+  mutate(
+    total_right_num = false_stimulus_right_num + true_stimulus_right_num, 
+    percent_correct = total_right_num / total_right_num
+  )
+
+```
+
+
+```{r}
+# prolific finish time participants 
+#prolific_summary <- read_csv(prolific_path) %>% 
+ # filter(status == "APPROVED") %>% 
+  #select(time_taken) %>% 
+  #summarize(
+  #median = median(time_taken),
+  #  mad = mad(time_taken), 
+   # upper = median + 3 * mad, 
+    #lower = median - 3 * mad)
+# this is buggy! forgot to record prolific id
+#prolific_sbj <- prolific_summary %>% 
+#  filter(time_taken < lower | time_taken > upper) %>% 
+#  pull(subject)
+  
+
+# flat rt participant 
+flat_rt_sbj <- df.processed %>% 
+  group_by(subject) %>% 
+  summarise(sd = sd(log(rt))) %>% 
+  filter(sd < 0.15) %>% 
+  pull(subject)
+
+# attention check participant 
+attention_check_sbj <- df.attention_check %>% 
+  filter(percent_correct < 0.8) %>% 
+  pull(subject)
+
+# similarity rating 
+similarity_sbj <- df.similarity %>% 
+  count(subject, rating) %>% 
+  filter(n > 20 * 0.8) %>%  # twenty trials, 80% identical rating 
+  pull(subject)  
+
+#similarity_sbj
+
+complexity_sbj <- df.complexity %>% 
+  count(subject, rating) %>% 
+  filter(n > 20 * 0.8) %>%  # twenty trials, 80% identical rating 
+  pull(subject)
+
+
+
+exlude_participant <- unique(c(flat_rt_sbj, 
+                               similarity_sbj, 
+                               complexity_sbj, 
+                               attention_check_sbj
+                               ))
+
+
+df.rt_trimmed <- df.processed %>% filter(!(subject %in% exlude_participant))
+#df.pref_trimmed <- df.pref %>% filter(!(subject %in% exlude_participant))
+df.complexity_trimmed <- df.complexity %>% filter(!(subject %in% exlude_participant))
+df.similarity_trimmed <- df.similarity %>% filter(!(subject %in% exlude_participant))
+df.demog_trimmmed <- df.demog %>% filter(!(subject %in% exlude_participant))
+```
+
+## trial level exclusion 
+```{r}
+rt_summary <- df.rt_trimmed %>% 
+  summarise(
+    median = median(log(rt)),
+    mad = mad(log(rt)), 
+    upper = median + 3 * mad, 
+    lower = median - 3 * mad)
+  
+df.rt_trimmed <- df.rt_trimmed %>% 
+  filter(!(log(rt) > rt_summary$upper | log(rt) < rt_summary$lower))
+```
+
+## writeout trimmed data 
+```{r}
+
+write_csv(df.rt_trimmed, rt_path)
+#write_csv(df.pref_trimmed, here('data/processed_data/trimmed_prefdata.csv'))
+write_csv(df.demog_trimmmed, demog_path)
+write_csv(df.similarity_trimmed, similarity_path)
+write_csv(df.complexity_trimmed, complexity_path)
+```
+
+

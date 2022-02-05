@@ -119,6 +119,9 @@ low_var_in_sbj <- tidy_all_rt_task_data %>%
   pull(subject)
 
 low_var_in_sbj
+
+df_low_var <- tibble("exclude_reason" = rep("low_var", length(low_var_in_sbj)), 
+                     sbj = low_var_in_sbj)
 ```
 
 (b) have responses on familiarity and complexity ratings that are highly homogenous (80% or more trials have the same score in each rating task.) 
@@ -137,6 +140,12 @@ complexity_sbj <- df.complexity %>%
 
 similarity_sbj
 complexity_sbj
+
+df_sim <- tibble("exclude_reason" = rep("similarity", length(similarity_sbj)), 
+                     sbj = similarity_sbj)
+
+df_complex <- tibble("exclude_reason" = rep("complexity", length(complexity_sbj)), 
+                     sbj = complexity_sbj)
 ```
 
 
@@ -167,7 +176,16 @@ p_sbj <- raw_data %>%
   pull(subject)
   
 p_sbj
+
+df_prolific <- tibble("exclude_reason" = rep("prolific", length(p_sbj)), 
+                     sbj = p_sbj)
 ```
+
+```{r}
+participants_exclusion <- bind_rows(df_low_var, df_sim, df_complex, df_prolific)
+write_csv(participants_exclusion, here("data/p_level_exclusion.csv"))
+```
+
 
 
 Participants will also be excluded based on their task responses if they 
