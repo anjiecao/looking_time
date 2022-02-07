@@ -1,0 +1,143 @@
+---
+title: "02_visualization"
+author: "anjie & gal"
+date: "2/7/2022"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(here)
+
+fm_d <- read_csv(here("data/02_processed_data/trimmed_fm_rt_data.csv"))
+fs_memory_d <- read_csv(here("data/02_processed_data/trimmed_fs_memory_rt_data.csv"))
+fs_only_d <- read_csv(here("data/02_processed_data/trimmed_fs_only_rt_data.csv"))
+
+d <- fm_d %>% 
+  filter(exposure_type == "forced_short") %>% 
+  mutate(exp = "mixed forced short") %>% 
+  select(subject, block_number, trial_number, trial_type, trial_complexity, rt, exp, first_dev_position, second_dev_position) %>% 
+  bind_rows(fs_memory_d %>% select(subject, block_number, trial_number, trial_type, trial_complexity, rt, first_dev_position, second_dev_position) %>% mutate(exp = "forced_short_memory"), 
+            fs_only_d %>% select(subject, block_number, trial_number, trial_type, trial_complexity, rt, first_dev_position, second_dev_position) %>% mutate(exp = "forced_short_math")) 
+
+
+  
+```
+
+# basic info
+
+also note that the two fs are complex only 
+
+```{r}
+ d %>% 
+  distinct(subject, exp) %>% 
+  group_by(exp) %>% 
+  summarise(subject_n = n())
+```
+the distribution of the deviant trial? 
+
+```{r}
+d %>% 
+  filter(trial_type == "deviant") %>% 
+  ggplot(aes(x = trial_number)) + 
+  geom_histogram()+ 
+  facet_wrap(~exp)
+```
+```{r}
+d %>% 
+  group_by(exp) %>% 
+  summarise(block_number = unique(block_number)) %>% 
+  group_by(exp) %>% 
+  summarise(n_block = n())
+```
+
+
+
+# compare the three forced short
+
+unclear why only the forced short memory shows a deviant effect at the second trial, potential explanations: 
+- participants only pay attention with task? 
+- participants are not doing their work at all during the forced short math condition
+
+```{r}
+d %>% 
+  ggplot(aes(x=trial_number, y=log(rt), colour=trial_type)) + 
+stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .2)) + 
+  facet_wrap(~exp) + 
+  theme_classic()
+```
+
+what if we only look at one position deviant position at 2 (weed out noises brought in by the sequence effect)
+(probably too little information to tell)
+
+```{r}
+d %>% 
+  filter(first_dev_position == 2 & is.na(second_dev_position)) %>% 
+  ggplot(aes(x=trial_number, y=log(rt), colour=trial_type)) + 
+stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .2)) + 
+  facet_wrap(~exp) + 
+  theme_classic()
+```
+
+does the second trial effect changes across block? 
+
+```{r}
+d %>% 
+  filter(exp == "forced_short_math") %>% 
+  ggplot(aes(x=trial_number, y=log(rt), colour=trial_type)) + 
+stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .2)) + 
+  facet_wrap(~block_number) + 
+  theme_classic() + 
+  labs(title = "forced short math")
+
+d %>% 
+  filter(exp == "forced_short_memory") %>% 
+  ggplot(aes(x=trial_number, y=log(rt), colour=trial_type)) + 
+stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .2)) + 
+  facet_wrap(~block_number) + 
+  theme_classic() + 
+  labs(title = "forced_short_memory")
+
+d %>% 
+  filter(exp == "mixed forced short") %>% 
+  ggplot(aes(x=trial_number, y=log(rt), colour=trial_type)) + 
+stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .2)) + 
+  facet_wrap(~block_number) + 
+  theme_classic() + 
+  labs(title = "mixed forced short")
+```
+can we recover complexity effect in the same experiment?
+
+```{r}
+d %>% 
+  filter(exp == "mixed forced short") %>% 
+  ggplot(aes(x=trial_number, y=log(rt), colour=trial_type)) + 
+stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .2)) + 
+  facet_wrap(~trial_complexity) + 
+  theme_classic()
+
+d %>% 
+  filter(exp == "mixed forced short") %>% 
+  filter(trial_type == "background") %>% 
+  ggplot(aes(x=trial_number, y=log(rt), colour=trial_complexity)) + 
+stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .2)) + 
+  theme_classic()
+
+```
+
+
+
+
+
+
+
+
+
+
