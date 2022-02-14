@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <!-- jspsych -->
+  <script src="js/jspsych/jspsych.js"></script>
+  <script src="js/jspsych/jspsych-instructions.js"></script>
+  <script src= "js/jspsych/jspsych-demog-age.js"></script>
+  <script src= "js/jspsych/jspsych-demog-ethnic-US.js"></script>
+  <script src= "js/jspsych/jspsych-demog-gender-and-education.js"></script>
+    <script src="js/jspsych/jspsych-html-keyboard-response.js"></script>
+  <script src="js/jspsych/jspsych-stimuli-presentation.js"></script>
+  <script src="js/jspsych/jspsych-fullscreen.js"></script>
+  <script src= "js/jspsych/jspsych-survey-text.js"></script>
+  <script src= "js/jspsych/jspsych-survey-likert.js"></script>
+  <script src="js/jspsych/jspsych-survey-multi-choice.js"></script>
+    
+    <!-- helper function -->
+    <script src= "js/helper/array.js"></script>
+    <script src= "js/helper/generate_blocks.js"></script>
+    <script src= "js/helper/generate_task.js"></script>
+    <script src= "js/helper/testing.js"></script>
+    
+    <!-- task module -->
+     <script src= "js/00_setting.js"></script>
+    <script src= "js/01_task_instructions.js"></script>
+    <script src= "js/02_main_task.js"></script>
+    <script src= "js/03_demographic_question.js"></script>
+    <script src= "js/04_feedback_and_code.js"></script>
+    <link rel="stylesheet" href="css/jspsych.css"></link>
+</head>
+<body></body>
+<script>
+
+
+jsPsych.data.addProperties({ subject: subject_id });
+
+
+
+var greeting = {
+    type: 'survey-multi-choice',
+    questions: [
+      {prompt: "<p><b>Thank you for reviewing this experiment! </b></p>" + 
+      "<p> Please select the condition you would like to review. </p>", 
+      name: 'task', options: ["Math", "Memory", "Curiosity"], required:true}
+    ],
+  };
+   
+
+// the reason why we can't set this up in a for loop is b/c this is a dynamic language and it will always use the last thing in the for loop
+
+
+math_main_task = get_main_task(math_all_blocks)
+math_instruction = get_consent_and_instructions_for_demo("math")
+math_package = math_instruction.concat(math_main_task)
+
+memory_main_task = get_main_task(memory_all_blocks)
+memory_instruction = get_consent_and_instructions_for_demo("memory")
+memory_package = memory_instruction.concat(memory_main_task)
+
+curiosity_main_task = get_main_task(curiosity_all_blocks)
+curiosity_instruction = get_consent_and_instructions_for_demo("curiosity")
+curiosity_package = curiosity_instruction.concat(curiosity_main_task)
+
+
+console.log(memory_main_task)
+console.log(math_main_task)
+console.log(curiosity_main_task)
+
+
+var math_node = {
+    timeline: math_package,
+    conditional_function: function(){
+        // get the data from the previous trial,
+        // and check which key was pressed
+        var data = jsPsych.data.get().last(1).values()[0];
+        console.log(data)
+        if(data.responses.includes("Math")){
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
+
+var memory_node = {
+    timeline: memory_package,
+    conditional_function: function(){
+        // get the data from the previous trial,
+        // and check which key was pressed
+        var data = jsPsych.data.get().last(1).values()[0];
+        console.log(data)
+        if(data.responses.includes("Memory")){
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
+
+
+var curiosity_node = {
+    timeline: curiosity_package,
+    conditional_function: function(){
+        // get the data from the previous trial,
+        // and check which key was pressed
+        var data = jsPsych.data.get().last(1).values()[0];
+        console.log(data)
+        if(data.responses.includes("Curiosity")){
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
+
+
+
+// initialize timeline
+var timeline = []
+timeline.push({
+  type: 'fullscreen',
+  fullscreen_mode: true
+  });
+timeline.push(greeting)
+
+  /*
+  if (SHOW_INTRO) {
+    timeline = get_consent_and_instructions(timeline)
+  }
+  */
+  
+  timeline.push(math_node, memory_node, curiosity_node)
+
+
+  //timeline = timeline.concat(main_task)
+
+  timeline.push({
+  type: 'fullscreen',
+  fullscreen_mode: false
+  });
+  
+  timeline = get_demog_questions(timeline)
+ 
+  timeline = get_feedback_and_code(timeline)
+
+  
+function saveData(name, data){
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '../../../cgi-bin/pokebaby/write_data.php');
+        //xhr.open('POST', 'write_data.php'); // 'write_data.php' is the path to the php file described above.
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify({filename: name, filedata: data}));
+    }
+
+// For loading
+
+
+
+jsPsych.init({
+        timeline: timeline,
+        show_progress_bar: false,
+        //use_webaudio: true, // this won't work for local testing (CORS), but maybe on server
+        preload_images: all_stimuli,
+        on_trial_finish: function(){
+            saveData("test" + subject_id, jsPsych.data.get().csv());
+            //jsPsych.data.displayData();
+            //setTimeout(function() { turk.submit(jsPsych.data.get().ignore('external-html').json()); }, 5000);
+      }
+    })
+
+    </script>
+</html>

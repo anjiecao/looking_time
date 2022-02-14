@@ -50,6 +50,14 @@ d %>%
   group_by(exp) %>% 
   summarise(n_block = n())
 ```
+```{r}
+d %>% 
+  group_by(exp) %>% 
+  summarise(trial_number = unique(trial_number)) %>% 
+  group_by(exp) %>% 
+  summarise(trial_number = n())
+
+```
 
 
 
