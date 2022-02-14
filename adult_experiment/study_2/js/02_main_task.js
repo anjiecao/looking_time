@@ -121,18 +121,14 @@ for (var block_index = 0;
     var self_paced_prompt =  {
                     type: 'html-keyboard-response',
                     stimulus: 'Now you can keep studying the creature.',
-                    trial_duration: function(){
-                        var random_duration = 800 + 500 * Math.random() 
-                        return random_duration  } ,
+                    trial_duration: 1000,
                     choices: jsPsych.NO_KEYS
                   }
     
     var forced_trial_prompt = {
       type: 'html-keyboard-response',
                     stimulus: 'Watch carefully!',
-                    trial_duration: function(){
-                        var random_duration = 800 + 500 * Math.random() 
-                        return random_duration  } ,
+                    trial_duration: 1000,
                     choices: jsPsych.NO_KEYS
         }
 
