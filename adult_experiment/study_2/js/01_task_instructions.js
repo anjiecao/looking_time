@@ -67,24 +67,101 @@ function get_consent_and_instructions_for_demo(task_type){
       ,
       "<p>Since this task was designed for babies, it's going to be really easy!</p>" +
       "<p>You will repeatedly see a frame on the screen, like this one:</p>" +
-      '<p><img src=images/blank.png width ="400" height = "400" style="border:5px solid black"></p>'
+      '<p><img src=images/blank.png width ="400" height = "400" style="border:5px solid black"></p>', 
+
+      "<p>On each trial, you will first see a creature shows up and then disappears. </p>" +
+      "<p>Then, you will have the opportunity to look at some creatures. You can look at each for as long as you want.</p>" +
+      "<p>Every couple of trials, we will test your memory of the creatures. </p>"  + 
+      "<p><b>So please study the creatures carefully</b></p>" + 
+      "<p>You can go to the next page to see an example trial</p>"
       ],
         data: {stimulus_type: 'instructions'},
         show_clickable_nav: true
       }
   
   
+      
   
-        var generic2 = {
+
+      var example_self_paced_prompt =  {
+        type: 'html-keyboard-response',
+        stimulus: 'Now you can keep studying the creature.',
+        trial_duration: 1000 ,
+        choices: jsPsych.NO_KEYS
+      }
+
+      var example_forced_trial_prompt = {
+      type: 'html-keyboard-response',
+        stimulus: 'Watch carefully!',
+        trial_duration: 1000,
+        choices: jsPsych.NO_KEYS
+      }
+
+      forced_trial_duration = 10 * (getRandomInt(forced_short_viewing_duration_base, 100))
+      width_height = parseFloat(Math.floor(Math.random() * 10) + 150);
+
+      var example_forced_trial = {
+        type: 'stimuli-presentation',
+        frame_animation: function(){
+            var html =  '<p><img src= images/blank.png width ="600" height = "600" style="position:fixed; top:50%; transform: translate(-50%, -50%);left:50%;border:5px solid black">'
+          
+            return html;
+        },
+        
+        stimuli_animation:  "<p><img src='images/practice/instructions_example_spore1.gif' width ='" + width_height + "' height = '" + width_height + "' style='position:relative;top:" + getRandomInt(-100, 100)+ "%;left:" + getRandomInt(-100, 100) +  "%'></p>",
+        key_response: [40],
+        minimum_viewing_duration: 500, // in non-first trial and self-paced first trial, 
+        forced_viewing_duration: forced_trial_duration, //50 ~ 1000 with 10 interval random
+        trial_duration: forced_trial_duration,
+        response_ends_trial: true,
+        exposure_type: "forced"
+      }
+
+  
+        var example_self_paced_trial_1 = {
+              type: 'stimuli-presentation',
+              frame_animation: function(){
+                var html = "<p> To continue, <b> press the down arrow-key </b> on your keyboard. </p>"
+                return html
+                },
+            //position:absolute;top:28px;left:40px
+              stimuli_animation: function(){
+                  var html = "<img src='images/practice/instructions_example_spore1.gif' width ='400' height = '400' style='border:5px solid black'>"
+                  return html
+              },
+              two_stimuli_interval: 0,
+              key_response: [40],
+              minimum_viewing_duration: 500, // daffner2000's info was 600, changed to 200
+              response_ends_trial: true,
+              exposure_type: "self_paced"
+        }
+
+        var example_self_paced_trial_2 = {
+                type: 'stimuli-presentation',
+                frame_animation: function(){
+                    var html =
+                        "<p> Sometimes a creature will repeatedly show up, You can just move on to the next one when you feel like you have remembered this creature.</p>" 
+                    return html
+                },
+              //position:absolute;top:28px;left:40px
+                stimuli_animation: function(){
+                    var html = "<img src='images/practice/instructions_example_spore1.gif' width ='400' height = '400' style='border:5px solid black'>"
+                    return html
+                },
+                two_stimuli_interval: 0,
+                key_response: [40],
+                minimum_viewing_duration: 500, // daffner2000's info was 600, changed to 200
+                response_ends_trial: true,
+                exposure_type: "self_paced"
+        }
+
+        var example_self_paced_trial_3 = {
           type: 'stimuli-presentation',
           frame_animation: function(){
   
   
         var html =
-                  "<p> On each trial, a creature will appear in the frame. </p>" +
-                  "<p> To continue, <b> press the down arrow-key </b> on your keyboard. </p>" +
-                  "<p> You can try it now! </p>"
-  
+                  "<p> Press the <b>down arrow-key </b> on your keyboard to move on.</p>" 
          return html
        },
         //position:absolute;top:28px;left:40px
@@ -98,32 +175,6 @@ function get_consent_and_instructions_for_demo(task_type){
           response_ends_trial: true,
           exposure_type: "self_paced"
         }
-  
-        var generic3 = {
-          type: 'stimuli-presentation',
-          frame_animation: function(){
-  
-  
-        var html =
-        "<p> You are doing great! </p>" +
-        "<p>Now, let's try again.</p>" +
-            "<p> Press the down arrow key when you've had enough of this little guy. </p>"
-  
-         return html
-       },
-        //position:absolute;top:28px;left:40px
-          stimuli_animation: function(){
-              var html = "<img src='images/practice/instructions_example_spore2.gif' width ='400' height = '400' style='border:5px solid black'>"
-              return html
-          },
-          two_stimuli_interval: 0,
-          key_response: [40],
-          minimum_viewing_duration: 500, // daffner2000's info was 600, changed to 200
-          response_ends_trial: true,
-          exposure_type: "self_paced"
-        }
-  
-  
   
         
         var generic4 = {
@@ -141,9 +192,7 @@ function get_consent_and_instructions_for_demo(task_type){
             type: "instructions",
         pages: [          "<p> Before we get started, please know that if you experienced significant lag in the preceding animations, it will probably get better once we start the actual experiment. </p>" +
         "<p> If the lagginess persists however, we would really appreciate if you could let us know in the feedback section at the end of the experiment. </p>",
-        "<p> Final point about the experiment:</p> <p>  Every couple of trials, we will ask you a simple question. </p>" +
-        "<p> Then you will see a new set of creatures to look at for as long as you like, </p>" +
-        "<p> and you can still move between creatures by pressing the down arrow. </p>",
+      
         "<p> We hope you enjoy our baby stimuli! </p>" +
         "<p> The task should take no longer than 6 minutes, </p>" +
         "<p> after which we will ask you some questions about the stimuli for 2-3 minutes, </p>" +
@@ -155,7 +204,15 @@ function get_consent_and_instructions_for_demo(task_type){
                 show_clickable_nav: true}
   
   
-        instruction_package = [consent, generic1, generic2, generic3, generic4, generic5]
+        instruction_package = [consent, generic1, 
+          example_forced_trial_prompt,
+          example_forced_trial, 
+          example_self_paced_prompt, 
+          example_self_paced_trial_1,
+          example_self_paced_trial_2, 
+          example_self_paced_trial_3, 
+          generic4, 
+                            generic5]
   
         return (instruction_package)
   
