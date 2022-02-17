@@ -18,18 +18,16 @@ numStimShifts = 3;
 numOrderShifts = 6;
 
 for y = 1:numStimShifts
-    
+
     stims_pairs = circshift(pairs, 1);
-    
+
     for x  = 1:numOrderShifts
-        
+
         % block types (deviant or std, and fam length)
         block_types(:,(y-1)* numOrderShifts + x) = circshift(block_pairs, 1);
         stims(:,(y-1)* numOrderShifts + x) = stims_pairs;
 
 
     end
-    
-end
-    
 
+end

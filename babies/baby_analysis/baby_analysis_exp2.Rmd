@@ -277,13 +277,13 @@ summary(model1)
 Inter-session correlation
 
 ```{r}
-wide_df <- test_df %>% pivot_wider(names_from = complexity, values_from = looking_time_2000) %>% dplyr::group_by(subject_num) %>% dplyr::summarise(simple = mean(simple, na.rm = TRUE), complex = mean(complex, na.rm = TRUE)) 
+wide_df <- test_df %>% pivot_wider(names_from = session_number, values_from = looking_time_2000, names_prefix = 'session') %>% dplyr::group_by(subject_num) %>% dplyr::summarise(session1 = mean(session1, na.rm = TRUE), session2 = mean(session2, na.rm = TRUE)) 
 
-ggplot(wide_df, aes(x = log(simple), y = log(complex))) + geom_point(size =4) + theme_classic()
+ggplot(wide_df, aes(x = log(session1), y = log(session2))) + geom_point(size =4) + geom_smooth(method = 'lm') + xlab('session 1 LT (log s)')  + ylab('session 2 LT (log s)') + theme_classic(base_size = 20) + coord_fixed()
 
 cor(wide_df$simple, wide_df$complex, use = 'na.or.complete')
 
-cor.test(log(wide_df$simple), log(wide_df$complex), use = 'na.or.complete')
+cor.test(log(wide_df$session1), log(wide_df$session2), use = 'na.or.complete')
 
 mean(log(wide_df$simple), na.rm = TRUE)
 mean(log(wide_df$complex), na.rm = TRUE)
