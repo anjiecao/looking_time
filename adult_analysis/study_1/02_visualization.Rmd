@@ -23,6 +23,28 @@ raw_data <- read_csv(RAW_DATA_PATH)
 d <- read_csv(MAIN_TASK_PATH)
 ```
 
+
+```{r}
+d %>% 
+  group_by(subject) %>% 
+  mutate(all_trial_number = row_number()) %>% 
+  mutate(deviant_position_print = case_when(
+    deviant_position == 2 ~ "Deviant at 2nd trial", 
+    deviant_position == 4 ~ "Deviant at 4th trial", 
+    deviant_position == 6 ~ "Deviant at 6th trial", 
+    is.na(deviant_position) ~ "No deviant"
+  ), 
+  block_number_print = as.character(block_number)) %>% 
+ # filter(is.na(deviant_position)) %>% 
+  ggplot(aes(x = trial_number, 
+             y = log(trial_looking_time), 
+             color = block_number_print)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  stat_summary(geom = "line", position = position_dodge(width = .2)) + 
+  facet_wrap(~deviant_position_print) 
+
+ 
+```
 # Basic info 
 
 potential concern: memory is sampled less and lead to the highest attrition rate (Participants will also be excluded based on their task responses if they a) in the math question condition and the memory question condition, answer 3 out of 8 questions wrong) 
@@ -212,6 +234,40 @@ d %>%
   theme(legend.position = "bottom") + 
   ylab("log RT (seconds)") + 
   xlab("Trial Number")
+```
+
+## Post deviant background 
+```{r}
+d %>% 
+  mutate(sequence_scheme = case_when(
+    deviant_position == 2 ~ "BDBBBB", 
+    deviant_position == 4 ~ "BBBDBB", 
+    deviant_position == 6 ~ "BBBBBD", 
+    is.na(deviant_position) ~ "BBBBBB"
+  )) %>% 
+  filter(trial_type == "background") %>% 
+  filter((deviant_position == 2 & trial_number == 3) | 
+          (deviant_position == 4 & trial_number == 5 ) |
+           is.na(deviant_position & trial_number == 2) |
+           is.na(deviant_position & trial_number == 4) |
+           (deviant_position == 6 & trial_number == 2) |
+           (deviant_position == 6 & trial_number == 4)) %>% 
+  mutate(
+    Nth_Trial = case_when(
+      trial_number == 3 ~ "3rd trial", 
+      trial_number == 5 ~ "5th trial"
+    )
+  ) %>% 
+  mutate(
+    background_type = case_when(
+      sequence_scheme == "BBBBBB" | sequence_scheme == "BBBBBD" ~ "baseline", 
+      TRUE ~ sequence_scheme 
+    ) 
+  ) %>% 
+  ggplot(aes(x = background_type, y = trial_looking_time, color = block_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  facet_wrap(~Nth_Trial)+ 
+  theme_classic()
 ```
 
 

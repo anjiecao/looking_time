@@ -18,6 +18,8 @@ MERGED_DATA_PATH <- here("data/01_merged_data/merged_data.csv")
 raw_df <- read_csv(MERGED_DATA_PATH)
 ```
 
+
+
 ```{r}
 raw_df %>% 
   filter(stimulus_type == "trial") %>% 
