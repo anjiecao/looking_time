@@ -2,8 +2,7 @@
 
 
 
-// ---------- General Helper functions ---------- //
-
+// ---------- General Helper functions ----------
 // function returning an object with the frequency of it occurrences in the array
 
 function count_occurence(array){
