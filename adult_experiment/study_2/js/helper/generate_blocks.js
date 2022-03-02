@@ -98,6 +98,97 @@ function generate_timeline_variables(block_information){
 }
 
 
+function generate_all_forced_block(num_blocks, 
+                                   num_trial_per_block, 
+                                   stimuli_array, 
+                                   all_deviant_position_array, 
+                                   forced_length_array, 
+                                   num_deviants, 
+                                   task_type 
+                                   ){
+
+        
+    all_block_information  = []
+    complexity = ["simple", "complex"]
+    simple_stimuli = stimuli_array.filter(stimulus => stimulus.includes("simple"))
+    complex_stimuli = stimuli_array.filter(stimulus => stimulus.includes("complex"))
+    // half forced long, half forced short 
+    // randomly selecting complex or simple               
+    loop_length = num_blocks / forced_length_array.length
+
+    for (i = 0; i < loop_length; i++){
+
+      console.log(i)
+      console.log(simple_stimuli)
+      console.log(complex_stimuli)
+
+      // set up complexity 
+      this_block_complexity = complexity[Math.floor(Math.random()*complexity.length)]
+     
+
+      // set up deviant positions 
+      // looping through all the possible deviant position here 
+      // dev at 2; dev at 4; dev at 6 & no dev 
+      if (i < all_deviant_position_array.length){
+        deviant_position = all_deviant_position_array[i]
+        num_deviants = num_deviants
+      }else{
+        deviant_position = null
+        num_deviants = [0]
+      }
+
+
+      // set up forced exposure 
+      for (j = 0; j < forced_length_array.length; j++){
+        
+        forced_exposure_length = forced_length_array[j]
+
+        // generate block 
+        // reason why for doing simple/complex selection here is that 
+        // we want to iteratively remove all the used stimuli 
+        if(this_block_complexity == "simple"){
+          output = generate_forced_dissimilar_block(simple_stimuli, 
+            num_trial_per_block, 
+            [deviant_position], 
+            num_deviants,  
+            block_type = this_block_complexity, 
+            forced_exposure_length = forced_exposure_length
+          )
+  
+          simple_stimuli = output[0]
+          basic_block_information = output[1]
+        // add task info
+            output = get_task_info(basic_block_information, simple_stimuli, task_type)
+            simple_stimuli = output[0]
+            block_information = output[1]
+            all_block_information.push(block_information)
+        }else{
+          output = generate_forced_dissimilar_block(complex_stimuli, 
+            num_trial_per_block, 
+            [deviant_position], 
+            num_deviants,  
+            block_type = this_block_complexity, 
+            forced_exposure_length = forced_exposure_length
+          )
+  
+          complex_stimuli = output[0]
+          basic_block_information = output[1]
+        // add task info
+            output = get_task_info(basic_block_information, complex_stimuli, task_type)
+            complex_stimuli = output[0]
+            block_information = output[1]
+            all_block_information.push(block_information)
+
+        }      
+      }
+    }
+
+    shuffleArray(all_block_information)
+
+    return (all_block_information)
+
+}
+
 
 function generate_all_block(num_blocks,
                             num_trial_per_block,
@@ -173,7 +264,64 @@ function generate_all_block(num_blocks,
 }
 
 
+function generate_forced_dissimilar_block(stims, 
+  num_trial_per_block, deviant_position, num_deviants, block_type, forced_exposure_length){
+
+
+
+// choose random creature as background
+console.log(stims)
+var randomIdx = Math.floor(Math.random() * stims.length)
+var background = stims[randomIdx];
+
+// and get info about species, modification, movement/rotation
+speciesInfo_1 = background.slice(background.length-10, background.length-8)
+
+// remove these creatures from the list for next iteration (not including their modification)
+
+stims = stims.filter(x => !(x.includes(speciesInfo_1)))
+
+// choose random index to get deviant stim
+
+var randomIdx = Math.floor(Math.random() * stims.length)
+var deviant = stims[randomIdx]
+// get relevant info about deviant to exclude that species
+speciesInfo_2 = deviant.slice(deviant.length-10, deviant.length-8)
+stims = stims.filter(x => !(x.includes(speciesInfo_2)))
+
+
+
+// random number of deviants
+num_deviants = getRandomSubarray(num_deviants, 1)
+
+// set up the 4 blocks per complexity type: 
+
+block_information = {
+num_trial_per_block: num_trial_per_block,
+background_stimuli: background,
+deviant_stimuli: deviant,
+deviant_position: deviant_position,
+num_deviants: num_deviants,
+block_type: block_type, 
+forced_exposure_length: forced_exposure_length
+}
+
+
+
+
+
+
+return ([stims, block_information])
+
+
+
+}
+
+
 // no task yet 
+
+
+
 function generate_basic_dissimilar_block(stims, 
                                   num_trial_per_block, deviant_position, num_deviants, block_type){
 
@@ -227,7 +375,7 @@ function generate_basic_dissimilar_block(stims,
 }
 
 // this is to make sure we have different stimuli for each block without using the timeline variable 
-function get_forced_trial(all_block_timeline_variables){
+function get_forced_trial(all_block_timeline_variables, all_block_information){
 
   all_block_forced_trial = []
 
@@ -235,7 +383,7 @@ function get_forced_trial(all_block_timeline_variables){
     block_index < all_block_timeline_variables.length; 
     block_index++){
 
-      forced_trial_duration = 10 * (getRandomInt(forced_short_viewing_duration_base, 100))
+      forced_trial_duration = all_block_information[block_index].forced_exposure_length
       width_height = parseFloat(Math.floor(Math.random() * 10) + 150);
 
       var forced_trial = {
