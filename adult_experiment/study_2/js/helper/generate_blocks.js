@@ -112,15 +112,16 @@ function generate_all_forced_block(num_blocks,
     complexity = ["simple", "complex"]
     simple_stimuli = stimuli_array.filter(stimulus => stimulus.includes("simple"))
     complex_stimuli = stimuli_array.filter(stimulus => stimulus.includes("complex"))
+    console.log(simple_stimuli)
+    console.log(complex_stimuli)
+
     // half forced long, half forced short 
     // randomly selecting complex or simple               
     loop_length = num_blocks / forced_length_array.length
 
     for (i = 0; i < loop_length; i++){
 
-      console.log(i)
-      console.log(simple_stimuli)
-      console.log(complex_stimuli)
+      
 
       // set up complexity 
       this_block_complexity = complexity[Math.floor(Math.random()*complexity.length)]
@@ -146,6 +147,16 @@ function generate_all_forced_block(num_blocks,
         // generate block 
         // reason why for doing simple/complex selection here is that 
         // we want to iteratively remove all the used stimuli 
+
+        // but first we need to make sure we haven't oversampled some stimuli already
+       
+        if (simple_stimuli.length < 3){
+          this_block_complexity == "complex"
+        }else if(complex_stimuli.length < 3){
+          this_block_complexity == "simple"
+        }
+
+
         if(this_block_complexity == "simple"){
           output = generate_forced_dissimilar_block(simple_stimuli, 
             num_trial_per_block, 
@@ -203,6 +214,7 @@ function generate_all_block(num_blocks,
     all_block_information = []
     simple_stimuli = stimuli_array.filter(stimulus => stimulus.includes("simple"))
     complex_stimuli = stimuli_array.filter(stimulus => stimulus.includes("complex"))
+
 
     if (show_simple){
       loop_length = num_blocks / 2
