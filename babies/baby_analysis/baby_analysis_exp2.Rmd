@@ -40,24 +40,24 @@ shifter <- function(x, n = 1) {
 ## load files (hidden)
 ```{r, include=FALSE}
 
-# looking times
+# laod looking times
 looking_list <- read_excel_allsheets(here("data", "exp2", "output.xlsx"))
 looking_df <- map_dfr(looking_list, ~ .x, .id = 'subject') %>% 
   clean_names() %>% separate(sheet_name, into = c("subject", "coder")) %>%
   mutate(subject = as.numeric(subject), coder = as.numeric(coder)) %>%
   select_if(function(col) !all(is.na(col)))
 
-# jspsych files
+# load jspsych files
 jspsych_path = "data/exp2/jspsych"
-
 jspsych_files <- list.files(jspsych_path)
+jspsych_list <- lapply(jspsych_files %>% lapply(function(x) {paste(jspsych_path, x, sep='/')}), read.csv)
+
+# add demographic info
+demog_info = read.csv('data/exp2/demographic_info_exp2.csv')
 
 # grab subject and session numbers
 subject_num <- lapply(jspsych_files, function(x) {x %>% substring(6,7) %>% as.numeric()})
 session_num <- lapply(jspsych_files, function(x) {x %>% substring(9,9) %>% as.numeric()})
-
-# convert jspsych files to big dataframe
-jspsych_list <- lapply(jspsych_files %>% lapply(function(x) {paste(jspsych_path, x, sep='/')}), read.csv)
 
 # expand subject and session num to concatenate
 subject_num_expanded <- rep(subject_num, lapply(jspsych_list, function(x) {nrow(x)}))
@@ -77,13 +77,14 @@ age_and_gender <- jspsych_df %>% select(responses) %>%
     separate(gender, into = c('del2', 'gender'), sep=':') %>%
    separate(session_num, into = c('del3', 'session_num'), sep=':') %>%
   tidyr::extract(age, "age") %>% tidyr::extract(gender, "gender") %>% tidyr::extract(session_num, "session_num") %>%
-  select(age, gender, session_num) %>% dplyr::mutate(subject_num = subject_num)
+  select(age, gender, session_num) %>% mutate(subject_num = as.numeric(subject_num))
 
 # get trials
 trial_df <- jspsych_df %>%
   filter(stimulus_type == 'trial') %>% 
   select(subject, rt, stimulus_displayed, block_number, block_type, subject_num, session_num) %>%
-  mutate(complexity = case_when(
+  mutate(subject_num = as.numeric(subject_num),
+      complexity = case_when(
                        str_detect(stimulus_displayed, 'simple') ~ 'simple',
                        str_detect(stimulus_displayed, 'complex') ~ 'complex'
                      ),
@@ -107,7 +108,7 @@ trial_df <- jspsych_df %>%
         fam_duration = max(trial_num) - 1, # how many fam trials in this block
         block_number = block_number + 1) %>% 
   filter(!(fam_or_test == 'fam' & trial_num < (n()-1))) %>% # remove fam trials except last, because this is the format of the looking data (one row for all fam trials)
-  ungroup() %>% left_join(age_and_gender, by = c('subject_num', 'session_num'))
+  ungroup() %>% left_join(age_and_gender, by = c('subject_num', 'session_num')) %>% left_join(demog_info, by = c('subject_num'))
 
 # complete missing blocks (for experiments that ended prematurely)
 trial_df <- trial_df %>% complete(subject_num, nesting(block_number, fam_or_test)) %>%
