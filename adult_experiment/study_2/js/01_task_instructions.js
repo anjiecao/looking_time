@@ -13,8 +13,6 @@ if (task_type == "memory"){
 instruction_package = get_generic_instruction()
 
 timeline = timeline.concat(instruction_package)
-
-
       
 return timeline
 }
@@ -194,9 +192,7 @@ function get_consent_and_instructions_for_demo(task_type){
         "<p> If the lagginess persists however, we would really appreciate if you could let us know in the feedback section at the end of the experiment. </p>",
       
         "<p> We hope you enjoy our baby stimuli! </p>" +
-        "<p> The task should take no longer than 6 minutes, </p>" +
-        "<p> after which we will ask you some questions about the stimuli for 2-3 minutes, </p>" +
-        "<p> and then you'll be all done! </p>",
+        "<p> The task should take no longer than 6 minutes. </p>",
         "<p> Many thanks again for your participation. :) </p> ",
         "<p> <b> The experiment begins now! </b> </p> <br></br>",
             ],
@@ -335,8 +331,6 @@ var curiosity1 = {
       "<p> and you can still move between creatures by pressing the down arrow. </p>",
       "<p> We hope you enjoy our baby stimuli! </p>" +
       "<p> The task should take no longer than 6 minutes, </p>" +
-      "<p> after which we will ask you some questions about the stimuli for 2-3 minutes, </p>" +
-      "<p> and then you'll be all done! </p>",
       "<p> Many thanks again for your participation. :) </p> ",
       "<p> <b> The experiment begins now! </b> </p> <br></br>",
           ],

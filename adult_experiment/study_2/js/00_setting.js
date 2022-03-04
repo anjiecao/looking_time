@@ -19,6 +19,7 @@ NUM_BLOCKS = 8
 NUM_TRIAL_PER_BLOCK = [6]
 DEVIANT_POSITIONS = [1, 3, 5] // don't forget adding the no deviant condition 
 NUM_DEVIANTS = [1]
+FORCED_LENGTH_ARRAY = [500, 10000]
 
 SPECIES_NUM = 24
 SHOW_SIMPLE = true 
@@ -42,7 +43,16 @@ NUM_SIMPLE_CREATURES = 20
 
 all_stimuli = get_all_stimuli(NUM_COMPLEX_CREATURES, NUM_SIMPLE_CREATURES)
 
+all_blocks_information = generate_all_forced_block(num_blocks = NUM_BLOCKS,
+    num_trial_per_block = NUM_TRIAL_PER_BLOCK,
+    stimuli_array = all_stimuli,
+    all_deviant_position_array = DEVIANT_POSITIONS,
+    forced_length_array = FORCED_LENGTH_ARRAY,
+    num_deviants = NUM_DEVIANTS,
+    task_type = CURRENT_TASK)
 
+
+/*
 all_blocks_information = generate_all_block(num_blocks = NUM_BLOCKS,
                                             num_trial_per_block = NUM_TRIAL_PER_BLOCK,
                                             stimuli_array = all_stimuli,
@@ -51,24 +61,10 @@ all_blocks_information = generate_all_block(num_blocks = NUM_BLOCKS,
                                             task_name = CURRENT_TASK, 
                                             show_simple = SHOW_SIMPLE)
 
-
+*/
 
 // below is for demo 
 
- curiosity_all_blocks =  generate_all_block(num_blocks = NUM_BLOCKS,
-                                            num_trial_per_block = NUM_TRIAL_PER_BLOCK,
-                                            stimuli_array = all_stimuli,
-                                            all_deviant_position_array = DEVIANT_POSITIONS,
-                                            num_deviants = NUM_DEVIANTS,
-                                            task_name = "curiosity", 
-                                            show_simple = SHOW_SIMPLE)                           
-math_all_blocks =  generate_all_block(num_blocks = NUM_BLOCKS,
-    num_trial_per_block = NUM_TRIAL_PER_BLOCK,
-    stimuli_array = all_stimuli,
-    all_deviant_position_array = DEVIANT_POSITIONS,
-    num_deviants = NUM_DEVIANTS,
-    task_name = "math", 
-    show_simple = SHOW_SIMPLE)    
 
 memory_all_blocks =   generate_all_block(num_blocks = NUM_BLOCKS,
     num_trial_per_block = NUM_TRIAL_PER_BLOCK,
@@ -78,16 +74,17 @@ memory_all_blocks =   generate_all_block(num_blocks = NUM_BLOCKS,
     task_name = "memory", 
     show_simple = SHOW_SIMPLE)            
     
-console.log(math_all_blocks)
-console.log(curiosity_all_blocks)
 
 
-/*
+
+
 checking_block_information(all_blocks_information = all_blocks_information, 
                            blcok_number = NUM_BLOCKS, 
-                           num_trial_per_block = NUM_TRIAL_PER_BLOCK
+                           num_trial_per_block = NUM_TRIAL_PER_BLOCK, 
+                           deviant_positions = DEVIANT_POSITIONS, 
+                           forced_lengths = FORCED_LENGTH_ARRAY
                             )
-*/
+
 
 if (verbose){
 console.log("All stimuli path: ")
