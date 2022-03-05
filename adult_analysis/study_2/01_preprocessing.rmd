@@ -1,0 +1,214 @@
+---
+title: "00_preprocessing.rmd"
+author: "anjie"
+date: "9/2/2021"
+output: html_document
+---
+```{r}
+library(tidyverse)
+library(here)
+library(jsonlite)
+
+source(here("helper/tidy_rt_task_data.r"))
+```
+
+# set up paths 
+```{r}
+RAW_DATA_DIRECTORY <- here("data/00_raw_data/")
+
+MIN_ROW <- 150  #subject to change 
+MERGED_DATA_PATH <- here("data/01_merged_data/merged_data.csv")
+
+```
+
+
+# get the main RT and task data 
+
+raw participants info 
+
+```{r}
+raw_data <- read_csv(MERGED_DATA_PATH)
+
+tidy_all_rt_task_data <- tidy_all_rt_task_data(raw_data)
+
+tidy_all_rt_task_data %>% 
+  distinct(subject, task_type) %>% 
+  group_by(task_type) %>% 
+  count()
+
+
+```
+
+
+```{r}
+tidy_all_rt_task_data %>% 
+  ggplot(aes(x = trial_number, y = log(trial_looking_time), color = as.factor(forced_exposure_time))) + 
+  stat_summary(fun.data = "mean_cl_boot") 
+```
+
+
+
+# exclusion 
+
+## Participant-based exclusion:
+We exclude participants if either 
+(a) the standard deviation of log-transformed of their reaction times on all trials is less than 0.15 
+```{r}
+low_var_in_sbj <- tidy_all_rt_task_data %>% 
+  group_by(subject) %>% 
+  summarise(mean_rt = mean(trial_looking_time), 
+            sd = sd(trial_looking_time)) %>% 
+  filter(sd < 0.15) %>% 
+  pull(subject)
+
+low_var_in_sbj
+
+df_low_var <- tibble("exclude_reason" = rep("low_var", length(low_var_in_sbj)), 
+                     sbj = low_var_in_sbj)
+```
+
+(b) have responses on familiarity and complexity ratings that are highly homogenous (80% or more trials have the same score in each rating task.) 
+```{r}
+similarity_sbj <- df.similarity %>% 
+  count(subject, rating) %>% 
+  filter(n > 8 * 0.8) %>%  # eight trials, 80% identical rating 
+  pull(subject)  
+
+#similarity_sbj
+
+complexity_sbj <- df.complexity %>% 
+  count(subject, rating) %>% 
+  filter(n > 8 * 0.8) %>%  # eight trials, 80% identical rating 
+  pull(subject)
+
+similarity_sbj
+complexity_sbj
+
+df_sim <- tibble("exclude_reason" = rep("similarity", length(similarity_sbj)), 
+                     sbj = similarity_sbj)
+
+df_complex <- tibble("exclude_reason" = rep("complexity", length(complexity_sbj)), 
+                     sbj = complexity_sbj)
+```
+
+
+(c) spent more than three absolute deviations away from the medians of the task completion time as reported by Prolific.
+```{r}
+p_df <- read_csv(here("data/prolific.csv"))
+
+p_summary <- p_df %>% 
+  select(participant_id, time_taken) %>% 
+   summarise(
+     median = median(time_taken),
+    mad = mad(time_taken), 
+    upper = median + 3 * mad, 
+    lower = median - 3 * mad) 
+
+p_id <- p_df %>% 
+  filter(time_taken > p_summary$upper | time_taken < p_summary$lower) %>% 
+  select(participant_id) %>% 
+  pull()
+
+p_sbj <- raw_data %>% 
+  filter(trial_type == "survey-text") %>% 
+  filter(grepl("p_id", responses)) %>% 
+  mutate(
+    prolific_id = map(responses, ~ fromJSON(.) %>% as.data.frame()) %>% unlist()) %>% 
+  select(prolific_id, subject) %>% 
+  filter(prolific_id %in% p_id) %>% 
+  pull(subject)
+  
+p_sbj
+
+df_prolific <- tibble("exclude_reason" = rep("prolific", length(p_sbj)), 
+                     sbj = p_sbj)
+```
+
+```{r}
+participants_exclusion <- bind_rows(df_low_var, df_sim, df_complex, df_prolific)
+write_csv(participants_exclusion, here("data/p_level_exclusion.csv"))
+```
+
+
+
+Participants will also be excluded based on their task responses if they 
+a) in the math question condition and the memory question condition, answer 3 out of 8 questions wrong; or
+```{r}
+math_sbj <- tidy_all_rt_task_data %>% 
+  filter(task_type == "math") %>% 
+  group_by(subject) %>% 
+  summarise(sum = sum(task_question_response)/6) %>% 
+  filter(sum < 6) %>% 
+  pull(subject)
+
+memory_sbj <-  tidy_all_rt_task_data %>% 
+  filter(task_type == "memory") %>% 
+  group_by(subject) %>% 
+  summarise(sum = sum(task_question_response)/6) %>% 
+  filter(sum < 6) %>% 
+  pull(subject)
+
+memory_sbj
+```
+
+b) in the curiosity rating condition, provide responses that are highly homogeneous ((80% or more trials have the same score in each rating task).
+
+```{r}
+curiosity_sbj <- tidy_all_rt_task_data %>% 
+  filter(task_type == "curiosity") %>% 
+  group_by(subject, task_question_response) %>% 
+  summarise(count = n()/6) %>% 
+  filter(count > 8 * 0.8) %>% 
+  pull(subject)
+```
+
+all excluded subject 
+```{r}
+exclude_participant <- unique(c(curiosity_sbj, 
+                               memory_sbj, 
+                               math_sbj,  
+                               similarity_sbj, 
+                               complexity_sbj, 
+                               p_sbj, 
+                               low_var_in_sbj))
+
+```
+
+```{r}
+st_rt_task <- tidy_all_rt_task_data %>% 
+  filter(!(subject %in% exclude_participant))
+st_similarity_df <- df.similarity %>% filter(!(subject %in% exclude_participant))
+st_complexity_df <- df.complexity %>% filter(!(subject %in% exclude_participant))
+
+```
+
+
+
+## Trial based exclusion:
+We exclude a trial if it is three absolute deviations away from the median in the log-transformed space across all participants.
+
+```{r}
+
+rt_summary <- st_rt_task %>% 
+  summarise(
+    median = median(log(trial_looking_time)),
+    mad = mad(log(trial_looking_time)), 
+    upper = median + 3 * mad, 
+    lower = median - 3 * mad)
+  
+final_trimmed_rt_task <- st_rt_task %>% 
+  filter(!(log(trial_looking_time) > rt_summary$upper | log(trial_looking_time) < rt_summary$lower))
+
+
+```
+
+
+# write out all the data 
+```{r}
+write_csv(final_trimmed_rt_task, here("data/02_processed_data/processed_rt_task_data.csv"))
+write_csv(st_similarity_df, here("data/02_processed_data/processed_similarity_data.csv"))
+write_csv(st_complexity_df, here("data/02_processed_data/processed_complexity_data.csv"))
+```
+
+
+
