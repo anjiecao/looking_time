@@ -1,0 +1,31 @@
+subject_num,education,race,income,residents
+1,"Professional degree (JD, MD)",White,"$200,000-$300,000",3
+25,Master's degree,White,"$100,000-$150,000",3
+28,Doctor's degree,White,"$150,000-$200,000",3
+7,Doctor's degree,White,"$150,000-$200,000",3
+21,Master's degree,White,"$100,000-$150,000",3
+29,Doctor's degree,White,"$50,000-$100,000",4
+33,Master's degree,Asian,"over $300,000",3
+22,Master's degree,White,"$200,000-$300,000",3
+12,Master's degree,White,"$50,000-$100,000",4
+19,Master's degree,White,"$150,000-$200,000",3
+36,Doctor's degree,White,"$150,000-$200,000",4
+2,Master's degree,Asian,,4
+27,Doctor's degree,White,"$200,000-$300,000",3
+31,Doctor's degree,White,"$50,000-$100,000",3
+9,Associate degree in college (2-year),White,"$100,000-$150,000",5
+8,Bachelor's degree in college (4-year),White,"$150,000-$200,000",3
+23,Bachelor's degree in college (4-year),White,"$50,000-$100,000",3
+35,Bachelor's degree in college (4-year),White (1/4th Filipino),"$50,000-$100,000",3
+10,Doctor's degree,Asian,"$50,000-$100,000",4
+24,Master's degree,Asian and Caucasian ,"$200,000-$300,000",3
+20,Master's degree,White,"$100,000-$150,000",3
+32,Doctor's degree,White and Pacific Islander,"$50,000-$100,000",3
+4,Some college but no degree,White,"over $300,000",3
+17,Bachelor's degree in college (4-year),White,"$50,000-$100,000",9
+30,Master's degree,"Half white, half asian","$50,000-$100,000",3
+26,Bachelor's degree in college (4-year),White,"$10,000-$50,000",4
+3,Bachelor's degree in college (4-year),Asian,"over $300,000",3
+18,Master's degree,White,"$100,000-$150,000",4
+13,Master's degree,White,"$100,000-$150,000",3
+5,Bachelor's degree in college (4-year),White,"$10,000-$50,000",3
