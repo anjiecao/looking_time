@@ -225,5 +225,83 @@ d %>%
 
 # Compare with pure self-paced
 
+```{r}
+d_0 <- read_csv(here("data/study_1_d.csv"))
+
+d_0 %>% 
+  select(trial_number, trial_type, block_type, trial_looking_time) %>% 
+  mutate(forced_exposure_time = "self_paced", 
+         block_type = case_when(
+           grepl("complex", block_type) ~ "complex", 
+           grepl("simple", block_type) ~ "simple"
+         )) %>%
+  filter(trial_number %in% c(1, 2)) %>% 
+  mutate(trial_category = case_when(
+    trial_number == 1 ~ "self_paced_first_trial", 
+    trial_number == 2 ~ "self_paced_second_trial"
+  )) %>% 
+  bind_rows(d %>%
+              mutate(forced_exposure_time = as.character(forced_exposure_time)) %>% 
+              mutate(trial_category = case_when(
+                forced_exposure_time == "500" ~ "forced 500 ms second trial", 
+                forced_exposure_time == "10000" ~ "forced 10000 ms second trial"
+              )) %>% 
+              select(trial_looking_time, trial_number, 
+                     trial_type, block_type, trial_category, forced_exposure_time) %>% 
+              filter(trial_number == 2)) %>% 
+  ggplot(aes(x = trial_category, 
+             y = log(trial_looking_time),
+             colour= as.factor(trial_type), 
+             shape = as.factor(block_type))) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+    stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .2)) + 
+  geom_hline(yintercept = log(500), color = "gray") + 
+  geom_hline(yintercept = log(10000), color = "gray") + 
+  #langcog::theme_mikabr() +
+  theme_classic()+
+  langcog::scale_color_solarized(name = "Trial Type") + 
+  theme(legend.position = "bottom") + 
+  xlab("") + 
+  ylab("log RT (ms)") + 
+  labs(title = "exposure effect on the second trial")
+```
 
 # running planned analysis 
+
+
+(1) log(looking time) ~ I((exp(1)**(-trial_number))) * item_type * item_complexity * first_trial_exposure_type + (trial_number * item_type *exposure_type|subject)
+
+
+```{r}
+#preregistration: log(looking time) ~ I((exp(1)**(-trial_number))) * item_type * trial_complexity + (trial_number * item_type * trial_complexity|subject)
+
+# didn't converge 
+#model_0 <- lmerTest::lmer(log(trial_looking_time) ~ I(exp(1)**(-trial_number)) * trial_type * block_type * forced_exposure_time  + (trial_number * trial_type * block_type | subject),
+#                          data = d %>% mutate(forced_exposure_time = as.character(forced_exposure_time)) %>% 
+#                            filter(trial_number > 1))
+
+
+
+
+model_1 <- lmerTest::lmer(log(trial_looking_time) ~ I(exp(1)**(-trial_number)) * trial_type * block_type * forced_exposure_time  + (1| subject),
+                          data = d %>% mutate(forced_exposure_time = as.character(forced_exposure_time)) %>% 
+                            filter(trial_number > 1))
+summary(model_1)
+
+```
+
+
+(2) log(looking_time_on_the_second_trial) ~ first_trial_exposure_type * item_type * item_complexity + ( exposure_type |subject)
+
+```{r}
+model_0 <- lmerTest::lmer(log(trial_looking_time) ~ forced_exposure_time * trial_type * block_type + (forced_exposure_time |subject) ,
+                          data = d %>% mutate(forced_exposure_time = as.character(forced_exposure_time)) %>% 
+  filter(trial_number == 2))
+
+summary(model_0)
+
+```
+
+
+
+
