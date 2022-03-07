@@ -1,26 +1,47 @@
 get_block_background <- function(df,block_n,  subject_number){
-  df %>% 
+  res <- df %>% 
     filter(subject == subject_number, block_number == block_n) %>% 
     select(block_background) %>% 
     pull() %>% 
     unique()
+  
+  # sometimes participants don't finish the experiment and reuslts in mismatch between the two dataframes 
+  if (length(res) == 0){
+    return (NA)
+  }else{
+    return (res)
+  }
 }
 
 get_block_deviant <- function(df,block_n,  subject_number){
-  df %>% 
+  res <- df %>% 
     filter(subject == subject_number, block_number == block_n) %>% 
     select(block_deviant) %>% 
     pull() %>% 
     unique()
+  
+  # sometimes participants don't finish the experiment and reuslts in mismatch between the two dataframes 
+  if (length(res) == 0){
+    return (NA)
+  }else{
+    return (res)
+  }
 }
 
-
 get_block_type <- function(df,block_n,  subject_number){
-  df %>% 
+  res <- df %>% 
     filter(subject == subject_number, block_number == block_n) %>% 
     select(block_type) %>% 
     pull() %>% 
     unique()
+  
+  # sometimes participants don't finish the experiment and reuslts in mismatch between the two dataframes 
+  if (length(res) == 0){
+    return (NA)
+  }else{
+    return (res)
+  }
+  
 }
 
 tidy_all_rt_task_data <- function(raw_data){
@@ -87,7 +108,7 @@ tidy_all_rt_task_data <- function(raw_data){
 
 
   # put all the self-paced trial together 
-  all_self_paced <- second_trial %>% 
+  all_self_paced <- second_trials %>% 
     rowwise() %>% 
     mutate(block_background = get_block_background(all_other_trials, block_number, subject), 
            block_deviant = get_block_deviant(all_other_trials, block_number, subject), 
@@ -101,6 +122,7 @@ tidy_all_rt_task_data <- function(raw_data){
   all_forced_trials <- memory_data_raw %>%
     filter(is.na(stimulus_displayed) & forced_exposure_time %in% c(500, 10000)) %>% 
     filter(exposure_type == "forced") %>% 
+    filter(trial_index > 10) %>%  # just in case some participants' practice run gets 500ms exposure time 
     group_by(subject) %>% 
     mutate(
       block_number = row_number()
@@ -128,6 +150,7 @@ tidy_all_rt_task_data <- function(raw_data){
                 filter(stimulus_type == "memory_test") %>% 
                 select(subject, block_number, question_stimuli, responses), 
               by = c("subject", "block_number")) %>% 
+    rowwise() %>% 
     mutate(
       task_question_type = case_when(
         deviant_trial_type == "one_deviant" & question_stimuli == block_background ~ "memory_background", 
@@ -136,11 +159,16 @@ tidy_all_rt_task_data <- function(raw_data){
         TRUE ~ "memory_novel"
       ), 
 
-      task_question_response_raw = map(responses, ~ fromJSON(.) %>% as.data.frame()) %>% unlist(), 
+      task_question_response_raw = case_when(
+        grepl("Yes", responses) ~ "Yes", 
+        grepl("No", responses) ~ "No", 
+        NA ~ "No responses"
+      ), 
       task_question_response = case_when(
         task_question_response_raw == "Yes" & task_question_type == "memory_background" ~ TRUE, 
         task_question_response_raw == "Yes" & task_question_type == "memory_deviant" ~ TRUE,
         task_question_response_raw == "No" & task_question_type == "memory_novel" ~ TRUE, 
+        task_question_response_raw == "No responses" ~ NA,
         TRUE ~ FALSE
       )
     ) %>% 

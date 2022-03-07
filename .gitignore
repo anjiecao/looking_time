@@ -6,6 +6,8 @@
 adult_analysis/data/raw_data/*
 adult_analysis/study_1/data/00_raw_data/*
 adult_analysis/study_1/data/prolific.csv
+adult_analysis/study_2/data/00_raw_data/*
+adult_analysis/study_2/data/prolific.csv
 preschooler-analysis/data/00_raw_data/*
 
 
