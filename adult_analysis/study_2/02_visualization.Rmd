@@ -1,0 +1,307 @@
+---
+title: "02_visualization"
+author: "anjie"
+date: "9/6/2021"
+output:
+  html_document:
+    code_folding: "hide"
+---
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+library(here)
+library(jsonlite)
+library(kableExtra)
+
+RAW_DATA_PATH <- here("data/01_merged_data/merged_data.csv")
+MAIN_TASK_PATH <- here("data/02_processed_data/processed_rt_task_data.csv")
+
+
+raw_data <- read_csv(RAW_DATA_PATH)
+d <- read_csv(MAIN_TASK_PATH)
+```
+
+# Basic info 
+
+
+## post-exclusion 
+
+```{r}
+d %>% 
+  distinct(subject, task_type) %>% 
+  count(task_type) %>% 
+   kableExtra::kable()
+```
+
+
+
+# Check raw looking time distribution {.tabset}
+
+bad (?): the irregular shapes 
+
+## by block type and trial type 
+
+```{r}
+d %>% 
+  filter(!trial_number == 1) %>% 
+  ggplot(aes(x = trial_looking_time, fill = task_type)) + 
+  scale_x_log10() + 
+  geom_density(alpha = .5) + 
+  facet_grid(trial_type~block_type)
+```
+
+## by position of deviant and trial_type
+
+```{r}
+d %>% 
+    filter(!trial_number == 1) %>% 
+  ggplot(aes(x = trial_looking_time, fill = task_type)) + 
+  scale_x_log10() + 
+  geom_density(alpha = .5) + 
+  facet_grid(trial_type~deviant_position)
+```
+
+## by block_number and trial_type 
+
+weirder shapes toward the latter part of the experiment 
+
+```{r}
+d %>% 
+  filter(!trial_number == 1) %>% 
+  ggplot(aes(x = trial_looking_time, fill = task_type)) + 
+  scale_x_log10() + 
+  geom_density(alpha = .5) + 
+  facet_grid(trial_type~block_number)
+```
+
+# Look at within block dynamics {.tabset}
+
+## exposure type 
+
+
+```{r}
+d %>% 
+  filter(trial_number %in% c(1, 2)) %>% 
+  group_by(trial_type, forced_exposure_time, trial_number) %>% 
+  summarise(n = n())
+```
+
+
+see evidence for complexity effect, not too much effect on the habituation? 
+no evidence for familairity preference 
+weak effect of exposure length 
+
+```{r}
+d %>% 
+  filter(trial_number == 2) %>% 
+  ggplot(aes(x = as.factor(forced_exposure_time), 
+             y = log(trial_looking_time),
+             colour= as.factor(trial_type), 
+             shape = as.factor(block_type))) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+    stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .2)) + 
+  geom_hline(yintercept = log(500), color = "gray") + 
+  geom_hline(yintercept = log(10000), color = "gray") + 
+  #langcog::theme_mikabr() +
+  theme_classic()+
+  langcog::scale_color_solarized(name = "Trial Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("log RT (seconds) at the second trial") + 
+  xlab("Exposure time at the first trial") + 
+  labs(title = "exposure effect on the second trial")
+```
+
+```{r}
+d %>% 
+  mutate(
+    deviant_position_print = case_when(
+      deviant_position == 2 ~ "second trial deviant", 
+      deviant_position == 4 ~ "fourth trial deviant", 
+      deviant_position == 6 ~ "sixth trial deviant", 
+      is.na(deviant_position) ~ "no deviant trial"
+    )
+  ) %>% 
+  ggplot(aes(x = trial_number, 
+             y = log(trial_looking_time),
+             colour= as.factor(forced_exposure_time))) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+    stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .2)) + 
+  facet_wrap(~deviant_position_print) + 
+  #langcog::theme_mikabr() +
+  theme_classic()+
+  langcog::scale_color_solarized(name = "Trial Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("log RT (seconds)") + 
+  xlab("Trial number") + 
+  labs(title = "By sequence type")
+```
+
+
+
+## complexity effect 
+
+tbh a little difficult to see 
+
+```{r}
+d %>% 
+  filter(trial_number != 1) %>% 
+  ggplot(aes(x=trial_number, y=log(trial_looking_time), colour=trial_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  facet_wrap(~block_type) +
+  #langcog::theme_mikabr() +
+  theme_classic()+
+  langcog::scale_color_solarized(name = "Trial Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("log RT (seconds)") + 
+  xlab("Trial Number")
+```
+
+## complexity interact with the exposure tyep?  
+
+not the best representation since it ignores the sequence effect 
+
+```{r}
+d %>% 
+  ggplot(aes(x=trial_number, y=log(trial_looking_time), colour=block_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .2)) + 
+  facet_grid(forced_exposure_time~trial_type) +
+  #langcog::theme_mikabr() +
+  theme_classic()+
+  langcog::scale_color_solarized(name = "Trial Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("log RT (seconds)") + 
+  xlab("Trial Number")
+```
+
+## look at sequence schema 
+
+```{r}
+d %>% 
+  mutate(sequence_scheme = case_when(
+    deviant_position == 2 ~ "BDBBBB", 
+    deviant_position == 4 ~ "BBBDBB", 
+    deviant_position == 6 ~ "BBBBBD", 
+    is.na(deviant_position) ~ "BBBBBB"
+  )) %>% 
+  #filter(trial_type == "background") %>% 
+  ggplot(aes(x=trial_number, y=log(trial_looking_time), color = block_type)) + 
+   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+   stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .2))+
+  #geom_smooth(method = "lm", 
+  #            formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  facet_wrap(~sequence_scheme) +
+  #langcog::theme_mikabr() +
+  theme_classic()+
+  langcog::scale_color_solarized(name = "Trial Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("log RT (seconds)") + 
+  xlab("Trial Number")
+```
+
+
+
+
+# Look at across blocks dynamics {.tabset}
+
+across block habituation effect is present but less salient 
+
+## overall 
+
+```{r}
+d %>% 
+  ggplot(aes(x=block_number, y=log(trial_looking_time), colour=block_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  geom_smooth() + 
+  #langcog::theme_mikabr() +
+  theme_classic()+
+  langcog::scale_color_solarized(name = "Trial Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("log RT (seconds)") + 
+  xlab("Trial Number")
+```
+
+# Compare with pure self-paced
+
+```{r}
+d_0 <- read_csv(here("data/study_1_d.csv"))
+
+d_0 %>% 
+  select(trial_number, trial_type, block_type, trial_looking_time) %>% 
+  mutate(forced_exposure_time = "self_paced", 
+         block_type = case_when(
+           grepl("complex", block_type) ~ "complex", 
+           grepl("simple", block_type) ~ "simple"
+         )) %>%
+  filter(trial_number %in% c(1, 2)) %>% 
+  mutate(trial_category = case_when(
+    trial_number == 1 ~ "self_paced_first_trial", 
+    trial_number == 2 ~ "self_paced_second_trial"
+  )) %>% 
+  bind_rows(d %>%
+              mutate(forced_exposure_time = as.character(forced_exposure_time)) %>% 
+              mutate(trial_category = case_when(
+                forced_exposure_time == "500" ~ "forced 500 ms second trial", 
+                forced_exposure_time == "10000" ~ "forced 10000 ms second trial"
+              )) %>% 
+              select(trial_looking_time, trial_number, 
+                     trial_type, block_type, trial_category, forced_exposure_time) %>% 
+              filter(trial_number == 2)) %>% 
+  ggplot(aes(x = trial_category, 
+             y = log(trial_looking_time),
+             colour= as.factor(trial_type), 
+             shape = as.factor(block_type))) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+    stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .2)) + 
+  geom_hline(yintercept = log(500), color = "gray") + 
+  geom_hline(yintercept = log(10000), color = "gray") + 
+  #langcog::theme_mikabr() +
+  theme_classic()+
+  langcog::scale_color_solarized(name = "Trial Type") + 
+  theme(legend.position = "bottom") + 
+  xlab("") + 
+  ylab("log RT (ms)") + 
+  labs(title = "exposure effect on the second trial")
+```
+
+# running planned analysis 
+
+
+(1) log(looking time) ~ I((exp(1)**(-trial_number))) * item_type * item_complexity * first_trial_exposure_type + (trial_number * item_type *exposure_type|subject)
+
+
+```{r}
+#preregistration: log(looking time) ~ I((exp(1)**(-trial_number))) * item_type * trial_complexity + (trial_number * item_type * trial_complexity|subject)
+
+# didn't converge 
+#model_0 <- lmerTest::lmer(log(trial_looking_time) ~ I(exp(1)**(-trial_number)) * trial_type * block_type * forced_exposure_time  + (trial_number * trial_type * block_type | subject),
+#                          data = d %>% mutate(forced_exposure_time = as.character(forced_exposure_time)) %>% 
+#                            filter(trial_number > 1))
+
+
+
+
+model_1 <- lmerTest::lmer(log(trial_looking_time) ~ I(exp(1)**(-trial_number)) * trial_type * block_type * forced_exposure_time  + (1| subject),
+                          data = d %>% mutate(forced_exposure_time = as.character(forced_exposure_time)) %>% 
+                            filter(trial_number > 1))
+summary(model_1)
+
+```
+
+
+(2) log(looking_time_on_the_second_trial) ~ first_trial_exposure_type * item_type * item_complexity + ( exposure_type |subject)
+
+```{r}
+model_0 <- lmerTest::lmer(log(trial_looking_time) ~ forced_exposure_time * trial_type * block_type + (forced_exposure_time |subject) ,
+                          data = d %>% mutate(forced_exposure_time = as.character(forced_exposure_time)) %>% 
+  filter(trial_number == 2))
+
+summary(model_0)
+
+```
+
+
+
+

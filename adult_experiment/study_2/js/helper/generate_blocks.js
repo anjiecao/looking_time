@@ -395,8 +395,10 @@ function get_forced_trial(all_block_timeline_variables, all_block_information){
     block_index < all_block_timeline_variables.length; 
     block_index++){
 
-      forced_trial_duration = all_block_information[block_index].forced_exposure_length
+      forced_trial_duration = all_block_timeline_variables[block_index].forced_exposure_length
       width_height = parseFloat(Math.floor(Math.random() * 10) + 150);
+
+
 
       var forced_trial = {
         type: 'stimuli-presentation',
@@ -419,6 +421,8 @@ function get_forced_trial(all_block_timeline_variables, all_block_information){
 
     }
 
+    console.log(all_block_timeline_variables)
+    console.log(all_block_forced_trial)
     return (all_block_forced_trial)
 
 }
