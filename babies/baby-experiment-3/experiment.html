@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="js/jspsych.js"></script>
+  <script src="js/instruction_and_transition.js"></script>
+  <script src="js/jspsych-video-sequential-stimulus-presentation.js"></script>
+  <script src= "js/jspsych-video-keyboard-response.js"></script>
+  <script src = "js/practice_trial_package.js"></script>
+  <script src = "js/demog_question_package.js"></script>
+  <script src="js/jspsych-pratctice-block.js"></script>
+  <script src="js/jspsych-stimulus-presentation.js"></script>
+  <script src="js/jspsych-sequential-stimulus-presentation.js"></script>
+  <script src = "js/jspsych-multi-stim-multi-response.js"></script>
+  <script src="js/jspsych-task-instructions.js"></script>
+  <script src="js/jspsych-instructions.js"></script>
+  <script src="js/instructions.js"></script>
+  <script src= "js/jspsych-survey-text.js"></script>
+  <script src= "js/jspsych-survey-likert.js"></script>
+  <script src= "js/jspsych-survey-multi-choice.js"></script>
+  <script src="js/jspsych-html-slider-response.js"></script>
+  <script src="js/jspsych-html-keyboard-response.js"></script>
+  <script src="js/jspsych-image-keyboard-response.js"></script>
+  <script src= "js/jspsych-survey-text.js"></script>
+  <script src= "js/jspsych-categorize-image.js"></script>
+  <script src= "js/jspsych-fullscreen.js"></script>
+  <script src="js/helper_for_generating_stimuli_array.js"></script>
+  <script src="js/helper_for_checking_duplicate_stimuli.js"></script>
+  <script src= "js/jspsych-demog-age.js"></script>
+  <script src= "js/jspsych-demog-ethnic-US.js"></script>
+  <script src= "js/jspsych-demog-gender-and-education.js"></script>
+  <script src= "js/jspsych-fullscreen.js"></script>
+  <script src= "js/jspsych-audio-keyboard-response.js"></script>
+
+
+  <link rel="stylesheet" href="css/jspsych.css"></link>
+</head>
+<body></body>
+<script>
+
+SUBJECT_NUM = 0 // 1,2,3... 30
+CONDITION_NUM = 1
+COMPLEX = false // true or false
+LAPTOP = false
+
+// Experiment setup
+    var verbose = false
+    var timenum = Date.now();
+    var turkInfo = jsPsych.turk.turkInfo();
+
+    // if we're not on MTurk, create a timestamp-based subject number; otherwise use turker ID
+    var subject_id = 'SS' + timenum;
+    var survey_code = 'SS' + timenum
+    jsPsych.data.addProperties({ subject: subject_id });
+
+// Stimuli setup
+TEST_RUN = false //test run with smaller number of species etc.
+
+//set size of stims
+if (LAPTOP) {
+    var boxsize = 800
+    var width_height = parseFloat(Math.floor(Math.random() * 350) + 350);
+}
+else {
+  var boxsize = 1100
+  var width_height = parseFloat(Math.floor(Math.random() * 400) + 600);
+}
+
+
+
+if (TEST_RUN) {
+  SHOW_INTRO = false
+  NUM_BLOCKS = 2
+  NUM_TRIAL_PER_BLOCK = 1
+  DEVIANT_POSITIONS = [1]
+  BREAK_EVERY_N_BLOCKS = 1
+  SPECIES_NUM = 4
+
+}
+else {
+  SHOW_INTRO = true
+  NUM_BLOCKS = 6
+  NUM_TRIAL_PER_BLOCK = 4
+  BREAK_EVERY_N_BLOCKS = 3
+  SPECIES_NUM = 12
+
+}
+
+ONSET_SOUNDS = true // toggle for sounds during trial onset
+
+if (ONSET_SOUNDS) {
+  sound_setting = ''
+}
+else if (ONSET_SOUNDS)  {
+  sound_setting = 'muted'
+}
+
+// autoplay beginning of block
+autoplay_block = false
+
+ALL_STIMULI = get_all_stimuli(TEST_RUN)
+
+all_blocks_information = generate_all_block(subject_num = SUBJECT_NUM,
+                                            num_blocks = NUM_BLOCKS,
+                                            num_trial_per_block = NUM_TRIAL_PER_BLOCK,
+                                            stimuli_array = ALL_STIMULI,
+                                            num_species = SPECIES_NUM)
+
+timeline = []
+
+
+if (SHOW_INTRO) {
+  timeline = instructions(timeline)
+}
+
+console.log('all_block_information')
+
+console.log(all_block_information)
+
+// loop through all blocks
+for (var block_index = 0; block_index < all_blocks_information.length; block_index++){
+
+    block_counter = 0
+    block_information = all_blocks_information[block_index]
+
+    fam_block_timeline_variable = generate_fam_timeline_variables(block_information)
+    test_block_timeline_variable = generate_test_timeline_variables(block_information)
+
+    console.log('fam Timeline Variable')
+    console.log(fam_block_timeline_variable)
+
+    console.log('test Timeline Variable')
+    console.log(test_block_timeline_variable)
+
+// give option to pause before every block except first
+  if (block_index > 0) {
+    var between_block = {
+      type: 'html-keyboard-response',
+      stimulus: '<p><img src="stimuli/images/attngetter_blank.png"></p>',
+      choices: jsPsych.ALL_KEYS,
+      data: {stimulus_type: 'between_block'}
+    }
+    timeline.push(between_block)
+  }
+// if this is a 0 fam block, skip attention getter and fam block
+console.log('fam_block_timeline_variable.length')
+
+console.log(fam_block_timeline_variable.length)
+
+
+var attention_getter = {
+  type: 'video-keyboard-response',
+  stimulus: [
+      'stimuli/images/attngetter_quiet.mp4'],
+  autoplay: true,
+  trial_ends_after_video: true,
+  width: 1000,
+  data: {stimulus_type: 'attention_getter'}
+}
+
+if (fam_block_timeline_variable.length > 0){
+
+  // For loading
+  var fam_block = {
+                    timeline: [
+                        {
+                            type: 'html-keyboard-response',
+                            stimulus: function(){
+                                    var html='<p><img src='+ jsPsych.timelineVariable('inter_trial', true) +' width ="200" height = "200" style="position:absolute;left:85%"></p>' +
+                                    '<p><img src= stimuli/images/blank.png width ="'+ boxsize +'" height = "' + boxsize + '" style="border:5px solid black"></p>'
+                                    return html
+                                  },
+                            trial_duration: function(){
+                                var random_duration = 500 + 2000 * Math.random() // random jitter from 0.5 - 2.5 sec
+                                return random_duration  } ,
+                            choices: jsPsych.ALL_KEYS,
+                            on_finish: function(symbol){
+                              console.log(jsPsych.data.get().last(1).values()[0].key_press)
+                                  var spacePressed_1n = jsPsych.data.get().last(1).values()[0].key_press
+                                  var spacePressed_2n = jsPsych.data.get().last(2).values()[0].key_press
+                                if(spacePressed_1n == 32 || spacePressed_2n == 32) {
+                                  jsPsych.endCurrentTimeline();
+                                }
+                            }
+                        },
+                        {
+                            type: 'sequential-stimulus-presentation',
+                            wall_animation: function(){
+                                var html = '<p><img src= stimuli/images/blank.png width ="' + boxsize + '" height = "' + boxsize + '" style="border:5px solid black"></p>'
+                                return html;
+                            },
+
+                            stimuli_animation: function(){
+
+                                var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='" + width_height + "' height = '" + width_height + "' style='position:absolute;top:" +
+                                parseFloat(Math.floor(Math.random() * 30) + 8) + "%;left:" + parseFloat(Math.floor(Math.random() * 20) + 26) + "%'></p>" +
+                                " <audio autoplay><source src='" + jsPsych.timelineVariable('music', true) + "' type='audio/mpeg'> </audio>"
+                                return html
+                            },
+                            two_stimuli_interval: 0,
+                            key_response: [40, 32],
+                            minimum_viewing_duration: 1000, // block responses until stimulus appears
+                            response_ends_trial: true,
+                            trial_duration: jsPsych.timelineVariable('trial_duration'),
+                            data: {subject_num: SUBJECT_NUM, block_number: block_index, block_type: jsPsych.timelineVariable('block_type'),  stimulus_type: 'trial',
+                            stimulus_displayed: jsPsych.timelineVariable('stimuli'), fam_duration: jsPsych.timelineVariable('fam_duration'), trial_type: jsPsych.timelineVariable('stim_type')},
+                        }
+                        ],
+                    timeline_variables: fam_block_timeline_variable
+                  }
+
+            timeline.push(attention_getter)
+
+            timeline.push(fam_block)
+
+          }
+
+  // always push test block
+    var test_block = {
+                  timeline: [
+                      {
+                          type: 'html-keyboard-response',
+                          stimulus: function(){
+                                  var html='<p><img src='+ jsPsych.timelineVariable('inter_trial', true) +' width ="200" height = "200" style="position:absolute;left:85%"></p>' +
+                                  '<p><img src= stimuli/images/blank.png width ="'+ boxsize +'" height = "' + boxsize + '" style="border:5px solid black"></p>'
+                                  return html
+                                },
+                          trial_duration: function(){
+                              var random_duration = 500 + 2000 * Math.random() // random jitter from 0.5 - 2.5 sec
+                              return random_duration  } ,
+                          choices: jsPsych.ALL_KEYS,
+                          on_finish: function(symbol){
+                            console.log(jsPsych.data.get().last(1).values()[0].key_press)
+                                var spacePressed_1n = jsPsych.data.get().last(1).values()[0].key_press
+                                var spacePressed_2n = jsPsych.data.get().last(2).values()[0].key_press
+                              if(spacePressed_1n == 32 || spacePressed_2n == 32) {
+                                jsPsych.endCurrentTimeline();
+                              }
+                          }
+                      },
+                      {
+                          type: 'sequential-stimulus-presentation',
+                          wall_animation: function(){
+                              var html = '<p><img src= stimuli/images/blank.png width ="' + boxsize + '" height = "' + boxsize + '" style="border:5px solid black"></p>'
+                              return html;
+                          },
+
+                          stimuli_animation: function(){
+
+                              var html = "<p><img src="+jsPsych.timelineVariable('stimuli', true)+" width ='" + width_height + "' height = '" + width_height + "' style='position:absolute;top:" +
+                              parseFloat(Math.floor(Math.random() * 30) + 8) + "%;left:" + parseFloat(Math.floor(Math.random() * 20) + 26) + "%'></p>" +
+                              " <audio autoplay><source src='" + jsPsych.timelineVariable('music', true) + "' type='audio/mpeg'> </audio>"
+                              return html
+                          },
+                          two_stimuli_interval: 0,
+                          key_response: [40, 32],
+                          minimum_viewing_duration: 1000, // block responses until stimulus appears
+                          response_ends_trial: true,
+                          trial_duration: jsPsych.timelineVariable('trial_duration'),
+                          data: {subject_num: SUBJECT_NUM, block_number: block_index, block_type: jsPsych.timelineVariable('block_type'),  stimulus_type: 'trial',
+                          stimulus_displayed: jsPsych.timelineVariable('stimuli'), fam_duration: jsPsych.timelineVariable('fam_duration'), trial_type: jsPsych.timelineVariable('stim_type')},
+                      }
+                      ],
+                  timeline_variables: test_block_timeline_variable
+                }
+
+        timeline.push(attention_getter)
+        timeline.push(test_block)
+
+}
+
+  var thank_you = {
+      type: "html-keyboard-response",
+      stimulus: "<p><span style=\"font-family: arial, helvetica, sans-serif; font-size: 48px; color: #993300;\"> That's it! Thank you so much for your participation! </span></p>"
+  }
+
+  timeline.push(thank_you)
+
+  consent_options = ["<b>Private</b>: Video may only be viewed by authorized scientists. </h1>",
+                      "<b>Scientific</b>: Video may be shared for scientific or educational purposes, e.g. at a conference, a class or a scientific paper.</h1>",
+                      "<b>Public</b>: Like 'Scientific' but also includes public venues such as websites, news articles etc. No commercial use. </h1>"]
+
+  var consent_level = {
+      type: "survey-multi-choice",
+      questions: [
+          {prompt: "<h1 style='font-size:12'> At what level of privacy would you like us to store your data? </h1>", name: 'Consent', options: consent_options},
+        ]
+      }
+
+timeline.push(consent_level)
+console.log('timeline')
+console.log(timeline)
+
+
+jsPsych.init({
+        timeline: timeline,
+        show_progress_bar: false,
+        //use_webaudio: true, // this won't work for local testing (CORS), but maybe on server
+        preload_images: all_stimuli,
+        on_finish: function(){
+          jsPsych.data.get().localSave('csv','mydata.csv');
+        }
+        //preload_video: VIDEO,
+            //jsPsych.data.displayData();
+            //setTimeout(function() { turk.submit(jsPsych.data.get().ignore('external-html').json()); }, 5000);
+    })
+
+    </script>
+</html>

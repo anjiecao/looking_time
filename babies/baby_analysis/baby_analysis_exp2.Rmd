@@ -290,3 +290,18 @@ mean(log(wide_df$simple), na.rm = TRUE)
 mean(log(wide_df$complex), na.rm = TRUE)
 
 ```
+
+# Plot demographic info
+```{r}
+
+ggplot(demog_info, aes(x=income)) + geom_histogram(stat = 'count') + xlab('Income') + ylab('Frequency') + theme_classic() + theme(strip.text.x = element_text(size = 14, colour = "black"),
+        axis.text=element_text(size=5),
+        axis.title= element_text(size = 14)) +
+  ggtitle('') 
+
+ggplot(demog_info, aes(x=race)) + geom_histogram(stat = 'count') + xlab('Income') + ylab('Frequency') + theme_classic() + theme(strip.text.x = element_text(size = 14, colour = "black"),
+        axis.text=element_text(size=5),
+        axis.title= element_text(size = 14)) +
+  ggtitle('') 
+
+```
