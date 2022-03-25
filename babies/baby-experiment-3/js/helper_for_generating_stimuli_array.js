@@ -134,6 +134,7 @@ function get_all_stimuli(TEST_RUN, COMPLEX){
 
     prefix = 'movie_'
     MAIN_DIR = "stimuli/images/unity_stims/"
+    fam_durations = [0,4,8]
 
     if (TEST_RUN == 1) {
       // 30 species
@@ -155,11 +156,15 @@ function get_all_stimuli(TEST_RUN, COMPLEX){
             current_species = '0' + species[j]
           }
 
-          current_stimuli_right = MAIN_DIR + prefix + current_species + "_FaceRight.gif"
-          current_stimulus_left = MAIN_DIR + prefix + current_species + "_FaceLeft.gif"
+          for (i = 0; i < fam_durations.length; i++) {
 
-          all_stimuli_right.push(current_stimuli_right)
-          all_stimuli_left.push(current_stimulus_left)
+            current_stimuli_right = MAIN_DIR + prefix + current_species + "_" + fam_durations[i] + "_FaceRight.gif"
+            current_stimulus_left = MAIN_DIR + prefix + current_species + "_" + fam_durations[i] + "_FaceLeft.gif"
+
+            all_stimuli_right.push(current_stimuli_right)
+            all_stimuli_left.push(current_stimulus_left)
+
+          }
 
           all_stimuli = {
             stim_facingright: all_stimuli_right,
@@ -168,10 +173,7 @@ function get_all_stimuli(TEST_RUN, COMPLEX){
         }
 
     // put creatures in pairs
-
-
     return (all_stimuli)
-
 }
   // -------- V2 generate timeline variable for each block
   function generate_fam_timeline_variables(block_information){
