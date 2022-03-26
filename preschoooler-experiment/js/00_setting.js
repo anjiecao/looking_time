@@ -12,22 +12,9 @@
 
 TEST_RUN = 0//test run with smaller number of species etc.
 
-if (TEST_RUN == 1) {
-  SHOW_INTRO = false
-  NUM_BLOCKS = 12
-  NUM_TRIAL_PER_BLOCK = [1]
-  DEVIANT_POSITIONS = [1]
-  BREAK_EVERY_N_BLOCKS = 1
-  // number of species per complexity level
-  SPECIES_NUM = 4
-  NUM_DEVIANTS = [0]
-  SHOW_SIMILAR = 0
 
-
-}
-else {
-  SHOW_INTRO = true
-  NUM_BLOCKS = 8
+SHOW_INTRO = true
+ NUM_BLOCKS = 8
   NUM_TRIAL_PER_BLOCK = [6]
   DEVIANT_POSITIONS = [null, null, 1, 1, 3, 3, 5, 5]
   SPECIES_NUM = 24
@@ -35,7 +22,7 @@ else {
   SHOW_SIMPLE = false 
   SHOW_COMPLEX = true
 
-}
+
 
 
 
@@ -71,6 +58,7 @@ all_complex_blocks_information = generate_all_block(num_blocks = NUM_BLOCKS,
                                         show_complex = true
                                         )
 
+console.log(all_complex_blocks_information)
 
 checking_block_information(all_blocks_information = all_complex_blocks_information, 
                               blcok_number = NUM_BLOCKS, 

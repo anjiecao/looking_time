@@ -141,6 +141,7 @@ for (var block_index = 0;
   }
 // putting everything together 
 main_task = main_task.concat(test_blocks)
+console.log(main_task)
 return(main_task)
 
 }
