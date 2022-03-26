@@ -270,14 +270,16 @@ block_index_with_false_memory = getRandomSubarray(all_block_index, loop_length/2
 
 for (i = 0; i < all_block_information.length; i++){
   real_used_stimuli = [all_block_information[i].background_stimuli]
- 
+
+  /* this is to only use background vs novel in the test so that kiddos don't get confused 
   if(all_block_information[i].deviant_position_array.length != 0){
     real_used_stimuli.push(all_block_information[i].deviant_stimuli)
   }
   shuffleArray(real_used_stimuli)
-  console.log(real_used_stimuli)
+  */
 
   memory_test_stimuli = [left_over_stimuli[i], real_used_stimuli[0]]
+  shuffleArray(real_used_stimuli)
   all_block_information[i].memory_test_stimuli = memory_test_stimuli
   all_block_information[i].memory_correct = real_used_stimuli[0]
   
@@ -469,13 +471,15 @@ function generate_dissimilar_block(stims, num_blocks, num_trial_per_block, curre
 
 
   var memory_items = [background, novel]
-  var memory_item = memory_items[Math.floor(Math.random() * memory_items.length)]
+  shuffleArray(memory_items)
+  //var memory_item = memory_items[Math.floor(Math.random() * memory_items.length)]
 
-  if (memory_item == background){
-    memory_test_type = "background"
+  if (memory_items[0] == background){
+    var correct_answer = "left"
   }else{
-    memory_test_type = "novel"
+    var correct_answer = "right"
   }
+
   
       block_information = {
           num_trial_per_block: num_trial_per_block,
@@ -483,8 +487,9 @@ function generate_dissimilar_block(stims, num_blocks, num_trial_per_block, curre
           deviant_stimuli: deviant,
           deviant_position_array: [current_deivant_position],
           block_type: block_type, 
-          memory_item: memory_item, 
-          memory_test_type: memory_test_type
+          memory_items: memory_items, 
+          correct_answer: correct_answer
+          
       }
 
 

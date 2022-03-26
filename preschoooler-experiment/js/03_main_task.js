@@ -30,15 +30,16 @@ for (var block_index = 0;
     block_type = block_information.block_type
     block_timeline_variable = generate_timeline_variables(block_information)
     exposure_type = block_information.exposure_type
-    memory_item = block_information.memory_item
-    memory_test_type = block_information.memory_test_type
+    memory_items = block_information.memory_items
+    memory_correct_answer = block_information.correct_answer
+    
     
     if (verbose){
         console.log("Each block time variable: ")
         console.log(block_timeline_variable)
         console.log('info: ' + block_information['stims_in_order'])
         console.log("memory question stimuli for the block:")
-        console.log(memory_item)
+        console.log(memory_items)
     }
 
 
@@ -98,15 +99,16 @@ for (var block_index = 0;
         var memory_question = {
                 type: 'html-button-response', 
                 stimulus: '',
-                choices: ["option"], 
-                margin_horizontal: 20,
-                button_html: ['<p><img src= ' +  memory_item + ' width ="400" height = "400"</p>'
+                choices: ["left", "right"], 
+                margin_horizontal: 2050,
+                button_html: ['<p><img src= ' +  memory_items[0] + ' width ="400" height = "400"</p>', 
+                '<p><img src= ' +  memory_items[1] + ' width ="400" height = "400"</p>'
                             ],
                             
+                // need to log the correct answer 
                 data: {stimulus_type: "memory_test",
-                    memory_block_index: block_index, 
-                    memory_test_type: memory_test_type,
-                    memory_options_left: memory_item
+                    memory_block_index: block_index,
+                    correct_answer: memory_correct_answer, 
                     }
         }
                 test_blocks.push(memory_question)
@@ -132,7 +134,7 @@ for (var block_index = 0;
               
     }
 
-        //test_blocks.push(great_job)
+        test_blocks.push(great_job)
         test_blocks.push(all_sticker_blocks[block_index])
 
      

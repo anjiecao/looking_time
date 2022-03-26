@@ -40,9 +40,9 @@ var generic_intro = {
 } 
     
 
-timeline.push(generic_intro)
+//timeline.push(generic_intro)
 timeline.push(demog_subject_ID)
-timeline.push(demog_red_cap_ID)
+//timeline.push(demog_red_cap_ID)
 
 
 

@@ -199,10 +199,14 @@ var great_job = {
           var practice_memory_1 = {
             type: 'html-button-response', 
             stimulus: '',
-            choices: ["right"], 
-            margin_horizontal: 20,
-            button_html: ['<p><img src= ' +   "images/practice/memory_practice_1.gif" + ' width ="400" height = "400"</p>'
-                        ]
+            choices: ["left", "right"], 
+            margin_horizontal: 2020,
+            button_html: ['<p><img src= ' +   "images/practice/memory_practice_1.gif" + ' width ="400" height = "400"</p>', 
+                        '<p><img src= ' +   "images/practice/memory_practice_1_novel.gif" + ' width ="400" height = "400"</p>'
+                        ],
+            data: {stimulus_type: "memory_practice",
+                    correct_answer: "left", 
+                      }
          }
 
 
@@ -265,10 +269,14 @@ var great_job = {
     var practice_memory_2 = {
       type: 'html-button-response', 
       stimulus: '',
-      choices: ["right"], 
-      margin_horizontal: 20,
-      button_html: ['<p><img src= ' +   "images/practice/memory_practice_2_novel.gif" + ' width ="400" height = "400"</p>'
-                  ]
+      choices: ["left","right"], 
+      margin_horizontal: 2000,
+      button_html: ['<p><img src= ' +   "images/practice/memory_practice_2_novel.gif" + ' width ="400" height = "400"</p>',
+                     '<p><img src= ' +   "images/practice/memory_practice_2.gif" + ' width ="400" height = "400"</p>'
+                  ],
+      data: {stimulus_type: "memory_practice",
+             correct_answer: "right" 
+                    }
       }
 
         var intro3 = {

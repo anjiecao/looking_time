@@ -68,10 +68,12 @@ weirder shapes toward the latter part of the experiment
 ```{r}
 d %>% 
   filter(!trial_number == 1) %>% 
-  ggplot(aes(x = trial_looking_time, fill = task_type)) + 
+  filter(is.na(deviant_position)) %>% 
+  ggplot(aes(x = trial_looking_time, fill = block_type)) + 
   scale_x_log10() + 
   geom_density(alpha = .5) + 
-  facet_grid(trial_type~block_number)
+  facet_grid(forced_exposure_time~block_number) + 
+   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 ```
 
 # Look at within block dynamics {.tabset}
@@ -187,12 +189,12 @@ d %>%
     is.na(deviant_position) ~ "BBBBBB"
   )) %>% 
   #filter(trial_type == "background") %>% 
-  ggplot(aes(x=trial_number, y=log(trial_looking_time), color = block_type)) + 
+  ggplot(aes(x=trial_number, y=log(trial_looking_time), color = as.factor(forced_exposure_time))) + 
    stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
    stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .2))+
   #geom_smooth(method = "lm", 
   #            formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
-  facet_wrap(~sequence_scheme) +
+  facet_grid(block_type ~ sequence_scheme) +
   #langcog::theme_mikabr() +
   theme_classic()+
   langcog::scale_color_solarized(name = "Trial Type") + 
@@ -229,7 +231,7 @@ d %>%
 d_0 <- read_csv(here("data/study_1_d.csv"))
 
 d_0 %>% 
-  select(trial_number, trial_type, block_type, trial_looking_time) %>% 
+  select(trial_number, block_number, trial_type, block_type, trial_looking_time) %>% 
   mutate(forced_exposure_time = "self_paced", 
          block_type = case_when(
            grepl("complex", block_type) ~ "complex", 
@@ -240,7 +242,9 @@ d_0 %>%
     trial_number == 1 ~ "self_paced_first_trial", 
     trial_number == 2 ~ "self_paced_second_trial"
   )) %>% 
+  filter(block_number < 4) %>% 
   bind_rows(d %>%
+              filter(block_number < 4) %>% 
               mutate(forced_exposure_time = as.character(forced_exposure_time)) %>% 
               mutate(trial_category = case_when(
                 forced_exposure_time == "500" ~ "forced 500 ms second trial", 
@@ -283,7 +287,7 @@ d_0 %>%
 
 
 
-model_1 <- lmerTest::lmer(log(trial_looking_time) ~ I(exp(1)**(-trial_number)) * trial_type * block_type * forced_exposure_time  + (1| subject),
+model_1 <- lmerTest::lmer(log(trial_looking_time) ~ I(exp(1)**(-trial_number)) * trial_type * block_type * forced_exposure_time  + ›(1| subject),
                           data = d %>% mutate(forced_exposure_time = as.character(forced_exposure_time)) %>% 
                             filter(trial_number > 1))
 summary(model_1)
@@ -302,6 +306,40 @@ summary(model_0)
 
 ```
 
+# diagnosing distribution 
+```{r}
+sum_d <- d %>% 
+  select(subject, block_number, block_type, task_type, deviant_position, trial_number, trial_type, trial_looking_time) %>% 
+  mutate(study = "study_2") %>% 
+  bind_rows(d_0 %>%  select(subject, block_number, block_type, task_type, deviant_position, trial_number, trial_type, trial_looking_time) %>% mutate(study = "study_1"))
+```
+
+```{r}
+d %>% 
+  filter(trial_number != 1) %>% 
+   ggplot(aes(x = trial_looking_time, fill = trial_type))+ 
+  geom_histogram() + 
+  scale_x_log10() + 
+  facet_grid(deviant_position~forced_exposure_time)
+```
+
+
+```{r}
+sum_d %>% 
+  filter(!(study == "study_2" & trial_number == 1)) %>% 
+  ggplot(aes(x = trial_looking_time, fill = trial_type))+ 
+  geom_histogram() + 
+  scale_x_log10() + 
+  facet_grid(deviant_position~study)
+```
+```{r}
+d_no_forced_trial <- d %>% filter(trial_number != 1)
+
+qqnorm(log(d_0$trial_looking_time)) 
+
+qqnorm(log(d_no_forced_trial$trial_looking_time)) 
+
+```
 
 
 
