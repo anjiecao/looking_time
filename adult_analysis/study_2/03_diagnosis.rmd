@@ -1,0 +1,101 @@
+---
+title: "03_diagnosing"
+author: "anjie & gal"
+date: "3/29/2022"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(here)
+library(factoextra)
+```
+
+
+```{r}
+d <- read.csv(here("data/study_1_d.csv"))
+
+d <- d %>% 
+  select(-task_type) %>% 
+  mutate(deviant_position = case_when(
+    is.na(deviant_position) ~ "0",
+    TRUE ~ as.character(deviant_position)
+  ), 
+  complexity = case_when(
+    grepl("complex", block_type) ~ "c", 
+    grepl("simple", block_type) ~ "s"
+  )) %>% 
+  mutate(
+    trial_info = paste0("b_", block_number, "_t_", trial_number)
+  ) %>% 
+  select(subject, trial_info, trial_looking_time) %>% 
+  pivot_wider(names_from = trial_info, values_from = trial_looking_time)
+  
+```
+
+```{r}
+d <- na.omit(d)
+df <- as.data.frame(d[, -1])
+rownames(df) <- d %>% pull(subject)
+
+```
+
+```{r}
+df <- scale(df)
+```
+
+```{r}
+distance <- get_dist(df)
+fviz_dist(distance, gradient = list(low = "#00AFBB", mid = "white", high = "#FC4E07"))
+
+```
+
+```{r}
+k2 <- kmeans(df, centers = 2, nstart = 25)
+k2
+```
+```{r}
+fviz_cluster(k2, data = df)
+```
+
+```{r}
+k3 <- kmeans(df, centers = 3, nstart = 25)
+k4 <- kmeans(df, centers = 4, nstart = 25)
+k5 <- kmeans(df, centers = 5, nstart = 25)
+
+# plots to compare
+p1 <- fviz_cluster(k2, geom = "point", data = df) + ggtitle("k = 2")
+p2 <- fviz_cluster(k3, geom = "point",  data = df) + ggtitle("k = 3")
+p3 <- fviz_cluster(k4, geom = "point",  data = df) + ggtitle("k = 4")
+p4 <- fviz_cluster(k5, geom = "point",  data = df) + ggtitle("k = 5")
+
+library(gridExtra)
+grid.arrange(p1, p2, p3, p4, nrow = 2)
+```
+
+```{r}
+set.seed(123)
+
+fviz_nbclust(df, kmeans, method = "wss")
+fviz_nbclust(df, kmeans, method = "silhouette")
+
+
+```
+
+```{r}
+
+df_long <- df %>% 
+  as.tibble() %>% 
+  mutate(cluster =  k2$cluster, 
+         subject = row_number()) %>% 
+  pivot_longer(cols = -c("cluster", "subject"), 
+               names_to = "trial_info", 
+               values_to = "scaled_trial_looking_time") 
+```
+
+
+```{r}
+df_long 
+```
+
+
