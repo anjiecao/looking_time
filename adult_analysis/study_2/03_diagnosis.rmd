@@ -11,6 +11,7 @@ library(here)
 library(factoextra)
 ```
 
+# Block / Trial clustering method 
 
 ```{r}
 d <- read.csv(here("data/study_1_d.csv"))
@@ -43,6 +44,11 @@ rownames(df) <- d %>% pull(subject)
 ```{r}
 df <- scale(df)
 ```
+
+```{r}
+df %>% get_clust_tendency(n = nrow(df)/10)
+```
+
 
 ```{r}
 distance <- get_dist(df)
@@ -84,10 +90,113 @@ fviz_nbclust(df, kmeans, method = "silhouette")
 
 ```{r}
 
-df_long <- df %>% 
-  as.tibble() %>% 
-  mutate(cluster =  k2$cluster, 
-         subject = row_number()) %>% 
+df_test <- as.tibble(df)
+
+df_test$subject <- as.vector(rownames(df))
+
+df <- df_test %>%
+  mutate(cluster =  k2$cluster) %>% 
+  pivot_longer(cols = -c("cluster", "subject"), 
+               names_to = "trial_info", 
+               values_to = "scaled_trial_looking_time") 
+
+
+```
+
+
+```{r}
+
+```
+
+
+```{r}
+df_long %>% 
+  ggplot(aes(x = scaled_trial_looking_time)) + 
+  geom_histogram() + 
+  scale_x_log10() + 
+  facet_wrap(~cluster) 
+```
+```{r}
+df_long %>% 
+  distinct(subject, cluster) %>% 
+  group_by(cluster) %>% 
+  summarise(n = n())
+```
+
+# more theory-driven clustering 
+
+```{r}
+d <- read.csv(here("data/study_1_d.csv"))
+
+d_b <- d %>% 
+  group_by(subject, block_type, trial_number, trial_type) %>% 
+  summarise(mean_lt = mean(trial_looking_time)) %>% 
+  mutate(
+    complexity = case_when(
+      grepl("complex", block_type) ~ "c",
+      grepl("simple", block_type) ~ "s"
+    ), 
+    trial_type_short = case_when(
+      trial_type == "background" ~ "bgd",
+      trial_type == "deviant" ~ "dvt"
+    ), 
+    trial_info = paste0(complexity, "_", trial_type_short, "_", trial_number)
+  ) %>% 
+  ungroup() %>% 
+  select(subject, trial_info, mean_lt) %>% 
+  pivot_wider(names_from = trial_info, values_from = mean_lt)
+```
+
+```{r}
+d_b <- na.omit(d_b)
+df_b <- as.data.frame(d_b[, -1])
+rownames(df_b) <- d_b %>% pull(subject)
+df_b <- scale(df_b)
+df_b <- na.omit(df_b)
+df_b
+```
+
+```{r}
+df %>% get_clust_tendency(n = nrow(df)/10)
+
+```
+
+```{r}
+df_b %>% get_clust_tendency(n = nrow(df)/10)
+```
+
+
+```{r}
+k2 <-  kmeans(df_b, centers = 2, nstart = 25)
+k3 <- kmeans(df_b, centers = 3, nstart = 25)
+k4 <- kmeans(df_b, centers = 4, nstart = 25)
+k5 <- kmeans(df_b, centers = 5, nstart = 25)
+
+# plots to compare
+p1 <- fviz_cluster(k2, geom = "point", data = df_b) + ggtitle("k = 2")
+p2 <- fviz_cluster(k3, geom = "point",  data = df_b) + ggtitle("k = 3")
+p3 <- fviz_cluster(k4, geom = "point",  data = df_b) + ggtitle("k = 4")
+p4 <- fviz_cluster(k5, geom = "point",  data = df_b) + ggtitle("k = 5")
+
+library(gridExtra)
+grid.arrange(p1, p2, p3, p4, nrow = 2)
+```
+
+
+```{r}
+set.seed(123)
+
+fviz_nbclust(df_b, kmeans, method = "wss")
+fviz_nbclust(df_b, kmeans, method = "silhouette")
+
+```
+```{r}
+df_test <- as.tibble(df_b)
+
+df_test$subject <- as.vector(rownames(df_b))
+
+df_b_long <- df_test %>%
+  mutate(cluster =  k2$cluster) %>% 
   pivot_longer(cols = -c("cluster", "subject"), 
                names_to = "trial_info", 
                values_to = "scaled_trial_looking_time") 
@@ -95,7 +204,126 @@ df_long <- df %>%
 
 
 ```{r}
-df_long 
+df_b_long %>% 
+  ggplot(aes(x = scaled_trial_looking_time)) + 
+  geom_histogram() + 
+  scale_x_log10() + 
+  facet_wrap(~cluster) 
+```
+```{r}
+df_b_long %>% 
+  distinct(subject, cluster) %>% 
+  group_by(cluster) %>% 
+  summarise(n = n())
 ```
 
+# put it back 
+
+```{r}
+d <- read.csv(here("data/study_1_d.csv"))
+
+
+
+df_b_long <- df_test %>%
+  mutate(cluster =  k2$cluster) %>% 
+  pivot_longer(cols = -c("cluster", "subject"), 
+               names_to = "trial_info", 
+               values_to = "scaled_trial_looking_time") 
+
+d %>% 
+  left_join(df %>% select(subject, cluster), by = "subject") %>% 
+  filter(!is.na(cluster)) %>% 
+  ggplot(aes(x = trial_looking_time, fill = trial_type))+ 
+  
+  geom_histogram() + 
+  scale_x_log10() + 
+  facet_grid(deviant_position~cluster)
+  
+```
+```{r}
+d %>% 
+  left_join(df_b_long %>% select(subject, cluster), by = "subject") %>% 
+  distinct(cluster, subject) %>% 
+  group_by(cluster) %>% 
+  count()
+```
+
+
+```{r}
+d %>% 
+  left_join(df_b_long %>% select(subject, cluster), by = "subject") %>% 
+  filter(!is.na(cluster)) %>% 
+  ggplot(aes(x=trial_number, y=log(trial_looking_time), colour=block_type)) + 
+stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .2)) + 
+  facet_grid(deviant_position ~ cluster)
+```
+
+
+
+```{r}
+d <- read.csv(here("data/study_1_d.csv"))
+
+
+
+d %>% 
+  left_join(df_long %>% select(subject, cluster), by = "subject") %>% 
+  filter(!is.na(cluster)) %>% 
+  ggplot(aes(x = trial_looking_time, fill = trial_type))+ 
+  
+  geom_histogram() + 
+  scale_x_log10() + 
+  facet_grid(deviant_position~cluster)
+```
+
+```{r}
+
+
+d %>% 
+
+  left_join(df %>% select(subject, cluster), by = "subject") %>% 
+  filter(!is.na(cluster)) %>% 
+   ggplot(aes(x=trial_number, y=log(trial_looking_time), colour=block_type)) + 
+stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .2)) + 
+  facet_grid(deviant_position ~ cluster)
+```
+
+
+```{r}
+d %>% 
+  left_join(df %>% select(subject, cluster), by = "subject") %>% 
+  distinct(cluster, subject) %>% 
+  group_by(cluster) %>% 
+  count()
+```
+
+
+```{r}
+cluster_raw <- d %>% 
+  left_join(df %>% select(subject, cluster), by = "subject") %>% 
+  mutate(cluster_raw = case_when(
+    cluster == 1 ~ "bad",
+    cluster == 2 ~ "good"
+  ))
+
+cluster_aggregated <- d %>% 
+  left_join(df_b_long %>% select(subject, cluster), by = "subject") %>% 
+  mutate(cluster_aggregated = case_when(
+    cluster == 1 ~ "good", 
+    cluster == 2 ~ "bad"
+  ))
+
+
+cluster_raw %>% 
+  filter(!is.na(cluster_raw)) %>% 
+  select(subject, cluster_raw) %>%
+  distinct(subject, cluster_raw) %>% 
+  left_join(cluster_aggregated %>% select(subject, cluster_aggregated) %>% distinct() %>% 
+              filter(!is.na(cluster_aggregated)), by = c("subject")) %>% 
+  group_by(cluster_raw, cluster_aggregated) %>% 
+  count()
+  
+
+```
 
