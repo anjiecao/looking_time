@@ -132,9 +132,11 @@ function get_all_stimuli(TEST_RUN, COMPLEX){
   all_stimuli_right = []
   all_stimuli_left = []
 
-    prefix = 'movie_'
+    prefix = 'unitystims_'
     MAIN_DIR = "stimuli/images/unity_stims/"
-    fam_durations = [0,4,8]
+    fam_durations = ['0','4','8']
+    block_type = ['background', 'deviant']
+    background_idx = ['1', '2']
 
     if (TEST_RUN == 1) {
       // 30 species
@@ -142,39 +144,45 @@ function get_all_stimuli(TEST_RUN, COMPLEX){
     }
     else {
       // 20 species
-      species = Array.from({length: 12}, (_, i) => i + 1)
+      species = Array.from({length: 6}, (_, i) => i + 1)
     }
 
     // set number is specified in experiment.html
-      for (var j = 0; j < species.length; j++){
+      for (var x = 0; x < species.length; x++){
 
-          // add 0's before number for species number less than 0
-          if (species[j] < 10) {
-            current_species = '00' + species[j]
-          }
-          else {
-            current_species = '0' + species[j]
-          }
+          current_species = species[x]
 
           for (i = 0; i < fam_durations.length; i++) {
+            for(j = 0; j < block_type.length; j++) {
+              for(k = 0; k < background_idx.length; k++) {
 
-            current_stimuli_right = MAIN_DIR + prefix + current_species + "_" + fam_durations[i] + "_FaceRight.gif"
-            current_stimulus_left = MAIN_DIR + prefix + current_species + "_" + fam_durations[i] + "_FaceLeft.gif"
+              current_stimulus_right = MAIN_DIR + prefix + '00' + current_species +
+              '_Right_' + fam_durations[i] + 'fam_' + block_type[j] + '_' +
+              background_idx[k] + " .gif"
 
-            all_stimuli_right.push(current_stimuli_right)
-            all_stimuli_left.push(current_stimulus_left)
+              current_stimulus_left = MAIN_DIR + prefix + '00' + current_species + '_Left_' + fam_durations[i] +
+               'fam_' + block_type[j] + '_' + background_idx[k] + ".gif"
 
+              all_stimuli_right.push(current_stimulus_right)
+              all_stimuli_left.push(current_stimulus_left)
+            }
           }
+        }
+      }
 
           all_stimuli = {
             stim_facingright: all_stimuli_right,
             stim_facingleft: all_stimuli_left
           }
-        }
+
+          console.log('all_stimuli')
+          console.log(all_stimuli)
+
 
     // put creatures in pairs
     return (all_stimuli)
 }
+
   // -------- V2 generate timeline variable for each block
   function generate_fam_timeline_variables(block_information){
 
