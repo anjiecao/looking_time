@@ -30,7 +30,7 @@ function getRandomSubarray(arr, size) {
 }
 
 // This function return an array of [len] length filled with value
-// e.g. if value = "a", len = 3, return ["a", "a", "a"]
+// e.g. if value = 'a', len = 3, return ['a', 'a', 'a']
 function fillArray(value, len) {
   if (len == 0) return [];
   var a = [value];
@@ -113,7 +113,7 @@ function generate_random_num_array(sum, n_chunk){
 function pop_multiple(array, n){
 
   if (n > array.length){
-    alert("pop_multiple n exceeds array length!")
+    alert('pop_multiple n exceeds array length!')
   }else{
   var popped_array = []
   for (var i = 0; i < n; i++){
@@ -133,7 +133,7 @@ function get_all_stimuli(TEST_RUN, COMPLEX){
   all_stimuli_left = []
 
     prefix = 'unitystims_'
-    MAIN_DIR = "stimuli/images/unity_stims/"
+    MAIN_DIR = 'stimuli/images/unity_stims/'
     fam_durations = ['0','4','8']
     block_type = ['background', 'deviantiant']
     background_idx = ['1', '2']
@@ -158,10 +158,10 @@ function get_all_stimuli(TEST_RUN, COMPLEX){
 
               current_stimulus_right = MAIN_DIR + prefix + '00' + current_species +
               '_Right_' + fam_durations[i] + 'fam_' + block_type[j] + '_' +
-              background_idx[k] + " .gif"
+              background_idx[k] + ' .gif'
 
               current_stimulus_left = MAIN_DIR + prefix + '00' + current_species + '_Left_' + fam_durations[i] +
-               'fam_' + block_type[j] + '_' + background_idx[k] + ".gif"
+               'fam_' + block_type[j] + '_' + background_idx[k] + '.gif'
 
               all_stimuli_right.push(current_stimulus_right)
               all_stimuli_left.push(current_stimulus_left)
@@ -189,11 +189,23 @@ function get_all_stimuli(TEST_RUN, COMPLEX){
         block_type = block_information.block_type
         fam_duration = block_information.fam_duration
 
-       // get test clips
-       music_array = ['stimuli/audio/music_test_1_withSFX.wav',
-                          'stimuli/audio/music_test_2_withSFX.wav',
-                          'stimuli/audio/music_test_3_withSFX.wav'
-      ]
+
+        if (fam_duration == '0') {
+          // get test clips
+          music_array = ['stimuli/audio/music_test_1_0fam.wav',
+                             'stimuli/audio/music_test_2_0fam.wav',
+                             'stimuli/audio/music_test_3_0fam.wav']
+        }
+        if (fam_duration == '4') {
+          music_array = ['stimuli/audio/music_test_1_4fam.wav',
+                             'stimuli/audio/music_test_2_4fam.wav',
+                             'stimuli/audio/music_test_3_4fam.wav']
+        }
+        if (fam_duration == '8') {
+          music_array = ['stimuli/audio/music_test_1_8fam.wav',
+                             'stimuli/audio/music_test_2_8fam.wav',
+                             'stimuli/audio/music_test_3_8fam.wav']
+        }
 
         shuffleArray(music_array)
 
@@ -205,7 +217,6 @@ function get_all_stimuli(TEST_RUN, COMPLEX){
           music: music_array[1],
           inter_trial: 'stimuli/images/blank_test.png'
       }
-
 
       console.log('block_stimuli')
       console.log(block_stimuli)
@@ -229,12 +240,12 @@ function generate_all_block(condition_num,
 
 
     counterbalancing_table =
-    [{"fam_duration":[0,0,8,4,8,4],"block_type":["standard","deviant","deviant","standard","standard","deviant"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[1,2,6,3,5,4]},
-    {"fam_duration":[0,4,0,4,8,8],"block_type":["deviant","standard","standard","deviant","deviant","standard"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[2,3,1,4,6,5]},
-    {"fam_duration":[4,4,0,8,0,8],"block_type":["standard","deviant","deviant","standard","standard","deviant"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[3,4,2,5,1,6]},
-    {"fam_duration":[4,8,4,8,0,0],"block_type":["deviant","standard","standard","deviant","deviant","standard"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[4,5,3,6,2,1]},
-    {"fam_duration":[8,8,4,0,4,0],"block_type":["standard","deviant","deviant","standard","standard","deviant"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[5,6,4,1,3,2]},
-    {"fam_duration":[8,0,8,0,4,4],"block_type":["deviant","standard","standard","deviant","deviant","standard"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[6,1,5,2,4,3]}]
+    [{'fam_duration':[0,0,8,4,8,4],'block_type':['standard','deviant','deviant','standard','standard','deviant'],'block_number':[1,2,3,4,5,6],'counterbalancing_condition':[1,2,6,3,5,4]},
+    {'fam_duration':[0,4,0,4,8,8],'block_type':['deviant','standard','standard','deviant','deviant','standard'],'block_number':[1,2,3,4,5,6],'counterbalancing_condition':[2,3,1,4,6,5]},
+    {'fam_duration':[4,4,0,8,0,8],'block_type':['standard','deviant','deviant','standard','standard','deviant'],'block_number':[1,2,3,4,5,6],'counterbalancing_condition':[3,4,2,5,1,6]},
+    {'fam_duration':[4,8,4,8,0,0],'block_type':['deviant','standard','standard','deviant','deviant','standard'],'block_number':[1,2,3,4,5,6],'counterbalancing_condition':[4,5,3,6,2,1]},
+    {'fam_duration':[8,8,4,0,4,0],'block_type':['standard','deviant','deviant','standard','standard','deviant'],'block_number':[1,2,3,4,5,6],'counterbalancing_condition':[5,6,4,1,3,2]},
+    {'fam_duration':[8,0,8,0,4,4],'block_type':['deviant','standard','standard','deviant','deviant','standard'],'block_number':[1,2,3,4,5,6],'counterbalancing_condition':[6,1,5,2,4,3]}]
 
 
     condition_idx = condition_num - 1
@@ -243,11 +254,11 @@ function generate_all_block(condition_num,
     block_orders = counterbalancing_table[subject_num].block_type
 
     // random order of pairs
-    species = ["1", "2", "3", "4", "5", "6"]
+    species = ['1', '2', '3', '4', '5', '6']
     shuffleArray(species)
 
     // background idx
-    background_idx = ["1", "2", "1", "2", "1", "2"]
+    background_idx = ['1', '2', '1', '2', '1', '2']
     shuffleArray(background_idx)
 
 
@@ -260,7 +271,7 @@ function generate_all_block(condition_num,
     for (i = 0; i < num_blocks; i++) {
         block_information = {
             stimulus_path: MAIN_DIR + prefix + '00' + species[i] + left_or_right[i] + fam_orders[i] +
-             'fam_' + block_orders[i] + '_' + background_idx[i] + ".gif",
+             'fam_' + block_orders[i] + '_' + background_idx[i] + '.gif',
             fam_duration: fam_orders[i],
             block_type: block_orders[i],
         }
