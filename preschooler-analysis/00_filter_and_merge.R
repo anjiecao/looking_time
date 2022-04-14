@@ -35,7 +35,9 @@ get_included_data <- function(raw_data_directory,
   
   RAW_DATA <- map_df((RAW_count %>% filter(n > MIN_ROW))$file_name,
                      function(file){
-                       d <- read_csv(file)
+                       d <- read_csv(file) %>% 
+                         mutate(rt = as.numeric(rt), 
+                                key_press = as.character(key_press))
                      }) 
   
   id_data <- RAW_DATA %>% 
@@ -43,10 +45,14 @@ get_included_data <- function(raw_data_directory,
     select(subject, responses) %>% 
     mutate(responses = map(responses, ~ fromJSON(.))) %>%
     unnest(responses) %>% 
-    unnest(responses)
+    unnest(responses) %>% 
+    mutate(responses = case_when(
+      grepl("0", responses) & !grepl("pilot", responses)  &  !grepl("Pilot", responses)~ as.character(as.numeric(responses)), 
+      TRUE ~ responses
+    ))
   
   include_sbj <- included_participants_df %>% 
-    select(`RedCAP ID`) %>% 
+    select(`Subject_id`) %>% 
     pull()
   
   include_sbj_id <- id_data %>% 

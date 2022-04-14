@@ -39,6 +39,74 @@ raw_df %>%
   ylab("log RT (seconds)") + 
   xlab("Trial Number")
 ```
+
+```{r}
+tidy_all_rt_task_data <- function(raw_data){
+  
+
+  cleaned_rt_data <- raw_data %>% 
+    filter(stimulus_type == "trial") %>% 
+    group_by(subject, block_number) %>% 
+    mutate(trial_number = row_number(), 
+           block_number = block_number + 1) %>% 
+    mutate(trial_type = case_when(
+      stimulus_displayed == block_background ~ "background", 
+      stimulus_displayed == block_deviant ~ "deviant"
+    )) 
+  
+  
+  cleaned_rt_data <- cleaned_rt_data%>%
+     left_join(
+      cleaned_rt_data %>% 
+        filter(trial_type == "deviant") %>% 
+        mutate(deviant_position = trial_number) %>% 
+        select(subject, block_number, deviant_position), 
+      by = c("subject", "block_number")
+    ) %>% 
+    select(subject, block_number, trial_number, block_type, trial_type, block_background, block_deviant, deviant_position,stimulus_displayed, trial_looking_time)
+  
+ 
+  
+  
+  return (cleaned_rt_data)
+  
+  
+  
+}
+
+```
+
+
+```{r}
+df <- tidy_all_rt_task_data(raw_df)
+
+```
+
+```{r}
+ df %>% 
+  ggplot(aes(x = trial_number, y = log(trial_looking_time), color = trial_type)) +
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  stat_summary(geom = "line", fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+   theme_classic()+
+  langcog::scale_color_solarized(name = "Trial Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("log RT (seconds)") + 
+  xlab("Trial Number")
+
+
+ df %>% 
+  ggplot(aes(x = trial_number, y = log(trial_looking_time))) +
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  stat_summary(geom = "line", fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  facet_wrap(~deviant_position)+  
+  xlab("Trial Number") + 
+     theme_classic()+
+  langcog::scale_color_solarized(name = "Trial Type") 
+```
+
+
+
+
 Trial based exclusion:
 We exclude a trial if it is three absolute deviations away from the median in the log-transformed space across all participants. If the participant fails to complete more than 50 percent of the study they will be excluded.
 Participant-based exclusion:
