@@ -1,0 +1,29 @@
+---
+title: "prepping followup"
+author: "anjie & gal"
+date: "4/14/2022"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(here)
+library(jsonlite)
+```
+
+# get the subject id prolific id pariing 
+```{r}
+# has pairing 
+rt_d <- read_csv(here("data/02_processed_data/processed_rt_task_data.csv"))
+# has prolific id
+p_id <- read_csv(here("data/01_merged_data/merged_data.csv")) %>% 
+  filter(trial_type == "survey-text" & grepl("p_id", responses)) %>% 
+  select(subject, responses) %>% 
+  mutate(prolifc_id = map(responses, ~ fromJSON(.) %>% as.data.frame()) %>% unlist()) %>% 
+  filter(subject %in% unique(rt_d %>% pull(subject))) %>% 
+  select(subject, prolific_id)
+  
+```
+
+
+# figure out what stimuli participnats have seen
