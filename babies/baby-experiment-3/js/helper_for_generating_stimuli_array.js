@@ -30,7 +30,7 @@ function getRandomSubarray(arr, size) {
 }
 
 // This function return an array of [len] length filled with value
-// e.g. if value = "a", len = 3, return ["a", "a", "a"]
+// e.g. if value = 'a', len = 3, return ['a', 'a', 'a']
 function fillArray(value, len) {
   if (len == 0) return [];
   var a = [value];
@@ -113,7 +113,7 @@ function generate_random_num_array(sum, n_chunk){
 function pop_multiple(array, n){
 
   if (n > array.length){
-    alert("pop_multiple n exceeds array length!")
+    alert('pop_multiple n exceeds array length!')
   }else{
   var popped_array = []
   for (var i = 0; i < n; i++){
@@ -132,9 +132,11 @@ function get_all_stimuli(TEST_RUN, COMPLEX){
   all_stimuli_right = []
   all_stimuli_left = []
 
-    prefix = 'movie_'
-    MAIN_DIR = "stimuli/images/unity_stims/"
-    fam_durations = [0,4,8]
+    prefix = 'unitystims_'
+    MAIN_DIR = 'stimuli/images/unity_stims/'
+    fam_durations = ['0','4','8']
+    block_type = ['background', 'deviantiant']
+    background_idx = ['1', '2']
 
     if (TEST_RUN == 1) {
       // 30 species
@@ -142,147 +144,82 @@ function get_all_stimuli(TEST_RUN, COMPLEX){
     }
     else {
       // 20 species
-      species = Array.from({length: 12}, (_, i) => i + 1)
+      species = Array.from({length: 6}, (_, i) => i + 1)
     }
 
     // set number is specified in experiment.html
-      for (var j = 0; j < species.length; j++){
+      for (var x = 0; x < species.length; x++){
 
-          // add 0's before number for species number less than 0
-          if (species[j] < 10) {
-            current_species = '00' + species[j]
-          }
-          else {
-            current_species = '0' + species[j]
-          }
+          current_species = species[x]
 
           for (i = 0; i < fam_durations.length; i++) {
+            for(j = 0; j < block_type.length; j++) {
+              for(k = 0; k < background_idx.length; k++) {
 
-            current_stimuli_right = MAIN_DIR + prefix + current_species + "_" + fam_durations[i] + "_FaceRight.gif"
-            current_stimulus_left = MAIN_DIR + prefix + current_species + "_" + fam_durations[i] + "_FaceLeft.gif"
+              current_stimulus_right = MAIN_DIR + prefix + '00' + current_species +
+              '_Right_' + fam_durations[i] + 'fam_' + block_type[j] + '_' +
+              background_idx[k] + ' .gif'
 
-            all_stimuli_right.push(current_stimuli_right)
-            all_stimuli_left.push(current_stimulus_left)
+              current_stimulus_left = MAIN_DIR + prefix + '00' + current_species + '_Left_' + fam_durations[i] +
+               'fam_' + block_type[j] + '_' + background_idx[k] + '.gif'
 
+              all_stimuli_right.push(current_stimulus_right)
+              all_stimuli_left.push(current_stimulus_left)
+            }
           }
+        }
+      }
 
           all_stimuli = {
             stim_facingright: all_stimuli_right,
             stim_facingleft: all_stimuli_left
           }
-        }
+
+          console.log('all_stimuli')
+          console.log(all_stimuli)
+
 
     // put creatures in pairs
     return (all_stimuli)
 }
-  // -------- V2 generate timeline variable for each block
-  function generate_fam_timeline_variables(block_information){
 
-  background_stimuli = block_information.background_stimuli
-  deviant_stimuli = block_information.deviant_stimuli
-  block_type = block_information.block_type
-  fam_duration = block_information.fam_duration
+    function generate_timeline_variables(block_information){
 
-   background_item = {
-       stimuli: background_stimuli,
-       stim_type: 'background',
-       trial_duration: 6000
-   }
-
-
-  block_stimuli = fillArray(background_item, fam_duration)
-
-  // get familiarization clips
-  music_fam_array = ['stimuli/audio/music_1_withSFX.wav',
-                     'stimuli/audio/music_2_withSFX.wav',
-                     'stimuli/audio/music_3_withSFX.wav',
-                     'stimuli/audio/music_4_withSFX.wav',
-                     'stimuli/audio/music_5_withSFX.wav',
-                     'stimuli/audio/music_6_withSFX.wav',
-                     'stimuli/audio/music_7_withSFX.wav',
-                     'stimuli/audio/music_8_withSFX.wav',
-                     'stimuli/audio/music_9_withSFX.wav',
-                     'stimuli/audio/music_10_withSFX.wav'
-  ]
-
-  shuffleArray(music_fam_array)
-
-  for (i = 0; i < fam_duration; i++) {
-
-    block_stimuli[i] = {
-        stimuli: background_stimuli,
-        stim_type: 'background',
-        trial_duration: 6000,
-        music: music_fam_array[i],
-        inter_trial: 'stimuli/images/blank_fam.png',
-        fam_duration: fam_duration,
-        block_type: block_type
-      }
-    }
-
-  return (block_stimuli)
-
-  }
-
-    function generate_test_timeline_variables(block_information){
-
-        background_stimuli = block_information.background_stimuli
-        deviant_stimuli = block_information.deviant_stimuli
+        stim_path = block_information.stimulus_path
         block_type = block_information.block_type
         fam_duration = block_information.fam_duration
 
-          background_item = {
-              stimuli: background_stimuli,
-              stim_type: 'background',
-              trial_duration: null
-          }
 
-         deviant_item = {
-             stimuli: deviant_stimuli,
-             stim_type: 'deviant',
-             trial_duration: null
-         }
-
-
-
-        if (block_type == 'Dev') {
-          block_stimuli = fillArray(background_item, 1)
+        if (fam_duration == '0') {
+          // get test clips
+          music_array = ['stimuli/audio/music_test_1_0fam.wav',
+                             'stimuli/audio/music_test_2_0fam.wav',
+                             'stimuli/audio/music_test_3_0fam.wav']
         }
-        else if (block_type = 'Std') {
-          block_stimuli = fillArray(deviant_stimuli, 1)
+        if (fam_duration == '4') {
+          music_array = ['stimuli/audio/music_test_1_4fam.wav',
+                             'stimuli/audio/music_test_2_4fam.wav',
+                             'stimuli/audio/music_test_3_4fam.wav']
+        }
+        if (fam_duration == '8') {
+          music_array = ['stimuli/audio/music_test_1_8fam.wav',
+                             'stimuli/audio/music_test_2_8fam.wav',
+                             'stimuli/audio/music_test_3_8fam.wav']
         }
 
-       // get test clips
-       music_test_array = ['stimuli/audio/music_test_1_withSFX.wav',
-                          'stimuli/audio/music_test_2_withSFX.wav',
-                          'stimuli/audio/music_test_3_withSFX.wav'
-      ]
+        shuffleArray(music_array)
 
-        shuffleArray(music_test_array)
-
-    if (block_type == 'Dev'){
-      block_stimuli[0] = {
-          stimuli: deviant_stimuli,
-          stim_type: 'deviant',
-          trial_duration: null,
-          music: music_test_array[1],
-          inter_trial: 'stimuli/images/blank_test.png',
-          fam_duration: fam_duration,
-          block_type: block_type
-      }
-    }
-
-    else if (block_type == 'Std') {
-      block_stimuli[0] = {
-          stimuli: background_stimuli,
+        block_stimuli = {
+          stimulus_path: stim_path,
           stim_type: 'background',
           trial_duration: null,
-          music: music_test_array[1],
-          inter_trial: 'stimuli/images/blank_test.png',
-          fam_duration: fam_duration,
-          block_type: block_type
+          block_type: block_type,
+          music: music_array[1],
+          inter_trial: 'stimuli/images/blank_test.png'
       }
-    }
+
+      console.log('block_stimuli')
+      console.log(block_stimuli)
 
     return (block_stimuli)
   }
@@ -303,12 +240,12 @@ function generate_all_block(condition_num,
 
 
     counterbalancing_table =
-    [{"fam_duration":[0,0,8,4,8,4],"block_type":["Std","Dev","Dev","Std","Std","Dev"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[1,2,6,3,5,4]},
-    {"fam_duration":[0,4,0,4,8,8],"block_type":["Dev","Std","Std","Dev","Dev","Std"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[2,3,1,4,6,5]},
-    {"fam_duration":[4,4,0,8,0,8],"block_type":["Std","Dev","Dev","Std","Std","Dev"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[3,4,2,5,1,6]},
-    {"fam_duration":[4,8,4,8,0,0],"block_type":["Dev","Std","Std","Dev","Dev","Std"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[4,5,3,6,2,1]},
-    {"fam_duration":[8,8,4,0,4,0],"block_type":["Std","Dev","Dev","Std","Std","Dev"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[5,6,4,1,3,2]},
-    {"fam_duration":[8,0,8,0,4,4],"block_type":["Dev","Std","Std","Dev","Dev","Std"],"block_number":[1,2,3,4,5,6],"counterbalancing_condition":[6,1,5,2,4,3]}]
+    [{'fam_duration':[0,0,8,4,8,4],'block_type':['standard','deviant','deviant','standard','standard','deviant'],'block_number':[1,2,3,4,5,6],'counterbalancing_condition':[1,2,6,3,5,4]},
+    {'fam_duration':[0,4,0,4,8,8],'block_type':['deviant','standard','standard','deviant','deviant','standard'],'block_number':[1,2,3,4,5,6],'counterbalancing_condition':[2,3,1,4,6,5]},
+    {'fam_duration':[4,4,0,8,0,8],'block_type':['standard','deviant','deviant','standard','standard','deviant'],'block_number':[1,2,3,4,5,6],'counterbalancing_condition':[3,4,2,5,1,6]},
+    {'fam_duration':[4,8,4,8,0,0],'block_type':['deviant','standard','standard','deviant','deviant','standard'],'block_number':[1,2,3,4,5,6],'counterbalancing_condition':[4,5,3,6,2,1]},
+    {'fam_duration':[8,8,4,0,4,0],'block_type':['standard','deviant','deviant','standard','standard','deviant'],'block_number':[1,2,3,4,5,6],'counterbalancing_condition':[5,6,4,1,3,2]},
+    {'fam_duration':[8,0,8,0,4,4],'block_type':['deviant','standard','standard','deviant','deviant','standard'],'block_number':[1,2,3,4,5,6],'counterbalancing_condition':[6,1,5,2,4,3]}]
 
 
     condition_idx = condition_num - 1
@@ -317,61 +254,31 @@ function generate_all_block(condition_num,
     block_orders = counterbalancing_table[subject_num].block_type
 
     // random order of pairs
-    pairs = [0,1,2,3,4,5]
-    shuffleArray(pairs)
+    species = ['1', '2', '3', '4', '5', '6']
+    shuffleArray(species)
+
+    // background idx
+    background_idx = ['1', '2', '1', '2', '1', '2']
+    shuffleArray(background_idx)
+
 
     // random left or right order
-    left_or_right = ['left', 'right', 'left', 'right', 'left', 'right']
+    left_or_right = ['_Left_', '_Right_', '_Left_', '_Right_', '_Left_', '_Right_']
     shuffleArray(left_or_right)
 
-    background_shifts = Array.from({length: 6}, () => Math.floor(Math.random() * 2));
-
-    deviant_shifts = Array()
-
-    for (var i = 0; i < background_shifts.length; i++) {
-      deviant_shifts.push(Math.abs(background_shifts[i]-1))
-    }
-
-    // get paths to all background stimuli
-    backgrounds = []
-    for (var i = 0; i < pairs.length; i++) {
-
-      if (left_or_right[i] === 'left')
-      {
-      backgrounds.push(stimuli_array['stim_facingleft'][pairs[i]*2 + background_shifts[i]])
-      }
-      else if(left_or_right[i] === 'right'){
-        backgrounds.push(stimuli_array['stim_facingright'][pairs[i]*2 + background_shifts[i]])
-      }
-
-      }
-
-    // get paths to all deviant stimuli
-    deviants = []
-    for (var i = 0; i < pairs.length; i++) {
-
-      if (left_or_right[i] === 'left')
-      {
-        deviants.push(stimuli_array['stim_facingleft'][pairs[i]*2 + deviant_shifts[i]])
-      }
-      else if(left_or_right[i] === 'right'){
-        deviants.push(stimuli_array['stim_facingright'][pairs[i]*2 + deviant_shifts[i]])
-      }
-    }
-
-    all_block_information = []
+    all_blocks_information = []
 
     for (i = 0; i < num_blocks; i++) {
         block_information = {
+            stimulus_path: MAIN_DIR + prefix + '00' + species[i] + left_or_right[i] + fam_orders[i] +
+             'fam_' + block_orders[i] + '_' + background_idx[i] + '.gif',
             fam_duration: fam_orders[i],
-            background_stimuli: backgrounds[i],
-            deviant_stimuli: deviants[i],
             block_type: block_orders[i],
         }
 
-     all_block_information.push(block_information)
-  }
+     all_blocks_information.push(block_information)
 
-    return (all_block_information)
+  }
+    return (all_blocks_information)
 
 }
