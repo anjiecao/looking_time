@@ -1,4 +1,4 @@
-[
+subject_stimuli_json = [
   {
     "subject": "SS1630945779290",
     "background_stimuli": ["images/stimuli/complex_10_A_a.gif", "images/stimuli/complex_09_A_a.gif", "images/stimuli/simple_01_A_a.gif", "images/stimuli/complex_19_A_a.gif", "images/stimuli/simple_12_A_a.gif", "images/stimuli/simple_04_A_a.gif", "images/stimuli/complex_03_A_a.gif", "images/stimuli/simple_09_A_a.gif"],
