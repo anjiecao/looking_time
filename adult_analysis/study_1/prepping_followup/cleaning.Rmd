@@ -52,6 +52,8 @@ json_df <- background %>%
 
 math_json <- jsonlite::toJSON(json_df, pretty=T)
 math_json
+
+write(math_json, here("prepping_followup/math.json"))
 ```
 
 
