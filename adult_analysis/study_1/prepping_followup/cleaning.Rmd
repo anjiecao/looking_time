@@ -22,6 +22,10 @@ p_id <- read_csv(here("data/01_merged_data/merged_data.csv")) %>%
   mutate(prolific_id = map(responses, ~ fromJSON(.) %>% as.data.frame()) %>% unlist()) %>% 
   filter(subject %in% unique(rt_d %>% pull(subject))) %>% 
   select(subject, prolific_id)
+
+#raw dataset tells us the stimuli used in memory and curiosity ratings 
+raw_d <- read_csv(here("data/01_merged_data/merged_data.csv"))
+
   
 ```
 
@@ -31,7 +35,6 @@ p_id <- read_csv(here("data/01_merged_data/merged_data.csv")) %>%
 ```{r}
 # easiest case for math condition participants
 background <- rt_d %>% 
- filter(task_question_type == "math") %>% 
   distinct(subject, trial_type, stimulus_displayed) %>% 
   ungroup() %>% 
   filter(trial_type == "background") %>% 
@@ -39,7 +42,6 @@ background <- rt_d %>%
   summarise(background_stimuli = list(stimulus_displayed))
 
 deviant <- rt_d %>% 
- filter(task_question_type == "math") %>% 
   distinct(subject, trial_type, stimulus_displayed) %>% 
   ungroup() %>% 
   filter(trial_type == "deviant") %>% 
@@ -50,23 +52,23 @@ json_df <- background %>%
   left_join(deviant, by = "subject") %>% 
   select(subject, background_stimuli, deviant_stimuli)
 
-math_json <- jsonlite::toJSON(json_df, pretty=T)
-math_json
+# figure out the question stimuli
+question_stimuli_set <- raw_d %>% 
+  filter(subject %in% unique(rt_d$subject)) %>% 
+  filter(stimulus_type == "curiousity" | stimulus_type == "memory_test") %>% 
+  select(subject, block_index, question_stimuli) %>% 
+   group_by(subject) %>% 
+  summarise(question_stimuli = list(question_stimuli))
 
-write(math_json, here("prepping_followup/math.json"))
+json_df <- json_df %>% left_join(question_stimuli_set, by = "subject")
+
+subject_stimuli_json <- jsonlite::toJSON(json_df, pretty=T)
+
+
+write(subject_stimuli_json, here("prepping_followup/subject_stimuli_json.json"))
 ```
 
-
-needs to figure out the novel stimulus presented at the memory/curiosity question 
-```{r}
-raw_d <- read_csv(here("data/01_merged_data/merged_data.csv"))
-
-```
-
-```{r}
-raw_d %>% 
-  select(question_stimuli)
-```
+`
 
 
 
