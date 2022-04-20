@@ -54,22 +54,6 @@ var timeline = []
 
 
 
-function get_timeline_variables(prolific_id){
-  console.log(prolific_id)
-  if (prolific_id == "0"){
-      var timeline_var = [
-        {stim: "<p>0</p>"}, 
-        {stim: "<p>0</p>"}, 
-        {stim: "<p>0</p>"}]
-    }else{
-      var timeline_var = [
-        {stim: "<p>1</p>"}, 
-        {stim: "<p>1</p>"}, 
-        {stim: "<p>1</p>"}]
-    }
-    return (timeline_var)
-}
-
 
 /*
 
@@ -103,21 +87,54 @@ var test_trials = {
 
 
 
-var trial =  {
+var trial_1 =  {
       type: "html-keyboard-response", 
-      stimulus: jsPsych.timelineVariable("stim")
+      stimulus: "<p>1</p>"
+    }
+
+var trial_2 = {
+      type: "html-keyboard-response", 
+      stimulus: "<p>2</p>"
     }
 
 
-var test_trials = {
-  timeline: [
-    trial
-  ], 
-  timeline_variables: function(){get_timeline_variables(jsPsych.data.get().last().values())}
+var trial_3 = {
+      type: "html-keyboard-response", 
+      stimulus: "<p>3</p>"
+    }
+
+
+
+var trial = {
+  type: "html-keyboard-response", 
+  stimulus: jsPsych.timelineVariable("stim")
+}
+
+var trials = {
+  timeline: [trial], 
+  timeline_variables: [
+        {stim: "<p>1</p>"}, 
+        {stim: "<p>2</p>"}, 
+        {stim: "<p>3</p>"}]
+    }
+
+
+var test_trials_node = {
+  timeline: [trials], 
+  conditional_function:function(){
+    var data = jsPsych.data.get().last(1).values([0]); 
+    console.log(data)
+    if (data[0].responses.includes("0")){
+      return true 
+    }else{
+      return false 
+    }
+  }
 }
 
 timeline.push(prolific_id)
-timeline.push(test_trials)
+//timeline.push(test_trials_0)
+timeline.push(test_trials_node)
 
 
 
