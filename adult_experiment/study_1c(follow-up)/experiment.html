@@ -29,7 +29,7 @@
      <script src= "js/00_setting.js"></script>
     <script src= "js/01_task_instructions.js"></script>
     <script src= "js/02_main_task.js"></script>
-    <script src= "js/03_demographic_question.js"></script>
+    <script src= "js/03_demographic_question.js"></script> 
     <script src= "js/04_feedback_and_code.js"></script>
     <link rel="stylesheet" href="css/jspsych.css"></link>
 </head>
@@ -53,7 +53,77 @@ var prolific_id = {
 var timeline = []
 
 
+
+function get_timeline_variables(prolific_id){
+  console.log(prolific_id)
+  if (prolific_id == "0"){
+      var timeline_var = [
+        {stim: "<p>0</p>"}, 
+        {stim: "<p>0</p>"}, 
+        {stim: "<p>0</p>"}]
+    }else{
+      var timeline_var = [
+        {stim: "<p>1</p>"}, 
+        {stim: "<p>1</p>"}, 
+        {stim: "<p>1</p>"}]
+    }
+    return (timeline_var)
+}
+
+
+/*
+
+var test_trials = {
+  timeline: [
+   {
+      type: "html-keyboard-response", 
+      stimulus: jsPsych.timelineVariable("stim")
+    }
+  ], 
+  timeline_variables: function(){
+    var prolific_id = jsPsych.data.get().last(1).values()[0]
+    console.log(prolific_id)
+    if (prolific_id == 0){
+      var timeline_var = [
+        {stim: "<p>0</p>"}, 
+        {stim: "<p>0</p>"}, 
+        {stim: "<p>0</p>"}]
+    }else{
+      var timeline_var = [
+        {stim: "<p>1</p>"}, 
+        {stim: "<p>1</p>"}, 
+        {stim: "<p>1</p>"}]
+    }
+    console.log(timeline_var)
+    return (timeline_var)
+  }
+}
+
+*/
+
+
+
+var trial =  {
+      type: "html-keyboard-response", 
+      stimulus: jsPsych.timelineVariable("stim")
+    }
+
+
+var test_trials = {
+  timeline: [
+    trial
+  ], 
+  timeline_variables: function(){get_timeline_variables(jsPsych.data.get().last().values())}
+}
+
 timeline.push(prolific_id)
+timeline.push(test_trials)
+
+
+
+
+
+
 
 timeline.push({
   type: 'fullscreen',
