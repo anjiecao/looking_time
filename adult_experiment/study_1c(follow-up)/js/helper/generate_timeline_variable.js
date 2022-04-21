@@ -56,6 +56,14 @@ function get_all_stimuli(NUM_COMPLEX_CREATURES, NUM_SIMPLE_CREATURES){
 
 all_stimuli = get_all_stimuli(24, 20)
 
+
+function get_all_prolific_id(subject_stimuli_json){
+    return (subject_stimuli_json.map(x => x.prolific_id))
+}
+
+all_prolific_id = get_all_prolific_id(subject_stimuli_json)
+
+
 function get_novel_stimuli(subject_info, all_stimuli){
     subject_seen_stimuli = subject_info.background_stimuli.concat(subject_info.deviant_stimuli.concat(subject_info.question_stimuli))
     all_novel_stimuli = all_stimuli.filter(item => !subject_seen_stimuli.includes(item))
@@ -135,10 +143,66 @@ function variable_to_timeline(timeline_variable){
                 data: {stimulus_type: 'trial', stimulus_displayed: jsPsych.timelineVariable('stimulus')},
             }
             ],
-            timeline_variables: timeline_variable // need to track of which trial of the block
+            timeline_variables: timeline_variable,  
+            randomize_order: true 
       }
 
-      return (testing_procedure_from_variable)
+      // buffer 
+
+
+        var familiarity_instruction = {
+                type: "instructions",
+                pages: [
+                    "<p>Thank you so much! You are almost done!</p><p> In this part, " +
+                    "you will be asked to rate the familiarity of the creatures you just saw. </p>" 
+                ],
+                data: {stimulus_type: 'instructions'},
+                show_clickable_nav: true
+        }       
+
+      // rating task 
+
+      var familiarity_rating_procedure = {
+          timeline: [
+                {type: 'survey-likert',
+                 preamble:  function(){
+                    var html = '<p><img src= ' + jsPsych.timelineVariable('stimulus', true) + ' width ="200" height = "200"</p>'
+                    return html
+                    },
+                 questions: [
+                    {prompt: '<p> How familiar is this creature?</p>', labels:  [
+                            "I have never seen this creature before today",
+                            "",
+                            "",
+                            "I'm not sure",
+                            "",
+                            "",
+                            'I have definitely seen this creature in the previous experiment',
+                            ], required: true}
+                            ],
+                    scale_width: '250px',
+                    data: {trial_type: 'familiarity_question', stimulus: jsPsych.timelineVariable('stimulus')}
+                }
+                    ], 
+          timeline_variables: timeline_variable, 
+          randomize_order: true
+
+    }
+
+
+    var final_instruction = {
+        type: "instructions",
+        pages: [
+            "<p>Thank you so much for participating in our study again! " +
+            "You are all done! </p>" 
+        ],
+        data: {stimulus_type: 'instructions'},
+        show_clickable_nav: true
+}       
+
+    full_testing_procedure = [testing_procedure_from_variable, familiarity_instruction, familiarity_rating_procedure, final_instruction]
+
+      return (full_testing_procedure)
 
 }
 
@@ -158,7 +222,7 @@ console.log(all_timelines)
 
 function generate_node(prolific_id, timeline){
     var node = {
-        timeline: [timeline], 
+        timeline: timeline, 
         conditional_function: function(){
             var data = jsPsych.data.get().last(1).values([0])
             if(data[0].responses.includes(prolific_id)){
@@ -172,6 +236,29 @@ function generate_node(prolific_id, timeline){
 } 
 
 
+var failsafe_instruction = {
+    type: "instructions",
+    pages: [
+        "<p>Unfortunately we are unable to find your prolific ID in our database, please refresh the webpage and try again! </p>" 
+    ],
+    data: {stimulus_type: 'instructions'},
+    show_clickable_nav: true
+}       
+
+
+
+
+var failsafe_node = {
+    timeline: [failsafe_instruction], 
+    conditional_function: function(){
+        var data = jsPsych.data.get().last(1).values([0])
+        if (!all_prolific_id.includes(data)){
+            return true 
+        }else{
+            return false
+        }
+    }
+}
 
 
 function generate_timeline_nodes(presenting_stimuli, timelines){
@@ -181,6 +268,9 @@ function generate_timeline_nodes(presenting_stimuli, timelines){
         node = generate_node(prolific_id, timelines[0])
         all_timeline_nodes.push(node)
     }
+
+    all_timeline_nodes.push(failsafe_node)
+
     return (all_timeline_nodes)
 }
 
