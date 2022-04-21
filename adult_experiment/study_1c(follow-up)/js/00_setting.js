@@ -36,7 +36,7 @@ CURRENT_TASK = ALL_TASKS[Math.floor(Math.random()*ALL_TASKS.length)]
 
 // current stimuli: 28 unity stimulus
 
-
+/*
 
 all_stimuli = get_all_stimuli(SPECIES_NUM)
 
@@ -56,12 +56,3 @@ checking_block_information(all_blocks_information = all_blocks_information,
                            num_trial_per_block = NUM_TRIAL_PER_BLOCK
                             )
 */
-
-if (verbose){
-console.log("All stimuli path: ")
-console.log(all_stimuli)
-console.log("All blocks information:")
-console.log(all_blocks_information)
-}
-
-
