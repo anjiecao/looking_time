@@ -36,7 +36,7 @@
 
 
 jsPsych.data.addProperties({ subject: subject_id });
-document.body.style.backgroundColor = '#FCFBFF'
+//document.body.style.backgroundColor = '#FCFBFF'
 
 
 var prolific_id = {
@@ -52,6 +52,11 @@ var timeline = []
 
 
 
+timeline.push({
+  type: 'fullscreen',
+  fullscreen_mode: true
+  });
+
 timeline.push(prolific_id)
 //timeline.push(test_trials_0)
 timeline = timeline.concat(all_timeline_nodes)
@@ -61,21 +66,13 @@ timeline = timeline.concat(all_timeline_nodes)
 
 
 
-
-timeline.push({
-  type: 'fullscreen',
-  fullscreen_mode: true
-  });
   /*
   if (SHOW_INTRO) {
     timeline = get_consent_and_instructions(timeline)
   }
   */
  
-  timeline.push({
-  type: 'fullscreen',
-  fullscreen_mode: false
-  });
+  
   
  
 

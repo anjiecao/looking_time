@@ -316,6 +316,12 @@ var generic1 = {
     data: {stimulus_type: 'feedback'},
   };
    
+
+  var quite_full_screen = {
+    type: 'fullscreen',
+    fullscreen_mode: false
+    };
+
   var thank_you = {
       type: "instructions",
       pages: [
@@ -333,8 +339,10 @@ var generic1 = {
         show_clickable_nav: false
    }
 
-  full_testing_procedure = instruction_package.concat([testing_procedure_from_variable, familiarity_instruction, familiarity_rating_procedure, 
-    feedback, thank_you, survey_code_page])
+
+
+   full_testing_procedure = instruction_package.concat([testing_procedure_from_variable, familiarity_instruction, familiarity_rating_procedure, 
+    feedback, quite_full_screen, thank_you, survey_code_page])
 
     return (full_testing_procedure)
 
