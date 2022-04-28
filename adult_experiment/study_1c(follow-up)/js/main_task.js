@@ -137,7 +137,7 @@ var generic1 = {
     "<p>Welcome back! Thank you very much for participating in our study again!</p><br></br>" +
     "<p>We are researchers who usually study babies. :) </p>" +
     "<p>In particular, we are interested in knowing what makes things interesting or boring to babies. </p>" +
-    "<p> In this study, we are going to show you some stimuli, some old and some new! </p>",
+    "<p> In this experiment, we’re going to show you some creatures. Some of these may be ones you have seen before.</p>",
     "<p>Similar to the study you participated, this one is going to be really easy too!</p>" +
     "<p>You will repeatedly see a frame on the screen, like this one:</p>" +
     '<p><img src=images/blank.png width ="400" height = "400" style="border:5px solid black"></p>'
@@ -290,10 +290,9 @@ var generic1 = {
                   },
                questions: [
                   {prompt: '<p> How familiar is this creature?</p>', labels:  [
-                          "I have never seen this creature before today",
+                          "I have definitely <b>never</b> seen this creature before today",
                           "",
                           "",
-                          "I'm not sure",
                           "",
                           "",
                           'I have definitely seen this creature in the previous experiment',
