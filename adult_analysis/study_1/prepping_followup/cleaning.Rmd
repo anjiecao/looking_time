@@ -70,6 +70,21 @@ write(subject_stimuli_json, here("prepping_followup/subject_stimuli_json.json"))
 ```
 
 `
+```{r}
+contatct_tracking_df <- json_df %>% ungroup() %>%  select(prolific_id) %>% mutate(contacted = "") 
+
+contatct_tracking_df_1 <- as.data.frame(tibble(contatct_tracking_df[1:80, ]))
+contatct_tracking_df_2 <- contatct_tracking_df[81:180, ]
+contatct_tracking_df_3 <- contatct_tracking_df[181:280, ]
+contatct_tracking_df_4 <- contatct_tracking_df[281:380, ]
+
+write_csv(contatct_tracking_df_1, here("prepping_followup/participant_tracking_wave1.csv"))
+write_csv(contatct_tracking_df_2, here("prepping_followup/participant_tracking_wave2.csv"))
+write_csv(contatct_tracking_df_3, here("prepping_followup/participant_tracking_wave3.csv"))
+write_csv(contatct_tracking_df_4, here("prepping_followup/participant_tracking_wave4.csv"))
+
+
+```
 
 
 
