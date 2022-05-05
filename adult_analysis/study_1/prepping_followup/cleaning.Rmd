@@ -61,11 +61,14 @@ question_stimuli_set <- raw_d %>%
   summarise(question_stimuli = list(question_stimuli))
 
 json_df <- json_df %>% left_join(question_stimuli_set, by = "subject") %>% 
-  left_join(p_id, by = "subject")
+  left_join(p_id, by = "subject") %>% 
+  mutate(background_stimuli = paste(shQuote(background_stimuli), collapse = ","), 
+         deviant_stimuli = paste(shQuote(deviant_stimuli), collapse = ","), 
+         question_stimuli = paste(shQuote(question_stimuli), collapse = ","))
 
 subject_stimuli_json <- jsonlite::toJSON(json_df, pretty=T)
 
-
+write_csv(json_df, here("prepping_followup/stimuli_pairing.csv"))
 write(subject_stimuli_json, here("prepping_followup/subject_stimuli_json.json"))
 ```
 

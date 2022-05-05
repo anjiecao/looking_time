@@ -1,0 +1,78 @@
+---
+title: "01_preprocessing"
+author: "anjie"
+date: "5/5/2022"
+output: html_document
+---
+```{r}
+library(tidyverse)
+library(here)
+library(jsonlite)
+
+source(here("helper/categorize_stimulus_type.R"))
+
+raw_d <- read_csv(here("data/01_merged_data/merged_data.csv"))
+pairing_d <- read_csv(here("data/stimuli_pairing.csv"))
+```
+
+```{r}
+p_id_df <- raw_d %>% 
+  filter(grepl("p_id", responses)) %>% 
+  select(subject, responses) %>% 
+  mutate(responses = map(responses, ~ fromJSON(.) %>% as.data.frame())) %>% 
+  unnest(responses)
+
+trial_df <- raw_d %>% 
+  filter(stimulus_type == "trial") %>% 
+  select(subject, stimulus_displayed, trial_looking_time) %>% 
+  left_join(p_id_df, by = "subject") %>% 
+  rowwise() %>% 
+  mutate(stimulus_type = categorize_stimulus_type(stimulus_displayed, 
+                                                  p_id, 
+                                                  pairing_d))
+
+ratings_df <- raw_d %>% 
+  filter(trial_type == "survey-likert") %>% 
+  select(subject, stimulus, responses) %>% 
+  mutate(responses = map(responses, ~ fromJSON(.) %>% as.data.frame())) %>% 
+  unnest(responses) %>% 
+  rename(rating = Q0) %>% 
+  left_join(p_id_df, by = "subject") %>% 
+  rowwise() %>% 
+  mutate(stimulus_type = categorize_stimulus_type(stimulus, 
+                                                  p_id, 
+                                                  pairing_d))
+```
+
+
+
+# trimming 
+## participants based exclusion TBA
+
+## trial based exclusion 
+```{r}
+rt_summary <- trial_df %>% 
+  ungroup() %>% 
+  summarise(
+    median = median(log(trial_looking_time)),
+    mad = mad(log(trial_looking_time)), 
+    upper = median + 3 * mad, 
+    lower = median - 3 * mad)
+  
+trimmed_trial_df <- trial_df %>% 
+  filter(!(log(trial_looking_time) > rt_summary$upper | log(trial_looking_time) < rt_summary$lower))
+```
+
+
+```{r}
+trial_df %>% 
+  ggplot(aes(x = stimulus_type, 
+             y = trial_looking_time)) + 
+  stat_summary(fun.data = "mean_cl_boot") 
+
+ratings_df %>% 
+  ggplot(aes(x = stimulus_type, 
+             y = rating)) + 
+  stat_summary(fun.data = "mean_cl_boot")
+
+```
