@@ -24,7 +24,10 @@ p_id_df <- raw_d %>%
 
 trial_df <- raw_d %>% 
   filter(stimulus_type == "trial") %>% 
-  select(subject, stimulus_displayed, trial_looking_time) %>% 
+  group_by(subject) %>% 
+  mutate(trial_number = row_number()) %>% 
+  ungroup() %>% 
+  select(subject, trial_number, stimulus_displayed, trial_looking_time) %>% 
   left_join(p_id_df, by = "subject") %>% 
   rowwise() %>% 
   mutate(stimulus_type = categorize_stimulus_type(stimulus_displayed, 
@@ -48,6 +51,15 @@ ratings_df <- raw_d %>%
 
 # trimming 
 ## participants based exclusion TBA
+```{r}
+response_bias_subject <- ratings_df %>% 
+  ungroup() %>% 
+  group_by(subject, rating) %>% 
+  count() %>% 
+  filter(n > (20* 0.8)) %>% 
+  pull(subject)
+```
+
 
 ## trial based exclusion 
 ```{r}
@@ -65,14 +77,76 @@ trimmed_trial_df <- trial_df %>%
 
 
 ```{r}
-trial_df %>% 
+clean_rt_df <- trimmed_trial_df %>% 
+  filter(!(subject %in% response_bias_subject))
+
+clean_rating_df <- ratings_df %>% 
+ filter(!(subject %in% response_bias_subject))
+```
+
+```{r}
+length(unique(clean_rt_df$subject))
+```
+
+
+# sanity check 
+```{r}
+clean_rt_df %>% 
+  ggplot(aes(x = log(trial_looking_time))) + 
+  geom_histogram() 
+
+clean_rt_df %>% 
+  ggplot(aes(x = log(trial_looking_time))) + 
+  geom_histogram() + 
+  facet_wrap(~stimulus_type)
+```
+
+
+# key manipulation
+
+```{r}
+clean_rt_df %>% 
+  ggplot(aes(x = stimulus_type, 
+             y = log(trial_looking_time))) + 
+  stat_summary(fun.data = "mean_cl_boot") +
+  theme_classic()
+
+clean_rt_df %>% 
   ggplot(aes(x = stimulus_type, 
              y = trial_looking_time)) + 
-  stat_summary(fun.data = "mean_cl_boot") 
+  stat_summary(fun.data = "mean_cl_boot") +
+  theme_classic()
 
-ratings_df %>% 
+clean_rating_df %>% 
   ggplot(aes(x = stimulus_type, 
              y = rating)) + 
-  stat_summary(fun.data = "mean_cl_boot")
+  stat_summary(fun.data = "mean_cl_boot") +
+  theme_classic()
 
 ```
+checking fatigue effect? 
+
+```{r}
+clean_rt_df %>% 
+  ggplot(aes(x = trial_number, 
+             y = log(trial_looking_time)) 
+       ) + 
+  stat_summary(fun.data = "mean_cl_boot", ) +
+  theme_classic() + 
+  facet_wrap(~stimulus_type)
+```
+```{r}
+clean_rt_df %>% 
+  mutate(half = case_when(
+    trial_number < 6 ~ "first_half", 
+    TRUE ~ "second_half"
+  )) %>% 
+  ggplot(aes(x = stimulus_type, 
+             y = log(trial_looking_time))) + 
+  stat_summary(fun.data = "mean_cl_boot") +
+  theme_classic() + 
+  facet_wrap(~half)
+```
+
+
+
