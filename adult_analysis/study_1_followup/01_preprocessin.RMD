@@ -148,5 +148,66 @@ clean_rt_df %>%
   facet_wrap(~half)
 ```
 
+# Residuals
 
+```{r}
+library(lme4)
+model <- lm(trial_looking_time ~ trial_number, data = clean_rt_df)
+clean_rt_df$res_lt <- residuals.lm(model)
+
+clean_rt_df %>% 
+  ggplot(aes(x = stimulus_type, 
+             y = log(res_lt))) + 
+  stat_summary(fun.data = "mean_cl_boot") +
+  theme_classic()
+
+clean_rt_df %>% 
+  ggplot(aes(x = stimulus_type, 
+             y = res_lt)) + 
+  stat_summary(fun.data = "mean_cl_boot") +
+  theme_classic()
+```
+
+# Subsetting
+
+```{r}
+remembered_subject <- clean_rating_df %>% 
+  group_by(subject, stimulus_type) %>% 
+  summarise(mean_ratings = mean(rating)) %>% 
+  pivot_wider(names_from = stimulus_type, values_from = mean_ratings) %>% 
+  mutate(diff_background_novel = background - novel) %>% 
+  filter(diff_background_novel > 1)
+
+clean_rt_df %>% 
+  mutate(
+    subject_type = case_when(
+    subject %in% (remembered_subject$subject) ~ "remembered(diff > 1)",
+    TRUE ~ "not_remembered"
+  )) %>% 
+  ggplot(aes(x = stimulus_type, 
+             y = log(res_lt))) + 
+  stat_summary(fun.data = "mean_cl_boot") +
+  theme_classic() + 
+  facet_wrap(~subject_type)
+```
+
+
+# Correlation 
+
+```{r}
+clean_rt_df %>% 
+  mutate(
+    subject_type = case_when(
+    subject %in% (remembered_subject$subject) ~ "remembered(diff > 1)",
+    TRUE ~ "not_remembered"
+  )) %>% 
+  left_join(clean_rating_df %>% rename(stimulus_displayed = stimulus) %>% 
+              select(subject, stimulus_displayed, rating), by = 
+              c("subject", "stimulus_displayed")) %>% 
+  ggplot(aes(x = rating, y = log(trial_looking_time), color = stimulus_type)) + 
+  geom_point() + 
+  geom_smooth() + 
+  facet_grid(stimulus_type~subject_type)
+
+```
 
