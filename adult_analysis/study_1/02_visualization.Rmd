@@ -23,6 +23,108 @@ raw_data <- read_csv(RAW_DATA_PATH)
 d <- read_csv(MAIN_TASK_PATH)
 ```
 
+# Check embedding distance  
+
+```{r}
+em_d <- read_csv(here("data/eucledian_distances.csv")) %>% rename(stimulus = '...1')
+em_d 
+
+lookup_distance <- function(background, deviant, em_d){
+  background = gsub("images/stimuli/", "", background)
+  background = gsub(".gif", ".png", background)
+  if (is.na(deviant)){
+    dist <- NA_real_
+  }else{
+     deviant =  gsub("images/stimuli/", "", deviant)
+     deviant = gsub(".gif", ".png", deviant)
+    dist <- em_d[em_d$stimulus == background, deviant] %>% pull()
+  }
+  return (dist)
+}
+```
+
+```{r}
+em_dist <- d %>% 
+  distinct(subject, block_number, trial_type, stimulus_displayed) %>% 
+  pivot_wider(names_from  = trial_type, values_from = stimulus_displayed) %>% 
+  rowwise() %>% 
+  mutate(bd_distance =  lookup_distance(background, deviant, em_d))
+```
+
+```{r}
+dist_d <- d %>% 
+  left_join(em_dist %>% select(subject, block_number, bd_distance), 
+            by = c("subject", "block_number")) 
+```
+
+## distance and raw time at deivant trial 
+
+```{r}
+dist_d %>% 
+  filter(trial_type == "deviant") %>% 
+  ggplot(aes(x = bd_distance, y = log(trial_looking_time))) +
+  geom_point() + 
+  facet_wrap(~block_type) + 
+  geom_smooth()
+
+dist_d %>% 
+  filter(trial_type == "deviant") %>% 
+  ggplot(aes(x = bd_distance, y = log(trial_looking_time))) +
+  geom_point() + 
+  facet_grid(block_number~block_type) + 
+  geom_smooth()
+
+dist_d %>% 
+  filter(trial_type == "deviant") %>% 
+  ggplot(aes(x = bd_distance, y = log(trial_looking_time))) +
+  geom_point() + 
+  facet_grid(deviant_position~block_type) + 
+  geom_smooth()
+```
+
+## raw habituation magnitude 
+
+relative to the previous background 
+
+```{r}
+dist_d_lt <- dist_d %>% 
+  filter(
+    deviant_position == trial_number | deviant_position == trial_number + 1
+  ) %>% 
+  select(subject, block_number, block_type, deviant_position, trial_type,trial_looking_time, bd_distance) %>% 
+  pivot_wider(names_from = trial_type, values_from = trial_looking_time) %>% 
+  mutate(bd_diff = deviant-background) 
+
+dist_d_lt %>% 
+  ggplot(aes(x = bd_distance, y = log(bd_diff))) + 
+  geom_point() + 
+  facet_grid(block_type ~ deviant_position) + 
+  geom_smooth()
+```
+
+```{r}
+baseline_lt_d <- dist_d %>% 
+  filter(is.na(deviant_position)) %>% 
+  select(subject, block_number, block_type, trial_number, trial_looking_time) %>% 
+  group_by(block_number, block_type, trial_number) %>% 
+  summarise(baseline_lt = mean(trial_looking_time))
+
+
+dist_d %>% 
+  filter(!is.na(deviant_position)) %>% 
+  left_join(
+    baseline_lt_d, by = c("block_number", "block_type", "trial_number")
+  ) %>% 
+  filter(deviant_position == trial_number) %>% 
+  mutate(baseline_diff = trial_looking_time - baseline_lt) %>% 
+  ggplot(aes(x = bd_distance, y = log(baseline_diff))) + 
+  geom_point() + 
+  facet_grid(block_type ~ deviant_position) + 
+  geom_smooth()
+```
+
+
+
 
 ```{r}
 d %>% 
