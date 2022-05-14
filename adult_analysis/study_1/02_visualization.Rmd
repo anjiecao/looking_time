@@ -23,6 +23,62 @@ raw_data <- read_csv(RAW_DATA_PATH)
 d <- read_csv(MAIN_TASK_PATH)
 ```
 
+# Check age 
+```{r}
+raw_data %>% 
+  filter(trial_type == "demog-age") %>% 
+  select(subject, responses) %>% 
+  mutate(responses = map(responses, ~ (fromJSON(.)) %>% as.data.frame)) %>% 
+  unnest(responses) %>% 
+  filter(subject %in% unique(d$subject)) %>% 
+  mutate(age = as.numeric(age)) %>% 
+  ggplot(aes(x = age)) + 
+  geom_histogram()+ 
+  xlim(18, 90)
+```
+
+```{r}
+age_df <- raw_data %>% 
+  filter(trial_type == "demog-age") %>% 
+  select(subject, responses) %>% 
+  mutate(responses = map(responses, ~ (fromJSON(.)) %>% as.data.frame)) %>% 
+  unnest(responses) %>% 
+  filter(subject %in% unique(d$subject)) %>% 
+  mutate(age = as.numeric(age)) %>% 
+  filter(age > 18 & age < 100)
+
+d %>% 
+  left_join(age_df, by = c("subject")) %>% 
+  ggplot(aes(x = log(age), y = log(trial_looking_time))) + 
+  geom_point() +
+  geom_smooth() +
+  facet_wrap(~block_type) 
+
+d %>% 
+  left_join(age_df, by = c("subject")) %>% 
+  ggplot(aes(x = log(age), y = log(trial_looking_time))) + 
+  geom_point() +
+  geom_smooth() +
+  facet_grid(block_number~block_type) 
+
+```
+
+```{r}
+dist_d %>% 
+  filter(!is.na(deviant_position)) %>% 
+  left_join(
+    baseline_lt_d, by = c("block_number", "block_type", "trial_number")
+  ) %>% 
+   left_join(age_df, by = c("subject")) %>% 
+  filter(deviant_position == trial_number) %>% 
+  mutate(baseline_diff = trial_looking_time - baseline_lt) %>% 
+  ggplot(aes(x = log(age), y = log(baseline_diff))) + 
+  geom_point() + 
+  facet_grid(block_type ~ trial_number) + 
+  
+```
+
+
 # Check embedding distance  
 
 ```{r}
