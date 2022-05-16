@@ -64,6 +64,19 @@ d %>%
 ```
 
 ```{r}
+d %>% 
+  left_join(age_df, by = c("subject")) %>% 
+  filter(task_type == "curiosity") %>% 
+  ggplot(aes(x = age, y = task_question_response, 
+             color = task_question_type), 
+         group = task_question_type) + 
+  geom_point(position = position_jitter(height = .2)) + 
+  geom_smooth() + 
+  theme_classic()
+```
+
+
+```{r}
 dist_d %>% 
   filter(!is.na(deviant_position)) %>% 
   left_join(
@@ -180,6 +193,38 @@ dist_d %>%
   geom_smooth()
 ```
 
+# distance & complexity 
+```{r}
+em_d %>% 
+  pivot_longer(cols = -stimulus, 
+               names_to = "distance_to") %>% 
+  mutate(
+    s_complexity = case_when(
+      grepl("complex", stimulus) ~ "complex", 
+      grepl("simple", stimulus) ~ "simple"
+    ), 
+    distance_to_complexity = case_when(
+      grepl("complex", distance_to) ~ "complex", 
+      grepl("simple", distance_to) ~ "simple"
+    )
+  ) %>% 
+  mutate(
+    distance_pair_complexity = case_when(
+      s_complexity == "complex" & distance_to_complexity == "complex" ~ "c_c",
+      s_complexity == "complex" & distance_to_complexity == "simple" ~ "c_s",
+      s_complexity == "simple" & distance_to_complexity == "complex" ~ "s_c",
+      s_complexity == "simple" & distance_to_complexity == "simple" ~ "s_s"
+    )
+  ) %>% 
+  filter(!grepl("unity", stimulus)) %>%
+  filter(!grepl("unity", distance_to)) %>% 
+  filter(stimulus != distance_to) %>% 
+  ggplot(aes(x = distance_pair_complexity, 
+             y = value)) + 
+  geom_violin() + 
+  stat_summary(fun.data = "mean_cl_boot") + 
+  theme_classic()
+```
 
 
 
