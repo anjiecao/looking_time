@@ -74,7 +74,8 @@ dist_d %>%
   mutate(baseline_diff = trial_looking_time - baseline_lt) %>% 
   ggplot(aes(x = log(age), y = log(baseline_diff))) + 
   geom_point() + 
-  facet_grid(block_type ~ trial_number) + 
+  geom_smooth() + 
+  facet_grid(block_type ~ trial_number)  
   
 ```
 

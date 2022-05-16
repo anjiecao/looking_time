@@ -13,6 +13,7 @@ source(here("helper/categorize_stimulus_type.R"))
 
 raw_d <- read_csv(here("data/01_merged_data/merged_data.csv"))
 pairing_d <- read_csv(here("data/stimuli_pairing.csv"))
+prolifi_d <- read_csv(here("data/prolific.csv"))
 ```
 
 ```{r}
@@ -50,6 +51,28 @@ ratings_df <- raw_d %>%
 
 
 # trimming 
+
+## prolific finish time exlcusion 
+
+```{r}
+prolifi_bound <- prolifi_d %>% 
+  summarise(
+    median = median(time_taken),
+    mad = mad(time_taken), 
+    upper = median +3 * mad, 
+    lower = median -3 * mad)
+
+prolific_exclude_sbj_p_id <- prolifi_d %>% 
+  filter(time_taken > prolifi_bound$upper) %>% 
+  pull(participant_id)
+
+prolific_exclude_sbj_id <- p_id_df %>% 
+  filter(p_id %in% prolific_exclude_sbj_p_id) %>% 
+  pull(subject)
+```
+
+
+
 ## participants based exclusion TBA
 ```{r}
 response_bias_subject <- ratings_df %>% 
@@ -78,10 +101,21 @@ trimmed_trial_df <- trial_df %>%
 
 ```{r}
 clean_rt_df <- trimmed_trial_df %>% 
-  filter(!(subject %in% response_bias_subject))
+  filter(!(subject %in% response_bias_subject)) %>% 
+  filter(!(subject %in% prolific_exclude_sbj_id)) %>% 
+  mutate(complexity = case_when(
+    grepl("complex", stimulus_displayed) ~ "complex", 
+    grepl("simple",stimulus_displayed) ~ 
+      "simple"
+  ))
 
 clean_rating_df <- ratings_df %>% 
- filter(!(subject %in% response_bias_subject))
+ filter(!(subject %in% response_bias_subject)) %>% 
+  mutate(complexity = case_when(
+    grepl("complex", stimulus) ~ "complex", 
+    grepl("simple",stimulus) ~ 
+      "simple"
+  ))
 ```
 
 ```{r}
@@ -107,19 +141,25 @@ clean_rt_df %>%
 ```{r}
 clean_rt_df %>% 
   ggplot(aes(x = stimulus_type, 
-             y = log(trial_looking_time))) + 
+             y = log(trial_looking_time), 
+             color = complexity), 
+         group = complexity) + 
   stat_summary(fun.data = "mean_cl_boot") +
   theme_classic()
 
 clean_rt_df %>% 
   ggplot(aes(x = stimulus_type, 
-             y = trial_looking_time)) + 
+             y = trial_looking_time, 
+             color = complexity), 
+         group = complexity) + 
   stat_summary(fun.data = "mean_cl_boot") +
   theme_classic()
 
 clean_rating_df %>% 
   ggplot(aes(x = stimulus_type, 
-             y = rating)) + 
+             y = rating, 
+             color = complexity), 
+         group = complexity) + 
   stat_summary(fun.data = "mean_cl_boot") +
   theme_classic()
 
@@ -129,7 +169,8 @@ checking fatigue effect?
 ```{r}
 clean_rt_df %>% 
   ggplot(aes(x = trial_number, 
-             y = log(trial_looking_time)) 
+             y = log(trial_looking_time), 
+             color = complexity) 
        ) + 
   stat_summary(fun.data = "mean_cl_boot", ) +
   theme_classic() + 
@@ -152,19 +193,25 @@ clean_rt_df %>%
 
 ```{r}
 library(lme4)
-model <- lm(trial_looking_time ~ trial_number, data = clean_rt_df)
+model <- lm(log(trial_looking_time) ~ trial_number, data = clean_rt_df)
 clean_rt_df$res_lt <- residuals.lm(model)
 
 clean_rt_df %>% 
   ggplot(aes(x = stimulus_type, 
-             y = log(res_lt))) + 
-  stat_summary(fun.data = "mean_cl_boot") +
+             y = log(res_lt), 
+             color = complexity), 
+         group = complexity) + 
+  stat_summary(fun.data = "mean_cl_boot", 
+               position = position_dodge(width = .2)) +
   theme_classic()
 
 clean_rt_df %>% 
   ggplot(aes(x = stimulus_type, 
-             y = res_lt)) + 
-  stat_summary(fun.data = "mean_cl_boot") +
+             y = res_lt, 
+             color = complexity), 
+         group = complexity) + 
+  stat_summary(fun.data = "mean_cl_boot", 
+               position = position_dodge(width = .2)) +
   theme_classic()
 ```
 
@@ -185,8 +232,11 @@ clean_rt_df %>%
     TRUE ~ "not_remembered"
   )) %>% 
   ggplot(aes(x = stimulus_type, 
-             y = log(res_lt))) + 
-  stat_summary(fun.data = "mean_cl_boot") +
+             y = log(res_lt), 
+             color = complexity), 
+         group = complexity) + 
+  stat_summary(fun.data = "mean_cl_boot", 
+               position = position_dodge(width = .2)) +
   theme_classic() + 
   facet_wrap(~subject_type)
 ```
@@ -204,10 +254,12 @@ clean_rt_df %>%
   left_join(clean_rating_df %>% rename(stimulus_displayed = stimulus) %>% 
               select(subject, stimulus_displayed, rating), by = 
               c("subject", "stimulus_displayed")) %>% 
-  ggplot(aes(x = rating, y = log(trial_looking_time), color = stimulus_type)) + 
-  geom_point() + 
-  geom_smooth() + 
-  facet_grid(stimulus_type~subject_type)
+  ggplot(aes(x = rating, y = log(trial_looking_time), color = complexity, 
+             group = complexity)) + 
+  geom_point(alpha = .2) + 
+  geom_smooth(method = "lm") + 
+  facet_grid(~stimulus_type)
 
 ```
+
 
