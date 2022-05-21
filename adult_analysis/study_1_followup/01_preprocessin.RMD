@@ -196,6 +196,9 @@ library(lme4)
 model <- lm(log(trial_looking_time) ~ trial_number, data = clean_rt_df)
 clean_rt_df$res_lt <- residuals.lm(model)
 
+m_model <- lmer(log(trial_looking_time) ~ trial_number + (1|subject), data = clean_rt_df)
+clean_rt_df$m_res_lt <- residuals(m_model)
+
 clean_rt_df %>% 
   ggplot(aes(x = stimulus_type, 
              y = log(res_lt), 
@@ -207,7 +210,7 @@ clean_rt_df %>%
 
 clean_rt_df %>% 
   ggplot(aes(x = stimulus_type, 
-             y = res_lt, 
+             y = m_res_lt, 
              color = complexity), 
          group = complexity) + 
   stat_summary(fun.data = "mean_cl_boot", 
@@ -232,7 +235,7 @@ clean_rt_df %>%
     TRUE ~ "not_remembered"
   )) %>% 
   ggplot(aes(x = stimulus_type, 
-             y = log(res_lt), 
+             y = res_lt, 
              color = complexity), 
          group = complexity) + 
   stat_summary(fun.data = "mean_cl_boot", 
@@ -240,6 +243,60 @@ clean_rt_df %>%
   theme_classic() + 
   facet_wrap(~subject_type)
 ```
+
+## just looking at ppl remembered complex? 
+```{r}
+remembered_complex <- clean_rating_df %>% 
+  group_by(subject, stimulus_type, complexity) %>% 
+  summarise(mean_ratings = mean(rating)) %>% 
+  pivot_wider(names_from = stimulus_type, values_from = mean_ratings) %>% 
+  filter(complexity == "complex") %>% 
+  mutate(diff_background_novel = background - novel) %>% 
+  filter(diff_background_novel > 1)
+
+clean_rt_df %>% 
+  mutate(
+    subject_type = case_when(
+    subject %in% (remembered_complex$subject) ~ "remembered complex",
+    TRUE ~ "not_remembered"
+  )) %>% 
+  ggplot(aes(x = stimulus_type, 
+             y = res_lt, 
+             color = complexity), 
+         group = complexity) + 
+  stat_summary(fun.data = "mean_cl_boot", 
+               position = position_dodge(width = .2)) +
+  theme_classic() + 
+  facet_wrap(~subject_type)
+
+```
+
+```{r}
+
+remembered_simple <- clean_rating_df %>% 
+  group_by(subject, stimulus_type, complexity) %>% 
+  summarise(mean_ratings = mean(rating)) %>% 
+  pivot_wider(names_from = stimulus_type, values_from = mean_ratings) %>% 
+  filter(complexity == "simple") %>% 
+  mutate(diff_background_novel = background - novel) %>% 
+  filter(diff_background_novel > 1)
+
+clean_rt_df %>% 
+  mutate(
+    subject_type = case_when(
+    subject %in% (remembered_simple$subject) ~ "remembered simple",
+    TRUE ~ "not_remembered"
+  )) %>% 
+  ggplot(aes(x = stimulus_type, 
+             y = res_lt, 
+             color = complexity), 
+         group = complexity) + 
+  stat_summary(fun.data = "mean_cl_boot", 
+               position = position_dodge(width = .2)) +
+  theme_classic() + 
+  facet_wrap(~subject_type)
+```
+
 
 
 # Correlation 

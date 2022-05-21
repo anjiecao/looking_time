@@ -24,6 +24,7 @@ d <- read_csv(MAIN_TASK_PATH)
 ```
 
 # Check age 
+
 ```{r}
 raw_data %>% 
   filter(trial_type == "demog-age") %>% 
@@ -49,16 +50,16 @@ age_df <- raw_data %>%
 
 d %>% 
   left_join(age_df, by = c("subject")) %>% 
-  ggplot(aes(x = log(age), y = log(trial_looking_time))) + 
+  ggplot(aes(x = age, y = log(trial_looking_time))) + 
   geom_point() +
-  geom_smooth() +
+  geom_smooth(method = "lm") +
   facet_wrap(~block_type) 
 
 d %>% 
   left_join(age_df, by = c("subject")) %>% 
-  ggplot(aes(x = log(age), y = log(trial_looking_time))) + 
+  ggplot(aes(x = age, y = log(trial_looking_time))) + 
   geom_point() +
-  geom_smooth() +
+  geom_smooth(method = "lm") +
   facet_grid(block_number~block_type) 
 
 ```
@@ -127,6 +128,29 @@ dist_d <- d %>%
             by = c("subject", "block_number")) 
 ```
 
+## look at model 
+
+```{r}
+dist_d <- dist_d %>% 
+  mutate(bd_distance_centered = case_when(
+    trial_type == "background" ~ 0, 
+    trial_type == "deviant" ~ bd_distance
+  ))
+```
+
+```{r}
+library(lme4)
+
+model_1 <- lmerTest::lmer(log(trial_looking_time) ~ I(exp(1)**(-trial_number)) * trial_type * block_type + (1 | subject), data = dist_d)
+summary(model_1)
+
+model_with_dist <-  lmerTest::lmer(log(trial_looking_time) ~ I(exp(1)**(-trial_number)) * trial_type * block_type +  trial_type * bd_distance_centered + (1 | subject), data = dist_d)
+
+anova(model_with_dist, model_1)
+```
+
+
+
 ## distance and raw time at deivant trial 
 
 ```{r}
@@ -193,7 +217,57 @@ dist_d %>%
   geom_smooth()
 ```
 
+```{r}
+dist_d %>% 
+  filter(!is.na(deviant_position)) %>% 
+  left_join(
+    baseline_lt_d, by = c("block_number", "block_type", "trial_number")
+  ) %>% 
+  filter(deviant_position == trial_number) %>% 
+  mutate(baseline_diff = trial_looking_time - baseline_lt) %>% 
+  ggplot(aes(x = trial_number, 
+             y = log(baseline_diff), 
+             color = block_type), 
+         group = block_type) + 
+  geom_point(alpha = .1, position = position_jitter(width = .2)) + 
+  stat_summary(fun.data = "mean_cl_boot", 
+               position = position_dodge(width = .5)) + 
+  facet_wrap(~block_number) + 
+  labs(title = "diff to baseline")
+  
+```
+
+```{r}
+dist_d_lt %>% 
+  ggplot(aes(x = deviant_position, 
+             y = log(bd_diff), 
+             color = block_type), 
+         group = block_type) + 
+  geom_point(alpha = .1, position = position_jitter(width = .2)) + 
+  stat_summary(fun.data = "mean_cl_boot", 
+               position = position_dodge(width = .5)) + 
+  facet_wrap(~block_number) + 
+  labs(title = "diff to previous trial")
+```
+
+```{r}
+dist_d %>% 
+  filter(trial_type == "deviant") %>% 
+  ggplot(aes(x = trial_number, 
+             y = log(trial_looking_time), 
+              color = block_type), 
+         group = block_type) +
+   geom_point(alpha = .1, position = position_jitter(width = .2)) + 
+  stat_summary(fun.data = "mean_cl_boot", 
+               position = position_dodge(width = .5)) + 
+  facet_wrap(~block_number) + 
+  labs(title = "raw deviant")
+```
+
+
+
 # distance & complexity 
+
 ```{r}
 em_d %>% 
   pivot_longer(cols = -stimulus, 
@@ -201,23 +275,29 @@ em_d %>%
   mutate(
     s_complexity = case_when(
       grepl("complex", stimulus) ~ "complex", 
-      grepl("simple", stimulus) ~ "simple"
+      grepl("simple", stimulus) ~ "simple", 
+      TRUE ~ "unity"
     ), 
     distance_to_complexity = case_when(
       grepl("complex", distance_to) ~ "complex", 
-      grepl("simple", distance_to) ~ "simple"
+      grepl("simple", distance_to) ~ "simple",
+       TRUE ~ "unity"
     )
   ) %>% 
   mutate(
     distance_pair_complexity = case_when(
       s_complexity == "complex" & distance_to_complexity == "complex" ~ "c_c",
       s_complexity == "complex" & distance_to_complexity == "simple" ~ "c_s",
-      s_complexity == "simple" & distance_to_complexity == "complex" ~ "s_c",
-      s_complexity == "simple" & distance_to_complexity == "simple" ~ "s_s"
+      #s_complexity == "simple" & distance_to_complexity == "complex" ~ "s_c",
+      s_complexity == "simple" & distance_to_complexity == "simple" ~ "s_s", 
+      s_complexity == "simple" & distance_to_complexity == "unity" ~ "s_u", 
+      #s_complexity == "unity" & distance_to_complexity == "simple" ~ "u_s", 
+      s_complexity == "complex" & distance_to_complexity == "unity" ~ "c_u",
+      #s_complexity == "unity" & distance_to_complexity == "complex" ~ "u_c",
+      s_complexity == "unity" & distance_to_complexity == "unity" ~ "u_u"
     )
   ) %>% 
-  filter(!grepl("unity", stimulus)) %>%
-  filter(!grepl("unity", distance_to)) %>% 
+  filter(!is.na(distance_pair_complexity)) %>% 
   filter(stimulus != distance_to) %>% 
   ggplot(aes(x = distance_pair_complexity, 
              y = value)) + 
