@@ -9,81 +9,42 @@ output: html_document
 library(tidyverse)
 library(here)
 
+source(here("helper/clean_data.R"))
+
 MERGED_DATA_PATH <- here("data/01_merged_data/merged_data.csv")
-```
+bing_d <- read_csv(here("data/bing_info.csv"))
+bing_d <- bing_d %>% filter(study_name_frank == 16) %>% 
+  select(bing_id, child_age_today_scheduling) %>% 
+  mutate(child_age_group = case_when(
+    child_age_today_scheduling > 3 & child_age_today_scheduling <= 4 ~ 3, 
+    child_age_today_scheduling > 4 & child_age_today_scheduling <= 5 ~ 4,
+    child_age_today_scheduling > 5 & child_age_today_scheduling <= 6 ~ 5,
+  ))
 
-
-
-```{r}
-raw_df <- read_csv(MERGED_DATA_PATH)
-```
-
-
-
-```{r}
-raw_df %>% 
-  filter(stimulus_type == "trial") %>% 
-  group_by(subject, block_number) %>% 
-  mutate(trial_number = row_number()) %>% 
-  mutate(item_type = case_when(
-    stimulus_displayed == block_background ~ "background", 
-    stimulus_displayed == block_deviant ~ "deviant"
-  )) %>% 
-  ggplot(aes(x = trial_number, y = log(trial_looking_time), color = item_type)) +
-  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
-  geom_smooth(method = "lm", 
-              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
-   theme_classic()+
-  langcog::scale_color_solarized(name = "Trial Type") + 
-  theme(legend.position = "bottom") + 
-  ylab("log RT (seconds)") + 
-  xlab("Trial Number")
-```
-
-```{r}
-tidy_all_rt_task_data <- function(raw_data){
-  
-
-  cleaned_rt_data <- raw_data %>% 
-    filter(stimulus_type == "trial") %>% 
-    group_by(subject, block_number) %>% 
-    mutate(trial_number = row_number(), 
-           block_number = block_number + 1) %>% 
-    mutate(trial_type = case_when(
-      stimulus_displayed == block_background ~ "background", 
-      stimulus_displayed == block_deviant ~ "deviant"
-    )) 
-  
-  
-  cleaned_rt_data <- cleaned_rt_data%>%
-     left_join(
-      cleaned_rt_data %>% 
-        filter(trial_type == "deviant") %>% 
-        mutate(deviant_position = trial_number) %>% 
-        select(subject, block_number, deviant_position), 
-      by = c("subject", "block_number")
-    ) %>% 
-    select(subject, block_number, trial_number, block_type, trial_type, block_background, block_deviant, deviant_position,stimulus_displayed, trial_looking_time)
-  
- 
-  
-  
-  return (cleaned_rt_data)
-  
-  
-  
-}
+raw_df <- read_csv(MERGED_DATA_PATH) %>% 
+  left_join(bing_d, by = "bing_id")
 
 ```
 
 
-```{r}
-df <- tidy_all_rt_task_data(raw_df)
 
+# preprocessed df 
+
+```{r}
+
+main_d <- tidy_all_rt_task_data(raw_df)
+# missing: memory question
 ```
 
 ```{r}
- df %>% 
+main_d %>% 
+  distinct(bing_id, child_age_group) %>% 
+  group_by(child_age_group) %>% 
+  count()
+```
+
+```{r}
+main_d %>% 
   ggplot(aes(x = trial_number, y = log(trial_looking_time), color = trial_type)) +
   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
   stat_summary(geom = "line", fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
@@ -91,17 +52,23 @@ df <- tidy_all_rt_task_data(raw_df)
   langcog::scale_color_solarized(name = "Trial Type") + 
   theme(legend.position = "bottom") + 
   ylab("log RT (seconds)") + 
-  xlab("Trial Number")
+  xlab("Trial Number") 
+```
 
 
- df %>% 
+```{r}
+ 
+ main_d %>% 
   ggplot(aes(x = trial_number, y = log(trial_looking_time))) +
-  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
-  stat_summary(geom = "line", fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2), 
+               aes(color = as.factor(child_age_group))) + 
+  stat_summary(geom = "line", fun.data = "mean_cl_boot", position = position_dodge(width = .2), 
+               aes(color = as.factor(child_age_group))) + 
   facet_wrap(~deviant_position)+  
   xlab("Trial Number") + 
      theme_classic()+
   langcog::scale_color_solarized(name = "Trial Type") 
+ 
 ```
 
 

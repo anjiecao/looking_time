@@ -5,7 +5,7 @@ get_included_participants <- function(){
   
   
   included_df <- tracking_df %>% 
-    filter(Include == "Yes") %>% 
+    filter(Include %in% c("Yes", "yes")) %>% 
     unnest(Subject_id) 
     
   

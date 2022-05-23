@@ -14,6 +14,8 @@ adult_analysis/study_1_followup/data/00_raw_data/*
 
 adult_analysis/study_2/data/prolific.csv
 preschooler-analysis/data/00_raw_data/*
+preschooler-analysis/data/bing_info.csv
+
 
 adult_analysis/forced_exp/data/00_raw_data/*
 

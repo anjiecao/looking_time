@@ -61,6 +61,10 @@ get_included_data <- function(raw_data_directory,
     pull()
   
   FILTERED_RAW_DATA <- RAW_DATA %>% 
+    left_join(id_data %>% rename("testing_id" = responses), by = "subject") %>% 
+    left_join(included_participants_df %>% select(Subject_id, bing_id) %>% 
+                mutate(Subject_id = as.character(Subject_id)) %>% 
+                rename(testing_id = Subject_id), by = "testing_id") %>% 
     filter(subject %in% include_sbj_id)
   
   
