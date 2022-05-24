@@ -114,6 +114,31 @@ lookup_distance <- function(background, deviant, em_d){
 }
 ```
 
+## check similarity distance 
+
+```{r}
+sim_d <- read_csv(here("data/02_processed_data/processed_similarity_data.csv"))
+
+sim_d <- sim_d %>% 
+  rowwise() %>%
+  mutate(stim_distance =  lookup_distance(stimulus_left, stimulus_right, em_d))
+```
+
+```{r}
+sim_d %>% 
+  ggplot(aes(x = stim_distance, y = rating)) + 
+  geom_jitter(alpha = .2) + 
+  geom_smooth(method = "lm")
+```
+
+```{r}
+em_d %>% 
+  arrange(complex_01_A_a.png) %>% 
+  pull(complex_01_A_a.png)
+```
+
+
+
 ```{r}
 em_dist <- d %>% 
   distinct(subject, block_number, trial_type, stimulus_displayed) %>% 
