@@ -16,10 +16,10 @@ bing_d <- read_csv(here("data/bing_info.csv"))
 bing_d <- bing_d %>% filter(study_name_frank == 16) %>% 
   select(bing_id, child_age_today_scheduling) %>% 
   mutate(child_age_group = case_when(
-    child_age_today_scheduling > 3 & child_age_today_scheduling <= 4 ~ 3, 
-    child_age_today_scheduling > 4 & child_age_today_scheduling <= 5 ~ 4,
-    child_age_today_scheduling > 5 & child_age_today_scheduling <= 6 ~ 5,
-  ))
+    child_age_today_scheduling > 3 & child_age_today_scheduling <= 4 ~ "3", 
+    child_age_today_scheduling > 4 & child_age_today_scheduling <= 5 ~ "4",
+    child_age_today_scheduling > 5 & child_age_today_scheduling <= 6 ~ "5",
+  )) 
 
 raw_df <- read_csv(MERGED_DATA_PATH) %>% 
   left_join(bing_d, by = "bing_id")
@@ -33,6 +33,14 @@ raw_df <- read_csv(MERGED_DATA_PATH) %>%
 ```{r}
 
 main_d <- tidy_all_rt_task_data(raw_df)
+adult_d <- read_csv(here("data/adult_data.csv")) %>% mutate(child_age_group = "adult")
+
+main_d <- main_d %>% 
+  bind_rows(adult_d) %>% 
+  mutate(participant_type = case_when(
+    child_age_group == "adult" ~ "adult", 
+    TRUE ~ "kids"
+  ))
 # missing: memory question
 ```
 
@@ -52,13 +60,32 @@ main_d %>%
   langcog::scale_color_solarized(name = "Trial Type") + 
   theme(legend.position = "bottom") + 
   ylab("log RT (seconds)") + 
-  xlab("Trial Number") 
+  xlab("Trial Number") + 
+  facet_wrap(~participant_type)
+```
+
+
+```{r}
+
+ main_d %>% 
+  ggplot(aes(x = trial_number, y = log(trial_looking_time))) +
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2),
+               aes(color = as.factor(participant_type)
+               )) + 
+  stat_summary(geom = "line", fun.data = "mean_cl_boot", position = position_dodge(width = .2),
+               aes(color = as.factor(participant_type))
+              ) + 
+  facet_wrap(~deviant_position)+  
+  xlab("Trial Number") + 
+     theme_classic()+
+  langcog::scale_color_solarized(name = "Trial Type") 
 ```
 
 
 ```{r}
  
  main_d %>% 
+  filter(participant_type == "kids") %>% 
   ggplot(aes(x = trial_number, y = log(trial_looking_time))) +
   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2), 
                aes(color = as.factor(child_age_group))) + 
