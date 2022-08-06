@@ -27,6 +27,13 @@ complexity_data <- read_csv(here('data/processed_data/trimmed_complexitydata.csv
 demog_data <- read_csv(here('data/processed_data/trimmed_demogdata.csv'))
 ```
 
+
+```{r}
+RT_data %>% 
+  select(subject, trial_index, stimulus, trial_looking_time)
+```
+
+
 # look at the verbal feedback
 ```{r}
 feedback <- read_csv(here('data/merged_data/merged_data.csv')) %>% 
