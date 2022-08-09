@@ -1,7 +1,6 @@
 ---
 title: "01_preprocessing.rmd"
 author: "anjie"
-date: "9/16/2021"
 output: html_document
 ---
 
@@ -55,37 +54,128 @@ main_d <- main_d %>%
     TRUE ~ "No Deviant"
   ))
 # missing: memory question
+
 ```
+
+
+# exclusion criteria: 
+
+## memory question and memory practice 
+
+```{r}
+failed_memory_test_kids <- raw_df %>% 
+  select(subject, 
+         stimulus_type, 
+         memory_block_index, button_pressed, correct_answer) %>% 
+  filter(stimulus_type == "memory_test") %>% 
+  mutate(block_number = memory_block_index + 1, 
+         memory_correct = ((button_pressed == 0 & correct_answer == "left") | 
+                            (button_pressed == 1 & correct_answer == "right"))) %>% 
+  group_by(subject) %>% 
+  summarise(sum_correct = sum(as.numeric(memory_correct))) %>% 
+  filter(sum_correct <= 4) %>% 
+  pull(subject)
+
+failed_memory_practice_kids <- raw_df %>% 
+  select(subject, 
+         stimulus_type, 
+         memory_block_index, button_pressed, correct_answer) %>% 
+  filter(stimulus_type == "memory_practice") %>% 
+  mutate(block_number = memory_block_index + 1, 
+         memory_correct = ((button_pressed == 0 & correct_answer == "left") | 
+                            (button_pressed == 1 & correct_answer == "right"))) %>% 
+  group_by(subject) %>% 
+  summarise(sum_correct = sum(as.numeric(memory_correct))) %>% 
+  filter(sum_correct == 0) %>% 
+  pull(subject)
+
+```
+
+## looking time 
+
+```{r}
+flat_looking_time <- main_d %>% 
+  filter(participant_type == "kids") %>% 
+  group_by(subject) %>% 
+  mutate(sd_lt = (log(sd(trial_looking_time)))) %>% 
+  filter(sd_lt < 0.15) %>% 
+  pull(subject)
+```
+
+
+## exclude participants 
+
+```{r}
+main_d <- main_d %>% 
+  filter(!(subject %in% failed_memory_test_kids)) %>% 
+  filter(!(subject %in% failed_memory_practice_kids))
+```
+
+## exclude trial 
+
+```{r}
+summary_lt_d <- main_d %>% 
+  filter(participant_type == "kids") %>% 
+  summarise(
+     median = median(log(trial_looking_time)),
+    mad = mad(log(trial_looking_time)), 
+    upper = median + 3 * mad, 
+    lower = median - 3 * mad) 
+
+
+main_d <- main_d %>% 
+  filter((participant_type == "kids" & log(trial_looking_time) > summary_lt_d$lower 
+          & log(trial_looking_time) < summary_lt_d$upper) | participant_type == "adult"
+          )
+```
+
+
+# final sample sie 
 
 ```{r}
 main_d %>% 
-  distinct(bing_id, child_age_group) %>% 
+  distinct(subject, child_age_group) %>% 
   group_by(child_age_group) %>% 
   count()
 ```
 
 ```{r}
-main_d %>% 
-  ggplot(aes(x = trial_number, y = log(trial_looking_time), color = trial_type)) +
-  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
-  stat_summary(geom = "line", fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
-   theme_classic()+
-  langcog::scale_color_solarized(name = "Trial Type") + 
-  theme(legend.position = "bottom") + 
-  ylab("Looking Time (Log msc)")+
-  xlab("Trial Number") + 
-  facet_wrap(~participant_type)
+ main_d %>% 
+  filter(participant_type == "kids") %>% 
+  ggplot(aes(x = log(trial_looking_time), fill = as.factor(child_age_group))) + 
+  geom_density(alpha = .3)   + 
+  facet_wrap(~trial_type)
 ```
 
+
+## kids only 
+
+```{r}
+ main_d %>% 
+  filter(participant_type == "kids") %>% 
+  #filter(child_age_group > 3) %>% 
+  ggplot(aes(x = trial_number, y = log(trial_looking_time))) +
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  stat_summary(geom = "line", fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  facet_wrap(~deviant_position_print)+  
+  xlab("Trial Number") + 
+    ylab("Looking Time (Log msc)")+
+
+     theme_classic()+
+  langcog::scale_color_solarized(name = "Participant Type") 
+```
+
+
+## kids vs adults
 
 ```{r}
 
  main_d %>% 
+  #filter(participant_type == "kids") %>% 
   #filter(child_age_group > 3) %>% 
   ggplot(aes(x = trial_number, y = log(trial_looking_time))) +
   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2),
-               aes(color = as.factor(participant_type)
-               )) + 
+               aes(color = as.factor(participant_type))) + 
   stat_summary(geom = "line", fun.data = "mean_cl_boot", position = position_dodge(width = .2),
                aes(color = as.factor(participant_type))
               ) + 
@@ -94,12 +184,13 @@ main_d %>%
     ylab("Looking Time (Log msc)")+
 
      theme_classic()+
-  langcog::scale_color_solarized(name = "Trial Type") 
+  langcog::scale_color_solarized(name = "Participant Type") 
 ```
 
+## 3 vs 4 vs 5
 
 ```{r}
- 
+
  main_d %>% 
   filter(participant_type == "kids") %>% 
   ggplot(aes(x = trial_number, y = log(trial_looking_time))) +
@@ -115,5 +206,20 @@ main_d %>%
  
 ```
 
+## 3 vs 4 vs 5 vs adults 
+```{r}
 
-
+ main_d %>% 
+  #filter(participant_type == "kids") %>% 
+  ggplot(aes(x = trial_number, y = log(trial_looking_time))) +
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2), 
+               aes(color = as.factor(child_age_group))) + 
+  stat_summary(geom = "line", fun.data = "mean_cl_boot", position = position_dodge(width = .2), 
+               aes(color = as.factor(child_age_group))) + 
+  facet_wrap(~deviant_position_print)+  
+  xlab("Trial Number") + 
+  ylab("Looking Time (Log msc)")+
+     theme_classic()+
+  langcog::scale_color_solarized(name = "Age Group") 
+ 
+```
