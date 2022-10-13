@@ -39,7 +39,8 @@ raw_df <- read_csv(MERGED_DATA_PATH) %>%
 ```{r}
 
 main_d <- tidy_all_rt_task_data(raw_df)
-adult_d <- read_csv(here("data/adult_data.csv")) %>% mutate(child_age_group = "adult")
+adult_d <- read_csv(here("data/adult_data.csv")) %>% mutate(child_age_group = "adult") %>% 
+  filter(grepl("complex", block_type))
 
 main_d <- main_d %>% 
   bind_rows(adult_d) %>% 
@@ -171,7 +172,7 @@ main_d %>%
 ```{r}
 
  main_d %>% 
-  #filter(participant_type == "kids") %>% 
+  #filter(participant_type == "adult") %>% 
   #filter(child_age_group > 3) %>% 
   ggplot(aes(x = trial_number, y = log(trial_looking_time))) +
   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2),
