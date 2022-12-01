@@ -1,1 +1,796 @@
+---
+title: "02_visualization"
+author: "anjie"
+date: "9/6/2021"
+output:
+  html_document:
+    code_folding: "hide"
+---
+
+```{r message=FALSE, warning=FALSE}
+library(tidyverse)
+library(here)
+library(jsonlite)
+library(kableExtra)
+
+RAW_DATA_PATH <- here("data/01_merged_data/merged_data.csv")
+MAIN_TASK_PATH <- here("data/02_processed_data/processed_rt_task_data.csv")
+similarity_data <- read_csv(here('data/02_processed_data/processed_similarity_data.csv'))
+complexity_data <- read_csv(here('data/02_processed_data/processed_complexity_data.csv'))
+
+
+raw_data <- read_csv(RAW_DATA_PATH)
+d <- read_csv(MAIN_TASK_PATH)
+```
+
+# Check age 
+
+```{r}
+raw_data %>% 
+  filter(trial_type == "demog-age") %>% 
+  select(subject, responses) %>% 
+  mutate(responses = map(responses, ~ (fromJSON(.)) %>% as.data.frame)) %>% 
+  unnest(responses) %>% 
+  filter(subject %in% unique(d$subject)) %>% 
+  mutate(age = as.numeric(age)) %>% 
+  ggplot(aes(x = age)) + 
+  geom_histogram()+ 
+  xlim(18, 90)
+```
+
+```{r}
+age_df <- raw_data %>% 
+  filter(trial_type == "demog-age") %>% 
+  select(subject, responses) %>% 
+  mutate(responses = map(responses, ~ (fromJSON(.)) %>% as.data.frame)) %>% 
+  unnest(responses) %>% 
+  filter(subject %in% unique(d$subject)) %>% 
+  mutate(age = as.numeric(age)) %>% 
+  filter(age > 18 & age < 100)
+
+d %>% 
+  left_join(age_df, by = c("subject")) %>% 
+  ggplot(aes(x = age, y = log(trial_looking_time))) + 
+  geom_point() +
+  geom_smooth(method = "lm") +
+  facet_wrap(~block_type) 
+
+d %>% 
+  left_join(age_df, by = c("subject")) %>% 
+  ggplot(aes(x = age, y = log(trial_looking_time))) + 
+  geom_point() +
+  geom_smooth(method = "lm") +
+  facet_grid(block_number~block_type) 
+
+```
+
+```{r}
+d %>% 
+  left_join(age_df, by = c("subject")) %>% 
+  filter(task_type == "curiosity") %>% 
+  ggplot(aes(x = age, y = task_question_response, 
+             color = task_question_type), 
+         group = task_question_type) + 
+  geom_point(position = position_jitter(height = .2)) + 
+  geom_smooth() + 
+  theme_classic()
+```
+
+
+```{r}
+dist_d %>% 
+  filter(!is.na(deviant_position)) %>% 
+  left_join(
+    baseline_lt_d, by = c("block_number", "block_type", "trial_number")
+  ) %>% 
+   left_join(age_df, by = c("subject")) %>% 
+  filter(deviant_position == trial_number) %>% 
+  mutate(baseline_diff = trial_looking_time - baseline_lt) %>% 
+  ggplot(aes(x = log(age), y = log(baseline_diff))) + 
+  geom_point() + 
+  geom_smooth() + 
+  facet_grid(block_type ~ trial_number)  
+  
+```
+
+
+# Check embedding distance  
+
+```{r}
+em_d <- read_csv(here("data/eucledian_distances.csv")) %>% rename(stimulus = '...1')
+em_d 
+
+lookup_distance <- function(background, deviant, em_d){
+  background = gsub("images/stimuli/", "", background)
+  background = gsub(".gif", ".png", background)
+  if (is.na(deviant)){
+    dist <- NA_real_
+  }else{
+     deviant =  gsub("images/stimuli/", "", deviant)
+     deviant = gsub(".gif", ".png", deviant)
+    dist <- em_d[em_d$stimulus == background, deviant] %>% pull()
+  }
+  return (dist)
+}
+```
+
+## check similarity distance 
+
+```{r}
+sim_d <- read_csv(here("data/02_processed_data/processed_similarity_data.csv"))
+
+sim_d <- sim_d %>% 
+  rowwise() %>%
+  mutate(stim_distance =  lookup_distance(stimulus_left, stimulus_right, em_d))
+```
+
+```{r}
+sim_d %>% 
+  ggplot(aes(x = stim_distance, y = rating)) + 
+  geom_jitter(alpha = .2) + 
+  geom_smooth(method = "lm")
+```
+
+```{r}
+em_d %>% 
+  arrange(complex_01_A_a.png) %>% 
+  pull(complex_01_A_a.png)
+```
+
+
+
+```{r}
+em_dist <- d %>% 
+  distinct(subject, block_number, trial_type, stimulus_displayed) %>% 
+  pivot_wider(names_from  = trial_type, values_from = stimulus_displayed) %>% 
+  rowwise() %>% 
+  mutate(bd_distance =  lookup_distance(background, deviant, em_d))
+```
+
+```{r}
+dist_d <- d %>% 
+  left_join(em_dist %>% select(subject, block_number, bd_distance), 
+            by = c("subject", "block_number")) 
+```
+
+## look at model 
+
+```{r}
+dist_d <- dist_d %>% 
+  mutate(bd_distance_centered = case_when(
+    trial_type == "background" ~ 0, 
+    trial_type == "deviant" ~ bd_distance
+  ))
+```
+
+```{r}
+library(lme4)
+
+model_1 <- lmerTest::lmer(log(trial_looking_time) ~ I(exp(1)**(-trial_number)) * trial_type * block_type + (1 | subject), data = dist_d)
+summary(model_1)
+
+model_with_dist <-  lmerTest::lmer(log(trial_looking_time) ~ I(exp(1)**(-trial_number)) * trial_type * block_type +  trial_type * bd_distance_centered + (1 | subject), data = dist_d)
+
+anova(model_with_dist, model_1)
+```
+
+
+
+## distance and raw time at deivant trial 
+
+```{r}
+dist_d %>% 
+  filter(trial_type == "deviant") %>% 
+  ggplot(aes(x = bd_distance, y = log(trial_looking_time))) +
+  geom_point() + 
+  facet_wrap(~block_type) + 
+  geom_smooth()
+
+dist_d %>% 
+  filter(trial_type == "deviant") %>% 
+  ggplot(aes(x = bd_distance, y = log(trial_looking_time))) +
+  geom_point() + 
+  facet_grid(block_number~block_type) + 
+  geom_smooth()
+
+dist_d %>% 
+  filter(trial_type == "deviant") %>% 
+  ggplot(aes(x = bd_distance, y = log(trial_looking_time))) +
+  geom_point() + 
+  facet_grid(deviant_position~block_type) + 
+  geom_smooth()
+```
+
+## raw habituation magnitude 
+
+relative to the previous background 
+
+```{r}
+dist_d_lt <- dist_d %>% 
+  filter(
+    deviant_position == trial_number | deviant_position == trial_number + 1
+  ) %>% 
+  select(subject, block_number, block_type, deviant_position, trial_type,trial_looking_time, bd_distance) %>% 
+  pivot_wider(names_from = trial_type, values_from = trial_looking_time) %>% 
+  mutate(bd_diff = deviant-background) 
+
+dist_d_lt %>% 
+  ggplot(aes(x = bd_distance, y = log(bd_diff))) + 
+  geom_point() + 
+  facet_grid(block_type ~ deviant_position) + 
+  geom_smooth()
+```
+
+```{r}
+baseline_lt_d <- dist_d %>% 
+  filter(is.na(deviant_position)) %>% 
+  select(subject, block_number, block_type, trial_number, trial_looking_time) %>% 
+  group_by(block_number, block_type, trial_number) %>% 
+  summarise(baseline_lt = mean(trial_looking_time))
+
+
+dist_d %>% 
+  filter(!is.na(deviant_position)) %>% 
+  left_join(
+    baseline_lt_d, by = c("block_number", "block_type", "trial_number")
+  ) %>% 
+  filter(deviant_position == trial_number) %>% 
+  mutate(baseline_diff = trial_looking_time - baseline_lt) %>% 
+  ggplot(aes(x = bd_distance, y = log(baseline_diff))) + 
+  geom_point() + 
+  facet_grid(block_type ~ deviant_position) + 
+  geom_smooth()
+```
+
+```{r}
+dist_d %>% 
+  filter(!is.na(deviant_position)) %>% 
+  left_join(
+    baseline_lt_d, by = c("block_number", "block_type", "trial_number")
+  ) %>% 
+  filter(deviant_position == trial_number) %>% 
+  mutate(baseline_diff = trial_looking_time - baseline_lt) %>% 
+  ggplot(aes(x = trial_number, 
+             y = log(baseline_diff), 
+             color = block_type), 
+         group = block_type) + 
+  geom_point(alpha = .1, position = position_jitter(width = .2)) + 
+  stat_summary(fun.data = "mean_cl_boot", 
+               position = position_dodge(width = .5)) + 
+  facet_wrap(~block_number) + 
+  labs(title = "diff to baseline")
+  
+```
+
+```{r}
+dist_d_lt %>% 
+  ggplot(aes(x = deviant_position, 
+             y = log(bd_diff), 
+             color = block_type), 
+         group = block_type) + 
+  geom_point(alpha = .1, position = position_jitter(width = .2)) + 
+  stat_summary(fun.data = "mean_cl_boot", 
+               position = position_dodge(width = .5)) + 
+  facet_wrap(~block_number) + 
+  labs(title = "diff to previous trial")
+```
+
+```{r}
+dist_d %>% 
+  filter(trial_type == "deviant") %>% 
+  ggplot(aes(x = trial_number, 
+             y = log(trial_looking_time), 
+              color = block_type), 
+         group = block_type) +
+   geom_point(alpha = .1, position = position_jitter(width = .2)) + 
+  stat_summary(fun.data = "mean_cl_boot", 
+               position = position_dodge(width = .5)) + 
+  facet_wrap(~block_number) + 
+  labs(title = "raw deviant")
+```
+
+
+
+# distance & complexity 
+
+```{r}
+em_d %>% 
+  pivot_longer(cols = -stimulus, 
+               names_to = "distance_to") %>% 
+  mutate(
+    s_complexity = case_when(
+      grepl("complex", stimulus) ~ "complex", 
+      grepl("simple", stimulus) ~ "simple", 
+      TRUE ~ "unity"
+    ), 
+    distance_to_complexity = case_when(
+      grepl("complex", distance_to) ~ "complex", 
+      grepl("simple", distance_to) ~ "simple",
+       TRUE ~ "unity"
+    )
+  ) %>% 
+  mutate(
+    distance_pair_complexity = case_when(
+      s_complexity == "complex" & distance_to_complexity == "complex" ~ "c_c",
+      s_complexity == "complex" & distance_to_complexity == "simple" ~ "c_s",
+      #s_complexity == "simple" & distance_to_complexity == "complex" ~ "s_c",
+      s_complexity == "simple" & distance_to_complexity == "simple" ~ "s_s", 
+      s_complexity == "simple" & distance_to_complexity == "unity" ~ "s_u", 
+      #s_complexity == "unity" & distance_to_complexity == "simple" ~ "u_s", 
+      s_complexity == "complex" & distance_to_complexity == "unity" ~ "c_u",
+      #s_complexity == "unity" & distance_to_complexity == "complex" ~ "u_c",
+      s_complexity == "unity" & distance_to_complexity == "unity" ~ "u_u"
+    )
+  ) %>% 
+  filter(!is.na(distance_pair_complexity)) %>% 
+  filter(stimulus != distance_to) %>% 
+  ggplot(aes(x = distance_pair_complexity, 
+             y = value)) + 
+  geom_violin() + 
+  stat_summary(fun.data = "mean_cl_boot") + 
+  theme_classic()
+```
+
+
+
+```{r}
+d %>% 
+  group_by(subject) %>% 
+  mutate(all_trial_number = row_number()) %>% 
+  mutate(deviant_position_print = case_when(
+    deviant_position == 2 ~ "Deviant at 2nd trial", 
+    deviant_position == 4 ~ "Deviant at 4th trial", 
+    deviant_position == 6 ~ "Deviant at 6th trial", 
+    is.na(deviant_position) ~ "No deviant"
+  ), 
+  block_number_print = as.character(block_number)) %>% 
+ # filter(is.na(deviant_position)) %>% 
+  ggplot(aes(x = trial_number, 
+             y = log(trial_looking_time), 
+             color = block_number_print)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  stat_summary(geom = "line", position = position_dodge(width = .2)) + 
+  facet_wrap(~deviant_position_print) 
+
+ 
+```
+# Basic info 
+
+potential concern: memory is sampled less and lead to the highest attrition rate (Participants will also be excluded based on their task responses if they a) in the math question condition and the memory question condition, answer 3 out of 8 questions wrong) 
+
+## pre-exclusion 
+
+```{r}
+
+source(here("helper/tidy_rt_task_data.r"))
+tidy_all_rt_task_data <- tidy_all_rt_task_data(raw_data)
+
+tidy_all_rt_task_data %>% 
+  distinct(subject, task_type) %>% 
+  group_by(task_type) %>% 
+  count() %>% 
+  kableExtra::kable()
+```
+
+## post-exclusion 
+
+```{r}
+d %>% 
+  distinct(subject, task_type) %>% 
+  count(task_type) %>% 
+   kableExtra::kable()
+```
+
+
+
+# Check raw looking time distribution {.tabset}
+
+good: the distribution across three tasks look pretty similar 
+bad (?): the irregular shapes 
+
+## by block type and trial type 
+
+```{r}
+d %>% 
+  ggplot(aes(x = trial_looking_time, fill = task_type)) + 
+  scale_x_log10() + 
+  geom_density(alpha = .5) + 
+  facet_grid(trial_type~block_type)
+```
+
+## by position of deviant and trial_type
+
+```{r}
+d %>% 
+  ggplot(aes(x = trial_looking_time, fill = task_type)) + 
+  scale_x_log10() + 
+  geom_density(alpha = .5) + 
+  facet_grid(trial_type~deviant_position)
+```
+
+## by block_number and trial_type 
+
+the only thing caught my eyes here is that at the last block participants who saw memory task looks has higher deviant looking time than participants in the other blocks 
+
+```{r}
+d %>% 
+  ggplot(aes(x = trial_looking_time, fill = task_type)) + 
+  scale_x_log10() + 
+  geom_density(alpha = .5) + 
+  facet_grid(trial_type~block_number)
+```
+
+# Look at within block dynamics {.tabset}
+
+# gal scratchpad
+```{r}
+
+d %>% 
+  ggplot(aes(x=trial_number, y=log(trial_looking_time), colour=trial_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  #langcog::theme_mikabr() +
+  theme_classic()+
+  langcog::scale_color_solarized(name = "Trial Type") + 
+  theme(legend.position = "bottom",
+        legend.title=element_text(size=14),
+        legend.text=element_text(size=14),
+        axis.text=element_text(size=12)) + 
+  ylab("log RT (seconds)") + 
+  xlab("Trial Number")
+
+
+d %>% 
+  ggplot(aes(x=trial_number, y=log(trial_looking_time), colour=block_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  facet_wrap(~trial_type) +
+  #langcog::theme_mikabr() +
+  theme_classic()+
+    langcog::scale_color_solarized(name = "Complexity", labels = c('complex', 'simple')) + 
+  theme(legend.position = "bottom",
+        legend.title=element_text(size=14),
+        legend.text=element_text(size=14),
+        axis.text=element_text(size=12),
+        strip.text =element_text(size=12) ) + 
+  ylab("log RT (seconds)") + 
+  xlab("Trial Number")
+
+
+d %>% 
+  mutate(sequence_scheme = case_when(
+    deviant_position == 2 ~ "BDBBBB", 
+    deviant_position == 4 ~ "BBBDBB", 
+    deviant_position == 6 ~ "BBBBBD", 
+    is.na(deviant_position) ~ "BBBBBB"
+  )) %>% 
+  #filter(trial_type == "background") %>% 
+  ggplot(aes(x=trial_number, y=log(trial_looking_time))) + 
+   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+   stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .2))+
+  #geom_smooth(method = "lm", 
+  #            formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  facet_wrap(~sequence_scheme) +
+  #langcog::theme_mikabr() +
+  theme_classic()+
+theme(legend.position = "bottom",
+        legend.title=element_text(size=14),
+        legend.text=element_text(size=14),
+        axis.text=element_text(size=12),
+        strip.text =element_text(size=12) ) + 
+  ylab("log RT (seconds)") + 
+  xlab("Trial Number")
+
+```
+
+## complexity effect 
+
+yay we have a pretty clear complexity effect. interesting that the complexity effect is more salient in deviant trials than in the background trials. 
+on a side note, am i crazy to say that the 2nd and 3rd trial doesn't look too different? is exponential a good fit? 
+
+```{r}
+d %>% 
+  ggplot(aes(x=trial_number, y=log(trial_looking_time), colour=trial_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  facet_wrap(~block_type) +
+  #langcog::theme_mikabr() +
+  theme_classic()+
+  langcog::scale_color_solarized(name = "Trial Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("log RT (seconds)") + 
+  xlab("Trial Number")
+```
+
+
+```{r}
+d %>% 
+  ggplot(aes(x=trial_number, y=log(trial_looking_time), colour=block_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  facet_wrap(~trial_type) +
+  #langcog::theme_mikabr() +
+  theme_classic()+
+  langcog::scale_color_solarized(name = "Trial Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("log RT (seconds)") + 
+  xlab("Trial Number")
+```
+
+## look at sequence schema 
+```{r}
+d %>% 
+  mutate(sequence_scheme = case_when(
+    deviant_position == 2 ~ "BDBBBB", 
+    deviant_position == 4 ~ "BBBDBB", 
+    deviant_position == 6 ~ "BBBBBD", 
+    is.na(deviant_position) ~ "BBBBBB"
+  )) %>% 
+  #filter(trial_type == "background") %>% 
+  ggplot(aes(x=trial_number, y=log(trial_looking_time), color = block_type)) + 
+   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+   stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .2))+
+  #geom_smooth(method = "lm", 
+  #            formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  facet_wrap(~sequence_scheme) +
+  #langcog::theme_mikabr() +
+  theme_classic()+
+  langcog::scale_color_solarized(name = "Trial Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("log RT (seconds)") + 
+  xlab("Trial Number")
+```
+
+## Post deviant background 
+```{r}
+d %>% 
+  mutate(sequence_scheme = case_when(
+    deviant_position == 2 ~ "BDBBBB", 
+    deviant_position == 4 ~ "BBBDBB", 
+    deviant_position == 6 ~ "BBBBBD", 
+    is.na(deviant_position) ~ "BBBBBB"
+  )) %>% 
+  filter(trial_type == "background") %>% 
+  filter((deviant_position == 2 & trial_number == 3) | 
+          (deviant_position == 4 & trial_number == 5 ) |
+           is.na(deviant_position & trial_number == 2) |
+           is.na(deviant_position & trial_number == 4) |
+           (deviant_position == 6 & trial_number == 2) |
+           (deviant_position == 6 & trial_number == 4)) %>% 
+  mutate(
+    Nth_Trial = case_when(
+      trial_number == 3 ~ "3rd trial", 
+      trial_number == 5 ~ "5th trial"
+    )
+  ) %>% 
+  mutate(
+    background_type = case_when(
+      sequence_scheme == "BBBBBB" | sequence_scheme == "BBBBBD" ~ "baseline", 
+      TRUE ~ sequence_scheme 
+    ) 
+  ) %>% 
+  ggplot(aes(x = background_type, y = trial_looking_time, color = block_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  facet_wrap(~Nth_Trial)+ 
+  theme_classic()
+```
+
+
+
+## sanity check task type doesn't influence 
+
+look pretty similar to me 
+
+```{r}
+d %>% 
+  ggplot(aes(x=trial_number, y=log(trial_looking_time), colour=trial_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  geom_smooth(method = "lm", 
+              formula = y ~ I(exp(1)**(-x)), se = FALSE) + 
+  facet_wrap(~task_type) +
+  #langcog::theme_mikabr() +
+  theme_classic()+
+  langcog::scale_color_solarized(name = "Trial Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("log RT (seconds)") + 
+  xlab("Trial Number")
+```
+
+# Look at across blocks dynamics {.tabset}
+
+across block habituation effect is present but less salient 
+
+## overall 
+
+```{r}
+d %>% 
+  filter(trial_number == 1) %>% 
+  ggplot(aes(x=block_number, y=log(trial_looking_time), colour=block_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  #geom_smooth() + 
+  #langcog::theme_mikabr() +
+  theme_classic()+
+  langcog::scale_color_solarized(name = "Trial Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("log RT (seconds)") + 
+  xlab("block Number") + 
+  labs(title = "First trial in each block")
+```
+
+## magnitude of dishabituation 
+
+```{r}
+dv_lt <- d %>% 
+  select(subject, block_type, block_number, trial_number, deviant_position, trial_looking_time) %>% 
+  filter(trial_number == deviant_position) %>% 
+  rename(deviant_looking_time = trial_looking_time) %>% 
+  select(subject, block_type, block_number, deviant_position, deviant_looking_time) 
+
+bd_lt <- d %>% 
+  select(subject,block_type,  block_number, trial_number, deviant_position, trial_looking_time) %>% 
+  filter(trial_number == deviant_position-1) %>% 
+  rename(bg_looking_time = trial_looking_time) %>% 
+  select(subject,block_type, block_number, deviant_position, bg_looking_time) 
+
+
+dishab_lt_df <- dv_lt %>% 
+  left_join(bd_lt, by = c("subject", "block_type", "block_number", "deviant_position")) %>% 
+  mutate(dishab_lt = deviant_looking_time - bg_looking_time)
+
+dishab_lt %>% 
+  ggplot(aes(x=block_number, y=log(dishab_lt), colour=block_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  #geom_smooth() + 
+  #langcog::theme_mikabr() +
+  theme_classic()+
+  langcog::scale_color_solarized(name = "Trial Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("log RT (seconds)") + 
+  xlab("Block Number") + 
+  facet_wrap(~deviant_position) + 
+  labs(title = "deviant - background")
+
+```
+
+## plotting all trials together 
+
+```{r}
+d %>% 
+  distinct(subject, block_number, deviant_position, block_type) %>% 
+  mutate(block_identifier = paste(block_number,deviant_position, sep = "_")) %>% 
+  select(subject) %>%
+  group_by(subject) %>% 
+  pivot_wider(block_identifier, names_from)
+  
+  
+```
+
+
+```{r}
+d %>% 
+  mutate(total_trial_number = ((block_number-1) * 6) + trial_number) %>% 
+  group_by(subject) %>% 
+  count(total_trial_number) %>% 
+  ggplot(aes(x = total_trial_number))
+
+```
+
+
+## by task 
+
+```{r}
+d %>% 
+  ggplot(aes(x=block_number, y=log(trial_looking_time), colour=block_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  geom_smooth() + 
+  facet_wrap(~task_type) +
+  #langcog::theme_mikabr() +
+  theme_classic()+
+  langcog::scale_color_solarized(name = "Trial Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("log RT (seconds)") + 
+  xlab("Trial Number")
+```
+
+
+# Look at curiosity ratings {.tabset}
+
+there is a sampling bug in experiment file causes the curiosity is either novel or background, similar issue with the memory task. however, this still speaks against with our hypothesis. 
+
+## depending on the type of question? 
+
+no difference 
+
+```{r}
+d %>% 
+  filter(task_type == "curiosity") %>% 
+  select(subject, block_number,  task_question_type, task_question_response, deviant_position) %>% 
+  distinct(.keep_all = TRUE) %>% 
+  ggplot(aes(x = task_question_type, y = task_question_response)) + 
+  stat_summary(fun.data = "mean_cl_boot") + 
+  theme_classic()
+```
+
+## complexity? 
+ 
+pretty clear effect on complexity though! 
+
+```{r}
+d %>% 
+  filter(task_type == "curiosity") %>% 
+  select(subject, block_number,  task_question_type, task_question_response, deviant_position, block_type) %>% 
+   distinct(.keep_all = TRUE) %>% 
+  ggplot(aes(x = task_question_type, y = task_question_response)) + 
+  stat_summary(fun.data = "mean_cl_boot") + 
+  facet_wrap(~block_type) + 
+  theme_classic()
+```
+
+
+## changing across blocks? 
+
+doesn't look meaningful to me
+
+
+```{r}
+d %>% 
+  filter(task_type == "curiosity") %>% 
+  select(subject, block_number,  task_question_type, task_question_response, deviant_position, block_type) %>% 
+   distinct(.keep_all = TRUE) %>% 
+  ggplot(aes(x = block_number, y = task_question_response, color = task_question_type)) + 
+  stat_summary(fun.data = "mean_cl_boot") + 
+  theme_classic()
+```
+
+# Similarity and Complexity Ratings? {.tabset}
+
+##  similarity by complexity interaction 
+
+this might explain why complexity effect shows up more in the dishabituation? they are perceived as more different? 
+
+```{r}
+
+similarity_data <- similarity_data %>% 
+  mutate(
+    complexity = case_when(
+      grepl("complex", stimulus_left) | grepl("complex", stimulus_right) ~ "complex", 
+      grepl("simple", stimulus_right) | grepl("simple", stimulus_right) ~ "simple"
+    ), 
+    stimulus_left_number = as.numeric(str_extract(stimulus_left, "[[:digit:]]+")), 
+    stimulus_right_number = as.numeric(str_extract(stimulus_right, "[[:digit:]]+")), 
+    similarity = case_when(
+      stimulus_left_number == stimulus_right_number ~ "similar", 
+      TRUE ~ "dissimilar"
+    )
+  )
+
+similarity_data %>% 
+  ggplot(aes(x = similarity, y= rating)) + 
+  geom_point(alpha = 0.1, 
+             position = position_jitter(width = 0.3)) + 
+   stat_summary(fun.data = "mean_cl_boot") + 
+  facet_wrap(~complexity)
+```
+
+## complexity 
+
+```{r}
+complexity_data <- complexity_data %>% 
+  mutate(
+    complexity = case_when(
+      grepl("complex", stimulus) ~ "complex", 
+      grepl("simple", stimulus) ~ "simple"
+    )
+  )
+
+complexity_data %>% 
+  ggplot(aes(x = complexity, y = rating)) + 
+  geom_point(alpha = 0.1, 
+             position = position_jitter(width = 0.3)) + 
+   stat_summary(fun.data = "mean_cl_boot") 
+```
 
