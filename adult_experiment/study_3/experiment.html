@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://unpkg.com/jspsych@7.2.3"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-preload@1.1.1"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-html-button-response@1.1.1"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-fullscreen@1.1.1"></script>
+
+    <script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response@1.1.1"></script>
+   
+    <script src="https://unpkg.com/@jspsych/plugin-survey-likert@1.1.1"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-survey-text@1.1.1"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-survey-multi-select@1.1.1"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-survey-multi-choice@1.1.1"></script>
+   
+    <script src="js/helper/array.js"></script>
+    <script src="js/helper/testing.js"></script>
+    <script src="js/helper/get_stimuli.js"></script>
+    <script src="js/helper/get_blocks.js"></script>
+    <script src="js/helper/get_ratings.js"></script>
+    
+    <script src="js/00_setting.js"></script>
+    <script src="js/01_instruction.js"></script>
+    <script src="js/02_calibration.js"></script>
+    <script src="js/03_main.js"></script>
+    <script src="js/04_rating.js"></script>
+    <script src="js/05_demog.js"></script>
+
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/jspsych@7.2.3/css/jspsych.css"
+    />
+
+  </head>
+  <body></body>
+  <script>
+
+      var timeline = []
+      var prolific_code = "CSSL4BT6"
+
+      var subject_id ='SS' + Date.now()
+      var intFrameWidth = window.innerWidth;
+      var intFrameHeight = window.innerHeight
+
+
+      // var enter_fullscreen = {
+      //     type: jsPsychFullscreen,
+      //     fullscreen_mode: true
+      // }
+
+      //general function for grabbing parameter from a URL
+      function getParamFromURL( name ) {
+        name = name.replace(/[\[]/,"\\[").replace(/[\]]/,"\\]");
+        var regexS = "[\?&]"+name+"=([^&#]*)";
+        var regex = new RegExp( regexS );
+        var results = regex.exec( window.location.href );
+        if( results == null )
+          return "";
+        else
+          return results[1];
+      }
+
+      // get participant-specific url parameters from Prolific study link
+      var prolific_pid = getParamFromURL('PROLIFIC_PID');
+      var study_id = getParamFromURL('STUDY_ID');
+      var session_id = getParamFromURL('SESSION_ID');
+
+      //make sure that nobody can enter anything damaging
+      prolific_pid.replace(/[^A-Za-z0-9_]/g, "");
+      study_id.replace(/[^A-Za-z0-9_]/g, "");
+      session_id.replace(/[^A-Za-z0-9_]/g, "");
+
+     
+
+      var jsPsych = initJsPsych({
+        on_trial_finish: function(){
+            jsPsych.data.addProperties({ 
+              subject: subject_id, 
+              prolific_id: prolific_pid,
+              study: study_id,
+              session: session_id,
+              window_width: intFrameWidth, 
+              window_height: intFrameHeight});
+            saveData("test" + subject_id, jsPsych.data.get().csv());
+          } 
+      });
+
+      
+
+
+     
+      var thank_you = {
+       type: jsPsychHtmlButtonResponse,
+       stimulus: 
+           "<p>Congratulations! You are all done! </p>" + 
+           "Your survey code is<p><b>"+ prolific_code + 
+            "</b></p><p>Please make sure you save this somewhere safe. You will need to enter this code into Prolific to be paid.</p>",
+        choices: ['Got it']
+    }
+
+    timeline.push(thank_you)
+
+
+
+
+
+/*
+      var show_data = {
+        type: jsPsychHtmlKeyboardResponse,
+        stimulus: function() {
+          var trial_data = jsPsych.data.getLastTrialData().values();
+          var trial_json = JSON.stringify(trial_data, null, 2);
+          return `<p style="margin-bottom:0px;"><strong>Trial data:</strong></p>
+            <pre style="margin-top:0px;text-align:left;">${trial_json}</pre>`;
+        },
+        choices: "NO_KEYS"
+      };
+
+
+      timeline.push(show_data)
+
+*/
+      console.log(timeline)
+
+      jsPsych.run(timeline);
+
+
+        
+  function saveData(name, data){
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', '../../../cgi-bin/pokebaby/write_data.php');
+        //xhr.open('POST', 'write_data.php'); // 'write_data.php' is the path to the php file described above.
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify({filename: name, filedata: data}));
+    }
+
+
+  </script>
+</html>
