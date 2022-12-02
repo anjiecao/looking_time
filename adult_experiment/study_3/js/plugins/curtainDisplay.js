@@ -30,57 +30,122 @@ var curtainDisplay = (function (jspsych) {
       trial(display_element, trial) {
 
 
+        display_element.innerHTML = `<img src="media/stimuli/complex_2.gif"></img>`;
+
+
+
+        const after_key_response = (info) => {
+        // hide the image
         var square = document.createElement('div');
+        square.style.width = '100%';
+        square.style.height = '100px';
+        square.style.backgroundColor = 'gray';
         square.style.position = 'absolute';
         square.style.top = '0px';
-        square.style.left = '0px';
-        square.style.width = "100%";
-        square.style.height = "0px";
-        square.style.backgroundColor = 'gray';
-
-        var squareb = document.createElement('div');
-
-        squareb.style.position = 'absolute';
-        squareb.style.top = '0px';
-        squareb.style.left = '0px';
-        squareb.style.width = "100%";
-        squareb.style.height = "100%";
-        squareb.style.backgroundColor = 'gray';
-
         document.body.appendChild(square);
-        document.body.appendChild(squareb);
+
+        function loweringCurtain() {
+            if (top > window.innerHeight){
+            square.style.height= "100%"
+            clearInterval(id2);
+        } else {
+            top = top + 5;
+            square.style.height = top + 'px';
+            console.log(square.style.top)
+        }
+        }
+
+        var id2 = setInterval(loweringCurtain, 1)
+
+        // record the response time as data
+        let data = {
+            rt: info.rt
+        }
+
+        // end the trial
+
+        this.jsPsych.pluginAPI.setTimeout(()=>{
+            this.jsPsych.finishTrial(data);
+          }, 5000);
+        
 
 
-        var squareSize = 5;
-        var squareGrowthRate = 5;
+        //this.jsPsych.finishTrial(data);
+        }
 
-        function curtainDrop() {
-	        square.style.height = squareSize + 'px'
-            squareSize += squareGrowthRate
-        if (squareSize >= window.innerHeight){
-  	        squareSize =  window.innerHeight
-        }}
-
-        function curtainRaise() {
-            squareb.style.height =  (window.innerHeight - squareSize) + 'px'
-            squareSize += squareGrowthRate
-        if (squareSize == 0){
-            squareSize = 0
-  
-        }}
-
-        setInterval(curtainRaise, 5)
+        // set up a keyboard event to respond only to the spacebar
+    this.jsPsych.pluginAPI.getKeyboardResponse({
+        callback_function: after_key_response,
+        valid_responses: [' '],
+        persist: false
+    });
 
 
 
+/*
+
+        var img = document.createElement("img");
+        img.src = "media/stimuli/complex_2.gif";
+        img.style.position = 'absolute'
+        img.style.top = '50%'
+        img.style.left = '50%'
+        img.style.width = "250px"
+        img.style.height = "250px"
+
+        document.body.appendChild(img);
+
+        
+
+      
+
+
+
+
+        var top = 0;
+        //var id = setInterval(raisingCurtain, 1);
+
+
+        const after_key_response = (info) => {
+            var id2 = setInterval(loweringCurtain, 1);
+            display_element.innerHTML = ""
+            this.jsPsych.finishTrial(data)
+
+            let data = {
+                rt:info.rt
+            }
+            console.log("end trial???")
+        }
+
+
+
+        function raisingCurtain() {
+            if (top == -window.innerHeight) {
+            clearInterval(id);
+        } else {
+            top = top -5;
+            square.style.top = top + 'px';
+        }
+        }
+
+       
 
         // data saving
         var trial_data = {
           parameter_name: "parameter value",
         };
-        // end trial
-        this.jsPsych.finishTrial(trial_data);
+       
+
+         // set up a keyboard event to respond only to the spacebar
+        this.jsPsych.pluginAPI.getKeyboardResponse({
+        callback_function: after_key_response,
+        valid_responses: [' '],
+        persist: false
+     });
+*/
       }
+
+     
+
     }
     curtainDisplay.info = info;
   
