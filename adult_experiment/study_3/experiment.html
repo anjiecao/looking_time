@@ -12,6 +12,8 @@
     <script src="https://unpkg.com/@jspsych/plugin-survey-text@1.1.1"></script>
     <script src="https://unpkg.com/@jspsych/plugin-survey-multi-select@1.1.1"></script>
     <script src="https://unpkg.com/@jspsych/plugin-survey-multi-choice@1.1.1"></script>
+
+    <script src="js/plugins/curtainDisplay.js"></script>
    
     <script src="js/helper/array.js"></script>
     <script src="js/helper/testing.js"></script>
@@ -21,7 +23,7 @@
     
     <script src="js/00_setting.js"></script>
     <script src="js/01_instruction.js"></script>
-    <script src="js/02_calibration.js"></script>
+    
     <script src="js/03_main.js"></script>
     <script src="js/04_rating.js"></script>
     <script src="js/05_demog.js"></script>
@@ -87,7 +89,10 @@
 
       
 
-
+      var test = {
+        type: curtainDisplay
+        
+      }
      
       var thank_you = {
        type: jsPsychHtmlButtonResponse,
@@ -99,6 +104,7 @@
     }
 
     timeline.push(thank_you)
+    timeline.push(test)
 
 
 
