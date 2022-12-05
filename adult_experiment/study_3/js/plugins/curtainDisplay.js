@@ -30,118 +30,101 @@ var curtainDisplay = (function (jspsych) {
       trial(display_element, trial) {
 
 
-        display_element.innerHTML = `<img src="media/stimuli/complex_2.gif"></img>`;
+        /*
+        display_element.innerHTML = '<div id="scene" align = "center"> \
+        <img src="media/gray.png" id="curtain"></img>'
 
+        var goUp = function() {
+            $("curtain").animate({ "top": "-=110px" }, 1000, "linear");
+            console.log("??")
+            
+        };
+        */
+
+/*
+        display_element.innerHTML = '\
+        <img src="media/stimuli/complex_2.gif"></img>\
+        <canvas id="canvas" style = "border: 1px solid; width: 500px; height: 500px"></canvas>\
+       '
+
+*/ 
+        display_element.innerHTML = '<div class="outsideWrapper">\
+        <div class="insideWrapper">\
+            <img src="media/stimuli/complex_2.gif" class="coveredImage" style = "width:100px; height:100px;position:fixed; top:50%; transform: translate(-50%, -50%);left:50%">\
+            <canvas id = "canvas" class="coveringCanvas"></canvas>\
+        </div>\
+    </div>'
+
+        var canvas = document.getElementById("canvas");
+        canvas.width = canvas.scrollWidth
+        canvas.height = canvas.scrollHeight
+
+        var ctx = canvas.getContext('2d')
+
+        ctx.fillStyle = "gray";
+
+        var square_down = {x:0, y:0, width: canvas.width, height:10}
+        var square_up = {x:0, y:0, width: canvas.width, height:canvas.height}
+
+
+        function curtainDown(){
+            ctx.clearRect(0, 0, canvas.width, canvas.height)
+            square_down.height += 7
+            ctx.fillRect(square_down.x, square_down.y, square_down.width, square_down.height)
+
+
+            window.requestAnimationFrame(curtainDown)
+        }
+
+        function curtainUp(){
+            ctx.clearRect(0, 0, canvas.width, canvas.height)
+            square_up.height -= 7
+            ctx.fillRect(square_up.x, square_up.y, square_up.width, square_up.height)
+
+
+            window.requestAnimationFrame(curtainUp)
+        }
+
+
+        curtainUp()
 
 
         const after_key_response = (info) => {
-        // hide the image
-        var square = document.createElement('div');
-        square.style.width = '100%';
-        square.style.height = '100px';
-        square.style.backgroundColor = 'gray';
-        square.style.position = 'absolute';
-        square.style.top = '0px';
-        document.body.appendChild(square);
-
-        function loweringCurtain() {
-            if (top > window.innerHeight){
-            square.style.height= "100%"
-            clearInterval(id2);
-        } else {
-            top = top + 5;
-            square.style.height = top + 'px';
-            console.log(square.style.top)
-        }
-        }
-
-        var id2 = setInterval(loweringCurtain, 1)
-
-        // record the response time as data
-        let data = {
-            rt: info.rt
-        }
-
-        // end the trial
-
-        this.jsPsych.pluginAPI.setTimeout(()=>{
-            this.jsPsych.finishTrial(data);
-          }, 5000);
+            // hide the image
+            curtainDown()
+            // record the response time as data
+            let data = {
+              rt: info.rt
+            }
         
+            // end the trial
+            //this.jsPsych.finishTrial(data);
+          }
+        
+          // set up a keyboard event to respond only to the spacebar
+          this.jsPsych.pluginAPI.getKeyboardResponse({
+            callback_function: after_key_response,
+            valid_responses: [' '],
+            persist: false
+          });
+
+
+        //draw()
+
+        //<img src="media/stimuli/complex_2.gif"></img>`;
+
+
 
 
         //this.jsPsych.finishTrial(data);
-        }
+    
 
         // set up a keyboard event to respond only to the spacebar
-    this.jsPsych.pluginAPI.getKeyboardResponse({
-        callback_function: after_key_response,
-        valid_responses: [' '],
-        persist: false
-    });
-
-
-
-/*
-
-        var img = document.createElement("img");
-        img.src = "media/stimuli/complex_2.gif";
-        img.style.position = 'absolute'
-        img.style.top = '50%'
-        img.style.left = '50%'
-        img.style.width = "250px"
-        img.style.height = "250px"
-
-        document.body.appendChild(img);
-
-        
-
-      
+   
 
 
 
 
-        var top = 0;
-        //var id = setInterval(raisingCurtain, 1);
-
-
-        const after_key_response = (info) => {
-            var id2 = setInterval(loweringCurtain, 1);
-            display_element.innerHTML = ""
-            this.jsPsych.finishTrial(data)
-
-            let data = {
-                rt:info.rt
-            }
-            console.log("end trial???")
-        }
-
-
-
-        function raisingCurtain() {
-            if (top == -window.innerHeight) {
-            clearInterval(id);
-        } else {
-            top = top -5;
-            square.style.top = top + 'px';
-        }
-        }
-
-       
-
-        // data saving
-        var trial_data = {
-          parameter_name: "parameter value",
-        };
-       
-
-         // set up a keyboard event to respond only to the spacebar
-        this.jsPsych.pluginAPI.getKeyboardResponse({
-        callback_function: after_key_response,
-        valid_responses: [' '],
-        persist: false
-     });
-*/
       }
 
      
