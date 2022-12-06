@@ -71,9 +71,11 @@ var curtainDisplay = (function (jspsych) {
             ctx.clearRect(0, 0, canvas.width, canvas.height)
             square_down.height += 7
             ctx.fillRect(square_down.x, square_down.y, square_down.width, square_down.height)
-
-
+            
             window.requestAnimationFrame(curtainDown)
+            
+
+
         }
 
         function curtainUp(){
@@ -96,9 +98,12 @@ var curtainDisplay = (function (jspsych) {
             let data = {
               rt: info.rt
             }
-        
-            // end the trial
-            //this.jsPsych.finishTrial(data);
+
+            this.jsPsych.pluginAPI.setTimeout(()=>{
+              this.jsPsych.finishTrial(data)
+            }, 1200);
+            
+           
           }
         
           // set up a keyboard event to respond only to the spacebar
