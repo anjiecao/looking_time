@@ -4,14 +4,14 @@ var curtainDisplay = (function (jspsych) {
     const info = {
       name: "curtain-display",
       parameters: {
-        parameter_name: {
-          type: jspsych.ParameterType.INT,
-          default: undefined,
-        },
-        parameter_name2: {
+        stimulus: {
           type: jspsych.ParameterType.IMAGE,
-          default: undefined,
+          default: null,
         },
+        valid_key_press:{
+          type: jspsych.ParameterType.ARRAY, 
+          default: [" "]
+        }
       },
     };
   
@@ -30,27 +30,22 @@ var curtainDisplay = (function (jspsych) {
       trial(display_element, trial) {
 
 
-        /*
-        display_element.innerHTML = '<div id="scene" align = "center"> \
-        <img src="media/gray.png" id="curtain"></img>'
+        function getRandomInt(min, max) {
+          min = Math.ceil(min);
+          max = Math.floor(max);
+          return Math.floor(Math.random() * (max - min) + min); // The maximum is exclusive and the minimum is inclusive
+        }
 
-        var goUp = function() {
-            $("curtain").animate({ "top": "-=110px" }, 1000, "linear");
-            console.log("??")
-            
-        };
-        */
+        var top_position = getRandomInt(40, 60)
+        var left_postion = getRandomInt(40, 60)
 
-/*
-        display_element.innerHTML = '\
-        <img src="media/stimuli/complex_2.gif"></img>\
-        <canvas id="canvas" style = "border: 1px solid; width: 500px; height: 500px"></canvas>\
-       '
+        console.log(top_position)
+        console.log(left_postion)
 
-*/ 
         display_element.innerHTML = '<div class="outsideWrapper">\
         <div class="insideWrapper">\
-            <img src="media/stimuli/complex_2.gif" class="coveredImage" style = "width:100px; height:100px;position:fixed; top:50%; transform: translate(-50%, -50%);left:50%">\
+            <img src="' + trial.stimulus + '" class="coveredImage" style = "width:100px; height:100px;position:fixed; top:' + top_position + '%;\
+            transform: translate(-50%, -50%);left:' + left_postion + '%">\
             <canvas id = "canvas" class="coveringCanvas"></canvas>\
         </div>\
     </div>'
@@ -74,8 +69,6 @@ var curtainDisplay = (function (jspsych) {
             
             window.requestAnimationFrame(curtainDown)
             
-
-
         }
 
         function curtainUp(){
@@ -109,7 +102,7 @@ var curtainDisplay = (function (jspsych) {
           // set up a keyboard event to respond only to the spacebar
           this.jsPsych.pluginAPI.getKeyboardResponse({
             callback_function: after_key_response,
-            valid_responses: [' '],
+            valid_responses: trial.valid_key_press,
             persist: false
           });
 

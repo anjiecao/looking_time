@@ -111,15 +111,34 @@
           } 
       });
 
+
+
+      var test_stimuli_array = ["media/stimuli/complex_2.gif", "media/stimuli/complex_2.gif", "media/stimuli/complex_2.gif", 
+      "media/stimuli/complex_2.gif", "media/stimuli/complex_2.gif", "media/stimuli/complex_1.gif"]
       
 
+      var test_block_array = test_stimuli_array.map(function(stimulus){
+        return {
+          type: curtainDisplay, 
+          stimulus: stimulus, 
+          valid_key_press: [" "]
+        }
+      })
+
+
+      console.log(test_block_array)
+
       var test_1 = {
-        type: curtainDisplay
+        type: curtainDisplay, 
+        stimulus: "media/stimuli/complex_2.gif", 
+        valid_key_press: [" "]
         
       }
 
       var test_2 = {
-        type: curtainDisplay
+        type: curtainDisplay,
+        stimulus: "media/stimuli/complex_2.gif", 
+        valid_key_press: [" "]
         
       }
      
@@ -132,8 +151,9 @@
         choices: ['Got it']
     }
 
-    timeline.push(test_1)
-    timeline.push(test_2)
+   
+    timeline = timeline.concat(test_block_array)
+
     timeline.push(thank_you)
 
 
