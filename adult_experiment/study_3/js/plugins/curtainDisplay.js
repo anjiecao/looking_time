@@ -39,12 +39,10 @@ var curtainDisplay = (function (jspsych) {
         var top_position = getRandomInt(40, 60)
         var left_postion = getRandomInt(40, 60)
 
-        console.log(top_position)
-        console.log(left_postion)
-
+        
         display_element.innerHTML = '<div class="outsideWrapper">\
         <div class="insideWrapper">\
-            <img src="' + trial.stimulus + '" class="coveredImage" style = "width:100px; height:100px;position:fixed; top:' + top_position + '%;\
+            <img src="' + trial.stimulus + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + top_position + '%;\
             transform: translate(-50%, -50%);left:' + left_postion + '%">\
             <canvas id = "canvas" class="coveringCanvas"></canvas>\
         </div>\
