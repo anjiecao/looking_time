@@ -36,13 +36,13 @@ var curtainDisplay = (function (jspsych) {
           return Math.floor(Math.random() * (max - min) + min); // The maximum is exclusive and the minimum is inclusive
         }
 
-        var top_position = getRandomInt(40, 60)
-        var left_postion = getRandomInt(40, 60)
+        var top_position = getRandomInt(45, 55)
+        var left_postion = getRandomInt(45, 55)
 
         
         display_element.innerHTML = '<div class="outsideWrapper">\
         <div class="insideWrapper">\
-            <img src="' + trial.stimulus + '" class="coveredImage test" style = "width:200px; height:200px;position:fixed; top:' + top_position + '%;\
+            <img src="' + trial.stimulus + '" class="coveredImage test" style = "width:150px; height:150px;position:fixed; top:' + top_position + '%;\
             transform: translate(-50%, -50%);left:' + left_postion + '%">\
             <canvas id = "canvas" class="coveringCanvas"></canvas>\
         </div>\
