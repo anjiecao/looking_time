@@ -39,6 +39,11 @@ var curtainDisplay = (function (jspsych) {
         var top_position = getRandomInt(45, 55)
         var left_postion = getRandomInt(45, 55)
 
+
+        var context = new AudioContext()
+        var audio_string = '<audio id="audio" controls style="display:none"> <source src="' + 
+        "media/key_press.wav"+ '"</audio>'
+
         
         display_element.innerHTML = '<div class="outsideWrapper">\
         <div class="insideWrapper">\
@@ -47,6 +52,11 @@ var curtainDisplay = (function (jspsych) {
             <canvas id = "canvas" class="coveringCanvas"></canvas>\
         </div>\
     </div>'
+
+        display_element.innerHTML  =  display_element.innerHTML  + audio_string
+
+
+        
 
         var canvas = document.getElementById("canvas");
         canvas.width = canvas.scrollWidth
@@ -62,7 +72,7 @@ var curtainDisplay = (function (jspsych) {
 
         function curtainDown(){
             ctx.clearRect(0, 0, canvas.width, canvas.height)
-            square_down.height += 7
+            square_down.height += 1.4
             ctx.fillRect(square_down.x, square_down.y, square_down.width, square_down.height)
             
             window.requestAnimationFrame(curtainDown)
@@ -71,20 +81,21 @@ var curtainDisplay = (function (jspsych) {
 
         function curtainUp(){
             ctx.clearRect(0, 0, canvas.width, canvas.height)
-            square_up.height -= 7
+            square_up.height -= 1.4
             ctx.fillRect(square_up.x, square_up.y, square_up.width, square_up.height)
 
 
             window.requestAnimationFrame(curtainUp)
         }
 
-
+        var trial_start = Date.now()
         curtainUp()
 
 
         const after_key_response = (info) => {
-            // hide the image
+          
             curtainDown()
+            
             // record the response time as data
             let data = {
               rt: info.rt
@@ -92,14 +103,27 @@ var curtainDisplay = (function (jspsych) {
 
             this.jsPsych.pluginAPI.setTimeout(()=>{
               this.jsPsych.finishTrial(data)
-            }, 1200);
+            }, 7000);
+          }
+          
+            // hide the image
+            
             
            
-          }
+          
         
           // set up a keyboard event to respond only to the spacebar
           this.jsPsych.pluginAPI.getKeyboardResponse({
-            callback_function: after_key_response,
+            callback_function: function(){
+              var elapsed_time = Date.now() - trial_start
+              if (elapsed_time < 1000){
+                context.resume().then(() => {
+                  display_element.querySelector('#audio').play()
+              });
+              }else{
+                after_key_response
+              }
+              },//after_key_response,
             valid_responses: trial.valid_key_press,
             persist: false
           });
