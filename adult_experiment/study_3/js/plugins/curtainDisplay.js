@@ -42,7 +42,7 @@ var curtainDisplay = (function (jspsych) {
 
         var context = new AudioContext()
         var audio_string = '<audio id="audio" controls style="display:none"> <source src="' + 
-        "media/key_press.wav"+ '"</audio>'
+        "media/error.wav"+ '"</audio>'
 
         
         display_element.innerHTML = '<div class="outsideWrapper">\
@@ -72,7 +72,7 @@ var curtainDisplay = (function (jspsych) {
 
         function curtainDown(){
             ctx.clearRect(0, 0, canvas.width, canvas.height)
-            square_down.height += 1.4
+            square_down.height += 12
             ctx.fillRect(square_down.x, square_down.y, square_down.width, square_down.height)
             
             window.requestAnimationFrame(curtainDown)
@@ -81,7 +81,7 @@ var curtainDisplay = (function (jspsych) {
 
         function curtainUp(){
             ctx.clearRect(0, 0, canvas.width, canvas.height)
-            square_up.height -= 1.4
+            square_up.height -= 12
             ctx.fillRect(square_up.x, square_up.y, square_up.width, square_up.height)
 
 
@@ -98,12 +98,15 @@ var curtainDisplay = (function (jspsych) {
             
             // record the response time as data
             let data = {
-              rt: info.rt
+              rt: info.rt,
+              total_rt: 1000 + info.rt
             }
+
+            console.log(data.rt)
 
             this.jsPsych.pluginAPI.setTimeout(()=>{
               this.jsPsych.finishTrial(data)
-            }, 7000);
+            }, 800);
           }
           
             // hide the image
@@ -113,20 +116,31 @@ var curtainDisplay = (function (jspsych) {
           
         
           // set up a keyboard event to respond only to the spacebar
-          this.jsPsych.pluginAPI.getKeyboardResponse({
+          var annoying_sound_listener = this.jsPsych.pluginAPI.getKeyboardResponse({
             callback_function: function(){
-              var elapsed_time = Date.now() - trial_start
-              if (elapsed_time < 1000){
                 context.resume().then(() => {
                   display_element.querySelector('#audio').play()
-              });
-              }else{
-                after_key_response
-              }
+              });             
               },//after_key_response,
             valid_responses: trial.valid_key_press,
-            persist: false
+            persist: true
           });
+
+
+
+          this.jsPsych.pluginAPI.setTimeout(()=>{
+            jsPsych.pluginAPI.cancelKeyboardResponse(annoying_sound_listener);
+          }, 1000)
+
+          this.jsPsych.pluginAPI.setTimeout(()=>{
+            this.jsPsych.pluginAPI.getKeyboardResponse({
+              callback_function: after_key_response,
+              valid_responses: trial.valid_key_press,
+              persist: false
+            });
+
+
+          }, 1000)
 
 
         //draw()
