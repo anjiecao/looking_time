@@ -1,0 +1,82 @@
+---
+title: "exp_curv"
+author: "anjie"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(here)
+
+
+```
+
+```{r}
+tibble(
+  trial_number = seq(1, 10)
+) %>% 
+  mutate(
+    lt_0.1 = I(exp(1) ** (-trial_number)) * 0.1,
+    lt_0.6 = I(exp(1) ** (-trial_number)) * 0.6, 
+    lt_0.8 = I(exp(1) ** (-trial_number)) * 0.8, 
+    lt_2 = I(exp(1) ** (-trial_number)) * 2 
+  ) %>% 
+  pivot_longer(cols = starts_with("lt"), 
+               values_to = "lt", 
+               names_to = "lt_type") %>% 
+  ggplot(aes(x = trial_number, 
+             y = lt, 
+             color = lt_type)) + 
+  geom_point() + 
+  geom_line() + 
+  theme_classic() + 
+  labs(title = "I(exp(1) ** (-trial_number)) * n")
+```
+
+
+```{r}
+tibble(
+  trial_number = seq(1, 10)
+) %>% 
+  mutate(
+    lt_0.1 = I(exp(1) ** (-trial_number * 0.1) ) ,
+    lt_0.6 = I(exp(1) ** (-trial_number * 0.6) ) , 
+    lt_0.8 = I(exp(1) ** (-trial_number * 0.8) ) , 
+    lt_2 = I(exp(1) ** (-trial_number * 2) )  
+  ) %>% 
+  pivot_longer(cols = starts_with("lt"), 
+               values_to = "lt", 
+               names_to = "lt_type") %>% 
+  ggplot(aes(x = trial_number, 
+             y = lt, 
+             color = lt_type)) + 
+  geom_point() + 
+  geom_line() + 
+  theme_classic() + 
+  labs(title = "I(exp(1) ** (-trial_number * n ))")
+```
+
+
+```{r}
+tibble(
+  trial_number = seq(1, 10)
+) %>% 
+  mutate(
+    lt_0.1 = I(exp(1 * 0.1) ** (-trial_number) ) ,
+    lt_0.6 = I(exp(1 * 0.6) ** (-trial_number ) ) , 
+    lt_0.8 = I(exp(1  * 0.8) ** (-trial_number) ) , 
+    lt_2 = I(exp(1 * 2) ** (-trial_number ) )  
+  ) %>% 
+  pivot_longer(cols = starts_with("lt"), 
+               values_to = "lt", 
+               names_to = "lt_type") %>% 
+  ggplot(aes(x = trial_number, 
+             y = lt, 
+             color = lt_type)) + 
+  geom_point() + 
+  geom_line() + 
+  theme_classic() + 
+  labs(title = "I(exp(1) ** (-trial_number * n ))")
+```
+
