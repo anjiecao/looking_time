@@ -26,7 +26,7 @@ tibble(
                values_to = "lt", 
                names_to = "lt_type") %>% 
   ggplot(aes(x = trial_number, 
-             y = lt, 
+             y = exp(lt), 
              color = lt_type)) + 
   geom_point() + 
   geom_line() + 
