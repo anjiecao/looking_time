@@ -45,10 +45,7 @@ function get_background_stimuli(all_stimuli){
     inanimate_left = getRandomSubarray(all_stimuli.filter(stimulus => stimulus.includes("inanimate") & stimulus.includes("left")), 4)
     inanimate_right = getRandomSubarray(all_stimuli.filter(stimulus => stimulus.includes("inanimate") & stimulus.includes("right")), 4)
 
-    console.log(animate_left)
-    console.log(animate_right)
-    console.log(inanimate_left) 
-    console.log(inanimate_right)
+
 
 
     background_collection = {
@@ -84,14 +81,6 @@ function remove_used_stimuli(all_stimuli, background_collection){
     ))
     return(remaining_stimuli)
 }
-
-all_stimuli = get_all_stimuli()
-backgrounds = get_background_stimuli(all_stimuli)
-remaining_pool = remove_used_stimuli(all_stimuli, backgrounds)
-
-console.log(all_stimuli)
-console.log(backgrounds)
-console.log(remaining_pool)
 
 
 
@@ -152,7 +141,6 @@ function get_deviant_object(background_type){
     return (deviant_object)
 }
 
-console.log(get_deviant_object("inanimate_pair_left"))
 
 
 function generate_all_block_info(background_collection, remaining_pool){
@@ -213,35 +201,3 @@ function generate_all_block_info(background_collection, remaining_pool){
 
 
 
-
-
-// get stimuli into 
-
-
-
-
-// get stimul into fam - novel pair 
-function get_fam_novel_pair(ALL_STIMULI, BLOCK_NUM, COMPLEXITY_LEVEL){
-    // figure out how many pairs to get in each level 
-    pair_each_level = BLOCK_NUM / (COMPLEXITY_LEVEL.length)
-    all_stimuli_pair = []
-
-    // make a copy so that we can modify 
-    full_stimuli_set = ALL_STIMULI
-    for (var i = 0; i < pair_each_level; i++){
-        for (var c = 0; c < COMPLEXITY_LEVEL.length; c++){
-            // randomply sample two 
-            current_complexity_level = COMPLEXITY_LEVEL[c]
-            current_stimuli_set = full_stimuli_set.filter(stimulus => stimulus.includes(current_complexity_level))
-            current_stimuli_pair = getRandomSubarray(current_stimuli_set, 2)
-
-            // add to the main 
-            all_stimuli_pair.push(current_stimuli_pair)
-            
-            // make sure the sampled two are discarded 
-            full_stimuli_set = full_stimuli_set.filter(stimulus => !(current_stimuli_pair.includes(stimulus)))
-        }
-    }
-    return all_stimuli_pair
-
-}
