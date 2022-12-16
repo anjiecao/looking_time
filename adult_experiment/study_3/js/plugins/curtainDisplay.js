@@ -47,10 +47,10 @@ var curtainDisplay = (function (jspsych) {
         
         display_element.innerHTML = '<div class="outsideWrapper">\
         <div class="insideWrapper">\
-            <img src="' + trial.stimulus + '" class="coveredImage test" style = "width:150px; height:150px;position:fixed; top:' + top_position + '%;\
+            <img src="' + trial.stimulus + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + top_position + '%;\
             transform: translate(-50%, -50%);left:' + left_postion + '%">\
-            <img src="' + trial.stimulus + '" class="coveredImage test" style = "width:150px; height:150px;position:fixed; top:' + top_position  + '%;\
-            transform: translate(-50%, -50%);left:' + left_postion+ '%">\
+            <img src="' + trial.stimulus + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + top_position  + '%;\
+            transform: translate(-50%, -50%);left:' + (left_postion+6)+ '%">\
             <canvas id = "canvas" class="coveringCanvas"></canvas>\
         </div>\
     </div>'

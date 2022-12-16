@@ -114,6 +114,8 @@ function get_violation_type(f){
 
 
 function get_deviant_object(background_type){
+
+    // split into the different features
     background_array = background_type.split("_")
     
     // randomly deciding which one to violate 
@@ -123,6 +125,7 @@ function get_deviant_object(background_type){
         violation_type = "identity"
         deviant_array = background_array
     }else{
+        // 
         violation_type = get_violation_type(background_array[violation_index])
         new_f = flip_feature(background_array[violation_index])
         // flip the feature 
@@ -130,6 +133,7 @@ function get_deviant_object(background_type){
         deviant_array[violation_index] = new_f
     }
 
+    // create deviant string 
     deviant_type = deviant_array.join("_")
     
     deviant_object = {
