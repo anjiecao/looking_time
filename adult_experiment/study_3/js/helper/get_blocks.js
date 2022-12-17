@@ -1,103 +1,90 @@
 
+
+function generate_all_blocks(all_blocks_info){
+    all_blocks = []
+    for (var i= 0; i < all_blocks_info.length; i++){
+        block = generate_block(all_blocks_info[i])
+        all_blocks = all_blocks.concat(block)
+    }
+    return (all_blocks)
+}
+
+
+function generate_block(block_info){
+
+    if(block_info.block_type == "background_block"){
+        background_html = generate_html_string_for_stimulus(block_info.background_type, block_info.background_stimulus)
+
+        // generate all trials
+        block = []
+        for (var i = 0; i < block_info.trial_number; i++){
+            trial = {
+                type: curtainDisplay, 
+                stimulus: background_html, 
+                valid_key_press: [" "],
+                data: block_info
+              }
+              block.push(trial)
+        }
+
+  
+    }else{
+        background_html = generate_html_string_for_stimulus(block_info.background_type, block_info.background_stimulus)
+        deviant_html =  generate_html_string_for_stimulus(block_info.deviant_type, block_info.deviant_stimulus)
+
+        // generate all background
+        block = []
+        for (var i = 0; i < block_info.trial_number-1; i++){
+            trial = {
+                type: curtainDisplay, 
+                stimulus: background_html, 
+                valid_key_press: [" "],
+                data: block_info
+              }
+              block.push(trial)
+        }
+        // add deviant at the end
+        trial = {
+            type: curtainDisplay, 
+            stimulus: deviant_html, 
+            valid_key_press: [" "],
+            data: block_info
+        }
+        block.push(trial)
+
+  
+    }
+    return (block)
+
+
+}
+
+
 // loop through all combo and create blocks 
 
-function generate_html_string_for_stimulus(stimulus_path){
-    // html_string = '<img src="' + 
-    //                stimulus_path + 
-    //               '" width="300px">'
-    html_string = '<img src="' + 
-                   stimulus_path + 
-                  '" style="width:300px;height:300px;object-fit:cover;border: 5px solid #555">'
-    return(html_string)
- }
- 
- 
- function generate_block(stimuli_pair, exposure_length, interval_length){
-     
-     shuffleArray(stimuli_pair)
-     fam_stimulus = generate_html_string_for_stimulus(stimuli_pair[0])
-     novel_stimulus = generate_html_string_for_stimulus(stimuli_pair[1])
+function generate_html_string_for_stimulus(stimulus_type, stimulus_string){
+   
 
-
-    var buffer = {
-        type: jsPsychHtmlKeyboardResponse,
-        stimulus:  "<p>Get ready to look at the pixel animations!</p><p>Press any key to start viewing the stimulus.</p>",
-        choices: "ALL_KEYS",
-        response_ends_trial: true,
+    var top_position = getRandomInt(45, 55)
+    var left_postion = getRandomInt(45, 55)
+    
+    
+    if(stimulus_type.includes("pair")){
+        s = '<img src="' + stimulus_string + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + top_position + '%;\
+            transform: translate(-50%, -50%);left:' + left_postion + '%"></img>'
+            '<img src="' + stimulus_string + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + top_position  + '%;\
+            transform: translate(-50%, -50%);left:' + (left_postion+6)+ '%">'
+    }else{
+        s = '<img src="' + stimulus_string + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + top_position + '%;\
+        transform: translate(-50%, -50%);left:' + left_postion + '%"></img>'
 
     }
 
- 
-     // get the familiarization trial 
-     var fam_phases = {
-         type: jsPsychHtmlKeyboardResponse,
-         stimulus:  fam_stimulus,
-         choices: "NO_KEYS",
-         trial_duration: exposure_length,
-         extensions: [
-           {
-             type: jsPsychExtensionWebgazer, 
-             params: {targets: ['#jspsych-html-keyboard-response-stimulus']}
-           }
-         ],
-         data: {   
-             trial_type: "familiarization",
-             complexity: novel_stimulus.includes("complexity") ? "complex" : "simple",
-             exposure_time: exposure_length
-         }
-      }
-     // get the interval 
-     var fixation = {
-         type: jsPsychHtmlKeyboardResponse,
-         stimulus:  '<p style="font-size:32px;"><b> + </b></p>',
-         choices: "NO_KEYS",
-         trial_duration: interval_length,
-     }
- 
-     // get the comparison trial
- 
-     // shuffle the left and right 
-     stimuli_pair = [novel_stimulus, fam_stimulus]
-     shuffleArray(stimuli_pair)
-     left_stimulus = stimuli_pair[0]
-     right_stimulus = stimuli_pair[1]
- 
- 
- var paired_presentation = {
-     type: jsPsychHtmlKeyboardResponse,
-     // maybe a better way to do it is to display a white image in the middle to control for the distance??
-     stimulus: 
-         ' <div class="row">' + 
-              '<div id="column_left">' + 
-                     left_stimulus + 
-             '</div>' +
-             '<div class="column">' + 
-                 '<img src="media/blank.png" width="300px">' + 
-             '</div>'+
-             '<div id="column_right">' + 
-                     right_stimulus + 
-             '</div>'+ 
-          '</div>',
-   
-     choices: "NO_KEYS",
-     trial_duration: 5000,
-     data: {
-         trial_type: "paired_presentation",
-         left_stimulus: ((left_stimulus == novel_stimulus) ? 'novel' : "familiar"),
-         right_stimulus: ((right_stimulus == novel_stimulus) ? 'novel' : "familiar"),
-         complexity: novel_stimulus.includes("complex") ? "complex" : "simple",
-         left_stimulus_raw: left_stimulus, 
-         right_stimulus_raw: right_stimulus, 
-         exposure_time: exposure_length
-     },
-     extensions: [
-       {
-         type: jsPsychExtensionWebgazer, 
-         params: {targets: ['#column_left', '#column_right']}
-       }
-     ]
+    return(s)
  }
  
-     block = [buffer, fam_phases, fixation, paired_presentation]
-     return(block)
- }
+ 
+
+
+
+
