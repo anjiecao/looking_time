@@ -138,24 +138,7 @@ img.test {
 
 
 
-      var filler_trial = {
-            type: jsPsychSurveyLikert,
-            preamble: "?",
-            questions: [
-              {
-                prompt: "How curious are you about this animation?", 
-                labels: ["Not at all curious", 
-                "A little curious", 
-                "Somewhat curious", 
-                "Pretty curious", "Very Curious"]
-              }
-            ],
-            data: {
-                rating_type: "background"
-            }
-          }
-
-      timeline.push(filler_trial)
+      timeline = timeline.concat(all_complexity_rating)
       timeline = timeline.concat(all_blocks)
 
       var test_stimuli_array = ["media/stims/animate_001_left.png", "media/stims/animate_001_left.png", "media/stims/animate_001_left.png", 

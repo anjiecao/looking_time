@@ -3,7 +3,7 @@ backgrounds = get_background_stimuli(all_stimuli)
 remaining_pool = remove_used_stimuli(all_stimuli, backgrounds)
 all_blocks_info = generate_all_block_info(backgrounds, remaining_pool)
 all_blocks = generate_all_blocks(all_blocks_info)
-
+all_complexity_rating = get_complexity_raitng_for_all_blocks(all_blocks_info)
 
 console.log(all_blocks)
-
+console.log(all_complexity_rating)
