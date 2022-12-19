@@ -7,6 +7,7 @@ all_complexity_rating = get_complexity_raitng_for_all_blocks(all_blocks_info)
 all_similarity_rating  = get_similarity_rating_for_all_blocks(all_blocks_info)
 
 
+instruction = get_instruction()
 
 console.log(all_blocks)
 console.log(all_complexity_rating)
