@@ -12,10 +12,7 @@
     <script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response@1.1.1"></script>
    
     <script src="https://unpkg.com/@jspsych/plugin-survey-likert@1.1.1"></script>
-    <script src="https://unpkg.com/@jspsych/plugin-survey-text@1.1.1"></script>
-    <script src="https://unpkg.com/@jspsych/plugin-survey-multi-select@1.1.1"></script>
-    <script src="https://unpkg.com/@jspsych/plugin-survey-multi-choice@1.1.1"></script>
-
+  
     <script src="js/plugins/curtainDisplay.js"></script>
    
     <script src="js/helper/array.js"></script>
@@ -141,6 +138,9 @@ img.test {
 
 
 
+      timeline = timeline.concat(all_complexity_rating)
+      timeline = timeline.concat(all_blocks)
+
       var test_stimuli_array = ["media/stims/animate_001_left.png", "media/stims/animate_001_left.png", "media/stims/animate_001_left.png", 
       "media/stimuli/animate_008_left.png", "media/stims/animate_005_left.png", "media/stims/animate_002_left.png"]
       
@@ -155,6 +155,8 @@ img.test {
 
 
       console.log(test_block_array)
+
+
 
       var test_1 = {
         type: curtainDisplay, 

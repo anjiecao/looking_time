@@ -23,8 +23,6 @@ function get_all_stimuli(){
 
         }
         
-         
-          
 
         }
         
