@@ -5,6 +5,7 @@ function generate_all_blocks(all_blocks_info){
     for (var i= 0; i < all_blocks_info.length; i++){
         block = generate_block(all_blocks_info[i])
         all_blocks = all_blocks.concat(block)
+        
     }
     return (all_blocks)
 }
