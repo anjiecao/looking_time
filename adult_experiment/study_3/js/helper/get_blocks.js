@@ -109,6 +109,8 @@ function generate_block(block_info){
 // loop through all combo and create blocks 
 
 function generate_html_string_for_stimulus(stimulus_type, stimulus_string){
+
+    console.log(stimulus_type)
    
 
     var top_position = getRandomInt(45, 55)
@@ -117,14 +119,15 @@ function generate_html_string_for_stimulus(stimulus_type, stimulus_string){
     
     if(stimulus_type.includes("pair")){
         s = '<img src="' + stimulus_string + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + top_position + '%;\
-            transform: translate(-50%, -50%);left:' + left_postion + '%"></img>'
+            transform: translate(-50%, -50%);left:' + (left_postion-5) + '%"></img>' + 
             '<img src="' + stimulus_string + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + top_position  + '%;\
-            transform: translate(-50%, -50%);left:' + (left_postion+6)+ '%">'
+            transform: translate(-50%, -50%);left:' + (left_postion+5)+ '%">'
     }else{
         s = '<img src="' + stimulus_string + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + top_position + '%;\
         transform: translate(-50%, -50%);left:' + left_postion + '%"></img>'
 
     }
+    console.log(s)
 
     return(s)
  }
@@ -140,9 +143,9 @@ function generate_html_string_for_filler_task(stimulus_type, stimulus_string){
     
     if(stimulus_type.includes("pair")){
         s = '<img src="' + stimulus_string + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + top_position + '%;\
-            transform: translate(-50%, -50%);left:' + (left_postion-3) + '%"></img>'+
+            transform: translate(-50%, -50%);left:' + (left_postion-5) + '%"></img>'+
             '<img src="' + stimulus_string + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + top_position  + '%;\
-            transform: translate(-50%, -50%);left:' + (left_postion + 3) + '%">'
+            transform: translate(-50%, -50%);left:' + (left_postion + 5) + '%">'
     }else{
         s = '<img src="' + stimulus_string + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + top_position + '%;\
         transform: translate(-50%, -50%);left:' + 46 + '%"></img>'

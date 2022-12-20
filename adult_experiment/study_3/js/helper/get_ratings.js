@@ -171,10 +171,10 @@ function generate_html_string_for_similarity_rating(stimulus_a_type, stimulus_b_
   var left_central_postion = 30
   var right_central_position = 70
 
-  var left_pair_left = left_central_postion - 3
-  var left_pair_right = left_central_postion + 3
-  var right_pair_left = right_central_position - 3
-  var right_pair_right = right_central_position + 3
+  var left_pair_left = left_central_postion - 5
+  var left_pair_right = left_central_postion + 5
+  var right_pair_left = right_central_position - 5
+  var right_pair_right = right_central_position + 5
 
   
 
@@ -215,9 +215,9 @@ function generate_html_string_for_rating_task(stimulus_type, stimulus_string){
   
   if(stimulus_type.includes("pair")){
       s = '<img src="' + stimulus_string + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + top_position + '%;\
-          transform: translate(-50%, -50%);left:' + (left_postion-3) + '%"></img>'+
+          transform: translate(-50%, -50%);left:' + (left_postion-5) + '%"></img>'+
           '<img src="' + stimulus_string + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + top_position  + '%;\
-          transform: translate(-50%, -50%);left:' + (left_postion + 3) + '%">'
+          transform: translate(-50%, -50%);left:' + (left_postion + 5) + '%">'
   }else{
       s = '<img src="' + stimulus_string + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + top_position + '%;\
       transform: translate(-50%, -50%);left:' + 46 + '%"></img>'
