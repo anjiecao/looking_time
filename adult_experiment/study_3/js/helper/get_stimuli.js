@@ -7,7 +7,7 @@ function get_all_stimuli(){
     pose_level = ["left", "right"]
 
 
-    TOTAL_STIM_EACH_LEVEL = 50
+    TOTAL_STIM_EACH_LEVEL = 80
     MAIN_DIR = "media/stims/"
     for (var i = 1; i < TOTAL_STIM_EACH_LEVEL + 1; i++){
       for (var animacy_index = 0; animacy_index < animacy_level.length; animacy_index++){
