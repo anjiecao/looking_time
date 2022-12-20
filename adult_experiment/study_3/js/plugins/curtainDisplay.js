@@ -11,6 +11,14 @@ var curtainDisplay = (function (jspsych) {
         valid_key_press:{
           type: jspsych.ParameterType.ARRAY, 
           default: [" "]
+        }, 
+        demo_mode:{
+          type:jspsych.ParameterType.BOOLEAN,
+          default: false
+        }, 
+        demo_string:{
+          type:jspsych.ParameterType.STRING,
+          default: "<p>Press the space bar whenever you have seen enough.</p> " 
         }
       },
     };
@@ -45,14 +53,29 @@ var curtainDisplay = (function (jspsych) {
         "media/error.wav"+ '"</audio>'
 
         
-        display_element.innerHTML = '<div class="outsideWrapper">\
-        <div class="insideWrapper">' + 
-          trial.stimulus + 
-          '<canvas id = "canvas" class="coveringCanvas"></canvas>\
-        </div>\
-    </div>'
 
-        display_element.innerHTML  =  display_element.innerHTML  + audio_string
+        if (trial.demo_mode == false){
+          display_element.innerHTML = '<div class="outsideWrapper">\
+          <div class="insideWrapper">' + 
+            trial.stimulus + 
+            '<canvas id = "canvas" class="coveringCanvas"></canvas>\
+          </div>\
+      </div>'
+  
+          display_element.innerHTML  =  display_element.innerHTML  + audio_string
+
+        }else{
+          display_element.innerHTML = trial.demo_string + '<div class="outsideWrapper">\
+          <div class="insideWrapper">' + 
+            trial.stimulus + 
+            '<canvas id = "canvas" class="coveringCanvas"></canvas>\
+          </div>\
+      </div>'
+
+      display_element.innerHTML  =  display_element.innerHTML  + audio_string
+
+        }
+       
 
 
         
