@@ -5,7 +5,7 @@ all_blocks_info = generate_all_block_info(backgrounds, remaining_pool)
 all_blocks = generate_all_blocks(all_blocks_info)
 all_complexity_rating = get_complexity_raitng_for_all_blocks(all_blocks_info)
 all_similarity_rating  = get_similarity_rating_for_all_blocks(all_blocks_info)
-
+demog  = get_demog_questions()
 
 instruction = get_instruction()
 

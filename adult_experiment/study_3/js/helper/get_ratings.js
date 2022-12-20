@@ -2,6 +2,8 @@
 
 
 function get_similarity_rating_for_all_blocks(all_blocks_info){
+
+  
   all_similarity_ratings = []
   for (var i= 0; i < all_blocks_info.length; i++){
       rating_for_block = get_similarity_rating_for_block(all_blocks_info[i])
