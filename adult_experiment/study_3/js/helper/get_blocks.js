@@ -15,14 +15,13 @@ function generate_block(block_info){
 
 
     if(block_info.block_type == "background_block"){
-        background_html = generate_html_string_for_stimulus(block_info.background_type, block_info.background_stimulus)
         filler_trial_html = generate_html_string_for_filler_task(block_info.background_type, block_info.background_stimulus)
         // generate all trials
         block = []
         for (var i = 0; i < block_info.trial_number; i++){
             trial = {
                 type: curtainDisplay, 
-                stimulus: background_html, 
+                stimulus: generate_html_string_for_stimulus(block_info.background_type, block_info.background_stimulus), 
                 valid_key_press: [" "],
                 data: block_info
               }
@@ -51,9 +50,7 @@ function generate_block(block_info){
 
   
     }else{
-        background_html = generate_html_string_for_stimulus(block_info.background_type, block_info.background_stimulus)
-        deviant_html =  generate_html_string_for_stimulus(block_info.deviant_type, block_info.deviant_stimulus)
-
+       
         rating_stimuli_type = getRandomSubarray(["background", "deviant"],1)[0]
         if (rating_stimuli_type == "background"){
             filler_trial_html = generate_html_string_for_filler_task(block_info.background_type, block_info.background_stimulus)
@@ -66,7 +63,7 @@ function generate_block(block_info){
         for (var i = 0; i < block_info.trial_number-1; i++){
             trial = {
                 type: curtainDisplay, 
-                stimulus: background_html, 
+                stimulus:  generate_html_string_for_stimulus(block_info.background_type, block_info.background_stimulus), 
                 valid_key_press: [" "],
                 data: block_info
               }
@@ -75,7 +72,7 @@ function generate_block(block_info){
         // add deviant at the end
         trial = {
             type: curtainDisplay, 
-            stimulus: deviant_html, 
+            stimulus: generate_html_string_for_stimulus(block_info.deviant_type, block_info.deviant_stimulus), 
             valid_key_press: [" "],
             data: block_info
         }
