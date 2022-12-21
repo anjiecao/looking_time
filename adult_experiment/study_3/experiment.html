@@ -91,7 +91,16 @@ img.test {
   </body>
   <script>
 
+
+    var preload = {
+        type: jsPsychPreload,
+        images: all_stimuli
+      }
+
+
       var timeline = []
+      timeline.push(preload)
+
       var prolific_code = "CSSL4BT6"
 
       var subject_id ='SS' + Date.now()
@@ -204,7 +213,7 @@ img.test {
       timeline.push(show_data)
 
 */
-      console.log(timeline)
+      
 
       jsPsych.run(timeline);
 
