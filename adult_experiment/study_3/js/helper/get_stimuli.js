@@ -179,6 +179,9 @@ function generate_all_block_info(background_collection, remaining_pool){
 
     // get all background blocks
     for (const background_type in background_collection){
+        trials = [2, 4, 6]
+        trial_number = trials[Math.floor(Math.random() * 3)]
+
         background_block_info = {
             block_type: "background_block", 
             background_stimulus: background_collection[background_type][1], // there are two in each, use the second
