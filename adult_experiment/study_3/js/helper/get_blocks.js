@@ -37,7 +37,8 @@ function generate_block(block_info){
                 labels: ["Not at all curious", 
                 "A little curious", 
                 "Somewhat curious", 
-                "Pretty curious", "Very Curious"]
+                "Pretty curious", "Very Curious"],
+                rrequired: true
               }
             ],
             data: {
@@ -88,7 +89,8 @@ function generate_block(block_info){
                 labels: ["Not at all curious", 
                 "A little curious", 
                 "Somewhat curious", 
-                "Pretty curious", "Very Curious"]
+                "Pretty curious", "Very Curious"],
+                required: true
               }
             ],
             data: {

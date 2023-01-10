@@ -49,7 +49,8 @@ function get_similarity_rating_for_block(block_info){
     questions: [
       {
         prompt: q_similarity, 
-        labels: scale_similarity
+        labels: scale_similarity,
+        required: true
       }
     ],
     data: {
@@ -95,7 +96,8 @@ function get_complexity_rating_for_block(block_info){
       questions: [
         {
           prompt: q_complexity, 
-          labels: scale_complexity
+          labels: scale_complexity,
+          required: true
         }
       ],
       data: {
@@ -116,7 +118,8 @@ function get_complexity_rating_for_block(block_info){
       questions: [
         {
           prompt: q_complexity, 
-          labels: scale_complexity
+          labels: scale_complexity,
+          required: true
         }
       ],
       data: {
@@ -132,7 +135,8 @@ function get_complexity_rating_for_block(block_info){
       questions: [
         {
           prompt: q_complexity, 
-          labels: scale_complexity
+          labels: scale_complexity,
+          required: true
         }
       ],
       data: {
