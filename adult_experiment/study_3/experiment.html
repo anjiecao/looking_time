@@ -64,23 +64,42 @@
 
 
 img.test {
-  animation: shake 0.5s;
+  animation: shake 2s;
   animation-iteration-count: infinite;
 }
 
+
 @keyframes shake {
   0% { transform: translate(1px, 1px) rotate(0deg); }
-  10% { transform: translate(-1px, -2px) rotate(-1deg); }
-  20% { transform: translate(-3px, 0px) rotate(1deg); }
+  10% { transform: translate(-1px, -2px) rotate(-2deg);}
+  20% { transform: translate(-3px, 0px) rotate(2deg); }
   30% { transform: translate(3px, 2px) rotate(0deg); }
-  40% { transform: translate(1px, -1px) rotate(1deg); }
-  50% { transform: translate(-1px, 2px) rotate(-1deg); }
+  40% { transform: translate(1px, -1px) rotate(2deg); }
+  50% { transform: translate(-1px, 2px) rotate(-2deg); }
   60% { transform: translate(-3px, 1px) rotate(0deg); }
-  70% { transform: translate(3px, 1px) rotate(-1deg); }
-  80% { transform: translate(-1px, -1px) rotate(1deg); }
+  70% { transform: translate(3px, 1px) rotate(-2deg); }
+  80% { transform: translate(-1px, -1px) rotate(2deg); }
   90% { transform: translate(1px, 2px) rotate(0deg); }
-  100% { transform: translate(1px, -2px) rotate(-1deg); }
+  100% { transform: translate(1px, -1px) rotate(-2deg); }
 }
+
+
+
+@keyframes shake {
+  0% { transform: translate(2px, 2px) rotate(0deg);  width: 75px; height: 75px} 
+  10% { transform: translate(-2px, -4px) rotate(-4deg);  width: 80px; height: 80px};
+  20% { transform: translate(-6px, 0px) rotate(4deg); width: 85px; height: 85px}
+  30% { transform: translate(6px, 4px) rotate(0deg); width: 90px; height: 90px}
+  40% { transform: translate(2px, -2px) rotate(4deg);width: 95px; height:95px }
+  50% { transform: translate(-2px, 4px) rotate(-4deg); width: 100px; height: 100px }
+  60% { transform: translate(2px, -2px) rotate(4deg);width: 95px; height: 95px}
+  70% { transform: translate(6px, 4px) rotate(0deg); width: 90px; height: 90px}
+  80% { transform: translate(-6px, 0px) rotate(4deg);  width: 85px; height:85px}
+  90% { transform: translate(-2px, -4px) rotate(-4deg);  width: 80px; height: 80px}
+  100% { transform: translate(2px, 2px) rotate(0deg); width: 75px; height:75px}
+}
+
+
 
   </style>
 
@@ -155,8 +174,8 @@ img.test {
         fullscreen_mode: true
       }
 
-      timeline.push(enter_fullscreen)
-      timeline = timeline.concat(instruction)
+      //timeline.push(enter_fullscreen)
+      //timeline = timeline.concat(instruction)
       timeline = timeline.concat(all_blocks)
 
       var pre_rating_trial = {

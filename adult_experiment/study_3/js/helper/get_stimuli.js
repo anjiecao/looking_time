@@ -8,7 +8,7 @@ function get_all_stimuli(){
 
 
     TOTAL_STIM_EACH_LEVEL = 80
-    MAIN_DIR = "media/stims/"
+    MAIN_DIR = "media/padded_stims/"
     for (var i = 1; i < TOTAL_STIM_EACH_LEVEL + 1; i++){
       for (var animacy_index = 0; animacy_index < animacy_level.length; animacy_index++){
         for (var pose_index = 0; pose_index < pose_level.length; pose_index++){
