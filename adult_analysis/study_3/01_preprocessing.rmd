@@ -16,6 +16,7 @@ source(here("helper/tidy_rt_task_data.r"))
 # set up paths 
 ```{r}
 
+
 MERGED_DATA_PATH <- here("data/merged_data.csv")
 d <- read_csv(MERGED_DATA_PATH)
 
@@ -29,8 +30,18 @@ lt_d <- d %>%
   select(subject, trial_type, total_rt, block_type, 
          background_stimulus, deviant_stimulus, background_type, deviant_type, violation_type, 
          trial_number) %>% 
-  select(-trial_type)
-
+  select(-trial_type) %>% 
+  rename(total_trial_number = trial_number) %>% 
+  group_by(subject, background_stimulus, deviant_stimulus) %>% 
+  mutate(trial_number = row_number()) %>% 
+  left_join(
+    d %>% filter(trial_type == "curtain-display") %>% 
+  filter(!is.na(background_type)) %>% distinct(subject, background_stimulus, deviant_stimulus) %>% 
+    group_by(subject) %>% mutate(block_number = row_number()), 
+  by = c("subject", "background_stimulus", "deviant_stimulus")
+  )
+  
+  
 # curiosity rating 
 curiosity_rating_df <- d %>% 
   filter(trial_type == "survey-likert") %>% 
@@ -213,6 +224,7 @@ We exclude a trial if it is three absolute deviations away from the median in th
 ```{r}
 
 rt_summary <- lt_d %>% 
+  ungroup() %>% 
   summarise(
     median = median(log(total_rt)),
     mad = mad(log(total_rt)), 

@@ -1,0 +1,100 @@
+---
+title: "02_visualization"
+author: "anjie"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(ggthemes)
+library(here)
+
+d <- read_csv(here("data/01_trimmed_data/trimmed_lt_d.csv"))
+```
+
+# background only blocks 
+
+## everything separate
+
+```{r}
+d %>% 
+  filter(block_type == "background_block") %>% 
+  ggplot(aes(x = trial_number, y = log(total_rt), color = background_type)) + 
+   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+    stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .2)) + 
+  theme_few()  + 
+  facet_wrap(~total_trial_number)
+  
+```
+## animate vs inanimate 
+
+```{r}
+d %>% 
+  filter(block_type == "background_block") %>% 
+  mutate(animacy = case_when(
+    grepl("inanimate", background_type) ~ "inanimate", 
+    TRUE ~ "animate"
+  )) %>% 
+  ggplot(aes(x = trial_number, y = log(total_rt), color = animacy)) + 
+   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+    stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .2)) + 
+  theme_few()  + 
+  facet_wrap(~total_trial_number)
+```
+
+## singleton vs pair 
+
+```{r}
+d %>% 
+  filter(block_type == "background_block") %>% 
+  mutate(pose = case_when(
+    grepl("left", background_type) ~ "left", 
+    TRUE ~ "right"
+  )) %>% 
+  ggplot(aes(x = trial_number, y = log(total_rt), color = pose)) + 
+   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+    stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .2)) + 
+  theme_few()  + 
+  facet_wrap(~total_trial_number)
+```
+
+
+## left vs right 
+
+```{r}
+d %>% 
+  filter(block_type == "background_block") %>% 
+  mutate(number = case_when(
+    grepl("left", background_type) ~ "left", 
+    TRUE ~ "left"
+  )) %>% 
+  ggplot(aes(x = trial_number, y = log(total_rt), color = number)) + 
+   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+    stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .2)) + 
+  theme_few()  + 
+  facet_wrap(~total_trial_number)
+```
+
+
+# deviant 
+
+```{r}
+d %>% 
+  mutate(
+    trial_type = case_when(
+      block_type == "deviant_block" && trial_number == total_trial_number ~ "deviant", 
+      TRUE ~ "background"
+    )
+  ) %>% 
+  ggplot(aes(x = trial_number, y = log(total_rt), color = trial_type)) + 
+   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+    stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .2)) + 
+  theme_few()  + 
+  facet_wrap(violation_type~total_trial_number)
+```
+
+
+# Ccomplexity rating 
+
+# Similarity rating 
