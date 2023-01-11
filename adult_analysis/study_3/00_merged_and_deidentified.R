@@ -4,7 +4,6 @@ library(tidyverse)
 
 
 RAW_DATA_DIRECTORY <- here("data/00_raw_data/")
-
 MIN_ROW <- 100  #subject to change 
 MERGED_DATA_PATH <- here("data/merged_data.csv")
 
