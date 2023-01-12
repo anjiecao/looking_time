@@ -39,7 +39,28 @@ lt_d <- d %>%
   filter(!is.na(background_type)) %>% distinct(subject, background_stimulus, deviant_stimulus) %>% 
     group_by(subject) %>% mutate(block_number = row_number()), 
   by = c("subject", "background_stimulus", "deviant_stimulus")
-  )
+  ) %>% 
+  mutate(
+    animacy = case_when(
+    grepl("inanimate", background_type) ~ "inanimate", 
+    TRUE ~ "animate"), 
+    
+    number = case_when(
+    grepl("single", background_type) ~ "single", 
+    TRUE ~ "pair"
+  ),
+  
+    pose = case_when(
+    grepl("left", background_type) ~ "left", 
+    TRUE ~ "right"
+  ),
+  
+    trial_type = case_when(
+      (block_type == "deviant_block" &trial_number == total_trial_number) ~ "deviant", 
+      TRUE ~ "background"
+    )
+  
+    )
   
   
 # curiosity rating 
@@ -50,25 +71,96 @@ curiosity_rating_df <- d %>%
   mutate(curiosity_rating = map(response, ~ fromJSON(.) %>% as.data.frame()) %>% unlist()) %>% 
   select(-response) %>% 
   group_by(subject) %>% 
-  mutate(block_number = row_number(), 
-         rating_type = "curiosity") 
+  mutate(block_number = row_number()) %>% 
+  left_join(lt_d %>% ungroup() %>%  distinct(subject, background_type, deviant_type, block_number) %>% 
+              select(subject, background_type, deviant_type, block_number), by = c("subject", "block_number")) %>% 
+  mutate(rating_stimus_type = case_when(
+    rating_type == "background" ~ background_type, 
+    rating_type == "deviant" ~ deviant_type
+  )) %>% 
+  mutate(
+    animacy = case_when(
+    grepl("inanimate", background_type) ~ "inanimate", 
+    TRUE ~ "animate"), 
+    
+    number = case_when(
+    grepl("single", background_type) ~ "single", 
+    TRUE ~ "pair"
+  ),
+  
+    pose = case_when(
+    grepl("left", background_type) ~ "left", 
+    TRUE ~ "right"
+  )
+    ) %>% 
+  select(subject, rating_type, curiosity_rating, block_number, rating_stimus_type, animacy, number, pose)
+
+
+
   
 # complexity rating 
 # lol missing some important informaiton i guess? 
-complexity_rating_df <- d %>% 
+complexity_rating_df <- 
+  bind_rows(
+    d %>% 
   filter(trial_type == "survey-likert") %>% 
   filter(!is.na(complexity_rating_type)) %>% 
+  filter(complexity_rating_type == "background") %>% 
   select(subject, rating_type, response, complexity_rating_type, complexity_rating_stimulus) %>% 
   mutate(complexity_rating = map(response, ~ fromJSON(.) %>% as.data.frame()) %>% unlist()) %>% 
   select(-response) %>% 
-  mutate(rating_type = "complexity") 
+  mutate(rating_type = "complexity") %>% 
+  rename(background_stimulus = complexity_rating_stimulus) %>% 
+  left_join(lt_d %>% ungroup() %>% distinct(subject, background_type, deviant_type, background_stimulus) %>% 
+              select(subject, background_type, background_stimulus, deviant_type), by = c("subject", "background_stimulus")), 
+  
+  d %>% 
+  filter(trial_type == "survey-likert") %>% 
+  filter(!is.na(complexity_rating_type)) %>% 
+  filter(complexity_rating_type == "deviant") %>% 
+  select(subject, rating_type, response, complexity_rating_type, complexity_rating_stimulus) %>% 
+  mutate(complexity_rating = map(response, ~ fromJSON(.) %>% as.data.frame()) %>% unlist()) %>% 
+  select(-response) %>% 
+  mutate(rating_type = "complexity") %>% 
+  rename(deviant_stimulus = complexity_rating_stimulus) %>% 
+  left_join(lt_d %>% ungroup() %>% distinct(subject, background_type, deviant_type, deviant_stimulus) %>% 
+              select(subject, deviant_type, deviant_stimulus, deviant_type), by = c("subject", "deviant_stimulus"))
+  
+  ) %>% 
+  mutate(
+   complexity_rating_stimulus = case_when(
+     !is.na(background_stimulus) ~ background_stimulus, 
+     !is.na(deviant_stimulus) ~deviant_stimulus
+   ), 
+   complexity_rating_type = case_when(
+     !is.na(background_type) ~ background_type, 
+     !is.na(deviant_type) ~deviant_type
+   )
+  ) %>% 
+  select(subject, complexity_rating_stimulus, complexity_rating_type, complexity_rating) %>% 
+  mutate(
+    animacy = case_when(
+    grepl("inanimate", complexity_rating_type) ~ "inanimate", 
+    TRUE ~ "animate"), 
+    
+    number = case_when(
+    grepl("single", complexity_rating_type) ~ "single", 
+    TRUE ~ "pair"
+  ),
+  
+    pose = case_when(
+    grepl("left", complexity_rating_type) ~ "left", 
+    TRUE ~ "right"
+  )
+    ) 
+  
 
 # similarity rating 
 similarity_rating_df <- d %>% 
   filter(trial_type == "survey-likert") %>% 
   filter(!is.na(similarity_rating_violation)) %>% 
   select(subject, response, similarity_rating_background, similarity_rating_deviant, similarity_rating_violation) %>% 
-  mutate(complexity_rating = map(response, ~ fromJSON(.) %>% as.data.frame()) %>% unlist()) %>% 
+  mutate(similarity_rating = map(response, ~ fromJSON(.) %>% as.data.frame()) %>% unlist()) %>% 
   select(-response) %>% 
   mutate(rating_type = "similarity") 
 

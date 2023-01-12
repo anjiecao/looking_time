@@ -1,4 +1,4 @@
-subject,similarity_rating_background,similarity_rating_deviant,similarity_rating_violation,complexity_rating,rating_type
+subject,similarity_rating_background,similarity_rating_deviant,similarity_rating_violation,similarity_rating,rating_type
 SS1673386322769,media/padded_stims/inanimate_048_left.png,media/padded_stims/animate_071_left.png,animacy,1,similarity
 SS1673386322769,media/padded_stims/inanimate_019_right.png,media/padded_stims/inanimate_078_left.png,pose,4,similarity
 SS1673386322769,media/padded_stims/inanimate_012_right.png,media/padded_stims/inanimate_018_right.png,identity,3,similarity
