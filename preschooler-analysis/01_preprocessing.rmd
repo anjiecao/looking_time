@@ -14,7 +14,9 @@ MERGED_DATA_PATH <- here("data/01_merged_data/merged_data.csv")
 bing_d <- read_csv(here("data/bing_info.csv"))
 bing_d <- bing_d %>% filter(study_name_frank == 16) %>% 
   select(bing_id, child_age_today_scheduling) %>% 
-  mutate(child_age_group = case_when(
+  mutate(
+    age_in_months = child_age_today_scheduling * 12, 
+    child_age_group = case_when(
     child_age_today_scheduling > 3 & child_age_today_scheduling <= 4 ~ "3", 
     child_age_today_scheduling > 4 & child_age_today_scheduling <= 5 ~ "4",
     child_age_today_scheduling > 5 & child_age_today_scheduling <= 6 ~ "5",
