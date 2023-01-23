@@ -32,8 +32,8 @@ raw_df <- read_csv(MERGED_DATA_PATH) %>%
 # preprocessed df 
 
 ```{r}
-
-main_d <- tidy_all_rt_task_data(raw_df)
+# take care of a duplicate 
+main_d <- tidy_all_rt_task_data(raw_df %>% filter(!(bing_id == "bb799" & round(age_in_months, 1) == 48.6)))
 adult_d <- read_csv(here("data/adult_data.csv")) %>% mutate(child_age_group = "adult") %>% 
   filter(grepl("complex", block_type))
 
