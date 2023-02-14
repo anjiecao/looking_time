@@ -3,10 +3,12 @@
 function generate_similarity_rating_blocks(all_similarity_rating_package){
 
     var pose_violation_package = all_similarity_rating_package.pose
-    console.log(pose_violation_package)
     var pose_violation_block = pose_violation_package.map(triad => generate_stimilarity_rating_trial(triad, "pose"))
     
-    return(pose_violation_block)
+    var number_violation_package = all_similarity_rating_package.number
+    var number_violation_block = number_violation_package.map(triad => generate_stimilarity_rating_trial(triad, "number"))
+
+    return(number_violation_block)
 
 }
 
@@ -29,8 +31,8 @@ function generate_similarity_rating_package(all_stimuli_info){
     all_similarity_rating_package.pose = all_pose_violation
     // number comparison 24 (random pose & number at target )
     // B, B, B with different number 
-
-
+    all_number_violation = get_number_violation_triads(all_stimuli_info)
+    all_similarity_rating_package.number = all_number_violation
 
     // identity comparison 61 
     // C, C, with all the other in categories one 
@@ -42,6 +44,38 @@ function generate_similarity_rating_package(all_stimuli_info){
 
 }
 
+
+function get_number_violation_triads(all_stimuli_info){
+
+    total_index = (all_stimuli_info.length)/8
+    all_number_violation = []
+
+    for (var i = 1; i < total_index + 1; i++){
+        
+        animate_with_index = all_stimuli_info.filter(obj => obj.index == i && obj.animacy === 'animate');
+        inanimate_with_index = all_stimuli_info.filter(obj => obj.index == i && obj.animacy === 'inanimate');
+
+        // select a random stimulus as the target 
+        random_animate_stimulus = getRandomSubarray(animate_with_index, 1)[0]
+        random_inanimate_stimulus = getRandomSubarray(inanimate_with_index, 1)[0]
+
+        // select a random non-used stimulus with number violation as in-animate 
+        random_animate_distractor = animate_with_index.filter(obj => obj.animacy == random_animate_stimulus.animacy && obj.number != random_animate_stimulus.number && obj.pose == random_animate_stimulus.pose)[0]
+        random_inanimate_distractor = inanimate_with_index.filter(obj => obj.animacy == random_inanimate_stimulus.animacy && obj.number != random_inanimate_stimulus.number && obj.pose == random_inanimate_stimulus.pose)[0]
+    
+
+        // form triad, always put the duplicate first atm 
+        animate_triad = [random_animate_stimulus, random_animate_stimulus,random_animate_distractor]
+        inanimate_triad = [random_inanimate_stimulus, random_inanimate_stimulus, random_inanimate_distractor]
+
+        all_number_violation.push(animate_triad)
+        all_number_violation.push(inanimate_triad)
+
+    }
+
+    return (all_number_violation)
+
+}
 
 
 function get_pose_violation_triads(all_stimuli_info){
