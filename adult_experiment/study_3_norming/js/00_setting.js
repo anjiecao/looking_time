@@ -5,7 +5,10 @@ all_stimuli_info = get_all_stimuli_info(all_stimuli)
 shuffleArray(all_stimuli_info)
 
 all_complexity_rating = get_all_complexity_rating(all_stimuli_info)
-similarity_trial = generate_stimilarity_rating_trial(all_stimuli_info[0], all_stimuli_info[1], all_stimuli_info[2])
+
+similarity_package = generate_similarity_rating_package(all_stimuli_info)
+all_similarity_rating = generate_similarity_rating_blocks(similarity_package)
+console.log(all_similarity_rating)
 
 
 

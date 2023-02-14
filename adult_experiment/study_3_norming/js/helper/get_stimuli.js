@@ -35,9 +35,11 @@ function get_all_stimuli(){
 function get_all_stimuli_info(all_stimuli){
     all_stimuli_info = []
 
+
     for (var i = 0; i < all_stimuli.length; i++){
         stimulus = {
             stimulus: all_stimuli[i],
+            index: all_stimuli[i].match(/\d+/g).map(Number)[0],
             animacy: (all_stimuli[i].includes("inanimate")) ? "inanimate" : "animate",  
             pose:  (all_stimuli[i].includes("left")) ? "left" : "right"
         }
