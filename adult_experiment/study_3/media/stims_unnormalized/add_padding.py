@@ -44,9 +44,6 @@ def resizeAndPad(img, size, padColor=0):
     return scaled_img
 
 images=glob.glob("*.png")
-image_list = []
-Length=[]
-Width=[]
 
 for img_name in images:
     img=cv2.imread(img_name)

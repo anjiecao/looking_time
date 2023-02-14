@@ -71,7 +71,7 @@ full_df$n_trial[is.na(full_df$n_trial)] = 0
 
 # plot distribution
 full_df %>% ggplot(aes(x=block_number, y=n_trial, group=block_type, color = block_type)) + geom_point(alpha=.8, position = position_dodge(width = .1))  + 
-  geom_line() + facet_grid(block_type~fam_duration)
+  geom_line() + facet_grid(block_type~fam_duration) + theme_grey(base_size = 20)
 
 
 # initialize rotation
