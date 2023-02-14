@@ -1,6 +1,7 @@
 ---
 title: "01_preprocessing.rmd"
 author: "anjie"
+date: "9/16/2021"
 output: html_document
 ---
 
@@ -14,9 +15,7 @@ MERGED_DATA_PATH <- here("data/01_merged_data/merged_data.csv")
 bing_d <- read_csv(here("data/bing_info.csv"))
 bing_d <- bing_d %>% filter(study_name_frank == 16) %>% 
   select(bing_id, child_age_today_scheduling) %>% 
-  mutate(
-    age_in_months = child_age_today_scheduling * 12, 
-    child_age_group = case_when(
+  mutate(child_age_group = case_when(
     child_age_today_scheduling > 3 & child_age_today_scheduling <= 4 ~ "3", 
     child_age_today_scheduling > 4 & child_age_today_scheduling <= 5 ~ "4",
     child_age_today_scheduling > 5 & child_age_today_scheduling <= 6 ~ "5",
@@ -32,8 +31,8 @@ raw_df <- read_csv(MERGED_DATA_PATH) %>%
 # preprocessed df 
 
 ```{r}
-# take care of a duplicate 
-main_d <- tidy_all_rt_task_data(raw_df %>% filter(!(bing_id == "bb799" & round(age_in_months, 1) == 48.6)))
+
+main_d <- tidy_all_rt_task_data(raw_df)
 adult_d <- read_csv(here("data/adult_data.csv")) %>% mutate(child_age_group = "adult") %>% 
   filter(grepl("complex", block_type))
 
@@ -44,103 +43,17 @@ main_d <- main_d %>%
     TRUE ~ "kids"
   ))
 # missing: memory question
-
 ```
-
-
-# exclusion criteria: 
-
-## memory question and memory practice 
-
-```{r}
-failed_memory_test_kids <- raw_df %>% 
-  select(subject, 
-         stimulus_type, 
-         memory_block_index, button_pressed, correct_answer) %>% 
-  filter(stimulus_type == "memory_test") %>% 
-  mutate(block_number = memory_block_index + 1, 
-         memory_correct = ((button_pressed == 0 & correct_answer == "left") | 
-                            (button_pressed == 1 & correct_answer == "right"))) %>% 
-  group_by(subject) %>% 
-  summarise(sum_correct = sum(as.numeric(memory_correct))) %>% 
-  filter(sum_correct <= 4) %>% 
-  pull(subject)
-
-failed_memory_practice_kids <- raw_df %>% 
-  select(subject, 
-         stimulus_type, 
-         memory_block_index, button_pressed, correct_answer) %>% 
-  filter(stimulus_type == "memory_practice") %>% 
-  mutate(block_number = memory_block_index + 1, 
-         memory_correct = ((button_pressed == 0 & correct_answer == "left") | 
-                            (button_pressed == 1 & correct_answer == "right"))) %>% 
-  group_by(subject) %>% 
-  summarise(sum_correct = sum(as.numeric(memory_correct))) %>% 
-  filter(sum_correct == 0) %>% 
-  pull(subject)
-
-```
-
-## looking time 
-
-```{r}
-flat_looking_time <- main_d %>% 
-  filter(participant_type == "kids") %>% 
-  group_by(subject) %>% 
-  mutate(sd_lt = (log(sd(trial_looking_time)))) %>% 
-  filter(sd_lt < 0.15) %>% 
-  pull(subject)
-```
-
-```{r}
-
-```
-
-
-
-## exclude participants 
-
-```{r}
-main_d <- main_d %>% 
-  filter(!(subject %in% failed_memory_test_kids)) %>% 
-  filter(!(subject %in% failed_memory_practice_kids), 
-         !(subject %in% flat_looking_time))
-```
-
-## exclude trial 
-
-```{r}
-summary_lt_d <- main_d %>% 
-  filter(participant_type == "kids") %>% 
-  summarise(
-     median = median(log(trial_looking_time)),
-    mad = mad(log(trial_looking_time)), 
-    upper = median + 3 * mad, 
-    lower = median - 3 * mad) 
-
-
-main_d <- main_d %>% 
-  filter((participant_type == "kids" & log(trial_looking_time) > summary_lt_d$lower 
-          & log(trial_looking_time) < summary_lt_d$upper) | participant_type == "adult"
-          )
-```
-
-```{r}
-write_csv(main_d, here("data/02_processed_data/clean_data.csv"))
-```
-
-
-
-# final sample sie 
 
 ```{r}
 main_d %>% 
-  distinct(subject, child_age_group) %>% 
+  distinct(bing_id, child_age_group) %>% 
   group_by(child_age_group) %>% 
   count()
 ```
 
 ```{r}
+<<<<<<< HEAD
 <<<<<<< HEAD
  main_d %>% 
   filter(participant_type == "kids") %>% 
@@ -169,43 +82,48 @@ main_d %>%
   filter(participant_type == "kids") %>% 
   #filter(child_age_group > 3) %>% 
   ggplot(aes(x = trial_number, y = log(trial_looking_time))) +
+=======
+main_d %>% 
+  ggplot(aes(x = trial_number, y = log(trial_looking_time), color = trial_type)) +
+>>>>>>> parent of c2f7e5e6 (near final preschooler analysis w/ exclusion)
   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
   stat_summary(geom = "line", fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
-  facet_wrap(~deviant_position_print)+  
+   theme_classic()+
+  langcog::scale_color_solarized(name = "Trial Type") + 
+  theme(legend.position = "bottom") + 
+  ylab("Looking Time (Log msc)")+
   xlab("Trial Number") + 
-    ylab("Looking Time (Log msc)")+
-
-     theme_classic()+
-  langcog::scale_color_solarized(name = "Participant Type") 
+  facet_wrap(~participant_type)
 ```
 
-
-## kids vs adults
 
 ```{r}
 
  main_d %>% 
 <<<<<<< HEAD
+<<<<<<< HEAD
   #filter(participant_type == "adult") %>% 
+=======
+>>>>>>> parent of c2f7e5e6 (near final preschooler analysis w/ exclusion)
   #filter(child_age_group > 3) %>% 
 =======
 >>>>>>> parent of eadf883f (long overdue preschooler analysis)
   ggplot(aes(x = trial_number, y = log(trial_looking_time))) +
   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2),
-               aes(color = as.factor(participant_type))) + 
+               aes(color = as.factor(participant_type)
+               )) + 
   stat_summary(geom = "line", fun.data = "mean_cl_boot", position = position_dodge(width = .2),
                aes(color = as.factor(participant_type))
               ) + 
   facet_wrap(~deviant_position)+  
   xlab("Trial Number") + 
      theme_classic()+
-  langcog::scale_color_solarized(name = "Participant Type") 
+  langcog::scale_color_solarized(name = "Trial Type") 
 ```
 
-## 3 vs 4 vs 5
 
 ```{r}
-
+ 
  main_d %>% 
   filter(participant_type == "kids") %>% 
   ggplot(aes(x = trial_number, y = log(trial_looking_time))) +
@@ -220,9 +138,8 @@ main_d %>%
  
 ```
 
-## 3 vs 4 vs 5 vs adults 
-```{r}
 
+<<<<<<< HEAD
 <<<<<<< HEAD
  main_d %>% 
   #filter(participant_type == "kids") %>% 
@@ -339,3 +256,6 @@ trimmed_raw_df_task <- raw_df %>%
 ```
 
 >>>>>>> parent of eadf883f (long overdue preschooler analysis)
+=======
+
+>>>>>>> parent of c2f7e5e6 (near final preschooler analysis w/ exclusion)

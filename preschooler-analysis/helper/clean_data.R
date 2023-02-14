@@ -20,7 +20,7 @@ tidy_all_rt_task_data <- function(raw_data){
         select(subject, block_number, deviant_position), 
       by = c("subject", "block_number")
     ) %>% 
-    select(bing_id, child_age_group, block_number, trial_number, block_type, trial_type, block_background, block_deviant, deviant_position,stimulus_displayed, trial_looking_time) %>% 
+    select(bing_id, child_age_group,age_in_months, block_number, trial_number, block_type, trial_type, block_background, block_deviant, deviant_position,stimulus_displayed, trial_looking_time) %>% 
     ungroup()
   
   

@@ -23,8 +23,11 @@
     <script src="js/helper/get_instruction.js"></script>
     <script src="js/helper/get_stimuli.js"></script>
     <script src="js/helper/get_blocks.js"></script>
-    <script src="js/helper/get_ratings.js"></script>
+    <script src="js/helper/get_complexity_rating.js"></script>
+    <script src="js/helper/get_similarity_rating.js"></script>
+
     <script src= "js/helper/get_demog.js"></script>
+    
     
     <script src="js/00_setting.js"></script>
     <script src="js/01_instruction.js"></script>
@@ -170,24 +173,25 @@ img.test {
       }
 
       
-      timeline.push(enter_fullscreen)
-      timeline = timeline.concat(instruction)
-      timeline = timeline.concat(all_blocks)
 
-      var pre_rating_trial = {
-        type:jsPsychInstructions,
-        pages: ["<p>You are almost done with the study!</p>" + 
-                "<p>Now we will just ask you some questions about our animation.</p>"
-        ],
-        show_clickable_nav: true,
       
-      }
+
+      //timeline.push(enter_fullscreen)
+      timeline.push(similarity_trial)
+      timeline = timeline.concat(all_complexity_rating)
+
+      /* 
+      timeline = timeline.concat(instruction)
+     
+
 
       timeline.push(pre_rating_trial)
       timeline = timeline.concat(all_similarity_rating)
       timeline = timeline.concat(all_complexity_rating)
 
       timeline = timeline.concat(demog)
+
+      */ 
 
       var thank_you = {
        type: jsPsychHtmlButtonResponse,

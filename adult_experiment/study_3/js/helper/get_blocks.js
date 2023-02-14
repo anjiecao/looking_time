@@ -15,6 +15,8 @@ function generate_block(block_info){
 
 
     if(block_info.block_type == "background_block"){
+        console.log(block_info)
+
         filler_trial_html = generate_html_string_for_filler_task(block_info.background_type, block_info.background_stimulus)
         // generate all trials
         block = []
@@ -37,7 +39,8 @@ function generate_block(block_info){
                 labels: ["Not at all curious", 
                 "A little curious", 
                 "Somewhat curious", 
-                "Pretty curious", "Very Curious"]
+                "Pretty curious", "Very Curious"],
+                rrequired: true
               }
             ],
             data: {
@@ -88,7 +91,8 @@ function generate_block(block_info){
                 labels: ["Not at all curious", 
                 "A little curious", 
                 "Somewhat curious", 
-                "Pretty curious", "Very Curious"]
+                "Pretty curious", "Very Curious"],
+                required: true
               }
             ],
             data: {
@@ -110,7 +114,6 @@ function generate_block(block_info){
 
 function generate_html_string_for_stimulus(stimulus_type, stimulus_string){
 
-    console.log(stimulus_type)
    
 
     var top_position = getRandomInt(45, 55)
@@ -127,7 +130,6 @@ function generate_html_string_for_stimulus(stimulus_type, stimulus_string){
         transform: translate(-50%, -50%);left:' + left_postion + '%"></img>'
 
     }
-    console.log(s)
 
     return(s)
  }

@@ -1,0 +1,344 @@
+---
+title: "00_preprocessing.rmd"
+author: "anjie"
+date: "9/2/2021"
+output: html_document
+---
+```{r}
+library(tidyverse)
+library(here)
+library(jsonlite)
+
+source(here("helper/tidy_rt_task_data.r"))
+
+```
+
+# set up paths 
+```{r}
+
+
+MERGED_DATA_PATH <- here("data/merged_data.csv")
+d <- read_csv(MERGED_DATA_PATH)
+
+```
+
+```{r}
+# looking time
+lt_d <- d %>% 
+  filter(trial_type == "curtain-display") %>% 
+  filter(!is.na(background_type)) %>% 
+  select(subject, trial_type, total_rt, block_type, 
+         background_stimulus, deviant_stimulus, background_type, deviant_type, violation_type, 
+         trial_number) %>% 
+  select(-trial_type) %>% 
+  rename(total_trial_number = trial_number) %>% 
+  group_by(subject, background_stimulus, deviant_stimulus) %>% 
+  mutate(trial_number = row_number()) %>% 
+  left_join(
+    d %>% filter(trial_type == "curtain-display") %>% 
+  filter(!is.na(background_type)) %>% distinct(subject, background_stimulus, deviant_stimulus) %>% 
+    group_by(subject) %>% mutate(block_number = row_number()), 
+  by = c("subject", "background_stimulus", "deviant_stimulus")
+  ) %>% 
+  mutate(
+    animacy = case_when(
+    grepl("inanimate", background_type) ~ "inanimate", 
+    TRUE ~ "animate"), 
+    
+    number = case_when(
+    grepl("single", background_type) ~ "single", 
+    TRUE ~ "pair"
+  ),
+  
+    pose = case_when(
+    grepl("left", background_type) ~ "left", 
+    TRUE ~ "right"
+  ),
+  
+    trial_type = case_when(
+      (block_type == "deviant_block" &trial_number == total_trial_number) ~ "deviant", 
+      TRUE ~ "background"
+    )
+  
+    )
+  
+  
+# curiosity rating 
+curiosity_rating_df <- d %>% 
+  filter(trial_type == "survey-likert") %>% 
+  filter(!is.na(rating_type)) %>% 
+  select(subject, rating_type, response) %>% 
+  mutate(curiosity_rating = map(response, ~ fromJSON(.) %>% as.data.frame()) %>% unlist()) %>% 
+  select(-response) %>% 
+  group_by(subject) %>% 
+  mutate(block_number = row_number()) %>% 
+  left_join(lt_d %>% ungroup() %>%  distinct(subject, background_type, deviant_type, block_number) %>% 
+              select(subject, background_type, deviant_type, block_number), by = c("subject", "block_number")) %>% 
+  mutate(rating_stimus_type = case_when(
+    rating_type == "background" ~ background_type, 
+    rating_type == "deviant" ~ deviant_type
+  )) %>% 
+  mutate(
+    animacy = case_when(
+    grepl("inanimate", background_type) ~ "inanimate", 
+    TRUE ~ "animate"), 
+    
+    number = case_when(
+    grepl("single", background_type) ~ "single", 
+    TRUE ~ "pair"
+  ),
+  
+    pose = case_when(
+    grepl("left", background_type) ~ "left", 
+    TRUE ~ "right"
+  )
+    ) %>% 
+  select(subject, rating_type, curiosity_rating, block_number, rating_stimus_type, animacy, number, pose)
+
+
+
+  
+# complexity rating 
+# lol missing some important informaiton i guess? 
+complexity_rating_df <- 
+  bind_rows(
+    d %>% 
+  filter(trial_type == "survey-likert") %>% 
+  filter(!is.na(complexity_rating_type)) %>% 
+  filter(complexity_rating_type == "background") %>% 
+  select(subject, rating_type, response, complexity_rating_type, complexity_rating_stimulus) %>% 
+  mutate(complexity_rating = map(response, ~ fromJSON(.) %>% as.data.frame()) %>% unlist()) %>% 
+  select(-response) %>% 
+  mutate(rating_type = "complexity") %>% 
+  rename(background_stimulus = complexity_rating_stimulus) %>% 
+  left_join(lt_d %>% ungroup() %>% distinct(subject, background_type, deviant_type, background_stimulus) %>% 
+              select(subject, background_type, background_stimulus, deviant_type), by = c("subject", "background_stimulus")), 
+  
+  d %>% 
+  filter(trial_type == "survey-likert") %>% 
+  filter(!is.na(complexity_rating_type)) %>% 
+  filter(complexity_rating_type == "deviant") %>% 
+  select(subject, rating_type, response, complexity_rating_type, complexity_rating_stimulus) %>% 
+  mutate(complexity_rating = map(response, ~ fromJSON(.) %>% as.data.frame()) %>% unlist()) %>% 
+  select(-response) %>% 
+  mutate(rating_type = "complexity") %>% 
+  rename(deviant_stimulus = complexity_rating_stimulus) %>% 
+  left_join(lt_d %>% ungroup() %>% distinct(subject, background_type, deviant_type, deviant_stimulus) %>% 
+              select(subject, deviant_type, deviant_stimulus, deviant_type), by = c("subject", "deviant_stimulus"))
+  
+  ) %>% 
+  mutate(
+   complexity_rating_stimulus = case_when(
+     !is.na(background_stimulus) ~ background_stimulus, 
+     !is.na(deviant_stimulus) ~deviant_stimulus
+   ), 
+   complexity_rating_type = case_when(
+     !is.na(background_type) ~ background_type, 
+     !is.na(deviant_type) ~deviant_type
+   )
+  ) %>% 
+  select(subject, complexity_rating_stimulus, complexity_rating_type, complexity_rating) %>% 
+  mutate(
+    animacy = case_when(
+    grepl("inanimate", complexity_rating_type) ~ "inanimate", 
+    TRUE ~ "animate"), 
+    
+    number = case_when(
+    grepl("single", complexity_rating_type) ~ "single", 
+    TRUE ~ "pair"
+  ),
+  
+    pose = case_when(
+    grepl("left", complexity_rating_type) ~ "left", 
+    TRUE ~ "right"
+  )
+    ) 
+  
+
+# similarity rating 
+similarity_rating_df <- d %>% 
+  filter(trial_type == "survey-likert") %>% 
+  filter(!is.na(similarity_rating_violation)) %>% 
+  select(subject, response, similarity_rating_background, similarity_rating_deviant, similarity_rating_violation) %>% 
+  mutate(similarity_rating = map(response, ~ fromJSON(.) %>% as.data.frame()) %>% unlist()) %>% 
+  select(-response) %>% 
+  mutate(rating_type = "similarity") 
+
+
+
+```
+
+
+
+# exclusion 
+
+## Participant-based exclusion:
+
+We exclude participants if either 
+(a) the standard deviation of log-transformed of their reaction times on all trials is less than 0.15 
+```{r}
+low_var_in_sbj <- lt_d %>% 
+  group_by(subject) %>% 
+  summarise(mean_rt = mean(total_rt), 
+            sd = sd(total_rt)) %>% 
+  filter(sd < 0.15) %>% 
+  pull(subject)
+
+low_var_in_sbj
+
+df_low_var <- tibble("exclude_reason" = rep("low_var", length(low_var_in_sbj)), 
+                     sbj = low_var_in_sbj)
+```
+
+(b) spent more than three absolute deviations away from the medians of the task completion time as reported by Prolific.
+
+```{r}
+# gather all of the prolific data
+
+MIN_ROW <- 100  #subject to change 
+
+merge_and_deidentify_data <- function(raw_data_directory, 
+                                      min_row){
+  
+  raw_files <- str_c(raw_data_directory, dir(here(raw_data_directory), "*.csv"))
+  
+  # count how many rows in each file 
+  RAW_count <- map_df(raw_files, function(file) {
+    d <- read_csv(file) %>% 
+      count() %>% 
+      mutate(
+        file_name = file 
+      )
+  })   
+  
+  
+  RAW_DATA <- map_df((RAW_count %>% filter(n > min_row))$file_name,
+                     function(file){
+                       d <- read_csv(file)
+                     }) 
+  
+  
+  return (RAW_DATA)
+  
+}
+
+raw_d <- merge_and_deidentify_data(here("data/00_raw_data/"), MIN_ROW)
+
+```
+
+
+```{r}
+p_df <- read_csv(here("data/prolific.csv")) %>% 
+  janitor::clean_names()
+
+p_summary <- p_df %>% 
+  select(participant_id, time_taken) %>% 
+   summarise(
+     median = median(time_taken),
+    mad = mad(time_taken), 
+    upper = median + 3 * mad, 
+    lower = median - 3 * mad) 
+
+p_id <- p_df %>% 
+  filter(time_taken > p_summary$upper | time_taken < p_summary$lower) %>% 
+  select(participant_id) %>% 
+  pull()
+
+p_sbj <- raw_d %>% 
+  distinct(subject, prolific_id) %>% 
+  filter(prolific_id %in% p_id) %>% 
+  pull(subject)
+  
+p_sbj
+
+df_prolific <- tibble("exclude_reason" = rep("prolific", length(p_sbj)), 
+                     sbj = p_sbj)
+```
+
+
+
+c) in the math question condition and the memory question condition, answer 3 out of 8 questions wrong; or
+
+```{r}
+
+
+memory_sbj <-  complexity_rating_df %>% 
+  group_by(subject) %>% 
+  select(subject, complexity_rating) %>% 
+  group_by(subject, complexity_rating) %>% 
+  count() %>% 
+  mutate(ratio = n / 24) %>% 
+  filter(ratio >.8) %>% 
+  pull(subject)
+
+memory_sbj
+
+df_memory <- tibble("exclude_reason" = rep("memory", length(memory_sbj)), 
+                     sbj = memory_sbj)
+```
+
+
+
+all excluded subject 
+```{r}
+
+participants_exclusion <- bind_rows(df_low_var, df_prolific, df_memory)
+write_csv(participants_exclusion, here("data/p_level_exclusion.csv"))
+
+
+exclude_participant <- unique(c(
+                               memory_sbj, 
+                               p_sbj, 
+                               low_var_in_sbj))
+
+```
+
+
+```{r}
+
+trimmed_lt_d <- lt_d %>% 
+  filter(!(subject %in% exclude_participant))
+
+trimmed_curiosity_rating_df <- curiosity_rating_df %>% 
+  filter(!(subject %in% exclude_participant))
+
+trimmed_complexity_rating_df <- complexity_rating_df %>% 
+  filter(!(subject %in% exclude_participant))
+
+trimmed_similarity_rating_df <- similarity_rating_df %>% 
+  filter(!(subject %in% exclude_participant))
+```
+
+
+## Trial based exclusion:
+We exclude a trial if it is three absolute deviations away from the median in the log-transformed space across all participants.
+
+```{r}
+
+rt_summary <- lt_d %>% 
+  ungroup() %>% 
+  summarise(
+    median = median(log(total_rt)),
+    mad = mad(log(total_rt)), 
+    upper = median + 3 * mad, 
+    lower = median - 3 * mad)
+  
+final_trimmed_lt_d <- trimmed_lt_d %>% 
+  filter(!(log(total_rt) > rt_summary$upper | log(total_rt) < rt_summary$lower))
+
+```
+
+
+
+# write out all the data 
+
+
+```{r}
+write_csv(final_trimmed_lt_d, here("data/01_trimmed_data/trimmed_lt_d.csv"))
+write_csv(trimmed_curiosity_rating_df, here("data/01_trimmed_data/trimmed_curiosity_rating.csv"))
+write_csv(trimmed_complexity_rating_df, here("data/01_trimmed_data/trimmed_complexity_rating.csv"))
+write_csv(trimmed_similarity_rating_df, here("data/01_trimmed_data/trimmed_similarity_rating_df.csv"))
+```
+
+
+

@@ -49,12 +49,16 @@ function get_similarity_rating_for_block(block_info){
     questions: [
       {
         prompt: q_similarity, 
-        labels: scale_similarity
+        labels: scale_similarity,
+        required: true
       }
     ],
     data: {
         violation_type: block_info.violation_type, 
-        trial_number: block_info.trial_number
+        trial_number: block_info.trial_number, 
+        similarity_rating_background: block_info.background_stimulus, 
+        similarity_rating_deviant: block_info.deviant_stimulus, 
+        similarity_rating_violation:block_info.violation_type
     }
   }
 
@@ -95,12 +99,14 @@ function get_complexity_rating_for_block(block_info){
       questions: [
         {
           prompt: q_complexity, 
-          labels: scale_complexity
+          labels: scale_complexity,
+          required: true
         }
       ],
       data: {
           complexity_rating_type: "background", 
-          complexity_reps: block_info.trial_number
+          complexity_reps: block_info.trial_number,
+          complexity_rating_stimulus: block_info.background_stimulus
       }
     }
     rating_for_block.push(complexity_rating_trial)
@@ -116,12 +122,14 @@ function get_complexity_rating_for_block(block_info){
       questions: [
         {
           prompt: q_complexity, 
-          labels: scale_complexity
+          labels: scale_complexity,
+          required: true
         }
       ],
       data: {
           complexity_rating_type: "background", 
-          complexity_reps: (block_info.trial_number - 1)
+          complexity_reps: (block_info.trial_number - 1),
+          complexity_rating_stimulus: block_info.background_stimulus
       }
     }
 
@@ -132,12 +140,14 @@ function get_complexity_rating_for_block(block_info){
       questions: [
         {
           prompt: q_complexity, 
-          labels: scale_complexity
+          labels: scale_complexity,
+          required: true
         }
       ],
       data: {
           complexity_rating_type: "deviant", 
-          complexity_reps: 1
+          complexity_reps: 1,
+          complexity_rating_stimulus: block_info.deviant_stimulus
       }
     }
     
