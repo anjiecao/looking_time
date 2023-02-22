@@ -4,11 +4,13 @@ function generate_similarity_rating_blocks(all_similarity_rating_package){
 
     var pose_violation_package = all_similarity_rating_package.pose
     var pose_violation_block = pose_violation_package.map(triad => generate_stimilarity_rating_trial(triad, "pose"))
-    
+    shuffleArray(pose_violation_block)
+
     var number_violation_package = all_similarity_rating_package.number
     var number_violation_block = number_violation_package.map(triad => generate_stimilarity_rating_trial(triad, "number"))
+    shuffleArray(number_violation_block)
 
-    return(number_violation_block)
+    return(pose_violation_block)
 
 }
 
@@ -44,6 +46,64 @@ function generate_similarity_rating_package(all_stimuli_info){
 
 }
 
+/* 
+[A, B, C, D, E]
+
+[A, A, B]
+[A, A, C]
+[A, A, D]
+[A, A, E]
+
+[B, B, C]
+[B, B, D]
+[B, B, E]
+
+[C, C, D]
+[C, C, E]
+
+[D, D, E]
+
+***********
+
+[A, B, C, D, E]
+
+[A, B, C]
+[A, B, D]
+[A, B, E]
+[A, C, D]
+[A, C, E]
+[A, D, E]
+
+[B, C, D]x
+[B, C, E]
+
+[B, D, E]
+
+[C, D, E]
+
+
+*/
+
+function get_identity_violation_triads(all_stimuli_info){
+
+    total_index = (all_stimuli_info.length)/8
+    all_number_violation = []
+
+    all_animate =  all_stimuli_info.filter(obj => obj.animacy === 'animate');
+    all_inanimate = all_stimuli_info.filter(obj => obj.animacy === 'inanimate');
+
+    shuffleArray(all_animate)
+    shuffleArray(all_inanimate)
+
+    for (var target_i = 0; target_i < total_index + 1; target_i++){
+
+
+
+    }
+
+
+
+}
 
 function get_number_violation_triads(all_stimuli_info){
 
@@ -122,12 +182,15 @@ function generate_stimilarity_rating_trial(triad, comparison_type){
     comparison_stimulus_a = choice_stimuli[0]
     comparison_stimulus_b = choice_stimuli[1]
 
+    key_left_image = "media/f.png"
+    key_right_image = "media/j.png"
 
-    var target_top_position = 20
+
+    var target_top_position = 10
     var target_left_postion = 48
-    var choice_top_position = 35 
-    var left_central_postion = target_left_postion - 20
-    var right_central_position = target_left_postion + 20
+    var choice_top_position = 25 
+    var left_central_postion = target_left_postion - 10
+    var right_central_position = target_left_postion + 10
 
 
     if(target_stimulus.number == "single"){
@@ -162,15 +225,17 @@ function generate_stimilarity_rating_trial(triad, comparison_type){
         transform: translate(-50%, -50%);left:' + (right_central_position+5) + '%"></img>'
     }
 
+    key_left = '<img src="' + key_left_image + '"style = "width:30px x; height:30px;position:fixed; top:' + (choice_top_position + 18) + '%;\
+    transform: translate(-50%, -50%);left:' + (left_central_postion + 2) + '%"></img>'
+
+    key_right = '<img src="' + key_right_image + '"style = "width:30px; height:30px;position:fixed; top:' + (choice_top_position + 18) + '%;\
+    transform: translate(-50%, -50%);left:' + (right_central_position + 2) + '%"></img>'
+
     var trial = {
-        type: jsPsychHtmlButtonResponse,
-        stimulus: s_target,
-        choices: ['left', 'right'],
-        button_html: [
-            s_choice_left,
-            s_choice_right
-        ],
-        prompt: "<p>Click on the animation in the bottom row that is more similar to the top animation</p>",
+        type: jsPsychHtmlKeyboardResponse,
+        stimulus: s_target + s_choice_left + s_choice_right + key_left + key_right,
+        choices: ['f', 'j'],
+        prompt: "<p>Press the key under the animation in the bottom row that is more similar to the top animation</p>",
         data: {
             target: target_stimulus.stimulus, 
             left: comparison_stimulus_a.stimulus, 
