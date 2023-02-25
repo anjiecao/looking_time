@@ -1,4 +1,106 @@
 
+function generate_target_set(all_stimuli_info){
+    // all individual but each with random pose and number 
+    target_set = []
+
+    pose = ["left", "right"]
+    number = ["pair", "single"]
+
+    for (var i = 1; i < (all_stimuli_info.length / 8) + 1; i++){
+
+        animate_pose = getRandomSubarray(pose, 1)[0]
+        inanimate_pose = getRandomSubarray(pose, 1)[0]
+
+        animate_number = getRandomSubarray(number, 1)[0]
+        inanimate_number = getRandomSubarray(number, 1)[0]
+
+        animate_with_index = all_stimuli_info.filter(obj => obj.index == i && obj.animacy === 'animate' && obj.pose == animate_pose && obj.number == animate_number)[0]
+        inanimate_with_index =  all_stimuli_info.filter(obj => obj.index == i && obj.animacy === 'inanimate' && obj.pose == inanimate_pose && obj.number == inanimate_number)[0]
+
+        target_set.push(animate_with_index)
+        target_set.push(inanimate_with_index)
+
+    }
+
+    return target_set
+
+}
+
+function generate_pose_violaion(target, all_stimuli_info){
+
+    pv_choice = all_stimuli_info.filter(obj => obj.index == target.index && obj.animacy === target.animacy && obj.pose != target.pose && obj.number == target.number)
+    pv_choice = pv_choice.map(obj => {obj.violation = "pose" 
+                                        return obj})
+    
+    return pv_choice
+}
+
+function generate_animacy_violation(target, all_stimuli_info){
+
+    av_choice = all_stimuli_info.filter(obj => obj.animacy != target.animacy && obj.pose === target.pose && obj.number === target.number)
+    av_choice = av_choice.map(obj => {obj.violation = "animacy"
+                                        return obj})
+
+    return av_choice
+
+}
+
+function generate_number_violation(target, all_stimuli_info){
+
+    nv_choice = all_stimuli_info.filter(obj => obj.index == target.index && obj.animacy === target.animacy && obj.pose === target.pose && obj.number != target.number)
+    nv_choice = nv_choice.map(obj => {obj.violation = "number" 
+                                        return obj})
+
+    return nv_choice
+
+}
+
+function generate_identity_violation(target, all_stimuli_info){
+
+    iv_choice = all_stimuli_info.filter(obj => obj.index != target.index && obj.animacy === target.animacy && obj.pose === target.pose && obj.number === target.number)
+    iv_choice = iv_choice.map(obj => {obj.violation = "identity"
+                                        return obj})
+    
+    return iv_choice
+}
+
+
+
+
+
+function generate_similarity_rating_package(all_stimuli_info){
+
+
+    // get target, needs to be randomly selected from pose, number 
+
+
+    // get pose violation 
+
+
+    // get animacy violation 
+
+
+    // get number violation 
+
+
+    // get identity violation 
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 function generate_similarity_rating_blocks(all_similarity_rating_package){
 

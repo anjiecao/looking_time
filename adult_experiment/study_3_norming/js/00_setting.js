@@ -4,6 +4,16 @@ all_stimuli = get_all_stimuli()
 all_stimuli_info = get_all_stimuli_info(all_stimuli)
 shuffleArray(all_stimuli_info)
 
+ts_1 = generate_target_set(all_stimuli_info)
+ts_2  = generate_target_set(all_stimuli_info)
+ts_3  = generate_target_set(all_stimuli_info)
+
+console.log(ts_1)
+console.log(ts_2)
+console.log(ts_3)
+
+console.log(generate_identity_violation(ts_1[0], all_stimuli_info))
+
 all_complexity_rating = get_all_complexity_rating(all_stimuli_info)
 
 similarity_package = generate_similarity_rating_package(all_stimuli_info)
