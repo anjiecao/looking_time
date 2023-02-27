@@ -29,8 +29,6 @@ function generate_target_set(all_stimuli_info){
 function generate_pose_violaion(target, all_stimuli_info){
 
     pv_choice = all_stimuli_info.filter(obj => obj.index == target.index && obj.animacy === target.animacy && obj.pose != target.pose && obj.number == target.number)
-    pv_choice = pv_choice.map(obj => {obj.violation = "pose" 
-                                        return obj})
     
     return pv_choice
 }
@@ -38,9 +36,7 @@ function generate_pose_violaion(target, all_stimuli_info){
 function generate_animacy_violation(target, all_stimuli_info){
 
     av_choice = all_stimuli_info.filter(obj => obj.animacy != target.animacy && obj.pose === target.pose && obj.number === target.number)
-    av_choice = av_choice.map(obj => {obj.violation = "animacy"
-                                        return obj})
-
+    
     return av_choice
 
 }
@@ -48,45 +44,93 @@ function generate_animacy_violation(target, all_stimuli_info){
 function generate_number_violation(target, all_stimuli_info){
 
     nv_choice = all_stimuli_info.filter(obj => obj.index == target.index && obj.animacy === target.animacy && obj.pose === target.pose && obj.number != target.number)
-    nv_choice = nv_choice.map(obj => {obj.violation = "number" 
-                                        return obj})
 
     return nv_choice
 
 }
 
 function generate_identity_violation(target, all_stimuli_info){
-
     iv_choice = all_stimuli_info.filter(obj => obj.index != target.index && obj.animacy === target.animacy && obj.pose === target.pose && obj.number === target.number)
-    iv_choice = iv_choice.map(obj => {obj.violation = "identity"
-                                        return obj})
-    
     return iv_choice
 }
 
 
 
+function get_combination_of_violation(target, v1, v2){
+
+    combo = []
+    for (var i = 0; i < v1.length; i++){
+        for (var j = 0; j < v2.length; j++){
+
+            // shuffle the order
+            v = [v1[i], v2[j]]
+            shuffleArray(v)
+
+            res = {
+                target: target,
+                choice_1: v[0], 
+                choice_2: v[1]}
+
+            combo.push(res)
+
+        }
+    }
+
+    return (combo)
 
 
-function generate_similarity_rating_package(all_stimuli_info){
+}
+
+
+
+
+function generate_all_similarity_rating_package(target_set, all_stimuli_info){
 
 
     // get target, needs to be randomly selected from pose, number 
+
+    // get an index array 
+    index = Array.from({length: target_set.length}, (x, i) => i);
 
 
     // get pose violation 
 
 
-    // get animacy violation 
+    all_pose_violation = structuredClone(target_set.map(x => generate_pose_violaion(x, all_stimuli_info)))
+    all_pose_violation = all_pose_violation.map(pvs => pvs.map(pv_obj => {pv_obj.violation = "pose" 
+                                                             return pv_obj}))
 
 
-    // get number violation 
+    all_animacy_violation = structuredClone(target_set.map(x => generate_animacy_violation(x, all_stimuli_info)))
+    all_animacy_violation = all_animacy_violation.map(avs => avs.map(av_obj => {av_obj.violation = "animacy" 
+                                                                return av_obj}))
+
+    all_number_violation = structuredClone(target_set.map(x => generate_number_violation(x, all_stimuli_info)))
+    all_number_violation = all_number_violation.map(nvs => nvs.map(nv_obj => {nv_obj.violation = "number"
+                                                                            return nv_obj}))
+
+    all_identity_violation = structuredClone(target_set.map(x => generate_identity_violation(x, all_stimuli_info)))
+    all_identity_violation = all_identity_violation.map(ivs => ivs.map(iv_obj => {iv_obj.violation = "identity" 
+                                                                    return iv_obj}))
 
 
-    // get identity violation 
+    // 24 * 1 * 12 
+    pose_vs_animacy = index.map(i => get_combination_of_violation(target_set[i], all_pose_violation[i], all_animacy_violation[i])).flat()
+    // 24 * 1 * 1
+    pose_vs_number = index.map(i => get_combination_of_violation(target_set[i], all_pose_violation[i], all_number_violation[i])).flat()
+    // 24 * 1 * 11
+    pose_vs_identity = index.map(i => get_combination_of_violation(target_set[i], all_pose_violation[i], all_identity_violation[i])).flat()
+    // 24 * 12 * 1
+    animacy_vs_number = index.map(i => get_combination_of_violation(target_set[i], all_animacy_violation[i], all_number_violation[i])).flat()
+    // 24 * 12 * 11
+    animacy_vs_identity =  index.map(i => get_combination_of_violation(target_set[i], all_animacy_violation[i], all_identity_violation[i])).flat()
+    // 24 * 1 * 11
+    number_vs_identity = index.map(i => get_combination_of_violation(target_set[i], all_number_violation[i], all_identity_violation[i])).flat()
 
 
 
+
+    return number_vs_identity
 
 }
 

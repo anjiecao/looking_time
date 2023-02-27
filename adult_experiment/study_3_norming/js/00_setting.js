@@ -13,6 +13,7 @@ console.log(ts_2)
 console.log(ts_3)
 
 console.log(generate_identity_violation(ts_1[0], all_stimuli_info))
+console.log(generate_all_similarity_rating_package(ts_1, all_stimuli_info))
 
 all_complexity_rating = get_all_complexity_rating(all_stimuli_info)
 
