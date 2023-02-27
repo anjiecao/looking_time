@@ -84,52 +84,54 @@ function get_combination_of_violation(target, v1, v2){
 
 
 
-function generate_all_similarity_rating_package(target_set, all_stimuli_info, sample_n = 24){
+function generate_all_similarity_rating_package(all_stimuli_info, sample_n = 24){
 
 
-    // get target, needs to be randomly selected from pose, number 
 
     // get an index array 
-    index = Array.from({length: target_set.length}, (x, i) => i);
-
-
-    // get pose violation 
-
-
+    // target set needs to be re-generated for every violation to randomly selected from pose & number 
+    target_set = generate_target_set(all_stimuli_info)
     all_pose_violation = structuredClone(target_set.map(x => generate_pose_violaion(x, all_stimuli_info)))
     all_pose_violation = all_pose_violation.map(pvs => pvs.map(pv_obj => {pv_obj.violation = "pose" 
                                                              return pv_obj}))
 
-
+    target_set = generate_target_set(all_stimuli_info)
     all_animacy_violation = structuredClone(target_set.map(x => generate_animacy_violation(x, all_stimuli_info)))
     all_animacy_violation = all_animacy_violation.map(avs => avs.map(av_obj => {av_obj.violation = "animacy" 
                                                                 return av_obj}))
 
+    target_set = generate_target_set(all_stimuli_info)
     all_number_violation = structuredClone(target_set.map(x => generate_number_violation(x, all_stimuli_info)))
     all_number_violation = all_number_violation.map(nvs => nvs.map(nv_obj => {nv_obj.violation = "number"
                                                                             return nv_obj}))
-
+    target_set = generate_target_set(all_stimuli_info)
     all_identity_violation = structuredClone(target_set.map(x => generate_identity_violation(x, all_stimuli_info)))
     all_identity_violation = all_identity_violation.map(ivs => ivs.map(iv_obj => {iv_obj.violation = "identity" 
                                                                     return iv_obj}))
 
-
+    index = Array.from({length: target_set.length}, (x, i) => i)                                                      
     // 24 * 1 * 12 
+    target_set = generate_target_set(all_stimuli_info)
     pose_vs_animacy = getRandomSubarray(index.map(i => get_combination_of_violation(target_set[i], all_pose_violation[i], all_animacy_violation[i])).flat(), 
                                         sample_n)
     // 24 * 1 * 1 
+    target_set = generate_target_set(all_stimuli_info)
     pose_vs_number = getRandomSubarray(index.map(i => get_combination_of_violation(target_set[i], all_pose_violation[i], all_number_violation[i])).flat(), 
                                         sample_n)
     // 24 * 1 * 11
+    target_set = generate_target_set(all_stimuli_info)
     pose_vs_identity = getRandomSubarray(index.map(i => get_combination_of_violation(target_set[i], all_pose_violation[i], all_identity_violation[i])).flat(), 
                         sample_n)
     // 24 * 12 * 1
+    target_set = generate_target_set(all_stimuli_info)
     animacy_vs_number = getRandomSubarray(index.map(i => get_combination_of_violation(target_set[i], all_animacy_violation[i], all_number_violation[i])).flat(), 
                         sample_n)
     // 24 * 12 * 11
+    target_set = generate_target_set(all_stimuli_info)
     animacy_vs_identity = getRandomSubarray(index.map(i => get_combination_of_violation(target_set[i], all_animacy_violation[i], all_identity_violation[i])).flat(), 
                         sample_n)
     // 24 * 1 * 11
+    target_set = generate_target_set(all_stimuli_info)
     number_vs_identity = getRandomSubarray(index.map(i => get_combination_of_violation(target_set[i], all_number_violation[i], all_identity_violation[i])).flat(), 
                         sample_n)
 
@@ -198,44 +200,6 @@ function generate_similarity_rating_package(all_stimuli_info){
     return (all_similarity_rating_package)
 
 }
-
-/* 
-[A, B, C, D, E]
-
-[A, A, B]
-[A, A, C]
-[A, A, D]
-[A, A, E]
-
-[B, B, C]
-[B, B, D]
-[B, B, E]
-
-[C, C, D]
-[C, C, E]
-
-[D, D, E]
-
-***********
-
-[A, B, C, D, E]
-
-[A, B, C]
-[A, B, D]
-[A, B, E]
-[A, C, D]
-[A, C, E]
-[A, D, E]
-
-[B, C, D]x
-[B, C, E]
-
-[B, D, E]
-
-[C, D, E]
-
-
-*/
 
 function get_identity_violation_triads(all_stimuli_info){
 
@@ -324,16 +288,11 @@ function get_pose_violation_triads(all_stimuli_info){
 
 
 
-function generate_stimilarity_rating_trial(triad, comparison_type){
+function generate_stimilarity_rating_trial(triad){
 
-
-    console.log(triad)
-    target_stimulus = triad[0]
-    // remove the first element
-    choice_stimuli = triad.slice(1)
-    shuffleArray(choice_stimuli)
-    comparison_stimulus_a = choice_stimuli[0]
-    comparison_stimulus_b = choice_stimuli[1]
+    target_stimulus = triad.target
+    comparison_stimulus_a = triad.choice_1
+    comparison_stimulus_b = triad.choice_2
 
     key_left_image = "media/f.png"
     key_right_image = "media/j.png"
@@ -361,11 +320,9 @@ function generate_stimilarity_rating_trial(triad, comparison_type){
         s_choice_left =  s_choice_left = '<img src="' + comparison_stimulus_a.stimulus + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + choice_top_position + '%;\
         transform: translate(-50%, -50%);left:' + left_central_postion + '%"></img>'
     }else{
-        console.log("PAIR??")
         s_choice_left = '<img src="' + comparison_stimulus_a.stimulus + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + choice_top_position + '%;\
         transform: translate(-50%, -50%);left:' + (left_central_postion-5) + '%"></img>' + '<img src="' + comparison_stimulus_a.stimulus + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + choice_top_position + '%;\
         transform: translate(-50%, -50%);left:' + (left_central_postion + 5) + '%"></img>'
-        console.log(s_choice_left)
     }
 
     
@@ -393,13 +350,15 @@ function generate_stimilarity_rating_trial(triad, comparison_type){
             target: target_stimulus.stimulus, 
             left: comparison_stimulus_a.stimulus, 
             right: comparison_stimulus_b.stimulus, 
-            comparison_type: comparison_type
+            comparison_type: comparison_stimulus_a.violation + comparison_stimulus_b.violation
         }
       };
 
       return (trial)
 
 }
+
+
 
 
 
