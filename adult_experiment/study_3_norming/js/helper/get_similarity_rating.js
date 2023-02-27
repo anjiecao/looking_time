@@ -84,7 +84,7 @@ function get_combination_of_violation(target, v1, v2){
 
 
 
-function generate_all_similarity_rating_package(target_set, all_stimuli_info){
+function generate_all_similarity_rating_package(target_set, all_stimuli_info, sample_n = 24){
 
 
     // get target, needs to be randomly selected from pose, number 
@@ -115,22 +115,29 @@ function generate_all_similarity_rating_package(target_set, all_stimuli_info){
 
 
     // 24 * 1 * 12 
-    pose_vs_animacy = index.map(i => get_combination_of_violation(target_set[i], all_pose_violation[i], all_animacy_violation[i])).flat()
-    // 24 * 1 * 1
-    pose_vs_number = index.map(i => get_combination_of_violation(target_set[i], all_pose_violation[i], all_number_violation[i])).flat()
+    pose_vs_animacy = getRandomSubarray(index.map(i => get_combination_of_violation(target_set[i], all_pose_violation[i], all_animacy_violation[i])).flat(), 
+                                        sample_n)
+    // 24 * 1 * 1 
+    pose_vs_number = getRandomSubarray(index.map(i => get_combination_of_violation(target_set[i], all_pose_violation[i], all_number_violation[i])).flat(), 
+                                        sample_n)
     // 24 * 1 * 11
-    pose_vs_identity = index.map(i => get_combination_of_violation(target_set[i], all_pose_violation[i], all_identity_violation[i])).flat()
+    pose_vs_identity = getRandomSubarray(index.map(i => get_combination_of_violation(target_set[i], all_pose_violation[i], all_identity_violation[i])).flat(), 
+                        sample_n)
     // 24 * 12 * 1
-    animacy_vs_number = index.map(i => get_combination_of_violation(target_set[i], all_animacy_violation[i], all_number_violation[i])).flat()
+    animacy_vs_number = getRandomSubarray(index.map(i => get_combination_of_violation(target_set[i], all_animacy_violation[i], all_number_violation[i])).flat(), 
+                        sample_n)
     // 24 * 12 * 11
-    animacy_vs_identity =  index.map(i => get_combination_of_violation(target_set[i], all_animacy_violation[i], all_identity_violation[i])).flat()
+    animacy_vs_identity = getRandomSubarray(index.map(i => get_combination_of_violation(target_set[i], all_animacy_violation[i], all_identity_violation[i])).flat(), 
+                        sample_n)
     // 24 * 1 * 11
-    number_vs_identity = index.map(i => get_combination_of_violation(target_set[i], all_number_violation[i], all_identity_violation[i])).flat()
+    number_vs_identity = getRandomSubarray(index.map(i => get_combination_of_violation(target_set[i], all_number_violation[i], all_identity_violation[i])).flat(), 
+                        sample_n)
 
 
+    all_pairing = [pose_vs_animacy, pose_vs_number, pose_vs_identity, animacy_vs_number, animacy_vs_identity, number_vs_identity].flat()
 
 
-    return number_vs_identity
+    return all_pairing
 
 }
 
