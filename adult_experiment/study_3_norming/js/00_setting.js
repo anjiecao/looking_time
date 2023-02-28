@@ -6,7 +6,6 @@ shuffleArray(all_stimuli_info)
 
 all_similarity_rating_package = generate_all_similarity_rating_package(all_stimuli_info)
 all_similarity_rating = all_similarity_rating_package.map(t => generate_stimilarity_rating_trial(t))
-console.log(all_similarity_rating)
 
 all_complexity_rating = get_all_complexity_rating(all_stimuli_info)
 

@@ -33,6 +33,15 @@ function generate_pose_violaion(target, all_stimuli_info){
     return pv_choice
 }
 
+
+function generate_filler_choice(target, all_stimuli_info){
+
+    filler = all_stimuli_info.filter(obj => obj.index == target.index && obj.animacy === target.animacy && obj.pose === target.pose && obj.number === target.number)
+    
+    return filler
+}
+
+
 function generate_animacy_violation(target, all_stimuli_info){
 
     av_choice = all_stimuli_info.filter(obj => obj.animacy != target.animacy && obj.pose === target.pose && obj.number === target.number)
@@ -109,6 +118,12 @@ function generate_all_similarity_rating_package(all_stimuli_info, sample_n = 24)
     all_identity_violation = all_identity_violation.map(ivs => ivs.map(iv_obj => {iv_obj.violation = "identity" 
                                                                     return iv_obj}))
 
+    target_set = generate_target_set(all_stimuli_info)
+    all_filler = structuredClone(target_set.map(x => generate_filler_choice(x, all_stimuli_info)))
+    all_filler = all_filler.map(fs => fs.map(f_obj => {f_obj.violation = "filler" 
+                                                                    return f_obj}))
+
+
     index = Array.from({length: target_set.length}, (x, i) => i)                                                      
     // 24 * 1 * 12 
     target_set = generate_target_set(all_stimuli_info)
@@ -136,7 +151,18 @@ function generate_all_similarity_rating_package(all_stimuli_info, sample_n = 24)
                         sample_n)
 
 
-    all_pairing = [pose_vs_animacy, pose_vs_number, pose_vs_identity, animacy_vs_number, animacy_vs_identity, number_vs_identity].flat()
+    // get one filler for each violation category 
+    target_set = generate_target_set(all_stimuli_info)
+    pose_vs_filler = getRandomSubarray(index.map(i => get_combination_of_violation(target_set[i], all_pose_violation[i], all_filler[i])).flat(), 1)
+    identity_vs_filler = getRandomSubarray(index.map(i => get_combination_of_violation(target_set[i], all_identity_violation[i], all_filler[i])).flat(), 1)
+    animacy_vs_filler = getRandomSubarray(index.map(i => get_combination_of_violation(target_set[i], all_animacy_violation[i], all_filler[i])).flat(), 1)
+    number_vs_filler = getRandomSubarray(index.map(i => get_combination_of_violation(target_set[i], all_number_violation[i], all_filler[i])).flat(), 1)
+
+
+    all_pairing = [pose_vs_animacy, pose_vs_number, pose_vs_identity, animacy_vs_number, animacy_vs_identity, number_vs_identity, 
+                  pose_vs_filler, identity_vs_filler, animacy_vs_filler, number_vs_filler].flat()
+
+    shuffleArray(all_pairing)
 
 
     return all_pairing
@@ -303,6 +329,7 @@ function generate_stimilarity_rating_trial(triad){
     var choice_top_position = 25 
     var left_central_postion = target_left_postion - 10
     var right_central_position = target_left_postion + 10
+    var pair_half_distance = 3
 
 
     if(target_stimulus.number == "single"){
@@ -310,8 +337,8 @@ function generate_stimilarity_rating_trial(triad){
     transform: translate(-50%, -50%);left:' + target_left_postion + '%"></img>'
     }else{
         s_target = '<img src="' + target_stimulus.stimulus + '" class="coveredImage test" style = "width:100px; height:100px; position:fixed; top:' + target_top_position + '%;\
-    transform: translate(-50%, -50%);left:' + (target_left_postion -5) + '%"></img>' +  '<img src="' + target_stimulus.stimulus + '" class="coveredImage test" style = "width:100px; height:100px; position:fixed; top:' + target_top_position + '%;\
-    transform: translate(-50%, -50%);left:' + (target_left_postion + 5) + '%"></img>'
+    transform: translate(-50%, -50%);left:' + (target_left_postion - pair_half_distance) + '%"></img>' +  '<img src="' + target_stimulus.stimulus + '" class="coveredImage test" style = "width:100px; height:100px; position:fixed; top:' + target_top_position + '%;\
+    transform: translate(-50%, -50%);left:' + (target_left_postion + pair_half_distance) + '%"></img>'
     
     }
 
@@ -321,8 +348,8 @@ function generate_stimilarity_rating_trial(triad){
         transform: translate(-50%, -50%);left:' + left_central_postion + '%"></img>'
     }else{
         s_choice_left = '<img src="' + comparison_stimulus_a.stimulus + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + choice_top_position + '%;\
-        transform: translate(-50%, -50%);left:' + (left_central_postion-5) + '%"></img>' + '<img src="' + comparison_stimulus_a.stimulus + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + choice_top_position + '%;\
-        transform: translate(-50%, -50%);left:' + (left_central_postion + 5) + '%"></img>'
+        transform: translate(-50%, -50%);left:' + (left_central_postion- pair_half_distance) + '%"></img>' + '<img src="' + comparison_stimulus_a.stimulus + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + choice_top_position + '%;\
+        transform: translate(-50%, -50%);left:' + (left_central_postion + pair_half_distance) + '%"></img>'
     }
 
     
@@ -331,8 +358,8 @@ function generate_stimilarity_rating_trial(triad){
         transform: translate(-50%, -50%);left:' + right_central_position + '%"></img>'
     }else{
         s_choice_right = '<img src="' + comparison_stimulus_b.stimulus + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + choice_top_position + '%;\
-        transform: translate(-50%, -50%);left:' + (right_central_position-5) + '%"></img>' + '<img src="' + comparison_stimulus_b.stimulus + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + choice_top_position + '%;\
-        transform: translate(-50%, -50%);left:' + (right_central_position+5) + '%"></img>'
+        transform: translate(-50%, -50%);left:' + (right_central_position-pair_half_distance) + '%"></img>' + '<img src="' + comparison_stimulus_b.stimulus + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + choice_top_position + '%;\
+        transform: translate(-50%, -50%);left:' + (right_central_position+pair_half_distance) + '%"></img>'
     }
 
     key_left = '<img src="' + key_left_image + '"style = "width:30px x; height:30px;position:fixed; top:' + (choice_top_position + 18) + '%;\
@@ -350,7 +377,7 @@ function generate_stimilarity_rating_trial(triad){
             target: target_stimulus.stimulus, 
             left: comparison_stimulus_a.stimulus, 
             right: comparison_stimulus_b.stimulus, 
-            comparison_type: comparison_stimulus_a.violation + comparison_stimulus_b.violation
+            comparison_type: comparison_stimulus_a.violation + "_" + comparison_stimulus_b.violation
         }
       };
 
@@ -358,47 +385,3 @@ function generate_stimilarity_rating_trial(triad){
 
 }
 
-
-
-
-
-function generate_html_string_for_similarity_rating(target_stimulus, comparison_stimulus_a, comparison_stimulus_b){
-   
-
-  
-    var target_top_position = 5
-    var target_left_postion = 46
-
-
-
-    var choice_top_position = 20 
-    var left_central_postion = 30
-    var right_central_position = 70
-  
-
-
-
-    var left_pair_left = left_central_postion - 5
-    var left_pair_right = left_central_postion + 5
-    var right_pair_left = right_central_position - 5
-    var right_pair_right = right_central_position + 5
-  
-    
-
-
-    s_target = '<img src="' + target_stimulus.stimulus + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + target_top_position + '%;\
-    transform: translate(-50%, -50%);left:' + target_left_postion + '%"></img>'
-
-    s_choice_left = '<img src="' + comparison_stimulus_a.stimulus + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + choice_top_position + '%;\
-    transform: translate(-50%, -50%);left:' + left_central_postion + '%"></img>'
-
-    s_choice_right = '<img src="' + comparison_stimulus_b.stimulus + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + choice_top_position + '%;\
-    transform: translate(-50%, -50%);left:' + right_central_position + '%"></img>'
-
-
-    s = s_target + s_choice_left + s_choice_right
-  
-  
-    return(s)
-  }
-  
