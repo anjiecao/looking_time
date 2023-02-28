@@ -150,6 +150,7 @@ img.test {
      
 
       var jsPsych = initJsPsych({
+        minimum_valid_rt: 500, 
         on_trial_finish: function(){
             jsPsych.data.addProperties({ 
               subject: subject_id, 

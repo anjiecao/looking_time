@@ -9,10 +9,11 @@ all_similarity_rating = all_similarity_rating_package.map(t => generate_stimilar
 
 all_complexity_rating = get_all_complexity_rating(all_stimuli_info)
 
-//
+create_block_structure(all_similarity_rating, all_complexity_rating, trial_n = 12)
 
 instruction = get_instruction()
 demog  = get_demog_questions()
+
 
 console.log(all_stimuli)
 console.log(all_stimuli_info)
