@@ -22,62 +22,21 @@ function get_instruction(){
         "<p>We are researchers who usually study babies. :) </p>" +
         "<p>In particular, we are interested in knowing what makes things interesting or boring to babies. </p>" +
         "<p> So we designed some cute stimuli, which we are hoping to show to babies soon! </p>" +
-        "<p> But first, to get an initial idea, we are trying our experiment with adults first (i.e. you!). </p>" +
-        "<p> So we really appreciate your help! </p>"
-        ,
-        "<p>Since this task was designed for babies, it's going to be really easy!</p>" +
-        "<p>You will repeatedly see a stage on the screen. </p>" + 
-        "<p>At the beginning of each trial, you will see a gray curtain being raised that reveals the animation behind the curtain. </p>"+
-        "<p>Whenever you feel like you have seen enough of the animation, you can press the space bar to proceed to the next trial.</p>" + 
-        "<p>You will see a few example trials next." 
+        "<p> But first, to get an initial idea, <b>we want to know what adults think of our stimuli.</b> </p>" +
+        "<p> <b>You will be asked to judge the complexity of the stimuli and the similarity between them.</b> </p>" +
+        "<p> We really appreciate your help! </p>"
         ],
           data: {stimulus_type: 'instructions'},
           show_clickable_nav: true
         }
     
-    var demo_1 = {    
-        type: curtainDisplay, 
-        demo_mode: true, 
-        demo_string: "Press the space whenever you have seen enough of this animation.",
-        stimulus: '<img src="' + "media/practice/p1.jpeg" + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + 50 + '%;\
-        transform: translate(-50%, -50%);left:' + 50 + '%"></img>', 
-        valid_key_press: [" "], 
-        data: {stimulus_type:'instructions'}
-    }
-
-    var demo_2 = {    
-        type: curtainDisplay, 
-        demo_mode: true, 
-        demo_string: "You did great! Let's try again! Press the spacebar whenever you want to go to the next trial",
-        stimulus: '<img src="' + "media/practice/p1.jpeg" + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + 44 + '%;\
-        transform: translate(-50%, -50%);left:' + 34 + '%"></img>', 
-        valid_key_press: [" "], 
-        data: {stimulus_type:'instructions'}
-    }
-
-    var demo_3 = {    
-        type: curtainDisplay, 
-        demo_mode: true, 
-        demo_string: "Awesome! You are almost ready for the experiment!",
-        stimulus: '<img src="' + "media/practice/p2.png" + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + 54 + '%;\
-        transform: translate(-50%, -50%);left:' + 54 + '%"></img>', 
-        valid_key_press: [" "], 
-        data: {stimulus_type:'instructions'}
-    }
+    
 
     var instruction2 = {
         type: jsPsychInstructions,
     
         pages: [          "<p> Before we get started, please know that if you experienced significant lag in the preceding animations, it will probably get better once we start the actual experiment. </p>" +
     "<p> If the lagginess persists however, we would really appreciate if you could let us know in the feedback section at the end of the experiment. </p>",
-    "<p> Final point about the experiment:</p> <p>  Every couple of trials, we will ask you a simple question. </p>" +
-    "<p> Then you will see a new set of creatures to look at for as long as you like, </p>" +
-    "<p> and you can still move between creatures by pressing the space bar. </p>",
-    "<p> We hope you enjoy our baby stimuli! </p>" +
-    "<p> The task should take no longer than 6 minutes, </p>" +
-    "<p> after which we will ask you some questions about the stimuli for 2-3 minutes, </p>" +
-    "<p> and then you'll be all done! </p>",
-    "<p> Many thanks again for your participation. :) </p> ",
     "<p> <b> The experiment begins now! </b> </p> <br></br>",
         ],
             data: {stimulus_type: 'instructions'},
@@ -86,7 +45,7 @@ function get_instruction(){
 
 
 
-    instruction = [consent, instruction1, demo_1, demo_2, demo_3, instruction2]
+    instruction = [consent, instruction1,instruction2]
 
     return (instruction)
 

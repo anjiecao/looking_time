@@ -53,14 +53,15 @@ function generate_html_string(stimulus_info){
 
   var top_position = 20
   var left_postion = 46
+  var pair_half_distance = 3
 
   stimulus_string = stimulus_info.stimulus
   
   if(stimulus_info.number == "pair"){
       s = '<img src="' + stimulus_string + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + top_position + '%;\
-          transform: translate(-50%, -50%);left:' + (left_postion-5) + '%"></img>'+
+          transform: translate(-50%, -50%);left:' + (left_postion-pair_half_distance) + '%"></img>'+
           '<img src="' + stimulus_string + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + top_position  + '%;\
-          transform: translate(-50%, -50%);left:' + (left_postion + 5) + '%">'
+          transform: translate(-50%, -50%);left:' + (left_postion + pair_half_distance) + '%">'
   }else{
       s = '<img src="' + stimulus_string + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + top_position + '%;\
       transform: translate(-50%, -50%);left:' + left_postion + '%"></img>'

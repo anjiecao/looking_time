@@ -9,9 +9,10 @@ all_similarity_rating = all_similarity_rating_package.map(t => generate_stimilar
 
 all_complexity_rating = get_all_complexity_rating(all_stimuli_info)
 
-//demog  = get_demog_questions()
+//
 
-//instruction = get_instruction()
+instruction = get_instruction()
+demog  = get_demog_questions()
 
 console.log(all_stimuli)
 console.log(all_stimuli_info)
