@@ -53,7 +53,7 @@ function generate_html_string(stimulus_info){
 
   var top_position = 20
   var left_postion = 46
-  var pair_half_distance = 3
+  var pair_half_distance = 3.5
 
   stimulus_string = stimulus_info.stimulus
   

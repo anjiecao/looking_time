@@ -1,7 +1,14 @@
 
-function get_block_filler(current_block_n, total_block_n){
+function get_block_filler(block, current_block_n, total_block_n){
 
-    return 
+    filler_trial = {
+        type: jsPsychHtmlKeyboardResponse,
+        stimulus:"",
+        prompt: "<p>You have finished " + current_block_n +  " out of " + total_block_n + " blocks so far. Press any key to continue</p>",
+      }
+
+    block.push(filler_trial)
+
 }
 
 
@@ -35,9 +42,14 @@ function create_block_structure(all_similarity_rating, all_complexity_rating, tr
         similarity_blocks.push(combined)
     }
 
-    console.log(complexity_blocks)
-    console.log(similarity_blocks)
+    all_blocks = complexity_blocks.concat(similarity_blocks)
+    shuffleArray(all_blocks)
     
+    total_block_n = all_blocks.length
+    for (var i = 0; i < total_block_n; i++){
+        current_block_n = i + 1
+        get_block_filler(all_blocks[i], current_block_n, total_block_n)
+    }
 
-
+    return all_blocks.flat()
 }

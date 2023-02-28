@@ -329,7 +329,7 @@ function generate_stimilarity_rating_trial(triad){
     var choice_top_position = 25 
     var left_central_postion = target_left_postion - 10
     var right_central_position = target_left_postion + 10
-    var pair_half_distance = 3
+    var pair_half_distance = 3.5
 
 
     if(target_stimulus.number == "single"){
