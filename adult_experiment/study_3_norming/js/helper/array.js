@@ -1,5 +1,9 @@
 
 
+function onlyUnique(value, index, array) {
+  return self.indexOf(value) === index;
+}
+
 // remove an array from an array of array
 // assuming no duplicate elements in the array of array  
 function removeArrayFromArray(arr, arrOfarr){

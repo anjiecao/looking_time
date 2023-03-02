@@ -102,7 +102,7 @@ function generate_all_similarity_rating_package(all_stimuli_info, sample_n = 24)
     target_set = generate_target_set(all_stimuli_info)
     all_pose_violation = structuredClone(target_set.map(x => generate_pose_violaion(x, all_stimuli_info)))
     all_pose_violation = all_pose_violation.map(pvs => pvs.map(pv_obj => {pv_obj.violation = "pose" 
-                                                             return pv_obj}))
+                                                             return pv_obj}))                                                       
 
     target_set = generate_target_set(all_stimuli_info)
     all_animacy_violation = structuredClone(target_set.map(x => generate_animacy_violation(x, all_stimuli_info)))
@@ -123,36 +123,97 @@ function generate_all_similarity_rating_package(all_stimuli_info, sample_n = 24)
     all_filler = all_filler.map(fs => fs.map(f_obj => {f_obj.violation = "filler" 
                                                                     return f_obj}))
 
-
+    
     index = Array.from({length: target_set.length}, (x, i) => i)                                                      
-    // 24 * 1 * 12 
+    
+    // pose vs animacy 24 * 1 * 12 
+    all_pose_violation = structuredClone(target_set.map(x => generate_pose_violaion(x, all_stimuli_info)))
+    all_pose_violation = all_pose_violation.map(pvs => pvs.map(pv_obj => {pv_obj.violation = "pose" 
+                                                             return pv_obj}))         
+    all_animacy_violation = structuredClone(target_set.map(x => generate_animacy_violation(x, all_stimuli_info)))
+    all_animacy_violation = all_animacy_violation.map(avs => avs.map(av_obj => {av_obj.violation = "animacy" 
+                                                                                                                         return av_obj}))
     target_set = generate_target_set(all_stimuli_info)
     pose_vs_animacy = getRandomSubarray(index.map(i => get_combination_of_violation(target_set[i], all_pose_violation[i], all_animacy_violation[i])).flat(), 
                                         sample_n)
-    // 24 * 1 * 1 
+    
+    
+    // pose vs number 24 * 1 * 1 
     target_set = generate_target_set(all_stimuli_info)
+    all_pose_violation = structuredClone(target_set.map(x => generate_pose_violaion(x, all_stimuli_info)))
+    all_pose_violation = all_pose_violation.map(pvs => pvs.map(pv_obj => {pv_obj.violation = "pose" 
+                                                             return pv_obj}))   
+    all_number_violation = structuredClone(target_set.map(x => generate_number_violation(x, all_stimuli_info)))
+    all_number_violation = all_number_violation.map(nvs => nvs.map(nv_obj => {nv_obj.violation = "number"
+                                                                        return nv_obj}))
     pose_vs_number = getRandomSubarray(index.map(i => get_combination_of_violation(target_set[i], all_pose_violation[i], all_number_violation[i])).flat(), 
                                         sample_n)
-    // 24 * 1 * 11
+    // pose vs identity 24 * 1 * 11
     target_set = generate_target_set(all_stimuli_info)
+    all_pose_violation = structuredClone(target_set.map(x => generate_pose_violaion(x, all_stimuli_info)))
+    all_pose_violation = all_pose_violation.map(pvs => pvs.map(pv_obj => {pv_obj.violation = "pose" 
+                                                             return pv_obj}))   
+    all_identity_violation = structuredClone(target_set.map(x => generate_identity_violation(x, all_stimuli_info)))
+    all_identity_violation = all_identity_violation.map(ivs => ivs.map(iv_obj => {iv_obj.violation = "identity" 
+                                                        return iv_obj}))                                                                                                               
     pose_vs_identity = getRandomSubarray(index.map(i => get_combination_of_violation(target_set[i], all_pose_violation[i], all_identity_violation[i])).flat(), 
                         sample_n)
-    // 24 * 12 * 1
+    
+                        
+    // animacy vs number: 24 * 12 * 1
+
     target_set = generate_target_set(all_stimuli_info)
+    all_animacy_violation = structuredClone(target_set.map(x => generate_animacy_violation(x, all_stimuli_info)))
+    all_animacy_violation = all_animacy_violation.map(avs => avs.map(av_obj => {av_obj.violation = "animacy" 
+                                                                                                                         return av_obj}))
+    all_number_violation = structuredClone(target_set.map(x => generate_number_violation(x, all_stimuli_info)))
+    all_number_violation = all_number_violation.map(nvs => nvs.map(nv_obj => {nv_obj.violation = "number"
+                                                                              return nv_obj}))
     animacy_vs_number = getRandomSubarray(index.map(i => get_combination_of_violation(target_set[i], all_animacy_violation[i], all_number_violation[i])).flat(), 
                         sample_n)
-    // 24 * 12 * 11
+
+
+    // animacy vs identity 24 * 12 * 11
     target_set = generate_target_set(all_stimuli_info)
+    all_animacy_violation = structuredClone(target_set.map(x => generate_animacy_violation(x, all_stimuli_info)))
+    all_animacy_violation = all_animacy_violation.map(avs => avs.map(av_obj => {av_obj.violation = "animacy" 
+                                                                                return av_obj}))
+    all_identity_violation = structuredClone(target_set.map(x => generate_identity_violation(x, all_stimuli_info)))
+    all_identity_violation = all_identity_violation.map(ivs => ivs.map(iv_obj => {iv_obj.violation = "identity" 
+                                                                                    return iv_obj}))                                                                                      
     animacy_vs_identity = getRandomSubarray(index.map(i => get_combination_of_violation(target_set[i], all_animacy_violation[i], all_identity_violation[i])).flat(), 
                         sample_n)
-    // 24 * 1 * 11
+    
+    // number vs identity 24 * 1 * 11
     target_set = generate_target_set(all_stimuli_info)
+    all_number_violation = structuredClone(target_set.map(x => generate_number_violation(x, all_stimuli_info)))
+    all_number_violation = all_number_violation.map(nvs => nvs.map(nv_obj => {nv_obj.violation = "number"
+                                                                              return nv_obj}))
+    all_identity_violation = structuredClone(target_set.map(x => generate_identity_violation(x, all_stimuli_info)))
+    all_identity_violation = all_identity_violation.map(ivs => ivs.map(iv_obj => {iv_obj.violation = "identity" 
+                                                                                    return iv_obj}))                                                                                     
     number_vs_identity = getRandomSubarray(index.map(i => get_combination_of_violation(target_set[i], all_number_violation[i], all_identity_violation[i])).flat(), 
                         sample_n)
 
 
     // get one filler for each violation category 
     target_set = generate_target_set(all_stimuli_info)
+    all_pose_violation = structuredClone(target_set.map(x => generate_pose_violaion(x, all_stimuli_info)))
+    all_pose_violation = all_pose_violation.map(pvs => pvs.map(pv_obj => {pv_obj.violation = "pose" 
+                                                             return pv_obj}))   
+    all_identity_violation = structuredClone(target_set.map(x => generate_identity_violation(x, all_stimuli_info)))
+    all_identity_violation = all_identity_violation.map(ivs => ivs.map(iv_obj => {iv_obj.violation = "identity" 
+                                                                                    return iv_obj}))   
+    all_animacy_violation = structuredClone(target_set.map(x => generate_animacy_violation(x, all_stimuli_info)))
+    all_animacy_violation = all_animacy_violation.map(avs => avs.map(av_obj => {av_obj.violation = "animacy" 
+                                                                                  return av_obj}))
+    all_number_violation = structuredClone(target_set.map(x => generate_number_violation(x, all_stimuli_info)))
+    all_number_violation = all_number_violation.map(nvs => nvs.map(nv_obj => {nv_obj.violation = "number"
+                                                                                    return nv_obj}))
+    all_filler = structuredClone(target_set.map(x => generate_filler_choice(x, all_stimuli_info)))
+    all_filler = all_filler.map(fs => fs.map(f_obj => {f_obj.violation = "filler" 
+                                                        return f_obj}))
+                                                    
     pose_vs_filler = getRandomSubarray(index.map(i => get_combination_of_violation(target_set[i], all_pose_violation[i], all_filler[i])).flat(), 1)
     identity_vs_filler = getRandomSubarray(index.map(i => get_combination_of_violation(target_set[i], all_identity_violation[i], all_filler[i])).flat(), 1)
     animacy_vs_filler = getRandomSubarray(index.map(i => get_combination_of_violation(target_set[i], all_animacy_violation[i], all_filler[i])).flat(), 1)
@@ -171,16 +232,6 @@ function generate_all_similarity_rating_package(all_stimuli_info, sample_n = 24)
 
 
 
-
-
-
-
-
-
-
-
-
-
 function generate_similarity_rating_blocks(all_similarity_rating_package){
 
     var pose_violation_package = all_similarity_rating_package.pose
@@ -196,57 +247,6 @@ function generate_similarity_rating_blocks(all_similarity_rating_package){
 }
 
 
-
-
-function generate_similarity_rating_package(all_stimuli_info){
-
-    all_similarity_rating_package = {
-        pose: [], 
-        number: [], 
-        identity: [], 
-        animacy: []
-    }
-
-    // pose 24  (diff num; diff pose; random number & pose) 
-    // A, A, A with different pose 
-
-    all_pose_violation = get_pose_violation_triads(all_stimuli_info)
-    all_similarity_rating_package.pose = all_pose_violation
-    // number comparison 24 (random pose & number at target )
-    // B, B, B with different number 
-    all_number_violation = get_number_violation_triads(all_stimuli_info)
-    all_similarity_rating_package.number = all_number_violation
-
-    // identity comparison 61 
-    // C, C, with all the other in categories one 
-
-    // animacy comparison 61 + 12
-    // D, D, with all the other animacy comparison
-
-    return (all_similarity_rating_package)
-
-}
-
-function get_identity_violation_triads(all_stimuli_info){
-
-    total_index = (all_stimuli_info.length)/8
-    all_number_violation = []
-
-    all_animate =  all_stimuli_info.filter(obj => obj.animacy === 'animate');
-    all_inanimate = all_stimuli_info.filter(obj => obj.animacy === 'inanimate');
-
-    shuffleArray(all_animate)
-    shuffleArray(all_inanimate)
-
-    for (var target_i = 0; target_i < total_index + 1; target_i++){
-
-
-
-    }
-
-
-
-}
 
 function get_number_violation_triads(all_stimuli_info){
 
@@ -277,38 +277,6 @@ function get_number_violation_triads(all_stimuli_info){
     }
 
     return (all_number_violation)
-
-}
-
-
-function get_pose_violation_triads(all_stimuli_info){
-
-    total_index = (all_stimuli_info.length)/8
-    all_pose_violation = []
-
-    for (var i = 1; i < total_index + 1; i++){
-        
-        animate_with_index = all_stimuli_info.filter(obj => obj.index == i && obj.animacy === 'animate');
-        inanimate_with_index = all_stimuli_info.filter(obj => obj.index == i && obj.animacy === 'inanimate');
-
-        // select a random stimulus as the target 
-        random_animate_stimulus = getRandomSubarray(animate_with_index, 1)[0]
-        random_inanimate_stimulus = getRandomSubarray(inanimate_with_index, 1)[0]
-
-        // select a random non-used stimulus with pose violation as in-animate 
-        random_animate_distractor = animate_with_index.filter(obj => obj.animacy == random_animate_stimulus.animacy && obj.number == random_animate_stimulus.number && obj.pose != random_animate_stimulus.pose)[0]
-        random_inanimate_distractor = inanimate_with_index.filter(obj => obj.animacy == random_inanimate_stimulus.animacy && obj.number == random_inanimate_stimulus.number && obj.pose != random_inanimate_stimulus.pose)[0]
-    
-
-        // form triad, always put the duplicate first atm 
-        animate_triad = [random_animate_stimulus, random_animate_stimulus,random_animate_distractor]
-        inanimate_triad = [random_inanimate_stimulus, random_inanimate_stimulus, random_inanimate_distractor]
-
-        all_pose_violation.push(animate_triad)
-        all_pose_violation.push(inanimate_triad)
-
-    }
-    return (all_pose_violation)
 
 }
 
