@@ -343,8 +343,17 @@ function generate_stimilarity_rating_trial(triad){
         prompt: "<p>Press the key under the animation in the bottom row that is more similar to the top animation</p>",
         data: {
             target: target_stimulus.stimulus, 
+            target_animacy: target_stimulus.animacy, 
+            target_pose: target_stimulus.pose, 
+            target_number: target_stimulus.number, 
             left: comparison_stimulus_a.stimulus, 
+            left_animacy: comparison_stimulus_a.animacy, 
+            left_pose: comparison_stimulus_a.pose, 
+            left_number: comparison_stimulus_a.number, 
             right: comparison_stimulus_b.stimulus, 
+            right_animacy: comparison_stimulus_b.animacy, 
+            right_pose: comparison_stimulus_b.pose, 
+            right_number: comparison_stimulus_b.number, 
             comparison_type: comparison_stimulus_a.violation + "_" + comparison_stimulus_b.violation
         }
       };
