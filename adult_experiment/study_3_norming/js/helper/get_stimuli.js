@@ -32,6 +32,32 @@ function get_all_stimuli(){
 }
 
 
+function get_complexity_anchor_info(){
+
+    anchor_item = ["media/stimuli/obj_ball.png", 
+                  "media/stimuli/obj_circuit.png"]
+
+    anchor_info = []
+    for (var i = 0; i < anchor_item.length; i++){
+        stimulus = {
+            stimulus: anchor_item[i], 
+            index: "anchor", 
+            animacy: "anchor", 
+            pose: "anchor", 
+            number: "anchor"
+        }
+        anchor_info.push(stimulus)
+    }
+
+    return (anchor_info)
+
+
+
+
+
+}
+
+
 function get_all_stimuli_info(all_stimuli){
     all_stimuli_info = []
 

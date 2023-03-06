@@ -2,23 +2,28 @@
 all_stimuli = get_all_stimuli()
 /* create object with stimuli properties of all stimuli path*/
 all_stimuli_info = get_all_stimuli_info(all_stimuli)
+all_complexity_rating_anchor = get_complexity_anchor_info()
+
 shuffleArray(all_stimuli_info)
+
+
 
 all_similarity_rating_package = generate_all_similarity_rating_package(all_stimuli_info)
 all_similarity_rating = all_similarity_rating_package.map(t => generate_stimilarity_rating_trial(t))
 check_duplicate(all_similarity_rating)
 
 
+complexity_rating_anchor = get_all_complexity_rating(all_complexity_rating_anchor)
 all_complexity_rating = get_all_complexity_rating(all_stimuli_info)
 
-all_blocked_ratings = create_block_structure(all_similarity_rating, all_complexity_rating, trial_n = 12)
+all_blocked_ratings = create_block_structure(all_similarity_rating, all_complexity_rating, complexity_rating_anchor, trial_n = 12)
 
 
 instruction = get_instruction()
 demog  = get_demog_questions()
 
-
 console.log(all_stimuli)
 console.log(all_stimuli_info)
 console.log(all_complexity_rating)
 console.log(all_similarity_rating)
+console.log(all_blocked_ratings)
