@@ -24,7 +24,7 @@ function get_all_complexity_rating(all_stimuli_info){
     var complexity_rating_trial = {
       type: jsPsychSurveyLikert,
       preamble: rating_stimulus,
-      scale_width: '500px',
+      scale_width: 1000,
       questions: [
         {
           prompt: q_complexity, 
