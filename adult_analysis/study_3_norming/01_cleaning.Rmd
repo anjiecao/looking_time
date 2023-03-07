@@ -1,0 +1,118 @@
+---
+title: "01_data_cleaning"
+output: html_document
+date: "`r Sys.Date()`"
+---
+
+```{r}
+library(tidyverse)
+library(here)
+library(jsonlite)
+
+raw_d <- read_csv(here("data/merged_data.csv"))
+```
+
+# Exclusion 
+
+
+(a) the standard deviation of log-transformed of their reaction times on all similarity rating trials is less than 0.15 (indicating key-mashing), 
+ 
+```{r}
+same_rt_sbj <- raw_d %>% 
+  filter(trial_type == "html-keyboard-response", !is.na(response)) %>% 
+  group_by(subject) %>% 
+  summarise(
+    m_rt = mean(rt), 
+    sd = sd(rt)
+  ) %>% 
+  filter(sd < 0.15) %>% 
+  pull(subject)
+
+same_rt_sbj
+```
+ 
+ 
+ 
+ (b) spent more than three absolute deviations above the median of the task completion time as reported by Prolific 
+ 
+```{r}
+prolific_d <- read_csv(here("data/prolific.csv"))
+
+summary_pd <- prolific_d %>% summarise(
+  median = median(`Time taken`), 
+  mad = mad(`Time taken`), 
+  upper = median + 3 * mad)
+
+exclude_p_id <- prolific_d %>% filter(`Time taken` > summary_pd$upper) %>% pull(`Participant id`)
+exclude_p_id
+```
+ 
+ 
+ 
+ (c) provided the same response to more than 80% of the complexity rating task  
+
+ 
+```{r}
+same_response_sbj <- raw_d %>% 
+  filter(trial_type == "survey-likert", rating_type != "anchoring") %>% 
+  mutate(complexity_rating = map(response, ~ fromJSON(.) %>% as.data.frame()) %>% unlist()) %>% 
+  select(-response) %>% 
+  group_by(subject, complexity_rating) %>% 
+  count() %>% 
+  ungroup() %>% 
+  mutate(proportion = n / 96) %>% 
+  filter(proportion > .8) %>% 
+  pull(subject) 
+
+same_response_sbj
+```
+ 
+ (d) answered more than 1 filler questions incorrectly. 
+
+```{r}
+wrong_filler_sbj <- raw_d %>% 
+  filter(trial_type == "html-keyboard-response", grepl("filler", comparison_type)) %>% 
+  mutate(filler_answer = case_when(
+   target_animacy == left_animacy & target_pose == left_pose & target_number == left_number & target == left ~ "f", 
+   TRUE ~ "j"
+  )
+  ) %>% 
+  mutate(filler_correct = (response == filler_answer)) %>% 
+  group_by(subject) %>% 
+  summarise(total_correct = sum(filler_correct)) %>% 
+  filter(total_correct < 3) %>% 
+  pull(subject)
+
+wrong_filler_sbj
+```
+
+
+```{r}
+raw_d <- raw_d %>% 
+  filter(!prolific_id %in% exclude_p_id) %>% 
+  filter(!subject %in% c(wrong_filler_sbj,same_response_sbj, same_rt_sbj))
+```
+
+
+# cleaning
+
+```{r}
+# complexity rating
+complexity_rating <- raw_d %>% 
+  filter(trial_type == "survey-likert", rating_type != "anchoring") %>% 
+  mutate(complexity_rating = map(response, ~ fromJSON(.) %>% as.data.frame()) %>% unlist()) %>% 
+  select(-response) %>% 
+  select(subject, rating_stimulus, rating_animacy, rating_number, rating_pose, complexity_rating)
+
+# similarity rating 
+raw_d %>% 
+  filter(trial_type == "html-keyboard-response", !grepl("filler", comparison_type)) %>% 
+  select(subject, rt, response, target, target_animacy, target_pose, target_number, left, left_animacy, left_pose, left_number, right_animacy, right_pose, right_number, 
+         comparison_type)
+  
+  
+  
+```
+
+
+
