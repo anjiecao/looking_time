@@ -35,9 +35,76 @@ function get_instruction(){
     var instruction2 = {
         type: jsPsychInstructions,
     
-        pages: [          "<p> Before we get started, please know that if you experienced significant lag in the preceding animations, it will probably get better once we start the actual experiment. </p>" +
-    "<p> If the lagginess persists however, we would really appreciate if you could let us know in the feedback section at the end of the experiment. </p>",
-    "<p> <b> The experiment begins now! </b> </p> <br></br>",
+        pages: [          "<p> Before we get started, we want to give you some examples of our complexity judgement trials, so you know what to expect </p>"
+    //"<p> <b> The experiment begins now! </b> </p> <br></br>",
+        ],
+            data: {stimulus_type: 'instructions'},
+            show_clickable_nav: true}
+
+    var top_position = 20
+    var left_postion = 46
+
+    var complex_anchor_trial = {
+
+        type: jsPsychSurveyLikert,
+        preamble:  '<img src="' +  "media/stimuli/obj_circuit.png" + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + top_position + '%;\
+        transform: translate(-50%, -50%);left:' + left_postion + '%"></img>',
+        scale_width: 1000,
+      questions: [
+        {
+          prompt: "This is a very complex animation. How would you rate the complexity of this animation?", 
+          labels:  [
+            "Simplest",
+            "Very Simple",
+            "Quite Simple",
+            "Neither Simple Nor Complex",
+            "Quite Complex",
+            'Very Complex',
+            'Most Complex',
+          ],
+          required: true
+        }
+      ],
+      data: {
+          rating_type: "anchoring"
+      }
+
+
+    }
+
+    var simple_anchor_trial = {
+
+        type: jsPsychSurveyLikert,
+        preamble:  '<img src="' + "media/stimuli/obj_ball.png" + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + top_position + '%;\
+        transform: translate(-50%, -50%);left:' + left_postion + '%"></img>',
+        scale_width: 1000,
+      questions: [
+        {
+          prompt: "This is a very simple animation. How would you rate the complexity of this animation?", 
+          labels:  [
+            "Simplest",
+            "Very Simple",
+            "Quite Simple",
+            "Neither Simple Nor Complex",
+            "Quite Complex",
+            'Very Complex',
+            'Most Complex',
+          ],
+          required: true
+        }
+      ],
+      data: {
+          rating_type: "anchoring"
+      }
+
+
+    }
+
+
+    var instruction3 = {
+        type: jsPsychInstructions,
+    
+        pages: [          "<p> You did great! The experiment begins now!</p>"
         ],
             data: {stimulus_type: 'instructions'},
             show_clickable_nav: true}
@@ -45,7 +112,7 @@ function get_instruction(){
 
 
 
-    instruction = [consent, instruction1,instruction2]
+    instruction = [consent, instruction1,instruction2, complex_anchor_trial, simple_anchor_trial, instruction3]
 
     return (instruction)
 

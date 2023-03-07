@@ -12,7 +12,7 @@ function get_block_filler(block, current_block_n, total_block_n){
 }
 
 
-function create_block_structure(all_similarity_rating, all_complexity_rating, complexity_rating_anchor, trial_n){
+function create_block_structure(all_similarity_rating, all_complexity_rating, trial_n){
 
     total_complexity_block_n = Math.floor(all_complexity_rating / trial_n)
     total_similarity_block_n = Math.floor(all_similarity_rating / trial_n)
@@ -46,15 +46,7 @@ function create_block_structure(all_similarity_rating, all_complexity_rating, co
     shuffleArray(all_blocks)
     
     total_block_n = all_blocks.length
-    n_complexity_block = 0
     for (var i = 0; i < total_block_n; i++){
-        // check if this is complexity block 
-        if (typeof(all_blocks[i][0].choices) == "undefined"){
-            n_complexity_block = n_complexity_block + 1
-            if (n_complexity_block == 1){
-                all_blocks[i] = complexity_rating_anchor.concat(all_blocks[i])
-            }
-        }
 
         current_block_n = i + 1
         get_block_filler(all_blocks[i], current_block_n, total_block_n)
