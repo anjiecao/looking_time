@@ -70,7 +70,7 @@ data_df %<>% complete(fam_duration)
 
 # jspsych files
 jspsych_files_exp4 <- list.files("data/exp4", full.names = T) 
-jspsych_list_exp4 <- lapply(jspsych_files_exp4[2:length(jspsych_files)], read.csv)
+jspsych_list_exp4 <- lapply(jspsych_files_exp4[2:length(jspsych_files_exp4)], read.csv)
 jspsych_list_exp4 <- lapply(jspsych_list_exp4, function(x) {x['success'] = NULL; x})
 jspsych_df <- map_dfr(jspsych_list_exp4, ~ .x, .id = 'subjectid') 
 
