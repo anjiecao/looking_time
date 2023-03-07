@@ -1,0 +1,65 @@
+---
+title: "02_visualization"
+output: html_document
+date: "`r Sys.Date()`"
+---
+
+
+```{r}
+library(tidyverse)
+library(here)
+library(jsonlite)
+library(ggthemes)
+
+cr <- read_csv(here("data/complexity_rating.csv"))
+sr <- read_csv(here("data/similarity_rating.csv"))
+```
+
+
+
+# Complexity rating 
+
+```{r}
+cr %>% 
+  ggplot(aes(x = rating_animacy, y = complexity_rating)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  theme_few() 
+
+
+cr %>% 
+  ggplot(aes(x = rating_pose, y = complexity_rating)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  theme_few() 
+
+
+cr %>% 
+  ggplot(aes(x = rating_number, y = complexity_rating)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  theme_few() 
+```
+
+```{r}
+cr %>% 
+   ggplot(aes(x = rating_stimulus, y = complexity_rating)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  theme_few() 
+```
+
+# Similarity 
+
+```{r}
+sr %>% 
+  group_by(subject) %>% 
+  count() %>% 
+  rename(n_trial = n) %>% 
+  left_join(sr, by = "subject") %>% 
+  group_by(subject, n_trial, chosen_violation) %>% 
+  count() %>% 
+  filter(!is.na(chosen_violation)) %>%
+  mutate(proportion = n / n_trial) %>% 
+  ggplot(aes(x = chosen_violation, y = proportion)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  theme_few() 
+```
+
+
