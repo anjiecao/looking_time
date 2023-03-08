@@ -1,0 +1,5 @@
+"success","timeout","failed_images","failed_audio","failed_video","trial_type","trial_index","time_elapsed","internal_node_id","subject","prolific_id","study","session","window_width","window_height","view_history","rt","stimulus_type"
+"true","false","[]","[]","[]","preload","0","245","0.0-0.0","SS1678233523590","5b05e0d131cebe000177c38e","6406d7f26dd5b7fc1e3377bd","6407ce622dcdfc0d5fdf5de6","1280","567","","",""
+"","","","","","instructions","1","4944","0.0-1.0","SS1678233523590","5b05e0d131cebe000177c38e","6406d7f26dd5b7fc1e3377bd","6407ce622dcdfc0d5fdf5de6","1280","567","[{""page_index"":0,""viewing_time"":4696}]","4696",""
+"","","","","","instructions","2","13468","0.0-2.0","SS1678233523590","5b05e0d131cebe000177c38e","6406d7f26dd5b7fc1e3377bd","6407ce622dcdfc0d5fdf5de6","1280","567","[{""page_index"":0,""viewing_time"":6518}]","6518","instructions"
+"","","","","","instructions","3","14472","0.0-3.0","SS1678233523590","5b05e0d131cebe000177c38e","6406d7f26dd5b7fc1e3377bd","6407ce622dcdfc0d5fdf5de6","1280","567","[{""page_index"":0,""viewing_time"":1002}]","1002","instructions"
