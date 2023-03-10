@@ -15,6 +15,8 @@ cr <- read_csv(here("data/complexity_rating.csv")) %>% mutate(complexity_rating 
 sr <- read_csv(here("data/similarity_rating.csv"))
 em <- read_csv(here("data/adult_norming_embeddings.csv"))
 
+c_dis <- read_csv(here("data/eucledian_distances_adultnorming.csv"))
+e_dis <- read_csv(here("data/cosine_distances_adultnorming.csv"))
 ```
 
 ```{r}
@@ -75,19 +77,33 @@ cr %>%
 ```{r}
 cr %>% 
   mutate(stim_name = gsub("media/stimuli/","",  rating_stimulus)) %>% 
-  mutate(stim_name = gsub("inanimate", "veggie", stim_name)) %>% 
-  distinct(stim_name) %>% 
-  arrange(stim_name)
-  #left_join(em, by = "stim_name")
+  left_join(em, by = "stim_name") %>% 
+  pivot_longer(cols = c("V1", "V2"), 
+               names_to = "embedding_dim", 
+               values_to = "embedding_val") %>% 
+  ggplot(aes(x = embedding_val, y = complexity_rating, color = rating_animacy)) + 
+  geom_point(alpha = .3, position = position_jitter(width = .2)) + 
+  #geom_smooth(method = "lm") + 
+  facet_wrap(~embedding_dim) + theme_few()
 ```
-
-animate_003_left.png	 - animate_003_left.png	
 
 
 
 ```{r}
-em %>% 
-  arrange(stim_name)
+cr %>% 
+  mutate(stim_name = gsub("media/stimuli/","",  rating_stimulus)) %>% 
+  group_by(rating_stimulus) %>% 
+  summarise(mean_complexity_rating = mean(complexity_rating)) %>% 
+   mutate(stim_name = gsub("media/stimuli/","",  rating_stimulus)) %>% 
+  left_join(em, by = "stim_name") %>% 
+  mutate(rating_animacy = ifelse(grepl("inanimate", stim_name), "inanimate", "animate")) %>% 
+  pivot_longer(cols = c("V1", "V2"), 
+               names_to = "embedding_dim", 
+               values_to = "embedding_val") %>% 
+  ggplot(aes(x = embedding_val, y = mean_complexity_rating, color = rating_animacy)) + 
+  geom_point(alpha = .3, position = position_jitter(width = .2)) + 
+  geom_smooth(method = "lm") + 
+  facet_wrap(~embedding_dim) + theme_few()
 ```
 
 
@@ -109,4 +125,33 @@ sr %>%
   theme_few() 
 ```
 
+
+```{r}
+sr %>% 
+  mutate(unchosen_violation = case_when(
+    left_violation == chosen_violation ~ right_violation, 
+    right_violation == chosen_violation ~ left_violation
+  )) %>% 
+  left_join(sr %>% group_by(subject, chosen_violation) %>% count() %>% rename(total_n_in_cateogry = n), by = c("subject", "chosen_violation")) %>% 
+  group_by(subject, chosen_violation, total_n_in_cateogry) %>% 
+  count(unchosen_violation) %>% 
+  mutate(proportion = n / total_n_in_cateogry) %>% 
+  filter(!is.na(chosen_violation)) %>%
+  ggplot(aes(x = unchosen_violation, y = proportion)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  facet_wrap(~chosen_violation) + 
+  theme_few()
+```
+
+
+
+```{r}
+sr %>% 
+  group_by(subject, chosen_violation) %>% 
+  summarise(m_rt = mean(rt)) %>% 
+  filter(!is.na(chosen_violation)) %>%
+  ggplot(aes(x = chosen_violation, y = m_rt)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  theme_few() 
+```
 

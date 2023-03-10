@@ -1,0 +1,96 @@
+---
+title: "03_embedding_dis"
+output: html_document
+date: "`r Sys.Date()`"
+---
+
+```{r}
+library(tidyverse)
+library(here)
+library(jsonlite)
+library(ggthemes)
+
+cr <- read_csv(here("data/complexity_rating.csv")) %>% mutate(complexity_rating = complexity_rating + 1)
+sr <- read_csv(here("data/similarity_rating.csv"))
+em <- read_csv(here("data/adult_norming_embeddings.csv"))
+
+c_dis <- read_csv(here("data/eucledian_distances_adultnorming.csv")) %>% rename(stim_name = `...1`)
+e_dis <- read_csv(here("data/cosine_distances_adultnorming.csv"))%>% rename(stim_name = `...1`)
+```
+
+
+# prep dataset (needs to get rid of number)
+
+```{r}
+replace_name <- function(x) gsub("media/stimuli/", "", x)
+
+clean_sr <- sr %>% 
+  mutate_at(c("target", "left", "right"), replace_name) %>% 
+  filter(!left_violation == "number" && !right_violation == "number")
+```
+
+## get the distinct triad and find the embedding distance value matching to it 
+
+time consuming, should read directly 
+
+```{r}
+triad <- clean_sr %>% 
+  distinct(target, left, right) %>% 
+  filter(!is.na(target), !is.na(left), !is.na(right)) 
+
+
+get_distance <- function(stim_a_name, stim_b_name, dist){
+  
+  tibble("val" = dist %>%
+  filter(stim_name == {{stim_b_name}}) %>% 
+  select({{stim_a_name}}) %>% 
+  pull())
+  
+}
+
+triad_ds <- triad %>% 
+  mutate(left_cds = map2_df(.x = triad$target, .y = triad$left, .f = get_distance, c_dis), 
+         left_eds = map2_df(.x = triad$target, .y = triad$left, .f = get_distance, e_dis), 
+         right_cds =  map2_df(.x = triad$target, .y = triad$right, .f = get_distance, c_dis), 
+         right_eds = map2_df(.x = triad$target, .y = triad$right, .f = get_distance, e_dis))
+
+
+write_csv(proportion_ds, here("data/em_dis_with_pair.csv"))
+
+```
+
+## calculate proportion 
+
+```{r}
+proportion_ds <- triad_ds %>% 
+  unnest(left_cds, left_eds, right_cds, right_eds) %>% 
+  rename(left_cds = val, 
+         left_eds = val1, 
+         right_cds = val2, 
+         right_eds = val3) %>% 
+  filter(target != left, target != right) %>% 
+  mutate(
+    left_p_cds = left_cds / (left_cds + right_cds), 
+    right_p_cds = right_cds / (left_cds + right_cds), 
+    left_p_eds = left_eds / (left_eds + right_eds), 
+    right_p_eds = right_eds / (left_eds + right_eds)
+  )
+```
+
+
+```{r}
+clean_sr
+
+# calculate violation proportion
+clean_sr %>% 
+  left_join(proportion_ds, by = c("target", "left", "right")) %>% 
+  filter(!is.na(left_cds)) # already pruned in the previous dataset so anything else would be fine
+
+```
+
+
+
+```{r}
+
+```
+

@@ -109,10 +109,10 @@ similarity_comparison <- raw_d %>%
   filter(trial_type == "html-keyboard-response") %>% 
   filter(!grepl("filler", comparison_type)) %>% 
   filter(!is.na(response)) %>% 
-  select(subject, rt, response, target, target_animacy, target_pose, target_number, left, left_animacy, left_pose, left_number, right_animacy, right_pose, right_number, 
+  select(subject, rt, response, target, target_animacy, target_pose, target_number, left, left_animacy, left_pose, left_number, right, right_animacy, right_pose, right_number, 
          comparison_type) %>% 
   separate(comparison_type, into = c("left_violation", "right_violation"), sep = "_") %>% 
-  select(subject, rt, response, target, left_violation, right_violation) %>% 
+  select(subject, rt, response, target, left, right, left_violation, right_violation) %>% 
   mutate(chosen_violation = case_when(
     response == "j" ~ right_violation, 
     response == "f" ~ left_violation
