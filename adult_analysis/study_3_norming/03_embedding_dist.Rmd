@@ -16,6 +16,10 @@ em <- read_csv(here("data/adult_norming_embeddings.csv"))
 
 c_dis <- read_csv(here("data/eucledian_distances_adultnorming.csv")) %>% rename(stim_name = `...1`)
 e_dis <- read_csv(here("data/cosine_distances_adultnorming.csv"))%>% rename(stim_name = `...1`)
+
+
+proportion_ds <- read_csv(here("data/em_dis_with_pair.csv"))
+
 ```
 
 
@@ -77,20 +81,101 @@ proportion_ds <- triad_ds %>%
   )
 ```
 
+# total plot 
+
 
 ```{r}
-clean_sr
-
 # calculate violation proportion
-clean_sr %>% 
+ds_proportion_df <- clean_sr %>% 
   left_join(proportion_ds, by = c("target", "left", "right")) %>% 
-  filter(!is.na(left_cds)) # already pruned in the previous dataset so anything else would be fine
+  filter(!is.na(left_cds)) %>% 
+  mutate(
+    choose_left_or_right = if_else(chosen_violation == left_violation, 
+                                   "left", 
+                                   "right"), 
+    chosen_cds = if_else(choose_left_or_right == "left", left_p_cds, right_p_cds), 
+    chosen_eds = if_else(choose_left_or_right == "left", left_p_eds, right_p_eds)
+  ) %>% 
+  select(subject, chosen_violation, chosen_cds, chosen_eds) %>% 
+  pivot_longer(cols = c("chosen_cds", "chosen_eds"), 
+               names_to = "proportion_type", 
+               values_to = "proportion") 
 
 ```
 
 
 
 ```{r}
-
+similarity_choice_df <- clean_sr %>% 
+  group_by(subject) %>% 
+  count() %>% 
+  rename(n_trial = n) %>% 
+  left_join(clean_sr, by = "subject") %>% 
+  group_by(subject, n_trial, chosen_violation) %>% 
+  count() %>% 
+  filter(!is.na(chosen_violation)) %>%
+  ungroup() %>% 
+  mutate(proportion = n / n_trial) %>% 
+  mutate(proportion_type = "sim_judgement") %>% 
+  select(subject, chosen_violation, proportion_type, proportion)
 ```
+
+
+```{r}
+bind_rows(ds_proportion_df, similarity_choice_df) %>% 
+  filter(chosen_violation != "number") %>% 
+  ggplot(aes(x = chosen_violation, y = proportion, color = proportion_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2))+ 
+  theme_few()
+```
+
+
+# by comparison 
+
+```{r}
+ds_proprotion_by_type_df <- clean_sr %>% 
+  left_join(proportion_ds, by = c("target", "left", "right")) %>% 
+  filter(!is.na(left_cds)) %>% 
+  mutate(
+    choose_left_or_right = if_else(chosen_violation == left_violation, 
+                                   "left", 
+                                   "right"), 
+    unchosen_violation = if_else(chosen_violation == left_violation, 
+                                   right_violation, 
+                                    left_violation), 
+    chosen_cds = if_else(choose_left_or_right == "left", left_p_cds, right_p_cds), 
+    chosen_eds = if_else(choose_left_or_right == "left", left_p_eds, right_p_eds), 
+    unchosen_cds = if_else(choose_left_or_right == "left", right_p_cds, left_p_cds), 
+    unchosen_eds = if_else(choose_left_or_right == "left", right_p_eds, left_p_eds), 
+  ) %>% 
+  select(subject, chosen_violation, unchosen_violation, chosen_cds, chosen_eds) %>% 
+  pivot_longer(cols = c("chosen_cds", "chosen_eds"), 
+               names_to = "proportion_type", 
+               values_to = "proportion") 
+```
+
+
+
+```{r}
+clean_sr %>% 
+  mutate(unchosen_violation = case_when(
+    left_violation == chosen_violation ~ right_violation, 
+    right_violation == chosen_violation ~ left_violation
+  )) %>% 
+  left_join(clean_sr %>% group_by(subject, chosen_violation) %>% count() %>% rename(total_n_in_cateogry = n), by = c("subject", "chosen_violation")) %>% 
+  group_by(subject, chosen_violation, total_n_in_cateogry) %>% 
+  count(unchosen_violation) %>% 
+  mutate(proportion = n / total_n_in_cateogry) %>% 
+  filter(!is.na(chosen_violation)) %>% 
+  select(subject, chosen_violation, unchosen_violation, proportion) %>% 
+  mutate(proportion_type)
+
+
+
+  ggplot(aes(x = unchosen_violation, y = proportion)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  facet_wrap(~chosen_violation) + 
+  theme_few()
+```
+
 
