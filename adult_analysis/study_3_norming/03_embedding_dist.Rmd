@@ -20,18 +20,15 @@ e_dis <- read_csv(here("data/cosine_distances_adultnorming.csv"))%>% rename(stim
 
 proportion_ds <- read_csv(here("data/em_dis_with_pair.csv"))
 
-```
 
-
-# prep dataset (needs to get rid of number)
-
-```{r}
 replace_name <- function(x) gsub("media/stimuli/", "", x)
 
 clean_sr <- sr %>% 
   mutate_at(c("target", "left", "right"), replace_name) %>% 
   filter(!left_violation == "number" && !right_violation == "number")
 ```
+
+
 
 ## get the distinct triad and find the embedding distance value matching to it 
 
@@ -93,11 +90,11 @@ ds_proportion_df <- clean_sr %>%
     choose_left_or_right = if_else(chosen_violation == left_violation, 
                                    "left", 
                                    "right"), 
-    chosen_cds = if_else(choose_left_or_right == "left", left_p_cds, right_p_cds), 
-    chosen_eds = if_else(choose_left_or_right == "left", left_p_eds, right_p_eds)
+    unchosen_cds = if_else(choose_left_or_right == "left", right_p_cds,left_p_cds), 
+    unchosen_eds = if_else(choose_left_or_right == "left",  right_p_eds, left_p_eds), 
   ) %>% 
-  select(subject, chosen_violation, chosen_cds, chosen_eds) %>% 
-  pivot_longer(cols = c("chosen_cds", "chosen_eds"), 
+  select(subject, chosen_violation, unchosen_cds, unchosen_eds) %>% 
+  pivot_longer(cols = c("unchosen_cds", "unchosen_eds"), 
                names_to = "proportion_type", 
                values_to = "proportion") 
 
@@ -148,8 +145,8 @@ ds_proprotion_by_type_df <- clean_sr %>%
     unchosen_cds = if_else(choose_left_or_right == "left", right_p_cds, left_p_cds), 
     unchosen_eds = if_else(choose_left_or_right == "left", right_p_eds, left_p_eds), 
   ) %>% 
-  select(subject, chosen_violation, unchosen_violation, chosen_cds, chosen_eds) %>% 
-  pivot_longer(cols = c("chosen_cds", "chosen_eds"), 
+  select(subject, chosen_violation, unchosen_violation, unchosen_cds, unchosen_eds) %>% 
+  pivot_longer(cols = c("unchosen_cds", "unchosen_eds"), 
                names_to = "proportion_type", 
                values_to = "proportion") 
 ```
@@ -168,11 +165,11 @@ clean_sr %>%
   mutate(proportion = n / total_n_in_cateogry) %>% 
   filter(!is.na(chosen_violation)) %>% 
   select(subject, chosen_violation, unchosen_violation, proportion) %>% 
-  mutate(proportion_type)
-
-
-
-  ggplot(aes(x = unchosen_violation, y = proportion)) + 
+  mutate(proportion_type = "sim_judgment") %>% 
+  ungroup() %>% 
+  bind_rows(ds_proprotion_by_type_df) %>% 
+  filter(unchosen_violation != "number", chosen_violation != "number") %>% 
+  ggplot(aes(x = unchosen_violation, y = proportion, color = proportion_type)) + 
   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
   facet_wrap(~chosen_violation) + 
   theme_few()
