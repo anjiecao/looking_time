@@ -24,8 +24,8 @@ proportion_ds <- read_csv(here("data/em_dis_with_pair.csv"))
 replace_name <- function(x) gsub("media/stimuli/", "", x)
 
 clean_sr <- sr %>% 
-  mutate_at(c("target", "left", "right"), replace_name) %>% 
-  filter(!left_violation == "number", !right_violation == "number")
+  mutate_at(c("target", "left", "right"), replace_name) #%>% 
+  #filter(!left_violation == "number", !right_violation == "number")
 ```
 
 
@@ -317,6 +317,7 @@ animacy_full_p_df <- animacy_p_df %>%
   mutate(violation_type = "animacy")
 
 
+
 # pose 
 pose_p_df <- proportion_match_df %>% 
   filter(left_violation == "pose" |  right_violation == "pose") %>% 
@@ -450,7 +451,10 @@ clean_sr_cateogry <- clean_sr %>%
     violation_type = case_when(
       (left_violation == "animacy" & right_violation == "identity") | (left_violation == "identity" & right_violation == "animacy") ~ "animacy_identity", 
       (left_violation == "animacy" & right_violation == "pose") | (left_violation == "pose" & right_violation == "animacy") ~ "animacy_pose", 
-      (left_violation == "identity" & right_violation == "pose") | (left_violation == "pose" & right_violation == "identity") ~ "identity_pose"
+      (left_violation == "identity" & right_violation == "pose") | (left_violation == "pose" & right_violation == "identity") ~ "identity_pose", 
+      (left_violation == "identity" & right_violation == "number") | (left_violation == "number" & right_violation == "identity") ~ "identity_number",
+      (left_violation == "pose" & right_violation == "number") | (left_violation == "number" & right_violation == "pose") ~ "pose_number",
+      (left_violation == "animacy" & right_violation == "number") | (left_violation == "number" & right_violation == "animacy") ~ "animacy_number"
     )
   ) 
 
@@ -474,6 +478,8 @@ sim_judg_plot <- clean_sr_cateogry %>%
   stat_summary(fun.data = "mean_cl_boot") + 
   facet_wrap(~violation_type, scales = "free_x") + 
   theme_few()
+
+sim_judg_plot
 ```
 
 
@@ -591,6 +597,22 @@ contains_identity_violation <- clean_sr %>%
 
 
 ```{r}
+
+
+
+summary_sr <- clean_sr %>% 
+  summarise(
+    median = median(rt), 
+    mad = mad(rt), 
+  ) %>% 
+  mutate( upper = median + 3 * mad)
+
+
+clean_sr = clean_sr %>% 
+  filter(rt < summary_sr$upper)
+
+
+
 proportion_match_df %>% 
   filter(!is.na(left_p_cds)) %>% 
   mutate(dist_diff = (abs(left_p_eds - right_p_eds) / (left_p_eds + right_p_eds))) %>% 
@@ -598,13 +620,17 @@ proportion_match_df %>%
     violation_type = case_when(
       (left_violation == "animacy" & right_violation == "identity") | (left_violation == "identity" & right_violation == "animacy") ~ "animacy_identity", 
       (left_violation == "animacy" & right_violation == "pose") | (left_violation == "pose" & right_violation == "animacy") ~ "animacy_pose", 
-      (left_violation == "identity" & right_violation == "pose") | (left_violation == "pose" & right_violation == "identity") ~ "identity_pose"
+      (left_violation == "identity" & right_violation == "pose") | (left_violation == "pose" & right_violation == "identity") ~ "identity_pose",
+      (left_violation == "identity" & right_violation == "number") | (left_violation == "number" & right_violation == "identity") ~ "identity_number",
+      (left_violation == "pose" & right_violation == "number") | (left_violation == "number" & right_violation == "pose") ~ "pose_number",
+      (left_violation == "animacy" & right_violation == "number") | (left_violation == "number" & right_violation == "animacy") ~ "animacy_number"
     )
   ) %>% 
   select(subject, left_violation, right_violation, dist_diff, violation_type) %>% 
   left_join(clean_sr, by = c("subject", "left_violation", "right_violation")) %>% 
   ggplot(aes(x = dist_diff, y = log(rt), color = violation_type)) + 
-  geom_point(alpha = .3)
+  geom_point(alpha = .1) + 
+  geom_smooth(method = "lm")
 
 ```
 

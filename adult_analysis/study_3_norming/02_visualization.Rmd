@@ -8,6 +8,7 @@ date: "`r Sys.Date()`"
 ```{r}
 library(tidyverse)
 library(here)
+library(magrittr)
 library(jsonlite)
 library(ggthemes)
 
@@ -141,6 +142,101 @@ sr %>%
   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
   facet_wrap(~chosen_violation) + 
   theme_few()
+```
+
+
+# basic 
+
+```{r}
+
+summary_sr <- sr %>% 
+  summarise(
+    median = median(rt), 
+    mad = mad(rt), 
+  ) %>% 
+  mutate( upper = median + 3 * mad)
+
+
+clean_sr = sr %>% 
+  filter(rt < summary_sr$upper)
+
+
+clean_sr  %<>% mutate(
+    violation_type = case_when(
+      (left_violation == "animacy" & right_violation == "identity") | (left_violation == "identity" & right_violation == "animacy") ~ "animacy_identity", 
+      (left_violation == "animacy" & right_violation == "pose") | (left_violation == "pose" & right_violation == "animacy") ~ "animacy_pose", 
+      (left_violation == "identity" & right_violation == "pose") | (left_violation == "pose" & right_violation == "identity") ~ "identity_pose", 
+      (left_violation == "animacy" & right_violation == "number") | (left_violation == "number" & right_violation == "animacy") ~ "animacy_number", 
+      (left_violation == "identity" & right_violation == "number") | (left_violation == "number" & right_violation == "identity") ~ "identity_number", 
+      (left_violation == "pose" & right_violation == "number") | (left_violation == "number" & right_violation == "pose") ~ "pose_number", 
+    )
+  ) 
+```
+
+
+## proportion 
+
+```{r}
+subject_n_trial_per_category <- clean_sr %>% 
+  group_by(subject, violation_type) %>% 
+  count() %>% 
+  rename(total_trial = n)
+
+summarised_proportion <- clean_sr %>% 
+  group_by(subject, violation_type, chosen_violation) %>% 
+  count() %>% 
+  left_join(subject_n_trial_per_category %>% ungroup(), by = c("subject", "violation_type")) %>% 
+  mutate(p = n / total_trial) %>% 
+  ungroup() %>% 
+  complete(
+    subject,
+    nesting(violation_type, chosen_violation),
+    fill = list(n = 0, p = 0),
+    explicit = FALSE
+  ) 
+  
+
+max_p_df <- summarised_proportion %>% 
+  group_by(violation_type, chosen_violation) %>% 
+  summarise(mean = mean(p)) %>% 
+  filter(mean == max(mean))
+  
+
+sim_plot <- summarised_proportion %>% 
+  filter(
+    (violation_type == "animacy_identity" & chosen_violation == "identity") | 
+   (violation_type == "animacy_number" & chosen_violation == "number") | 
+    (violation_type == "animacy_pose" & chosen_violation == "pose")| 
+    (violation_type == "identity_number" & chosen_violation == "number") | 
+    (violation_type == "identity_pose" & chosen_violation == "pose") |
+    (violation_type == "pose_number" & chosen_violation == "pose")
+  ) %>% 
+  ggplot(aes(x = violation_type, y = p, color = chosen_violation)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  ylim(0, 1) + 
+  theme_few() + 
+  theme(axis.text.x = element_blank()) + 
+  xlab("") 
+```
+
+
+
+
+```{r}
+rt_plot <- clean_sr %>% 
+  ggplot(aes(x = violation_type, y = log(rt))) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  theme_few() + 
+  theme_few() + 
+  theme(axis.text.x = element_text(angle = 90)) + 
+  xlab("")
+```
+
+
+```{r}
+library(patchwork)
+
+sim_plot / rt_plot
 ```
 
 
