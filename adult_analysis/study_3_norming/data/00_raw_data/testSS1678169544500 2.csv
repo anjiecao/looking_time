@@ -1,0 +1,5 @@
+"success","timeout","failed_images","failed_audio","failed_video","trial_type","trial_index","time_elapsed","internal_node_id","subject","prolific_id","study","session","window_width","window_height","view_history","rt","stimulus_type"
+"true","false","[]","[]","[]","preload","0","1277","0.0-0.0","SS1678169544500","","","","1920","969","","",""
+"","","","","","instructions","1","2294","0.0-1.0","SS1678169544500","","","","1920","969","[{""page_index"":0,""viewing_time"":1015}]","1016",""
+"","","","","","instructions","2","6732","0.0-2.0","SS1678169544500","","","","1920","969","[{""page_index"":0,""viewing_time"":2428}]","2428","instructions"
+"","","","","","instructions","3","8142","0.0-3.0","SS1678169544500","","","","1920","969","[{""page_index"":0,""viewing_time"":858},{""page_index"":1,""viewing_time"":549}]","1408","instructions"

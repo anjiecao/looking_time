@@ -53,6 +53,7 @@ exclude_p_id
 
  
 ```{r}
+
 same_response_sbj <- raw_d %>% 
   filter(trial_type == "survey-likert", rating_type != "anchoring") %>% 
   mutate(complexity_rating = map(response, ~ fromJSON(.) %>% as.data.frame()) %>% unlist()) %>% 
@@ -63,6 +64,7 @@ same_response_sbj <- raw_d %>%
   mutate(proportion = n / 96) %>% 
   filter(proportion > .8) %>% 
   pull(subject) 
+
 
 same_response_sbj
 ```
@@ -105,12 +107,23 @@ complexity_rating <- raw_d %>%
   select(subject, rating_stimulus, rating_animacy, rating_number, rating_pose, complexity_rating)
 
 # similarity rating 
-raw_d %>% 
-  filter(trial_type == "html-keyboard-response", !grepl("filler", comparison_type)) %>% 
-  select(subject, rt, response, target, target_animacy, target_pose, target_number, left, left_animacy, left_pose, left_number, right_animacy, right_pose, right_number, 
-         comparison_type)
+similarity_comparison <- raw_d %>% 
+  filter(trial_type == "html-keyboard-response") %>% 
+  filter(!grepl("filler", comparison_type)) %>% 
+  filter(!is.na(response)) %>% 
+  select(subject, rt, response, target, target_animacy, target_pose, target_number, left, left_animacy, left_pose, left_number, right, right_animacy, right_pose, right_number, 
+         comparison_type) %>% 
+  filter(!is.na(target)) %>% 
+  separate(comparison_type, into = c("left_violation", "right_violation"), sep = "_") %>% 
+  select(subject, rt, response, target, left, right, left_violation, right_violation) %>% 
+  mutate(chosen_violation = case_when(
+    response == "j" ~ right_violation, 
+    response == "f" ~ left_violation
+  ))
   
-  
+
+write_csv(complexity_rating, here("data/complexity_rating.csv"))
+write_csv(similarity_comparison, here("data/similarity_rating.csv"))
   
 ```
 

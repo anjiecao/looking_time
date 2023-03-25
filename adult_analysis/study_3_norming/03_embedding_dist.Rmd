@@ -1,0 +1,636 @@
+---
+title: "03_embedding_dis"
+output: html_document
+date: "`r Sys.Date()`"
+---
+
+```{r}
+library(tidyverse)
+library(here)
+library(jsonlite)
+library(ggthemes)
+
+cr <- read_csv(here("data/complexity_rating.csv")) %>% mutate(complexity_rating = complexity_rating + 1)
+sr <- read_csv(here("data/similarity_rating.csv"))
+em <- read_csv(here("data/adult_norming_embeddings.csv"))
+
+c_dis <- read_csv(here("data/eucledian_distances_adultnorming.csv")) %>% rename(stim_name = `...1`)
+e_dis <- read_csv(here("data/cosine_distances_adultnorming.csv"))%>% rename(stim_name = `...1`)
+
+
+proportion_ds <- read_csv(here("data/em_dis_with_pair.csv"))
+
+
+replace_name <- function(x) gsub("media/stimuli/", "", x)
+
+clean_sr <- sr %>% 
+  mutate_at(c("target", "left", "right"), replace_name) #%>% 
+  #filter(!left_violation == "number", !right_violation == "number")
+```
+
+
+
+## get the distinct triad and find the embedding distance value matching to it 
+
+time consuming, should read directly 
+
+```{r}
+triad <- clean_sr %>% 
+  distinct(target, left, right) %>% 
+  filter(!is.na(target), !is.na(left), !is.na(right)) 
+
+
+get_distance <- function(stim_a_name, stim_b_name, dist){
+  
+  tibble("val" = dist %>%
+  filter(stim_name == {{stim_b_name}}) %>% 
+  select({{stim_a_name}}) %>% 
+  pull())
+  
+}
+
+triad_ds <- triad %>% 
+  mutate(left_cds = map2_df(.x = triad$target, .y = triad$left, .f = get_distance, c_dis), 
+         left_eds = map2_df(.x = triad$target, .y = triad$left, .f = get_distance, e_dis), 
+         right_cds =  map2_df(.x = triad$target, .y = triad$right, .f = get_distance, c_dis), 
+         right_eds = map2_df(.x = triad$target, .y = triad$right, .f = get_distance, e_dis))
+
+
+write_csv(proportion_ds, here("data/em_dis_with_pair.csv"))
+
+```
+
+## calculate proportion 
+
+```{r}
+proportion_ds <- triad_ds %>% 
+  unnest(left_cds, left_eds, right_cds, right_eds) %>% 
+  rename(left_cds = val, 
+         left_eds = val1, 
+         right_cds = val2, 
+         right_eds = val3) %>% 
+  filter(target != left, target != right) %>% 
+  mutate(
+    left_p_cds = left_cds / (left_cds + right_cds), 
+    right_p_cds = right_cds / (left_cds + right_cds), 
+    left_p_eds = left_eds / (left_eds + right_eds), 
+    right_p_eds = right_eds / (left_eds + right_eds)
+  )
+```
+
+# total plot 
+
+
+```{r}
+# calculate violation proportion
+ds_proportion_df <- clean_sr %>% 
+  left_join(proportion_ds, by = c("target", "left", "right")) %>% 
+  filter(!is.na(left_cds)) %>% 
+  mutate(
+    choose_left_or_right = if_else(chosen_violation == left_violation, 
+                                   "left", 
+                                   "right"), 
+    chosen_cds = if_else(choose_left_or_right == "left", left_p_cds, right_p_cds), 
+    chosen_eds = if_else(choose_left_or_right == "left",  left_p_eds, right_p_eds), 
+    unchosen_cds =  if_else(choose_left_or_right == "right", left_p_cds, right_p_cds), 
+    unchosen_eds =   if_else(choose_left_or_right == "right",  left_p_eds, right_p_eds), 
+  ) %>% 
+  select(subject, target, left_violation, right_violation, chosen_violation, unchosen_cds, unchosen_eds) %>% 
+  pivot_longer(cols = c("unchosen_cds", "unchosen_eds"), 
+               names_to = "proportion_type", 
+               values_to = "proportion") #%>% 
+  #rowwise() %>% 
+  #mutate(choose_this = generate(dist_bernoulli(proportion), 1)[[1]])
+
+
+```
+
+```{r}
+ds_proportion_df
+```
+
+
+```{r}
+
+ds_flipped_proportion <- ds_proportion_df %>% 
+  group_by(subject, proportion_type) %>% 
+  count() %>% 
+  rename(n_trial = n) %>% 
+  left_join(ds_proportion_df, by = c("subject", "proportion_type")) %>% 
+  group_by(subject, n_trial, chosen_violation, choose_this) %>% 
+  count() %>% 
+  ungroup() %>% 
+  filter(choose_this) %>% 
+  mutate(proportion = n / n_trial) 
+
+ds_flipped_proportion
+```
+
+
+
+
+
+```{r}
+similarity_choice_df <- clean_sr %>% 
+  group_by(subject) %>% 
+  filter(left_violation != "number", right_violation != "number") %>% 
+  count() %>% 
+  rename(n_trial = n) %>% 
+  left_join(clean_sr %>% filter(left_violation != "number", right_violation != "number") , by = "subject") %>% 
+  group_by(subject, n_trial, chosen_violation) %>% 
+  count() %>% 
+  filter(!is.na(chosen_violation)) %>%
+  ungroup() %>% 
+  mutate(proportion = n / n_trial) %>% 
+  mutate(proportion_type = "sim_judgement") %>% 
+  select(subject, chosen_violation, proportion_type, proportion)
+
+```
+
+
+
+
+
+```{r}
+bind_rows(ds_proportion_df, similarity_choice_df) %>% 
+  ggplot(aes(x = chosen_violation, y = proportion, color = proportion_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2))+ 
+  theme_few()
+```
+
+
+# by comparison 
+
+```{r}
+ds_proprotion_by_type_df <- clean_sr %>% 
+  left_join(proportion_ds, by = c("target", "left", "right")) %>% 
+  filter(!is.na(left_cds)) %>% 
+  mutate(
+    choose_left_or_right = if_else(chosen_violation == left_violation, 
+                                   "left", 
+                                   "right"), 
+    unchosen_violation = if_else(chosen_violation == left_violation, 
+                                   right_violation, 
+                                    left_violation), 
+    chosen_cds = if_else(choose_left_or_right == "left", left_p_cds, right_p_cds), 
+    chosen_eds = if_else(choose_left_or_right == "left", left_p_eds, right_p_eds), 
+    unchosen_cds = if_else(choose_left_or_right == "left", right_p_cds, left_p_cds), 
+    unchosen_eds = if_else(choose_left_or_right == "left", right_p_eds, left_p_eds), 
+  ) %>% 
+  select(subject, chosen_violation, unchosen_violation, chosen_cds, chosen_eds) %>% 
+  pivot_longer(cols = c("chosen_cds", "chosen_eds"), 
+               names_to = "proportion_type", 
+               values_to = "proportion") 
+```
+
+
+
+```{r}
+clean_sr %>% 
+  mutate(unchosen_violation = case_when(
+    left_violation == chosen_violation ~ right_violation, 
+    right_violation == chosen_violation ~ left_violation
+  )) %>% 
+  # count how many trials in which subjects have chosen that type of violation 
+  left_join(clean_sr %>% group_by(subject, chosen_violation) %>% count() %>% rename(total_n_in_cateogry = n), by = c("subject", "chosen_violation")) %>% 
+  group_by(subject, chosen_violation, total_n_in_cateogry) %>% 
+  count(unchosen_violation) %>% 
+  # the proportion is calculated from how many trials from each unchosen category 
+  mutate(proportion = n / total_n_in_cateogry) %>% 
+  filter(!is.na(chosen_violation)) %>% 
+  select(subject, chosen_violation, unchosen_violation, proportion) %>% 
+  mutate(proportion_type = "sim_judgment") %>% 
+  ungroup() %>% 
+  bind_rows(ds_proprotion_by_type_df) %>% 
+  filter(unchosen_violation != "number", chosen_violation != "number") %>% 
+  ggplot(aes(x = chosen_violation, y = proportion, color = proportion_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  facet_wrap(~unchosen_violation) + 
+  theme_few()
+```
+- each panel: the "unchosen option" 
+
+- blue dots: proportion is calcualted from: (N trial of each chosen category) / (total N trial of non-chosen category)
+  - For example, the identity blue dot on the animacy panel (~.95) means that when there is a trial where the animacy is paired with other categories, ~.95 times people chose the identity violation to be more similar. 
+  
+- Green dot / red-dots: the chosen distance / (chosen + unchosen) 
+  
+  
+# correct calculation 
+
+## sim judgment 
+  
+```{r}
+animacy_violation_df <- clean_sr %>% 
+  mutate(has_animacy_violation = (left_violation == "animacy" | right_violation == "animacy")) %>% 
+  filter(has_animacy_violation) %>% 
+  group_by(subject, chosen_violation) %>% 
+  count() %>% 
+  rename(n_each_category = n) %>% 
+  left_join(clean_sr %>% 
+  mutate(has_animacy_violation = (left_violation == "animacy" | right_violation == "animacy")) %>% 
+  filter(has_animacy_violation) %>% group_by(subject) %>% count(), by = c("subject")) %>% 
+  mutate(proportion = n_each_category / n) %>% 
+  mutate(violation_type = "animacy")
+
+identity_violation_df <- clean_sr %>% 
+  mutate(has_identity_violation = (left_violation == "identity" | right_violation == "identity")) %>% 
+  filter(has_identity_violation) %>% 
+  group_by(subject, chosen_violation) %>% 
+  count() %>% 
+  rename(n_each_category = n) %>% 
+  left_join(clean_sr %>% 
+  mutate(has_identity_violation = (left_violation == "identity" | right_violation == "identity")) %>% 
+  filter(has_identity_violation) %>% group_by(subject) %>% count(), by = c("subject")) %>% 
+  mutate(proportion = n_each_category / n) %>% 
+  mutate(violation_type = "identity")
+
+
+pose_violation_df <- clean_sr %>% 
+  mutate(has_pose_violation = (left_violation == "pose" | right_violation == "pose")) %>% 
+  filter(has_pose_violation) %>% 
+  group_by(subject, chosen_violation) %>% 
+  count() %>% 
+  rename(n_each_category = n) %>% 
+  left_join(clean_sr %>% 
+  mutate(has_pose_violation = (left_violation == "pose" | right_violation == "pose")) %>% 
+  filter(has_pose_violation) %>% group_by(subject) %>% count(), by = c("subject")) %>% 
+  mutate(proportion = n_each_category / n) %>% 
+  mutate(violation_type = "pose")
+
+
+bind_rows(animacy_violation_df, identity_violation_df, pose_violation_df) %>% 
+  ggplot(aes(x = chosen_violation, y = proportion)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  facet_wrap(~violation_type) + 
+  theme_few()
+```
+  
+## embedding 
+
+```{r}
+proportion_match_df <- clean_sr %>% 
+  left_join(proportion_ds, by = c("target", "left", "right")) %>% 
+  mutate(
+    choose_left_or_right = if_else(chosen_violation == left_violation, 
+                                   "left", 
+                                   "right"), 
+    chosen_cds = if_else(choose_left_or_right == "left", left_p_cds, right_p_cds), 
+    chosen_eds = if_else(choose_left_or_right == "left",  left_p_eds, right_p_eds), 
+    unchosen_cds =  if_else(choose_left_or_right == "right", left_p_cds, right_p_cds), 
+    unchosen_eds =   if_else(choose_left_or_right == "right",  left_p_eds, right_p_eds), 
+  ) %>% 
+  select(subject, left_violation, right_violation, left_p_cds, right_p_cds, left_p_eds, right_p_eds)
+
+
+# animacy 
+animacy_p_df <- proportion_match_df %>% 
+  filter(left_violation == "animacy" |  right_violation == "animacy") %>% 
+  filter(!is.na(left_p_cds)) %>% 
+  mutate(
+    animacy_cds = if_else(left_violation == "animacy", left_p_cds, right_p_cds), 
+    animacy_eds = if_else(left_violation == "animacy", left_p_eds, right_p_eds), 
+    non_animacy_cds =  if_else(left_violation != "animacy", left_p_cds, right_p_cds), 
+    non_animacy_eds =  if_else(left_violation != "animacy", left_p_eds, right_p_eds), 
+  ) 
+
+animacy_full_p_df <- animacy_p_df %>% 
+  mutate(non_animacy_violation = if_else(left_violation == "animacy",right_violation, left_violation)) %>% 
+  select(
+    non_animacy_violation, animacy_cds, animacy_eds
+  ) %>% 
+  rename(cds_p_for_choice = animacy_cds, 
+         eds_p_for_choice = animacy_eds, 
+         category = non_animacy_violation) %>% 
+  bind_rows(
+    animacy_p_df %>% 
+    select(non_animacy_cds, non_animacy_eds) %>% 
+    mutate(category = "animacy") %>% 
+    rename(cds_p_for_choice = non_animacy_cds, 
+         eds_p_for_choice = non_animacy_eds) 
+  ) %>% 
+  pivot_longer(
+    cols = c("cds_p_for_choice", "eds_p_for_choice"), 
+    names_to = "proportion_type", 
+    values_to = "p"
+  ) %>% 
+  mutate(violation_type = "animacy")
+
+
+
+# pose 
+pose_p_df <- proportion_match_df %>% 
+  filter(left_violation == "pose" |  right_violation == "pose") %>% 
+  filter(!is.na(left_p_cds)) %>% 
+  mutate(
+    pose_cds = if_else(left_violation == "pose", left_p_cds, right_p_cds), 
+    pose_eds = if_else(left_violation == "pose", left_p_eds, right_p_eds), 
+    non_pose_cds =  if_else(left_violation != "pose", left_p_cds, right_p_cds), 
+    non_pose_eds =  if_else(left_violation != "pose", left_p_eds, right_p_eds), 
+  ) 
+
+pose_full_p_df <- pose_p_df %>% 
+  mutate(non_pose_violation = if_else(left_violation == "pose",right_violation, left_violation)) %>% 
+  select(
+    non_pose_violation, pose_cds, pose_eds
+  ) %>% 
+  rename(cds_p_for_choice = pose_cds, 
+         eds_p_for_choice = pose_eds, 
+         category = non_pose_violation) %>% 
+  bind_rows(
+    pose_p_df %>% 
+    select(non_pose_cds, non_pose_eds) %>% 
+    mutate(category = "pose") %>% 
+    rename(cds_p_for_choice = non_pose_cds, 
+         eds_p_for_choice = non_pose_eds) 
+  ) %>% 
+  pivot_longer(
+    cols = c("cds_p_for_choice", "eds_p_for_choice"), 
+    names_to = "proportion_type", 
+    values_to = "p"
+  ) %>% 
+  mutate(violation_type = "pose")
+
+#identity 
+
+identity_p_df <- proportion_match_df %>% 
+  filter(left_violation == "identity" |  right_violation == "identity") %>% 
+  filter(!is.na(left_p_cds)) %>% 
+  mutate(
+    identity_cds = if_else(left_violation == "identity", left_p_cds, right_p_cds), 
+    identity_eds = if_else(left_violation == "identity", left_p_eds, right_p_eds), 
+    non_identity_cds =  if_else(left_violation != "identity", left_p_cds, right_p_cds), 
+    non_identity_eds =  if_else(left_violation != "identity", left_p_eds, right_p_eds), 
+  ) 
+
+identity_full_p_df <- identity_p_df %>% 
+  mutate(non_identity_violation = if_else(left_violation == "identity",right_violation, left_violation)) %>% 
+  select(
+    non_identity_violation, identity_cds, identity_eds
+  ) %>% 
+  rename(cds_p_for_choice = identity_cds, 
+         eds_p_for_choice = identity_eds, 
+         category = non_identity_violation) %>% 
+  bind_rows(
+    identity_p_df %>% 
+    select(non_identity_cds, non_identity_eds) %>% 
+    mutate(category = "identity") %>% 
+    rename(cds_p_for_choice = non_identity_cds, 
+         eds_p_for_choice = non_identity_eds) 
+  ) %>% 
+  pivot_longer(
+    cols = c("cds_p_for_choice", "eds_p_for_choice"), 
+    names_to = "proportion_type", 
+    values_to = "p"
+  ) %>% 
+  mutate(violation_type = "identity")
+
+
+
+
+bind_rows(identity_full_p_df, pose_full_p_df, animacy_full_p_df) %>%
+  ggplot(aes(x = category, y = p, color = proportion_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  facet_wrap(~violation_type) +
+  ylim(0, 1) + 
+  theme_few()
+
+
+```
+
+
+
+```{r}
+choice_animacy_p_df <- animacy_full_p_df %>% 
+  rowwise() %>% 
+  mutate(choose_this = distributional::generate(distributional::dist_bernoulli(p), 1)[[1]])
+
+
+```
+
+```{r}
+choice_animacy_p_df %>% 
+  mutate(chosen_category = case_when(
+    choose_this ~ category, 
+    choose_this == FALSE ~ "animacy"
+  )) %>% 
+  group_by(chosen_category) %>% 
+  count() %>% 
+  mutate()
+```
+
+
+choice_animacy = .7
+choice_identity = .1
+
+chance_animacy = .1 / (.1 + .7)
+
+
+
+
+```{r}
+bind_rows(animacy_violation_df, identity_violation_df, pose_violation_df) %>% 
+  mutate(data_type = "sim_judgement") %>% 
+  rename(p = proportion,  
+         category = chosen_violation) %>%
+  mutate(proportion_type = "similarity judgement") %>% 
+  bind_rows(bind_rows(identity_full_p_df, pose_full_p_df, animacy_full_p_df) %>% mutate(data_type = "d_proportion")) %>% 
+  ggplot(aes(x = category, y = p, color = proportion_type)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  facet_grid(data_type~violation_type) +
+  ylim(0, 1) + 
+  theme_few()
+  
+  
+```
+
+
+```{r}
+clean_sr_cateogry <- clean_sr %>% 
+  mutate(
+    violation_type = case_when(
+      (left_violation == "animacy" & right_violation == "identity") | (left_violation == "identity" & right_violation == "animacy") ~ "animacy_identity", 
+      (left_violation == "animacy" & right_violation == "pose") | (left_violation == "pose" & right_violation == "animacy") ~ "animacy_pose", 
+      (left_violation == "identity" & right_violation == "pose") | (left_violation == "pose" & right_violation == "identity") ~ "identity_pose", 
+      (left_violation == "identity" & right_violation == "number") | (left_violation == "number" & right_violation == "identity") ~ "identity_number",
+      (left_violation == "pose" & right_violation == "number") | (left_violation == "number" & right_violation == "pose") ~ "pose_number",
+      (left_violation == "animacy" & right_violation == "number") | (left_violation == "number" & right_violation == "animacy") ~ "animacy_number"
+    )
+  ) 
+
+
+sim_judg_plot <- clean_sr_cateogry %>% 
+  left_join(
+    clean_sr_cateogry %>% group_by(subject, violation_type) %>% count() %>% rename(total_trial = n), 
+    by = c("subject", "violation_type")
+  ) %>% 
+  group_by(subject, violation_type, total_trial, chosen_violation) %>% 
+  count() %>% 
+  mutate(p = n / total_trial ) %>% 
+  ungroup() %>% 
+  complete(
+    subject,
+    nesting(violation_type, chosen_violation),
+    fill = list(n = 0, p = 0, total_trial = 24),
+    explicit = FALSE
+  ) %>% 
+  ggplot(aes(x = chosen_violation, y = p)) + 
+  stat_summary(fun.data = "mean_cl_boot") + 
+  facet_wrap(~violation_type, scales = "free_x") + 
+  theme_few()
+
+sim_judg_plot
+```
+
+
+```{r}
+choice_p_df <- bind_rows(identity_full_p_df, pose_full_p_df, animacy_full_p_df) %>% 
+  mutate(
+    violation_type = case_when(
+      (category == "animacy" & violation_type == "identity") | (category == "identity" & violation_type == "category") ~ "animacy_identity", 
+      (category == "animacy" & violation_type == "pose") | (category == "pose" & violation_type == "animacy") ~ "animacy_pose", 
+      (category == "identity" & violation_type == "pose") | (category == "pose" & violation_type == "identity") ~ "identity_pose"
+    )
+  ) %>% 
+  filter(!is.na(violation_type)) %>% 
+  rowwise() %>% 
+  mutate(choose_this = distributional::generate(distributional::dist_bernoulli(p), 1)[[1]])
+  
+
+```
+
+```{r}
+choice_p_df %<>%
+  mutate(chosen_category = case_when(
+    choose_this ~ category, 
+    !choose_this & violation_type == "animacy_identity" & category == "animacy" ~ "identity", 
+    !choose_this & violation_type == "animacy_identity" & category == "identity" ~ "animacy", 
+    !choose_this & violation_type == "identity_pose" & category == "identity" ~ "pose", 
+    !choose_this & violation_type == "identity_pose" & category == "pose" ~ "identity", 
+    !choose_this & violation_type == "animacy_pose" & category == "animacy" ~ "pose", 
+    !choose_this & violation_type == "animacy_pose" & category == "pose" ~ "animacy", 
+  ))
+```
+
+```{r}
+choice_p_df %>% 
+  select(violation_type, category, proportion_type, chosen_category)  
+
+```
+
+
+```{r}
+plot_df <- choice_p_df %>% 
+  select(violation_type,  proportion_type, chosen_category)  %>% 
+  left_join(
+    choice_p_df %>% 
+  group_by(violation_type, proportion_type) %>% 
+  count() %>% rename(total_trial = n), 
+  by = c("violation_type", "proportion_type")
+  ) %>% 
+  group_by(chosen_category, violation_type, proportion_type, total_trial) %>% 
+  count() %>% 
+  filter(proportion_type == "eds_p_for_choice")
+
+
+
+
+
+embedding_plot <- plot_df %>%  
+  ungroup() %>% 
+  ggplot(aes(x = chosen_category, y = n / total_trial, color = proportion_type)) + 
+  geom_point() + 
+  facet_wrap(~violation_type, scales = "free_x") + 
+  ylim(0, 1) + 
+  theme_few()+ 
+  theme(legend.position = "None") + 
+  xlab("")
+
+
+```
+
+
+
+```{r}
+clean_sr_cateogry %>% 
+  left_join(
+    clean_sr_cateogry %>% group_by(subject, violation_type) %>% count() %>% rename(total_trial = n), 
+    by = c("subject", "violation_type")
+  ) %>% 
+  group_by(subject, violation_type, total_trial, chosen_violation) %>% 
+  count() %>% 
+  mutate(p = n / total_trial ) %>% 
+  ungroup() %>% 
+  complete(
+    subject,
+    nesting(violation_type, chosen_violation),
+    fill = list(n = 0, p = 0, total_trial = 24),
+    explicit = FALSE
+  ) %>% 
+  s
+```
+
+
+
+```{r}
+library(patchwork)
+embedding_plot  / sim_judg_plot
+```
+
+
+
+
+```{r}
+contains_pose_violation <- clean_sr %>% 
+  mutate(has_pose_violation = (left_violation == "pose" | right_violation == "pose")) %>% 
+  filter(has_pose_violation) %>% 
+  filter(chosen_violation == "pose")
+
+contains_identity_violation <- clean_sr %>% 
+    mutate(has_identity_violation = (left_violation == "identity" | right_violation == "identity")) %>% 
+    filter(has_identity_violation) %>% 
+    filter(chosen_violation == "pose")
+```
+
+
+# RT and similarity 
+
+
+```{r}
+
+
+
+summary_sr <- clean_sr %>% 
+  summarise(
+    median = median(rt), 
+    mad = mad(rt), 
+  ) %>% 
+  mutate( upper = median + 3 * mad)
+
+
+clean_sr = clean_sr %>% 
+  filter(rt < summary_sr$upper)
+
+
+
+proportion_match_df %>% 
+  filter(!is.na(left_p_cds)) %>% 
+  mutate(dist_diff = (abs(left_p_eds - right_p_eds) / (left_p_eds + right_p_eds))) %>% 
+  mutate(
+    violation_type = case_when(
+      (left_violation == "animacy" & right_violation == "identity") | (left_violation == "identity" & right_violation == "animacy") ~ "animacy_identity", 
+      (left_violation == "animacy" & right_violation == "pose") | (left_violation == "pose" & right_violation == "animacy") ~ "animacy_pose", 
+      (left_violation == "identity" & right_violation == "pose") | (left_violation == "pose" & right_violation == "identity") ~ "identity_pose",
+      (left_violation == "identity" & right_violation == "number") | (left_violation == "number" & right_violation == "identity") ~ "identity_number",
+      (left_violation == "pose" & right_violation == "number") | (left_violation == "number" & right_violation == "pose") ~ "pose_number",
+      (left_violation == "animacy" & right_violation == "number") | (left_violation == "number" & right_violation == "animacy") ~ "animacy_number"
+    )
+  ) %>% 
+  select(subject, left_violation, right_violation, dist_diff, violation_type) %>% 
+  left_join(clean_sr, by = c("subject", "left_violation", "right_violation")) %>% 
+  ggplot(aes(x = dist_diff, y = log(rt), color = violation_type)) + 
+  geom_point(alpha = .1) + 
+  geom_smooth(method = "lm")
+
+```
+
