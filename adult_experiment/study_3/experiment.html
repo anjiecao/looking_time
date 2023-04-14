@@ -170,8 +170,8 @@ img.test {
       }
 
       
-      timeline.push(enter_fullscreen)
-      timeline = timeline.concat(instruction)
+      //timeline.push(enter_fullscreen)
+      //timeline = timeline.concat(instruction)
       timeline = timeline.concat(all_blocks)
 
       var pre_rating_trial = {
@@ -236,7 +236,7 @@ img.test {
         
   function saveData(name, data){
         var xhr = new XMLHttpRequest();
-        xhr.open('POST', '../../../cgi-bin/pokebaby/write_data.php');
+        xhr.open('POST', 'https://web.stanford.edu/~anjiecao/cgi-bin/pokebaby_withinsubject/write_data.php');
         //xhr.open('POST', 'write_data.php'); // 'write_data.php' is the path to the php file described above.
         xhr.setRequestHeader('Content-Type', 'application/json');
         xhr.send(JSON.stringify({filename: name, filedata: data}));

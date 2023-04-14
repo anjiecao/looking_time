@@ -115,7 +115,7 @@ similarity_comparison <- raw_d %>%
          comparison_type) %>% 
   filter(!is.na(target)) %>% 
   separate(comparison_type, into = c("left_violation", "right_violation"), sep = "_") %>% 
-  select(subject, rt, response, target, left, right, left_violation, right_violation) %>% 
+  select(subject, rt, response, target, left, right, target_number, left_violation, right_violation) %>% 
   mutate(chosen_violation = case_when(
     response == "j" ~ right_violation, 
     response == "f" ~ left_violation

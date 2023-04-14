@@ -94,7 +94,7 @@ var curtainDisplay = (function (jspsych) {
 
         function curtainDown(){
             ctx.clearRect(0, 0, canvas.width, canvas.height)
-            square_down.height += 12
+            square_down.height += 18
             ctx.fillRect(square_down.x, square_down.y, square_down.width, square_down.height)
             
             window.requestAnimationFrame(curtainDown)
@@ -103,7 +103,7 @@ var curtainDisplay = (function (jspsych) {
 
         function curtainUp(){
             ctx.clearRect(0, 0, canvas.width, canvas.height)
-            square_up.height -= 12
+            square_up.height -= 18
             ctx.fillRect(square_up.x, square_up.y, square_up.width, square_up.height)
 
 
@@ -121,14 +121,14 @@ var curtainDisplay = (function (jspsych) {
             // record the response time as data
             let data = {
               rt: info.rt,
-              total_rt: 1000 + info.rt
+              total_rt: 500 + info.rt
             }
 
             console.log(data.rt)
 
             this.jsPsych.pluginAPI.setTimeout(()=>{
               this.jsPsych.finishTrial(data)
-            }, 800);
+            }, 500);
           }
           
             // hide the image
@@ -152,7 +152,7 @@ var curtainDisplay = (function (jspsych) {
 
           this.jsPsych.pluginAPI.setTimeout(()=>{
             jsPsych.pluginAPI.cancelKeyboardResponse(annoying_sound_listener);
-          }, 1000)
+          }, 500)
 
           this.jsPsych.pluginAPI.setTimeout(()=>{
             this.jsPsych.pluginAPI.getKeyboardResponse({
@@ -162,7 +162,7 @@ var curtainDisplay = (function (jspsych) {
             });
 
 
-          }, 1000)
+          }, 500)
 
 
         //draw()

@@ -122,9 +122,9 @@ function generate_html_string_for_stimulus(stimulus_type, stimulus_string){
     
     if(stimulus_type.includes("pair")){
         s = '<img src="' + stimulus_string + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + top_position + '%;\
-            transform: translate(-50%, -50%);left:' + (left_postion-5) + '%"></img>' + 
+            transform: translate(-50%, -50%);left:' + (left_postion-4) + '%"></img>' + 
             '<img src="' + stimulus_string + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + top_position  + '%;\
-            transform: translate(-50%, -50%);left:' + (left_postion+5)+ '%">'
+            transform: translate(-50%, -50%);left:' + (left_postion+4)+ '%">'
     }else{
         s = '<img src="' + stimulus_string + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + top_position + '%;\
         transform: translate(-50%, -50%);left:' + left_postion + '%"></img>'
@@ -145,9 +145,9 @@ function generate_html_string_for_filler_task(stimulus_type, stimulus_string){
     
     if(stimulus_type.includes("pair")){
         s = '<img src="' + stimulus_string + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + top_position + '%;\
-            transform: translate(-50%, -50%);left:' + (left_postion-5) + '%"></img>'+
+            transform: translate(-50%, -50%);left:' + (left_postion-4) + '%"></img>'+
             '<img src="' + stimulus_string + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + top_position  + '%;\
-            transform: translate(-50%, -50%);left:' + (left_postion + 5) + '%">'
+            transform: translate(-50%, -50%);left:' + (left_postion + 4) + '%">'
     }else{
         s = '<img src="' + stimulus_string + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + top_position + '%;\
         transform: translate(-50%, -50%);left:' + 46 + '%"></img>'

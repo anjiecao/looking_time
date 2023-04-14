@@ -16,8 +16,9 @@ cr <- read_csv(here("data/complexity_rating.csv")) %>% mutate(complexity_rating 
 sr <- read_csv(here("data/similarity_rating.csv"))
 em <- read_csv(here("data/adult_norming_embeddings.csv"))
 
-c_dis <- read_csv(here("data/eucledian_distances_adultnorming.csv"))
-e_dis <- read_csv(here("data/cosine_distances_adultnorming.csv"))
+e_dis <- read_csv(here("data/cosine_distances_with_number.csv"))%>% rename(stim_name = `...1`)
+proportion_ds <- read_csv(here("data/em_dis_with_pair.csv"))
+
 ```
 
 ```{r}
@@ -161,6 +162,7 @@ clean_sr = sr %>%
   filter(rt < summary_sr$upper)
 
 
+
 clean_sr  %<>% mutate(
     violation_type = case_when(
       (left_violation == "animacy" & right_violation == "identity") | (left_violation == "identity" & right_violation == "animacy") ~ "animacy_identity", 
@@ -168,13 +170,14 @@ clean_sr  %<>% mutate(
       (left_violation == "identity" & right_violation == "pose") | (left_violation == "pose" & right_violation == "identity") ~ "identity_pose", 
       (left_violation == "animacy" & right_violation == "number") | (left_violation == "number" & right_violation == "animacy") ~ "animacy_number", 
       (left_violation == "identity" & right_violation == "number") | (left_violation == "number" & right_violation == "identity") ~ "identity_number", 
-      (left_violation == "pose" & right_violation == "number") | (left_violation == "number" & right_violation == "pose") ~ "pose_number", 
+      (left_violation == "pose" & right_violation == "number") | (left_violation == "number" & right_violation == "pose") ~ "pose_number"
     )
   ) 
 ```
 
 
 ## proportion 
+
 
 ```{r}
 subject_n_trial_per_category <- clean_sr %>% 
@@ -227,16 +230,94 @@ rt_plot <- clean_sr %>%
   ggplot(aes(x = violation_type, y = log(rt))) + 
   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
   theme_few() + 
-  theme_few() + 
-  theme(axis.text.x = element_text(angle = 90)) + 
+  theme(axis.text.x = element_blank()) +
   xlab("")
 ```
+
+
+## embedding
+
+```{r}
+replace_name <- function(x) gsub("media/stimuli/", "", x)
+clean_sr <- sr %>% 
+  mutate_at(c("target", "left", "right"), replace_name)
+
+# calculate violation proportion
+ds_proportion_df <- clean_sr %>% 
+  filter(!is.na(target), !is.na(left), !is.na(right)) %>% 
+  rowwise() %>% 
+  mutate(left_number = case_when(
+    target_number == "pair" && left_violation == "number" ~ "single", 
+    target_number == "pair" && left_violation != "number" ~ "pair", 
+    target_number == "single" && left_violation == "number" ~ "pair", 
+    target_number == "single"&& left_violation != "number" ~ "single"
+   ), 
+   right_number = case_when(
+    target_number == "pair" && right_violation == "number" ~ "single", 
+    target_number == "pair" && right_violation != "number" ~ "pair", 
+    target_number == "single" && right_violation == "number" ~ "pair", 
+    target_number == "single"&& right_violation != "number" ~ "single"
+   )
+   )%>% 
+  mutate(
+    target_match_name = case_when(
+      target_number == "pair" ~ gsub("(.*)(\\.)", paste0("\\1_pair\\2"), target), 
+      TRUE ~ target
+    ), 
+    left_match_name = case_when(
+      left_number == "pair" ~ gsub("(.*)(\\.)", paste0("\\1_pair\\2"), left), 
+      TRUE ~ left
+    ), 
+    right_match_name = case_when(
+      right_number == "pair" ~ gsub("(.*)(\\.)", paste0("\\1_pair\\2"), right), 
+      TRUE ~ right
+    )
+  ) %>% left_join(proportion_ds %>% select(target_match_name, left_match_name, right_match_name, 
+                                           left_eds, right_eds, left_p_eds, right_p_eds), 
+                  by = c("target_match_name", "left_match_name", "right_match_name")) 
+
+
+ds_proportion_df %<>% mutate(
+    violation_type = case_when(
+      (left_violation == "animacy" & right_violation == "identity") | (left_violation == "identity" & right_violation == "animacy") ~ "animacy_identity", 
+      (left_violation == "animacy" & right_violation == "pose") | (left_violation == "pose" & right_violation == "animacy") ~ "animacy_pose", 
+      (left_violation == "identity" & right_violation == "pose") | (left_violation == "pose" & right_violation == "identity") ~ "identity_pose", 
+      (left_violation == "animacy" & right_violation == "number") | (left_violation == "number" & right_violation == "animacy") ~ "animacy_number", 
+      (left_violation == "identity" & right_violation == "number") | (left_violation == "number" & right_violation == "identity") ~ "identity_number", 
+      (left_violation == "pose" & right_violation == "number") | (left_violation == "number" & right_violation == "pose") ~ "pose_number"
+    )
+  ) 
+
+
+
+dist_plot <- ds_proportion_df %>% 
+  filter(
+    (violation_type == "animacy_identity" & chosen_violation == "identity") | 
+   (violation_type == "animacy_number" & chosen_violation == "number") | 
+    (violation_type == "animacy_pose" & chosen_violation == "pose")| 
+    (violation_type == "identity_number" & chosen_violation == "number") | 
+    (violation_type == "identity_pose" & chosen_violation == "pose") |
+    (violation_type == "pose_number" & chosen_violation == "pose")
+  ) %>% 
+  mutate(
+    unchosen_p_eds = ifelse(chosen_violation == left_violation, right_p_eds, left_p_eds)
+  ) %>% 
+  ggplot(aes(x = violation_type, y = unchosen_p_eds, color = chosen_violation)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  ylim(0, 1) + 
+  theme_few() + 
+  theme(axis.text.x = element_text(angle = 90)) + 
+  xlab("") + 
+  ylab("cos_dist_p")
+```
+
+
 
 
 ```{r}
 library(patchwork)
 
-sim_plot / rt_plot
+sim_plot / rt_plot / dist_plot
 ```
 
 
