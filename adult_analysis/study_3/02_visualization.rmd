@@ -23,8 +23,6 @@ library(here)
 
 d <- read_csv(here("data/01_trimmed_data/trimmed_lt_d.csv"))
 
-cr_d <- read_csv(here("data/01_trimmed_data/trimmed_complexity_rating.csv"))
-sim_d <- read_csv(here("data/01_trimmed_data/trimmed_similarity_rating_df.csv"))
 ```
 
 
@@ -90,7 +88,7 @@ d %>%
    stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
     stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .2)) + 
   theme_few()  + 
-  facet_grid(background_type~violation_type)
+  facet_grid(~violation_type)
 ```
 
 ## animate vs inanimate 
@@ -159,117 +157,5 @@ d %>%
   facet_wrap(~total_trial_number)+ 
   theme_few()
 ```
-
-
-# Complexity rating 
-
-oops 
-
-```{r}
-cr_d %>% 
-  ggplot(aes(x = complexity_rating_type, y = complexity_rating)) + 
-  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
-  theme_few() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
-
-```
-
-
-# Similarity rating 
-
-```{r}
-sim_d %>% 
-  ggplot(aes(x = similarity_rating_violation, y = similarity_rating)) +
-  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
-  theme_few()
-```
-
-
-# Item level analysis 
-
-## do we have that much data to tell? 
-```{r}
-cr_d %>% 
-  group_by(complexity_rating_stimulus) %>% 
-  count() %>% 
-  ggplot(aes(x = n)) +
-  geom_histogram()
-
-
-cr_d %>% 
-  group_by(complexity_rating_stimulus) %>% 
-  count() %>% 
-  ggplot(aes(x = n)) +
-  geom_histogram()
-
-
-sim_d %>% 
-  mutate(combined = paste(similarity_rating_background, similarity_rating_deviant, "_")) %>% 
-  group_by(combined) %>% 
-  count() %>% 
-  filter(n > 1)
-```
-
-
-
-## complexity 
-
-```{r}
-multiple_rators_stimulus <- cr_d %>% 
-  group_by(complexity_rating_stimulus) %>% 
-  count() %>% 
-  filter(n > 3) %>% 
-  pull(complexity_rating_stimulus)
-
-
-cr_d %>% 
-  filter(complexity_rating_stimulus %in% multiple_rators_stimulus) %>% 
-  ggplot(aes(x = complexity_rating_stimulus, y = complexity_rating)) + 
-  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
-  theme_few() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) 
-
-
-
-cr_d %>% 
-  filter(complexity_rating_stimulus %in% multiple_rators_stimulus) %>% 
-  ggplot(aes(x = complexity_rating_stimulus, y = complexity_rating)) + 
-  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
-  theme_few() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) + 
-  facet_wrap(~animacy, scales = "free")
-
-
-cr_d %>% 
-  filter(complexity_rating_stimulus %in% multiple_rators_stimulus) %>% 
-  ggplot(aes(x = complexity_rating_stimulus, y = complexity_rating)) + 
-  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
-  theme_few() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) + 
-  facet_wrap(~number, scales = "free")
-
-cr_d %>% 
-  filter(complexity_rating_stimulus %in% multiple_rators_stimulus) %>% 
-  ggplot(aes(x = complexity_rating_stimulus, y = complexity_rating)) + 
-  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
-  theme_few() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) + 
-  facet_wrap(~pose, scales = "free")
-```
-
-## similarity 
-
-```{r}
-sim_d %>% 
-  mutate(combined = paste(similarity_rating_background, similarity_rating_deviant, "_")) %>% 
-  ggplot(aes(x = combined, y = similarity_rating)) +
-  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
-  theme_few()
-
-```
-
-
-
-
 
 
