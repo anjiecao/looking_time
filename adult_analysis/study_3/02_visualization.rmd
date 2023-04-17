@@ -184,6 +184,37 @@ d %>%
   #facet_wrap(~half)
 ```
 
+## asymmetry? 
+
+```{r}
+d %>% filter(
+  violation_type_with_background %in% c("background", "animacy")
+) %>% 
+  mutate(
+    background_animacy = case_when(
+      grepl("inanimate", background_stimulus) ~ "background: inanimate",
+      TRUE ~ "background: animate"
+    ), 
+    deviant_animacy = case_when(
+      grepl("inanimate", deviant_stimulus) ~ "deviant: inanimate", 
+      deviant_stimulus == "null" ~ "deviant:na", 
+      TRUE ~ "deviant: animate"
+    )
+  ) %>% 
+   ggplot(aes(x = trial_number, y = total_rt, color = violation_type_with_background)) + 
+   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+    stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .2)) + 
+  theme_few() +
+  ylab("Reaction Time (ms)") + 
+  xlab("Trial Number") + 
+  scale_color_discrete(name = "Trial Type") + 
+  scale_y_log10()  + 
+  facet_wrap(~background_animacy)
+
+```
+
+
+
 ```{r}
 d %>% 
   mutate(violation_type_with_background = case_when(
@@ -198,7 +229,6 @@ d %>%
   scale_x_log10()
   #facet_wrap(~half)
 
-nrow(filter(d, violation_type == "animacy"))
 ```
 
 ```{r}
