@@ -234,6 +234,43 @@ final_trimmed_lt_d <- trimmed_lt_d %>%
 
 ```
 
+# Add embedding distance into the mix
+
+```{r}
+em_dis <- read_csv(here("data/eucledian_distances_with_number.csv")) %>% rename(stim_name = `...1`)
+replace_name <- function(x) gsub("media/padded_stims/", "", x)
+trimmed_lt_d <- trimmed_lt_d %>% 
+  mutate_at(c("background_stimulus", "deviant_stimulus"), replace_name) %>% 
+  mutate_at(c("background_stimulus", "deviant_stimulus"),
+    funs(case_when(
+      number == "single" ~ ., 
+      TRUE ~ gsub("(.*)(\\.)", paste0("\\1_pair\\2"), .)
+    )))
+
+
+get_distance <- function(stim_a_name, stim_b_name,  dist){
+  if (stim_a_name  == "null" | stim_b_name  == "null"){
+    return (tibble("val" = NA_real_))
+  }else{
+    return( 
+      tibble("val" = dist %>%
+      filter(stim_name == {{stim_b_name}}) %>% 
+      select({{stim_a_name}}) %>% 
+      pull())
+      )
+  }
+  
+}
+
+trimmed_lt_d <- trimmed_lt_d %>% 
+  ungroup() %>% 
+  mutate(edist = map2_df(.x = trimmed_lt_d$background_stimulus, 
+                        .y = trimmed_lt_d$deviant_stimulus, 
+                        .f = get_distance, em_dis)) %>% 
+  unnest(edist)
+```
+
+
 
 
 # write out all the data 

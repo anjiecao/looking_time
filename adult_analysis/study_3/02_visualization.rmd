@@ -16,14 +16,12 @@ output:
 library(tidyverse)
 library(ggthemes)
 library(here)
-
-
-
-
+library(lme4)
 
 d <- read_csv(here("data/01_trimmed_data/trimmed_lt_d.csv"))
 
 ```
+
 
 
 
@@ -127,13 +125,14 @@ d %>%
 
 ```
 
-## assuming background are the same 
+# assuming background are the same 
 
 
 
 ```{r}
 
 d %>% 
+  mutate(half = if_else(block_number < 9, "first_half", "second_half")) %>% 
   mutate(violation_type_with_background = case_when(
     trial_type == "background" ~ "background", 
     TRUE ~ violation_type
@@ -141,12 +140,14 @@ d %>%
    ggplot(aes(x = trial_number, y = log(total_rt), color = violation_type_with_background)) + 
    stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
     stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .2)) + 
-  theme_few() 
+  theme_few() + 
+  facet_wrap(~half)
 
 ```
 
 ```{r}
 d %>% 
+  mutate(half = if_else(block_number < 9, "first_half", "second_half")) %>% 
   mutate(violation_type_with_background = case_when(
     trial_type == "background" ~ "background", 
     TRUE ~ violation_type
@@ -154,8 +155,103 @@ d %>%
    ggplot(aes(x = trial_number, y = log(total_rt), color = violation_type_with_background)) + 
    stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
     stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .2)) + 
-  facet_wrap(~total_trial_number)+ 
+  facet_grid(half~total_trial_number)+ 
   theme_few()
 ```
+
+
+# embedding relationships? 
+
+
+log(looking time) ~ I((exp(1)**(-trial_number))) + I((exp(1)**(-trial_number))) * item_number + I((exp(1)**(-trial_number))) * item_orientation + I((exp(1)**(-trial_number))) * item_category + I((exp(1)**(-trial_number))) * trial_type + (trial_number * item_number | subject) + (trial_number * item_orientation | subject) + (trial_number * item_category | subject) + (trial_number * trial_type | subject)
+
+## first run the model 
+
+```{r}
+d <- d %>% mutate(violation_type_with_background = case_when(
+    trial_type == "background" ~ "background", 
+    TRUE ~ violation_type
+  )) 
+```
+
+
+```{r}
+
+# very time intensive, didn't work? 
+
+# m0 <- lmer(
+#   log(total_rt) ~ I((exp(1) ** (-trial_number))) +
+#                 I((exp(1)**(-trial_number))) * number +
+#               I((exp(1)**(-trial_number)))  * pose +
+#               I((exp(1)**(-trial_number)))  * animacy +
+#               I((exp(1)**(-trial_number))) * violation_type_with_background +
+#               (trial_number * number | subject) + (trial_number * pose | subject) + (trial_number * animacy | subject) + (trial_number * violation_type_with_background | subject),
+#   data = d
+# 
+# )
+
+# failed to converge
+# m1 <- lmer(
+#   log(total_rt) ~ I((exp(1) ** (-trial_number))) +
+#                 I((exp(1)**(-trial_number))) * number +
+#               I((exp(1)**(-trial_number)))  * pose +
+#               I((exp(1)**(-trial_number)))  * animacy +
+#               I((exp(1)**(-trial_number))) * violation_type_with_background +
+#               (number | subject) + (pose | subject) + (animacy | subject) + (violation_type_with_background | subject),
+#   data = d
+# 
+# )
+
+# # failed to converge
+# m2 <- lmer(
+#   log(total_rt) ~ I((exp(1) ** (-trial_number))) +
+#                 I((exp(1)**(-trial_number))) * number +
+#               I((exp(1)**(-trial_number)))  * pose +
+#               I((exp(1)**(-trial_number)))  * animacy +
+#               I((exp(1)**(-trial_number))) * violation_type_with_background +
+#              (violation_type_with_background | subject),
+#   data = d
+# 
+# )
+
+m3 <- lmerTest::lmer(
+  log(total_rt) ~ I((exp(1) ** (-trial_number))) +
+                I((exp(1)**(-trial_number))) * number +
+              I((exp(1)**(-trial_number)))  * pose +
+              I((exp(1)**(-trial_number)))  * animacy +
+              I((exp(1)**(-trial_number))) * violation_type_with_background +
+             (1 | subject),
+  data = d
+
+)
+
+
+
+```
+
+# get residual 
+
+```{r}
+d$residual = resid(m3)
+```
+
+```{r}
+resid_d %>% 
+  ggplot(aes(x = val, y = residual, color = violation_type_with_background)) + 
+  geom_point(alpha = .3) +
+  geom_smooth(method = "lm") + 
+  theme_few()
+```
+
+
+```{r}
+resid_d <- d %>% 
+  filter(violation_type_with_background != "background")
+
+
+summary(lm(residual ~ violation_type_with_background * val, 
+   data = resid_d))
+```
+
 
 
