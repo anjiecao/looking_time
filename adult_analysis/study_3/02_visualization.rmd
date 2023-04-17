@@ -127,6 +127,25 @@ d %>%
 
 # assuming background are the same 
 
+```{r}
+length(unique(d$subject))
+```
+
+```{r}
+
+d %>% 
+  mutate(half = if_else(block_number < 9, "first_half", "second_half")) %>% 
+  mutate(violation_type_with_background = case_when(
+    trial_type == "background" ~ "background", 
+    TRUE ~ violation_type
+  )) %>% 
+   ggplot(aes(x = trial_number, y = total_rt, color = violation_type_with_background)) + 
+   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+    stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .2)) + 
+  theme_few() +
+  scale_y_log10() + 
+  facet_wrap(~half)
+```
 
 
 ```{r}
@@ -137,12 +156,49 @@ d %>%
     trial_type == "background" ~ "background", 
     TRUE ~ violation_type
   )) %>% 
-   ggplot(aes(x = trial_number, y = log(total_rt), color = violation_type_with_background)) + 
+   ggplot(aes(x = trial_number, y = total_rt, color = violation_type_with_background)) + 
    stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
     stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .2)) + 
-  theme_few() + 
-  facet_wrap(~half)
+  theme_few() +
+  ylab("Reaction Time (ms)") + 
+  xlab("Trial Number") + 
+  scale_color_discrete(name = "Trial Type") + 
+  scale_y_log10() 
 
+#+ 
+  #facet_wrap(~half)
+
+```
+```{r}
+d %>% 
+  mutate(violation_type_with_background = case_when(
+    trial_type == "background" ~ "background", 
+    TRUE ~ violation_type
+  )) %>% 
+  filter(trial_type != "background") |>
+   ggplot(aes(x = violation_type, y = total_rt, color = violation_type_with_background)) + 
+   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+    stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .2)) + 
+  theme_few() +
+  scale_y_log10()#+ 
+  #facet_wrap(~half)
+```
+
+```{r}
+d %>% 
+  mutate(violation_type_with_background = case_when(
+    trial_type == "background" ~ "background", 
+    TRUE ~ violation_type
+  )) %>% 
+  filter(trial_type != "background") |>
+   ggplot(aes(x = total_rt, fill = violation_type_with_background)) + 
+  geom_histogram(bins = 10) + 
+  facet_wrap(~violation_type) + 
+  theme_few() +
+  scale_x_log10()
+  #facet_wrap(~half)
+
+nrow(filter(d, violation_type == "animacy"))
 ```
 
 ```{r}
@@ -159,6 +215,44 @@ d %>%
   theme_few()
 ```
 
+# super bad precision analysis
+
+```{r}
+p1 <- d %>% 
+  mutate(violation_type_with_background = case_when(
+    trial_type == "background" ~ "background", 
+    TRUE ~ violation_type
+  )) %>% 
+  filter(trial_type != "background") |>
+   ggplot(aes(x = violation_type, y = total_rt, color = violation_type_with_background)) + 
+   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+    stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .2)) + 
+  theme_few() +
+  scale_color_discrete(guide = "none") + 
+  scale_y_log10()
+
+p2 <- bind_rows(d, 
+          d |> mutate(subject = str_c(subject, "-2")), 
+          d |> mutate(subject = str_c(subject, "-3")), 
+          d |> mutate(subject = str_c(subject, "-4")),
+          d |> mutate(subject = str_c(subject, "-5")),
+          d |> mutate(subject = str_c(subject, "-6")),
+          d |> mutate(subject = str_c(subject, "-7")),
+          d |> mutate(subject = str_c(subject, "-8"))) %>% 
+  mutate(violation_type_with_background = case_when(
+    trial_type == "background" ~ "background", 
+    TRUE ~ violation_type
+  )) %>% 
+  filter(trial_type != "background") |>
+   ggplot(aes(x = violation_type, y = total_rt, color = violation_type_with_background)) + 
+   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+    stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .2)) + 
+  theme_few() +
+  scale_color_discrete(guide = "none") +
+  scale_y_log10()
+
+cowplot::plot_grid(p1, p2)
+```
 
 # embedding relationships? 
 
