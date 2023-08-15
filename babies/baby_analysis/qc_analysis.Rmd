@@ -1,0 +1,137 @@
+---
+title: "baby_analysis_qc.Rmd"
+author: "gal"
+date: "2023-04-22"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(magrittr)
+library(ggforce)
+library(pracma)
+library(lmerTest)
+library(readr)
+library(stringr)
+```
+
+Load data
+```{r}
+
+# data
+exp3_data_before_qc = read.csv('processed_data/before_qc/exp3_data.csv') %>% mutate(experiment = 3, qc = FALSE)
+exp3_data_after_qc = read.csv('processed_data/after_qc/exp3_data.csv') %>% mutate(experiment = 3, qc = TRUE)
+
+exp4_before_qc = read.csv('processed_data/before_qc/exp4_data.csv') %>% mutate(experiment = 4,qc = FALSE) 
+exp4_after_qc = read.csv('processed_data/after_qc/exp4_data.csv') %>% mutate(experiment = 4,qc = TRUE) 
+
+
+# experimenter manual exclusions
+exclusions_exp3 = read.csv('data/exp3/exclusions/exclusions.csv') %>% mutate(experiment = 3)
+exclusions_exp4 = read.csv('data/exp4/exclusions/exclusions.csv') %>% mutate(experiment = 4)
+
+```
+
+Combine datasets & exclusions files
+```{r}
+data_df = rbind(exp3_data_before_qc,exp3_data_after_qc,exp4_before_qc,exp4_after_qc)
+
+exclusions_df =  rbind(exclusions_exp3, exclusions_exp4)
+
+```
+
+Wrangle data df
+```{r}
+
+# separate trial type column
+data_df %<>% separate(Trials.trialType, sep = '-', into = c('fam_or_test', 'fam_duration', 'test_type')) 
+
+# create block number variable
+data_df <- data_df %>% arrange(experiment, qc, SubjectInfo.subjID, Trials.ordinal) %>% group_by(experiment, SubjectInfo.subjID) %>%   mutate(value_change = (fam_duration != lag(fam_duration, default = first(fam_duration))) | 
+           (test_type != lag(test_type, default = first(test_type)))) %>% # Create a logical column indicating whether the values changed compared to the previous row
+  mutate(block_num = 1 + cumsum(value_change)) %>% # Create a new column 'group_number' by cumulative sum of value_change
+  select(-value_change) # Remove the intermediate value_change column
+
+# make fam duration numeric
+# data_df %<>% mutate(fam_duration = as.numeric(fam_duration))
+
+data_df %<>% mutate(test_type = case_when(fam_duration == 0 ~ "baseline",
+                                          test_type == 'background' ~ "fam",
+                                           test_type == 'deviant' ~ "nov"),
+                    qc = case_when(qc ~ 'controlled', !qc ~ 'raw'))
+
+# rename a bunch of columns
+data_df %<>% rename(subject_num = SubjectInfo.subjID, LT = Looks.duration_onLooks, age = SubjectInfo.testAge, sex = SubjectInfo.gender)
+
+# add fam durations to make plots complete
+data_df %<>% complete(fam_duration)
+```
+
+Exclusions
+```{r}
+
+# preallocate exclude from output
+data_df %<>% mutate(exclude = as.logical(Trials.excludeTrial))
+
+
+# drop na from exclusions
+for (x in 1:nrow(exclusions_df)){
+  exclusion_info = exclusions_df[x,]
+  print(exclusion_info$onwards)
+  if (exclusion_info$onwards){   # if onwards = T, then remove all trials starting from that trial onwards
+      data_df %<>% mutate(
+      exclude = case_when(
+                experiment == exclusion_info$experiment & 
+                  subject_num == paste0("PKBB_", exclusion_info$subject_number) & 
+                  block_num >= exclusion_info$trial_number ~ T,
+            TRUE ~ exclude))
+    
+  }
+  else {  # if onwards = F, then only mark trial of that number
+    data_df %<>% mutate(
+      exclude = case_when(
+                experiment == exclusion_info$experiment & 
+                  subject_num == paste0("PKBB_", exclusion_info$subject_number) & 
+                  block_num == exclusion_info$trial_number ~ T,
+            TRUE ~ exclude))
+    
+  
+  }
+}
+```
+
+Plots
+```{r}
+
+#EXP3
+ggplot(data_df %>% filter(fam_or_test == 'test', !exclude, experiment == 3), aes(x=test_type, y=LT, group=fam_duration, color = fam_duration)) + geom_jitter(alpha=0.2, position = position_dodge(width = .2)) + 
+    stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1))  + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + facet_grid(qc~fam_duration) + xlab('Trial type') + ylab('LT in s') + labs(color = 'fam dur') + theme_classic(base_size = 20) + 
+  theme(strip.text.x = element_text(size = 20, colour = "black")) 
+
+# EXP4
+ggplot(data_df %>% filter(fam_or_test == 'test', !exclude, experiment == 4), aes(x=test_type, y=LT, group=fam_duration, color = fam_duration)) + geom_jitter(alpha=0.2, position = position_dodge(width = .2)) + 
+    stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1))  + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + facet_grid(qc~fam_duration) + xlab('Trial type') + ylab('LT in s') + labs(color = 'fam dur') + theme_classic(base_size = 20) + 
+  theme(strip.text.x = element_text(size = 20, colour = "black")) 
+
+#COGSCI FIG
+ggplot(data_df %>% filter(fam_or_test == 'test', !exclude, fam_duration > 0), aes(x=as.numeric(fam_duration), y=LT, group=test_type, color = test_type)) + geom_point(alpha=0.1, size = 1.2, position = position_jitterdodge(jitter.width = 0.2)) + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = 1), size = 0.6) + xlab('exposure duration') + ylab('Looking time (s)') + labs(color = 'Test type') + theme_classic(base_size = 14) + theme(strip.text.x = element_text(size = 20, colour = "black")) + scale_x_continuous(breaks = c(0, 1,3,4,8,9)) + geom_smooth(method ="lm", alpha = 0.4)  + scale_y_log10() + scale_y_continuous(breaks = c(3,10, 18, 27)) + theme(legend.title=element_blank(), 
+    legend.position = "bottom",
+   legend.box.margin=margin(-10,-10,-10,-10),
+    legend.margin=margin(3,3,3,3),
+    legend.text = element_text(size = 10)) +
+    coord_cartesian(ylim=c(3, 35)) + facet_wrap(~qc)
+
+
+
+df_no_qc=data_df %>% filter(!qc)  %>% arrange(experiment, subject_num, Trials.ordinal)
+df_qc=data_df %>% filter(qc) %>% arrange(experiment, subject_num, Trials.ordinal)
+
+plot_df <- tibble(qc_LT = df_qc$LT, no_qc_LT =df_no_qc$LT, qc_exclude = df_qc$exclude, no_qc_exclude = df_no_qc$exclude, fam_or_test = df_qc$fam_or_test, fam_duration = df_no_qc$fam_duration, test_type = df_qc$test_type) 
+
+
+ggplot(plot_df %>% filter(!qc_exclude, !no_qc_exclude, fam_or_test == 'test'), aes(x=no_qc_LT, y=qc_LT)) + geom_jitter(alpha=0.2, position = position_dodge(width = .2)) + xlab('LT (no QC)') + ylab('LT (QC)') + coord_equal() + theme_grey(base_size = 20) + ggtitle('test trials only')
+
+ggplot(plot_df %>% filter(!qc_exclude, !no_qc_exclude), aes(x=no_qc_LT, y=qc_LT)) + geom_jitter(alpha=0.2, position = position_dodge(width = .2)) + xlab('LT (no QC)') + ylab('LT (QC)') + coord_equal() + theme_grey(base_size = 20) + geom_smooth(method = 'lm') + ggtitle('all trials')
+```
+
+```
