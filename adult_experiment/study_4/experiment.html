@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://unpkg.com/jspsych@7.2.3"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+
+    <script src="https://unpkg.com/@jspsych/plugin-preload@1.1.1"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-html-button-response@1.1.1"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-fullscreen@1.1.1"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response@1.1.1"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-instructions@1.1.1"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-survey-likert@1.1.1"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-survey-text@1.1.1"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-survey-multi-select@1.1.1"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-survey-multi-choice@1.1.1"></script>
+
+  
+    <script src="js/plugins/curtainDisplay.js"></script>
+   
+    <script src="js/helper/array.js"></script>
+    <script src="js/helper/testing.js"></script>
+    <script src="js/helper/get_instruction.js"></script>
+    <script src="js/helper/get_stimuli.js"></script>
+    <script src="js/helper/get_blocks.js"></script>
+    <script src="js/helper/get_ratings.js"></script>
+    <script src= "js/helper/get_demog.js"></script>
+    
+    <script src="js/00_setting.js"></script>
+    <script src="js/01_instruction.js"></script>
+    
+    <script src="js/03_main.js"></script>
+    <script src="js/04_rating.js"></script>
+    <script src="js/05_demog.js"></script>
+
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/jspsych@7.2.3/css/jspsych.css"
+    />
+  <style>
+    .outsideWrapper{ 
+    width:1000px; height:800px; 
+    border:1px solid white;}
+.insideWrapper{ 
+    width:100%; height:100%; 
+    position:relative;}
+.coveredImage{ 
+    width:100%; height:100%; 
+    position:absolute; top:0px; left:0px;
+}
+.coveringCanvas{ 
+    width:100%; height:100%; 
+    position:absolute; top:0px; left:0px;
+    
+}
+.row {
+  display: flex;
+}
+
+.column {
+  flex: 5%;
+  padding: 5px;
+}
+
+
+img.test {
+  animation: shake 2s;
+  animation-iteration-count: infinite;
+}
+
+
+@keyframes shake {
+  0% { transform: translate(1px, 1px) rotate(0deg); }
+  10% { transform: translate(-1px, -2px) rotate(-2deg);}
+  20% { transform: translate(-3px, 0px) rotate(2deg); }
+  30% { transform: translate(3px, 2px) rotate(0deg); }
+  40% { transform: translate(1px, -1px) rotate(2deg); }
+  50% { transform: translate(-1px, 2px) rotate(-2deg); }
+  60% { transform: translate(-3px, 1px) rotate(0deg); }
+  70% { transform: translate(3px, 1px) rotate(-2deg); }
+  80% { transform: translate(-1px, -1px) rotate(2deg); }
+  90% { transform: translate(1px, 2px) rotate(0deg); }
+  100% { transform: translate(1px, -1px) rotate(-2deg); }
+}
+
+
+
+@keyframes shake {
+  0% { transform: translate(2px, 2px) rotate(0deg);  width: 75px; height: 75px} 
+  10% { transform: translate(-2px, -4px) rotate(-4deg);  width: 80px; height: 80px};
+  20% { transform: translate(-6px, 0px) rotate(4deg); width: 85px; height: 85px}
+  30% { transform: translate(6px, 4px) rotate(0deg); width: 90px; height: 90px}
+  40% { transform: translate(2px, -2px) rotate(4deg);width: 95px; height:95px }
+  50% { transform: translate(-2px, 4px) rotate(-4deg); width: 100px; height: 100px }
+  60% { transform: translate(2px, -2px) rotate(4deg);width: 95px; height: 95px}
+  70% { transform: translate(6px, 4px) rotate(0deg); width: 90px; height: 90px}
+  80% { transform: translate(-6px, 0px) rotate(4deg);  width: 85px; height:85px}
+  90% { transform: translate(-2px, -4px) rotate(-4deg);  width: 80px; height: 80px}
+  100% { transform: translate(2px, 2px) rotate(0deg); width: 75px; height:75px}
+}
+
+
+
+  </style>
+
+  </head>
+  <body>
+
+
+  </body>
+  <script>
+
+
+    var preload = {
+        type: jsPsychPreload,
+        images: all_stimuli
+      }
+
+
+      var timeline = []
+      timeline.push(preload)
+
+      var prolific_code = "3D699F4F"
+
+      var subject_id ='SS' + Date.now()
+      var intFrameWidth = window.innerWidth;
+      var intFrameHeight = window.innerHeight
+
+
+      //general function for grabbing parameter from a URL
+      function getParamFromURL( name ) {
+        name = name.replace(/[\[]/,"\\[").replace(/[\]]/,"\\]");
+        var regexS = "[\?&]"+name+"=([^&#]*)";
+        var regex = new RegExp( regexS );
+        var results = regex.exec( window.location.href );
+        if( results == null )
+          return "";
+        else
+          return results[1];
+      }
+
+      // get participant-specific url parameters from Prolific study link
+      var prolific_pid = getParamFromURL('PROLIFIC_PID');
+      var study_id = getParamFromURL('STUDY_ID');
+      var session_id = getParamFromURL('SESSION_ID');
+
+      //make sure that nobody can enter anything damaging
+      prolific_pid.replace(/[^A-Za-z0-9_]/g, "");
+      study_id.replace(/[^A-Za-z0-9_]/g, "");
+      session_id.replace(/[^A-Za-z0-9_]/g, "");
+
+     
+
+      var jsPsych = initJsPsych({
+        on_trial_finish: function(){
+            jsPsych.data.addProperties({ 
+              subject: subject_id, 
+              prolific_id: prolific_pid,
+              study: study_id,
+              session: session_id,
+              window_width: intFrameWidth, 
+              window_height: intFrameHeight});
+            saveData("test" + subject_id, jsPsych.data.get().csv());
+          } 
+      });
+
+      var enter_fullscreen = {
+        type: jsPsychFullscreen,
+        fullscreen_mode: true
+      }
+
+      
+      //timeline.push(enter_fullscreen)
+      //timeline = timeline.concat(instruction)
+      timeline = timeline.concat(all_blocks)
+
+      var pre_rating_trial = {
+        type:jsPsychInstructions,
+        pages: ["<p>You are almost done with the study!</p>" + 
+                "<p>Now we will just ask you some questions about our animation.</p>"
+        ],
+        show_clickable_nav: true,
+      
+      }
+
+      timeline.push(pre_rating_trial)
+      timeline = timeline.concat(all_similarity_rating)
+      timeline = timeline.concat(all_complexity_rating)
+
+      timeline = timeline.concat(demog)
+
+      var thank_you = {
+       type: jsPsychHtmlButtonResponse,
+       stimulus: 
+           "<p>Congratulations! You are all done! </p>" + 
+           "Your survey code is<p><b>"+ prolific_code + 
+            "</b></p><p>Please make sure you save this somewhere safe. You will need to enter this code into Prolific to be paid.</p>",
+        choices: ['Got it']
+    }
+
+
+    var exit_fullscreen = {
+      type: jsPsychFullscreen,
+      fullscreen_mode: false,
+      delay_after: 0
+    }
+
+    timeline.push(exit_fullscreen)
+   
+    timeline.push(thank_you)
+
+
+
+
+/*
+      var show_data = {
+        type: jsPsychHtmlKeyboardResponse,
+        stimulus: function() {
+          var trial_data = jsPsych.data.getLastTrialData().values();
+          var trial_json = JSON.stringify(trial_data, null, 2);
+          return `<p style="margin-bottom:0px;"><strong>Trial data:</strong></p>
+            <pre style="margin-top:0px;text-align:left;">${trial_json}</pre>`;
+        },
+        choices: "NO_KEYS"
+      };
+
+
+      timeline.push(show_data)
+
+*/
+      
+
+      jsPsych.run(timeline);
+
+
+        
+  function saveData(name, data){
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', 'https://web.stanford.edu/~anjiecao/cgi-bin/pokebaby_withinsubject/write_data.php');
+        //xhr.open('POST', 'write_data.php'); // 'write_data.php' is the path to the php file described above.
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send(JSON.stringify({filename: name, filedata: data}));
+    }
+
+
+  </script>
+</html>

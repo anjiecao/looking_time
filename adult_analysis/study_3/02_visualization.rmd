@@ -163,12 +163,80 @@ d %>%
   ylab("Reaction Time (ms)") + 
   xlab("Trial Number") + 
   scale_color_discrete(name = "Trial Type") + 
-  scale_y_log10() 
-
-#+ 
-  #facet_wrap(~half)
+  scale_y_log10() + 
+  facet_wrap(~block_number)
 
 ```
+
+## investigate block number effect 
+
+```{r}
+d %>% 
+  mutate(half = if_else(block_number < 9, "first_half", "second_half")) %>% 
+  mutate(violation_type_with_background = case_when(
+    trial_type == "background" ~ "background", 
+    TRUE ~ violation_type
+  )) %>% 
+   ggplot(aes(x = trial_number, y = total_rt, color = trial_type)) + 
+   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+    stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .2)) + 
+  theme_few() +
+  ylab("Reaction Time (ms)") + 
+  xlab("Trial Number") + 
+  scale_color_discrete(name = "Trial Type") + 
+  scale_y_log10() + 
+  facet_wrap(~block_number)
+```
+
+
+```{r}
+mean_background_lt_df <- d %>% 
+  filter(trial_type == "background", 
+         trial_number %in% c(2, 4, 6)) %>% 
+  group_by(block_number, trial_number) %>% 
+  summarise(mean_background_lt = mean(total_rt))
+
+
+d %>% 
+  filter(trial_type == "deviant", 
+         trial_number %in% c(2, 4, 6), 
+         violation_type == "pose"
+         ) %>% 
+  left_join(
+    mean_background_lt_df, by = c("block_number", "trial_number")
+  ) %>% 
+  mutate(
+    dishabituation_lt = total_rt - mean_background_lt
+  ) %>% 
+  ggplot(aes(x = block_number, y = dishabituation_lt)) +
+  stat_summary(fun.data = "mean_cl_boot") + 
+  geom_smooth(method = "lm") + 
+  facet_grid(~trial_number)+ 
+  scale_y_log10() + 
+  theme_few() 
+
+```
+
+
+
+
+```{r}
+d %>% 
+  mutate(half = if_else(block_number < 9, "first_half", "second_half")) %>% 
+  mutate(violation_type_with_background = case_when(
+    trial_type == "background" ~ "background", 
+    TRUE ~ violation_type
+  )) %>% 
+   ggplot(aes(x = trial_number, y = total_rt, color = violation_type_with_background)) + 
+   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+    stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .2)) + 
+  theme_few() +
+  scale_y_log10() 
+```
+
+
+
+
 ```{r}
 d %>% 
   mutate(violation_type_with_background = case_when(
@@ -185,11 +253,19 @@ d %>%
 ```
 
 ## asymmetry? 
+## by block 
 
 ```{r}
-d %>% filter(
+d %>% 
+   mutate(violation_type_with_background = case_when(
+    trial_type == "background" ~ "background", 
+    TRUE ~ violation_type
+  )) %>% 
+  filter(
   violation_type_with_background %in% c("background", "animacy")
 ) %>% 
+
+  # try faceting 
   mutate(
     background_animacy = case_when(
       grepl("inanimate", background_stimulus) ~ "background: inanimate",
@@ -201,17 +277,148 @@ d %>% filter(
       TRUE ~ "deviant: animate"
     )
   ) %>% 
-   ggplot(aes(x = trial_number, y = total_rt, color = violation_type_with_background)) + 
+  # try putting everything together 
+  mutate(
+    trial_type_detail = case_when(
+      trial_type == "background"  & background_animacy == "background: inanimate" ~ "Ibackground", 
+      trial_type == "background" &  background_animacy == "background: animate" ~ "Abackground", 
+      trial_type == "deviant" & deviant_animacy == "deviant: inanimate" ~ "Ideviant", 
+      trial_type == "deviant" & deviant_animacy == "deviant: animate" ~ "Adeviant"
+    )
+  ) %>% 
+  mutate(background_deviant_combo = paste(background_animacy, deviant_animacy, sep = ";")) %>% 
+   ggplot(aes(x = trial_number, y = total_rt, color = trial_type_detail)) + 
+   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+    stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .2)) + 
+  theme_few() +
+  theme(legend.position = "bottom") + 
+  ylab("Reaction Time (ms)") + 
+  xlab("Trial Number") + 
+  scale_y_log10() + 
+  guides(colour = guide_legend(nrow = 2))+ 
+  facet_wrap(~block_number)
+
+```
+
+
+
+## inanimate vs animate
+
+```{r}
+animacy_v_p <- d %>% 
+   mutate(violation_type_with_background = case_when(
+    trial_type == "background" ~ "background", 
+    TRUE ~ violation_type
+  )) %>% 
+  filter(
+  violation_type_with_background %in% c("background", "animacy")
+) %>% 
+
+  # try faceting 
+  mutate(
+    background_animacy = case_when(
+      grepl("inanimate", background_stimulus) ~ "background: inanimate",
+      TRUE ~ "background: animate"
+    ), 
+    deviant_animacy = case_when(
+      grepl("inanimate", deviant_stimulus) ~ "deviant: inanimate", 
+      deviant_stimulus == "null" ~ "deviant:na", 
+      TRUE ~ "deviant: animate"
+    )
+  ) %>% 
+  # try putting everything together 
+  mutate(
+    trial_type_detail = case_when(
+      trial_type == "background"  & background_animacy == "background: inanimate" ~ "Ibackground", 
+      trial_type == "background" &  background_animacy == "background: animate" ~ "Abackground", 
+      trial_type == "deviant" & deviant_animacy == "deviant: inanimate" ~ "Ideviant", 
+      trial_type == "deviant" & deviant_animacy == "deviant: animate" ~ "Adeviant"
+    )
+  ) %>% 
+  mutate(background_deviant_combo = paste(background_animacy, deviant_animacy, sep = ";")) %>% 
+   ggplot(aes(x = trial_number, y = total_rt, color = trial_type_detail)) + 
+   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+    stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .2)) + 
+  theme_few() +
+  theme(legend.position = "bottom") + 
+  ylab("Reaction Time (ms)") + 
+  xlab("Trial Number") + 
+  scale_y_log10() + 
+  guides(colour = guide_legend(nrow = 2))
+
+```
+
+## pair vs simple 
+
+```{r}
+number_v_p <- d %>% 
+   mutate(violation_type_with_background = case_when(
+    trial_type == "background" ~ "background", 
+    TRUE ~ violation_type
+  )) %>% 
+  filter(
+  violation_type_with_background %in% c("background", "number")
+) %>% 
+  
+  mutate(
+    trial_type_detail = case_when(
+      trial_type == "background"  & grepl("pair", background_stimulus)  ~ "2background", 
+      trial_type == "background" & !grepl("pair", background_stimulus) ~ "1background", 
+      trial_type == "deviant" & grepl("pair", deviant_stimulus) ~ "2deviant", 
+      trial_type == "deviant" & !grepl("pair", deviant_stimulus) ~ "1deviant", 
+    )
+  ) %>% 
+   ggplot(aes(x = trial_number, y = total_rt, color = trial_type_detail)) + 
+   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+    stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .2)) + 
+  theme_few() +
+  theme(legend.position = "bottom") + 
+  ylab("Reaction Time (ms)") + 
+  xlab("Trial Number") + 
+  theme(legend.position = "bottom")+
+  scale_y_log10() +
+  guides(colour = guide_legend(nrow = 2))
+
+
+  #facet_wrap(~background_animacy)
+```
+
+
+```{r}
+pose_v_p <- d %>% 
+   mutate(violation_type_with_background = case_when(
+    trial_type == "background" ~ "background", 
+    TRUE ~ violation_type
+  )) %>% 
+  filter(
+  violation_type_with_background %in% c("background", "pose")
+) %>% 
+  
+  mutate(
+    trial_type_detail = case_when(
+      trial_type == "background"  & grepl("left", background_stimulus)  ~ "Lbackground", 
+      trial_type == "background" & grepl("right", background_stimulus) ~ "Rbackground", 
+      trial_type == "deviant" & grepl("left", deviant_stimulus) ~ "Ldeviant", 
+      trial_type == "deviant" & grepl("right", deviant_stimulus) ~ "Rdeviant", 
+    )
+  ) %>% 
+   ggplot(aes(x = trial_number, y = total_rt, color = trial_type_detail)) + 
    stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
     stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .2)) + 
   theme_few() +
   ylab("Reaction Time (ms)") + 
   xlab("Trial Number") + 
-  scale_color_discrete(name = "Trial Type") + 
-  scale_y_log10()  + 
-  facet_wrap(~background_animacy)
-
+  scale_y_log10() + 
+  theme(legend.position = "bottom") + 
+  guides(colour = guide_legend(nrow = 2))
 ```
+
+
+```{r}
+library(patchwork)
+animacy_v_p + number_v_p + pose_v_p
+```
+
 
 
 
@@ -259,7 +466,8 @@ p1 <- d %>%
     stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .2)) + 
   theme_few() +
   scale_color_discrete(guide = "none") + 
-  scale_y_log10()
+  scale_y_log10() + 
+  labs(title = "original")
 
 p2 <- bind_rows(d, 
           d |> mutate(subject = str_c(subject, "-2")), 
@@ -268,7 +476,9 @@ p2 <- bind_rows(d,
           d |> mutate(subject = str_c(subject, "-5")),
           d |> mutate(subject = str_c(subject, "-6")),
           d |> mutate(subject = str_c(subject, "-7")),
-          d |> mutate(subject = str_c(subject, "-8"))) %>% 
+          d |> mutate(subject = str_c(subject, "-8")), 
+          d |> mutate(subject = str_c(subject, "-9")), 
+          d |> mutate(subject = str_c(subject, "-10"))) %>% 
   mutate(violation_type_with_background = case_when(
     trial_type == "background" ~ "background", 
     TRUE ~ violation_type
@@ -279,7 +489,8 @@ p2 <- bind_rows(d,
     stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .2)) + 
   theme_few() +
   scale_color_discrete(guide = "none") +
-  scale_y_log10()
+  scale_y_log10() + 
+  labs(title = "10x data")
 
 cowplot::plot_grid(p1, p2)
 ```
@@ -349,6 +560,7 @@ m3 <- lmerTest::lmer(
 
 )
 
+d$residual = resid(m3)
 
 
 ```
@@ -356,21 +568,100 @@ m3 <- lmerTest::lmer(
 # get residual 
 
 ```{r}
-d$residual = resid(m3)
+resid_d <- d %>% 
+  filter(violation_type_with_background != "background")
+```
+
+
+
+```{r}
+resid_d %>% 
+  group_by(background_stimulus, deviant_stimulus, violation_type, val) %>% 
+  summarise(mean_rt = mean(total_rt)) %>% 
+  ggplot(aes(x = val, y = mean_rt, color = violation_type)) + 
+  geom_point(alpha = .3) +
+  geom_smooth(method = "lm") + 
+  scale_y_log10()+
+  facet_wrap(~violation_type) + 
+  theme_few() + 
+  labs(title = "RT average by individual background - deviant pair", 
+       subtitle = "3~4 per group")
+
+```
+
+
+
+```{r}
+resid_d %>% 
+  group_by(background_stimulus, violation_type) %>% 
+  summarise(
+    mean_val = mean(val),
+    mean_res = mean(residual)) %>% 
+  ggplot(aes(x = mean_val, y = mean_res, color = violation_type)) + 
+  geom_point(alpha = .3) +
+  geom_smooth(method = "lm") + 
+  facet_wrap(~violation_type) + 
+  theme_few() + 
+  labs(title = "Res & distance group average by background stimulus ", 
+       subtitle = "20~30 per group")
+
 ```
 
 ```{r}
 resid_d %>% 
+ group_by(background_stimulus, violation_type) %>% 
+  summarise(
+    mean_val = mean(val),
+    mean_rt = mean(total_rt))%>% 
+  ggplot(aes(x = mean_val, y = mean_rt, color = violation_type)) + 
+  geom_point(alpha = .3) +
+  geom_smooth(method = "lm") + 
+  scale_y_log10()+
+  facet_wrap(~violation_type) + 
+  theme_few() + 
+   labs(title = "RT & distance group average by background stimulus ", 
+       subtitle = "20~30 per group")
+```
+
+
+
+```{r}
+resid_d %>% 
+  group_by(deviant_stimulus, violation_type) %>% 
+  summarise(
+    mean_val = mean(val),
+    mean_res = mean(residual)) %>% 
+  ggplot(aes(x = mean_val, y = mean_res, color = violation_type)) + 
+  geom_point(alpha = .3) +
+  geom_smooth(method = "lm") + 
+  facet_wrap(~violation_type) + 
+  theme_few() + 
+  labs(title = "Res & distance group average by deviant stimulus ", 
+       subtitle = "20~30 per group")
+```
+
+
+
+```{r}
+
+
+resid_d %>% 
   ggplot(aes(x = val, y = residual, color = violation_type_with_background)) + 
   geom_point(alpha = .3) +
   geom_smooth(method = "lm") + 
-  theme_few()
+  theme_few() 
+
+resid_d %>% 
+  ggplot(aes(x = val, y = residual, color = violation_type_with_background)) + 
+  geom_point(alpha = .3) +
+  geom_smooth(method = "lm") + 
+  theme_few() + 
+  facet_wrap(~ violation_type_with_background)
 ```
 
 
 ```{r}
-resid_d <- d %>% 
-  filter(violation_type_with_background != "background")
+
 
 
 summary(lm(residual ~ violation_type_with_background * val, 

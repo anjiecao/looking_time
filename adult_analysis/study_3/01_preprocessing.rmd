@@ -164,8 +164,8 @@ p_df <- read_csv(here("data/prolific.csv")) %>%
 p_summary <- p_df %>% 
   select(participant_id, time_taken) %>% 
    summarise(
-     median = median(time_taken),
-    mad = mad(time_taken), 
+     median = median(time_taken, na.rm = TRUE),
+    mad = mad(time_taken, na.rm = TRUE), 
     upper = median + 3 * mad, 
     lower = median - 3 * mad) 
 
@@ -239,7 +239,7 @@ final_trimmed_lt_d <- trimmed_lt_d %>%
 ```{r}
 em_dis <- read_csv(here("data/eucledian_distances_with_number.csv")) %>% rename(stim_name = `...1`)
 replace_name <- function(x) gsub("media/padded_stims/", "", x)
-trimmed_lt_d <- trimmed_lt_d %>% 
+final_trimmed_lt_d <- final_trimmed_lt_d %>% 
   mutate_at(c("background_stimulus", "deviant_stimulus"), replace_name) %>% 
   mutate_at(c("background_stimulus", "deviant_stimulus"),
     funs(case_when(
@@ -262,10 +262,10 @@ get_distance <- function(stim_a_name, stim_b_name,  dist){
   
 }
 
-trimmed_lt_d <- trimmed_lt_d %>% 
+final_trimmed_lt_d <- final_trimmed_lt_d %>% 
   ungroup() %>% 
-  mutate(edist = map2_df(.x = trimmed_lt_d$background_stimulus, 
-                        .y = trimmed_lt_d$deviant_stimulus, 
+  mutate(edist = map2_df(.x = final_trimmed_lt_d$background_stimulus, 
+                        .y = final_trimmed_lt_d$deviant_stimulus, 
                         .f = get_distance, em_dis)) %>% 
   unnest(edist)
 ```
