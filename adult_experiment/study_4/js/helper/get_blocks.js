@@ -1,9 +1,84 @@
 
+function get_block_information(all_stimuli, fam_trial_params = [1, 3, 9]){
 
-function generate_all_blocks(all_blocks_info){
+    all_block_info = []
+    block_type = ["all_background", "deviant"]
+
+    // grab each pair in an object things 
+    // each of the pair is now in a subarray 
+    all_pairs = packNeighboringElements(all_stimuli)
+    console.log(all_pairs)
+    for (var i = 0; i < all_pairs.length; i++){
+        pair = all_pairs[i]
+        shuffleArray(pair)
+        block_info = {
+            background: pair[0], 
+            deviant: pair[1]
+        }
+        all_block_info.push(block_info)
+
+    }
+
+    shuffleArray(all_block_info)
+
+    for (var pair_type_index = 0; pair_type_index < block_type.length; pair_type_index++){
+        for (var fam_trial_index = 0; fam_trial_index < fam_trial_params.length; fam_trial_index++){
+            // 0, 0 // 0, 1 // 0, 2 // 1, 0 // 1, 1 // 1, 2
+            // 0    // 1    // 2    // 3    // 4   // 5 
+            
+            block_index = pair_type_index * 3 + fam_trial_index
+            all_block_info[block_index].block_type = block_type[pair_type_index]
+            all_block_info[block_index].fam_trial = fam_trial_params[fam_trial_index]
+
+
+        }
+    }
+
+
+    return all_block_info
+
+
+}
+
+
+function generate_block(block_info, familiarization_time){
+    
+    block = []
+    // generate familiarization phase 
+    for (var i = 0; i < block_info.fam_trial; i++){
+        trial = {
+            type: curtainDisplay, 
+            stimulus: generate_html_string_for_stimulus(block_info.background), 
+            valid_key_press: [" "],
+            familiarization_time: familiarization_time, 
+            familiarization_phase: true, 
+            data: block_info
+          }
+        block.push(trial)
+    }
+
+    // generate test phase 
+    test_stimulus = (block_info.block_type == "deviant") ? block_info.deviant : block_info.background
+    trial = {
+        type: curtainDisplay, 
+        stimulus: generate_html_string_for_stimulus(test_stimulus), 
+        valid_key_press: [" "],
+        familiarization_time: familiarization_time, 
+        familiarization_phase: false, 
+        data: block_info
+    }
+
+    block.push(trial)
+    return block
+
+}
+
+
+
+function generate_all_blocks(all_blocks_info, familiarization_time){
     all_blocks = []
     for (var i= 0; i < all_blocks_info.length; i++){
-        block = generate_block(all_blocks_info[i])
+        block = generate_block(all_blocks_info[i], familiarization_time)
         all_blocks = all_blocks.concat(block)
         
     }
@@ -11,6 +86,10 @@ function generate_all_blocks(all_blocks_info){
 }
 
 
+
+
+
+/* 
 function generate_block(block_info){
 
 
@@ -108,28 +187,13 @@ function generate_block(block_info){
 
 
 }
-
+*/
 
 // loop through all combo and create blocks 
 
-function generate_html_string_for_stimulus(stimulus_type, stimulus_string){
+function generate_html_string_for_stimulus(stimulus){
 
-   
-
-    var top_position = getRandomInt(45, 55)
-    var left_postion = getRandomInt(45, 55)
-    
-    
-    if(stimulus_type.includes("pair")){
-        s = '<img src="' + stimulus_string + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + top_position + '%;\
-            transform: translate(-50%, -50%);left:' + (left_postion-4) + '%"></img>' + 
-            '<img src="' + stimulus_string + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + top_position  + '%;\
-            transform: translate(-50%, -50%);left:' + (left_postion+4)+ '%">'
-    }else{
-        s = '<img src="' + stimulus_string + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + top_position + '%;\
-        transform: translate(-50%, -50%);left:' + left_postion + '%"></img>'
-
-    }
+    s = "<img src = '" + stimulus + "' style = 'width:800px; height:800px'>"
 
     return(s)
  }

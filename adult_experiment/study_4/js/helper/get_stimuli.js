@@ -101,7 +101,6 @@ function get_block_information(all_stimuli, fam_trial_params = [1, 3, 9]){
 
 }
 
-get_block_information(all_stimuli)
 
 
 

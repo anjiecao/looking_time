@@ -62,7 +62,7 @@ var curtainDisplay = (function (jspsych) {
         var audio_string = '<audio id="audio" controls style="display:none"> <source src="' + 
         "media/error.wav"+ '"</audio>'
 
-        var test_stimulus = "<img src = 'media/animal_stim/ezgif-1-d9558f1ec0.gif' style = 'width:800px; height:800px'>"
+        var test_stimulus = trial.stimulus
         //var test_stimulus = "<video playsinline autoplay muted loop width = '320' height = '240' style='z-index: 0;'><source src = 'media/animal_stim/unitystims_001_Left_2fam_background_1_new.mp4' type = 'video/mp4'>"
 
         if (trial.demo_mode == false){
