@@ -12,9 +12,15 @@ var curtainDisplay = (function (jspsych) {
           type: jspsych.ParameterType.ARRAY, 
           default: [" "]
         }, 
+
+        familiarization_time: {
+          type: jspsych.ParameterType.INT, 
+          default: 3000 
+        }, 
+
         familiarization_phase:{
           type:jspsych.ParameterType.BOOLEAN,
-          default: true
+          default: false
         },
         demo_mode:{
           type:jspsych.ParameterType.BOOLEAN,
@@ -164,10 +170,10 @@ function curtain_open_from_middle() {
             window.requestAnimationFrame(curtainUp)
         }
 
-        //curtainUp()
-        //curtain_to_right()
-        //curtain_to_left()
+      
         curtain_open_from_middle()
+
+
         const after_key_response = (info) => {
           
             //curtainDown()
@@ -186,11 +192,7 @@ function curtain_open_from_middle() {
               this.jsPsych.finishTrial(data)
             }, 500);
           }
-          
-            // hide the image
-            
-            
-           
+                      
           
         
           // set up a keyboard event to respond only to the spacebar
@@ -223,8 +225,19 @@ function curtain_open_from_middle() {
   
             }, 500)
           }else{
+            this.jsPsych.pluginAPI.setTimeout(()=>{
+              curtain_to_right()
+              curtain_to_left()
+            }, trial.familiarization_time);
+            
             //move to next trial given certain time
+            this.jsPsych.pluginAPI.setTimeout(()=>{
+              
+              
+              this.jsPsych.finishTrial()
+            }, trial.familiarization_time + 500);
 
+            
 
           }
     
