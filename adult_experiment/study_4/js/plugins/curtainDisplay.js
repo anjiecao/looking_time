@@ -12,6 +12,10 @@ var curtainDisplay = (function (jspsych) {
           type: jspsych.ParameterType.ARRAY, 
           default: [" "]
         }, 
+        familiarization_phase:{
+          type:jspsych.ParameterType.BOOLEAN,
+          default: true
+        },
         demo_mode:{
           type:jspsych.ParameterType.BOOLEAN,
           default: false
@@ -52,12 +56,13 @@ var curtainDisplay = (function (jspsych) {
         var audio_string = '<audio id="audio" controls style="display:none"> <source src="' + 
         "media/error.wav"+ '"</audio>'
 
-        
+        var test_stimulus = "<img src = 'media/animal_stim/ezgif-1-d9558f1ec0.gif' style = 'width:800px; height:800px'>"
+        //var test_stimulus = "<video playsinline autoplay muted loop width = '320' height = '240' style='z-index: 0;'><source src = 'media/animal_stim/unitystims_001_Left_2fam_background_1_new.mp4' type = 'video/mp4'>"
 
         if (trial.demo_mode == false){
           display_element.innerHTML = '<div class="outsideWrapper">\
           <div class="insideWrapper">' + 
-            trial.stimulus + 
+          test_stimulus + 
             '<canvas id = "canvas" class="coveringCanvas"></canvas>\
           </div>\
       </div>'
@@ -67,7 +72,7 @@ var curtainDisplay = (function (jspsych) {
         }else{
           display_element.innerHTML = trial.demo_string + '<div class="outsideWrapper">\
           <div class="insideWrapper">' + 
-            trial.stimulus + 
+          test_stimulus + 
             '<canvas id = "canvas" class="coveringCanvas"></canvas>\
           </div>\
       </div>'
@@ -159,7 +164,6 @@ function curtain_open_from_middle() {
             window.requestAnimationFrame(curtainUp)
         }
 
-        var trial_start = Date.now()
         //curtainUp()
         //curtain_to_right()
         //curtain_to_left()
@@ -206,15 +210,24 @@ function curtain_open_from_middle() {
             jsPsych.pluginAPI.cancelKeyboardResponse(annoying_sound_listener);
           }, 500)
 
-          this.jsPsych.pluginAPI.setTimeout(()=>{
-            this.jsPsych.pluginAPI.getKeyboardResponse({
-              callback_function: after_key_response,
-              valid_responses: trial.valid_key_press,
-              persist: false
-            });
+
+          if (trial.familiarization_phase == false){
+
+            this.jsPsych.pluginAPI.setTimeout(()=>{
+              this.jsPsych.pluginAPI.getKeyboardResponse({
+                callback_function: after_key_response,
+                valid_responses: trial.valid_key_press,
+                persist: false
+              });
+  
+  
+            }, 500)
+          }else{
+            //move to next trial given certain time
 
 
-          }, 500)
+          }
+    
 
 
         //draw()
