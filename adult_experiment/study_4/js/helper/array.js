@@ -1,3 +1,20 @@
+//pack neighboring array 
+function packNeighboringElements(arr) {
+  const packedArray = [];
+  
+  for (let i = 0; i < arr.length; i += 2) {
+    if (i + 1 < arr.length) {
+      packedArray.push([arr[i], arr[i + 1]]);
+    } else {
+      packedArray.push([arr[i]]);
+    }
+  }
+  
+  return packedArray;
+}
+
+
+
 // remove an array from an array of array
 // assuming no duplicate elements in the array of array  
 function removeArrayFromArray(arr, arrOfarr){
