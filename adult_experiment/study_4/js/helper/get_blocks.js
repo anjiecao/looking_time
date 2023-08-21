@@ -69,6 +69,27 @@ function generate_block(block_info, familiarization_time){
     }
 
     block.push(trial)
+
+    
+    var filler_trial = {
+        type: jsPsychSurveyLikert,
+        preamble: generate_html_string_for_filler_task(test_stimulus),
+        questions: [
+          {
+            prompt: "How curious are you about this animation?", 
+            labels: ["Not at all curious", 
+            "A little curious", 
+            "Somewhat curious", 
+            "Pretty curious", "Very Curious"],
+            rrequired: true
+          }
+        ],
+        data: {
+            rating_type: "background"
+        }
+      }
+
+    block.push(filler_trial)
     return block
 
 }
@@ -200,26 +221,15 @@ function generate_html_string_for_stimulus(stimulus){
  
  
 
-function generate_html_string_for_filler_task(stimulus_type, stimulus_string){
+function generate_html_string_for_filler_task(stimulus){
    
 
     var top_position = 20
     var left_postion = 46
     
-    
-    if(stimulus_type.includes("pair")){
-        s = '<img src="' + stimulus_string + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + top_position + '%;\
-            transform: translate(-50%, -50%);left:' + (left_postion-4) + '%"></img>'+
-            '<img src="' + stimulus_string + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + top_position  + '%;\
-            transform: translate(-50%, -50%);left:' + (left_postion + 4) + '%">'
-    }else{
-        s = '<img src="' + stimulus_string + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + top_position + '%;\
-        transform: translate(-50%, -50%);left:' + 46 + '%"></img>'
-        
-
-
-    }
-
+    //s = "<img src = '" + stimulus + "' style = 'width:100px; height:100px; position:fixed; top:" + top_position + '%;\
+    //transform: translate(-50%, -50%);left:' + left_postion + '%"></img>'
+    s = "<img src = '" + stimulus + "' style = 'width:800px; height:800px'>"
     return(s)
  }
  
