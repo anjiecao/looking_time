@@ -1,0 +1,124 @@
+---
+title: "power analysis exp7"
+output: html_document
+date: "2023-08-07"
+---
+
+```{r}
+library(lme4)
+library(simr)
+library(emmeans)
+```
+
+```{r}
+set.seed(1)
+
+# specify parameters based on your previous data
+mean_log_looking_time <- log(17.5)
+sd_log_looking_time <- log(1.5)
+
+# specify parameters for effects
+effect_size <- 0  # standardized effect size for condition
+effect_size_trial <- -0.17  # standardized effect size for trial number
+effect_size_diff_exp <- c(0.2,1.1,0.8,1.2)  # pose,number,identity,animacy
+ICC <- 0.05  # intra-class correlation
+n_conditions <- 4  # total number of conditions
+n_trials_per_infant <- 4  # number of trials each infant sees
+n_participants <- 50  # number of participants
+
+# calculate standard deviations for the log-transformed data
+SD_within_log <- sqrt((1 - ICC) / ICC)
+SD_between_log <- SD_within_log / sqrt(n_conditions) - 0.5
+
+# generate a data frame to hold the synthetic data
+data_df <- data.frame(participant = rep(1:n_participants, each=n_trials_per_infant),
+                   trial = rep(1:n_trials_per_infant, n_participants),
+                   condition = rep(c("control", "exp1", "exp2", "exp3", "exp4"), 
+                                   length.out=n_participants * n_trials_per_infant))
+
+# generate the random participant effects
+random_effects_log <- rnorm(n_participants, 0, SD_between_log)
+
+# generate the synthetic log-transformed looking times
+data_df$log_looking_time <- with(data_df, 
+                              mean_log_looking_time +
+                              effect_size * (condition != "control") + 
+                              effect_size_diff_exp[1] * (condition == "exp1") +
+                              effect_size_diff_exp[2] * (condition == "exp2") +
+                              effect_size_diff_exp[3] * (condition == "exp3") +
+                              effect_size_diff_exp[4] * (condition == "exp4") +
+                              effect_size_trial * trial +
+                              random_effects_log[participant] +
+                              rnorm(nrow(data_df), 0, sd_log_looking_time)) - 1.2
+
+# cap the looking times at 60 seconds
+data_df$log_looking_time <- pmin(data_df$log_looking_time, log(60))
+
+
+# transform the log-transformed looking times to the original scale
+data_df$looking_time <- exp(data_df$log_looking_time)
+
+# Ensure that the condition variable is a factor
+data_df$condition <- as.factor(data_df$condition)
+
+# Recode the factor levels
+data_df$condition <- recode(data_df$condition, 
+                         "exp1" = "pose",
+                         "exp2" = "number",
+                         "exp3" = "identity",
+                         "exp4" = "animacy")
+
+# fit the model to the synthetic data
+model <- lmer(log_looking_time ~ condition + trial + (1|participant), data=data_df %>% filter(looking_time > 2), REML=FALSE)
+
+# print the model summary
+print(summary(model))
+
+# make contrasts
+pose = c(0, 1, 0, 0, 0)
+number = c(0,0,1,0,0)
+identity = c(0,0,0,1,0)
+animacy = c(0, 0, 0, 0, 1)
+
+marginal_means <- emmeans(model, ~ condition)
+
+# Specify the pairs to compare
+specific_comparisons <- contrast(marginal_means, method = list("pose - identity" = pose - identity, "pose - identity" = pose - identity, "pose - number" = pose - animacy, "pose - animacy" = pose - animacy ))
+
+print(specific_comparisons)
+
+pairwise_comparisons <- pairs(marginal_means)
+print(pairwise_comparisons)
+
+
+
+```
+
+# plots
+```{r}
+ggplot(data_df) + geom_histogram(aes(x = looking_time)) + theme_classic(base_size = 20)
+
+
+ggplot(data_df, aes(x = condition, y = looking_time)) + geom_point(alpha = 0.05) + stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1)) + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + theme_classic(base_size = 20) + ylab('LT') + ggtitle('simulated data, n = 30') + coord_cartesian(ylim=c(0,40))
+ 
+
+data_df_wide = data_df %>% filter(looking_time > 2) %>% pivot_wider(names_from = condition, values_from = looking_time) 
+
+
+```
+# Power analysis
+```{r}
+# specify the number of simulations
+n_sims <- 1000
+
+# fit the mixed effects model to the synthetic data
+model <- lmer(log_looking_time ~ condition + trial + (1|participant), data=data, REML=FALSE)
+
+# perform the power analysis for each condition
+for (cond in c("animacy", "number", "pose", "identity")) {
+  power <- powerSim(model, test=fixed(paste0("condition", cond)), nsim=n_sims)
+  
+  # print the power analysis results
+  print(power)
+}
+```
