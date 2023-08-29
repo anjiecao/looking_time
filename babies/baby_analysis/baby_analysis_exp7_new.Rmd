@@ -1,0 +1,293 @@
+---
+title: "exp7_analysis"
+author: "gal"
+date: '2023-08-28'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(magrittr)
+library(ggforce)
+library(pracma)
+library(lmerTest)
+library(readr)
+library(stringr)
+```
+
+Load data
+```{r}
+
+# data
+data_df = read.csv("processed_data/before_qc/exp7_data.csv") %>% mutate(experiment = 7)
+
+# experimenter manual exclusions
+exclusions_df = read.csv('data/exp7/exclusions/exclusions.csv') %>% mutate(experiment = 7)
+print(exclusions_df)
+```
+
+
+Combine datasets & exclusions files
+```{r}
+```
+
+
+Wrangle data df
+```{r}
+
+# separate trial type column
+print(data_df["Trials.trialType"])
+data_df %<>% separate(Trials.trialType, sep = '-', into = c('fam_or_test', 'fam_duration', 'test_type','animal')) 
+
+# create block number variable
+data_df <- data_df %>% arrange(experiment, SubjectInfo.subjID, Trials.ordinal) %>% group_by(experiment, SubjectInfo.subjID) %>%   mutate(value_change = (fam_duration != lag(fam_duration, default = first(fam_duration))) | 
+           (test_type != lag(test_type, default = first(test_type)))) %>% # Create a logical column indicating whether the values changed compared to the previous row
+  mutate(block_num = 1 + cumsum(value_change)) %>% # Create a new column 'group_number' by cumulative sum of value_change
+  select(-value_change) # Remove the intermediate value_change column
+
+# make fam duration numeric
+# data_df %<>% mutate(fam_duration = as.numeric(fam_duration))
+data_df %<>% mutate(animal = as.numeric(animal))
+data_df %<>% mutate(test_type = case_when(test_type == "background" ~ "background",
+                                          test_type == "identity" ~ "identity",
+                                          test_type == "pose" ~ "pose",
+                                          test_type == "animacy" ~ "animacy",
+                                          test_type == "number" ~ "number"))
+# rename a bunch of columns
+data_df %<>% rename(subject_num = SubjectInfo.subjID, LT = Looks.duration_onLooks, age = SubjectInfo.testAge, sex = SubjectInfo.gender)
+
+# add fam durations to make plots complete
+data_df %<>% complete(fam_duration)
+```
+
+
+# Get stimuli & sharing level
+
+```{r}
+
+# jspsych files
+
+jspsych_files_exp7 <- list.files("data", full.names = T) 
+jspsych_list_exp7 <- lapply(jspsych_files_exp7[2:length(jspsych_files_exp7)], read.csv)
+jspsych_list_exp7 <- lapply(jspsych_list_exp7, function(x) {x['success'] = NULL; x})
+subject_numbers_exp7 = parse_number(str_replace(jspsych_files_exp7[2:length(jspsych_files_exp7)], "data/exp7/",""))
+subject_mapping_exp7 <- data.frame(old_subject = as.character(seq(1, length(subject_numbers_exp7))), new_subject = subject_numbers_exp7)
+jspsych_df_exp7 <- map_dfr(jspsych_list_exp7, ~ .x, .id = 'subjectid') %>% mutate(experiment = 7) %>% 
+  left_join(subject_mapping_exp7, by = c("subjectid" = "old_subject")) %>% select(-subjectid) %>% rename(subjectid = new_subject)
+extras <- c("stimuli/images/unity_stims/|fam8|fam9|/") 
+types <- c("pose|animacy|number|identity|background")
+
+trial_df = rbind(jspsych_df_exp7) %>% filter(stimulus_type == 'trial') %>% 
+  mutate(stimulus_displayed = str_replace_all(stimulus_displayed, extras,"")) %>% mutate(stimulus_displayed = str_replace(stimulus_displayed, types,"")) %>%select(-c(subject_num)) %>% rename(block_num = block_number, subject_num = subjectid) %>%
+  mutate(subject_num = as.numeric(subject_num)) %>% separate(stimulus_displayed, sep = '_', into = c("animate", 'animal_pair', 'fam','block_type', 'junk')) %>% mutate(
+    animal_pair = as.numeric(animal_pair)) %>%
+  select(subject_num, block_num, experiment, animal_pair,fam)
+
+consent_df_exp7 <- jspsych_df_exp7 %>% filter(nchar(response) > 5) %>% select(subjectid, response) %>% 
+  mutate(consent_level = case_when(str_detect(response, 'Private') ~ 'private', 
+                                   str_detect(response, 'Scientific') ~ 'scientific',
+                                   str_detect(response, 'General Public') ~ 'public'))
+
+```
+
+Exclusions
+```{r}
+
+# preallocate exclude from output
+data_df %<>% mutate(exclude = as.logical(Trials.excludeTrial))
+
+
+# drop na from exclusions
+for (x in 1:seq_len(nrow(exclusions_df))){
+  exclusion_info = exclusions_df[x,]
+  print(exclusion_info$onwards)
+  if (exclusion_info$onwards){   # if onwards = T, then remove all trials starting from that trial onwards
+      data_df %<>% mutate(
+      exclude = case_when(
+                  subject_num == paste0("PKBB_", exclusion_info$subject_number) & 
+                  block_num >= exclusion_info$trial_number ~ T,
+            TRUE ~ exclude))
+    
+  }
+  else {  # if onwards = F, then only mark trial of that number
+    data_df %<>% mutate(
+      exclude = case_when(
+                  subject_num == paste0("PKBB_", exclusion_info$subject_number) & 
+                  block_num == exclusion_info$trial_number ~ T,
+            TRUE ~ exclude))
+    
+  
+  }
+}
+print(data_df["exclude"])
+# merge with stim info
+
+# data_df <- data_df %>% mutate(subject_num = parse_number(subject_num)) %>% left_join(trial_df, by = c('subject_num','block_num')) %>% mutate(animal = 
+#   case_when(pair_counterbalancing == 1 ~ 1 + (animal_pair-1) * 2,
+#             pair_counterbalancing == 2 ~ 2 + (animal_pair-1) * 2)) %>%
+#   mutate(animal = case_when(test_type == 'nov' & fam_or_test == 'test' & mod(animal,2) == 1 ~ animal + 1,
+#                             test_type == 'nov' & fam_or_test == 'test' & mod(animal,2) == 0 ~ animal - 1,
+#                              TRUE ~ animal))
+```
+
+
+New plots
+```{r}
+
+# ggplot(data_df %>% mutate(animal = factor(animal, levels = c(1,2,3,4,5,6))) %>% filter(fam_or_test == 'test', !exclude), aes(x=animal, y=LT)) + geom_point(alpha=0.2, position = position_dodge(width = .1)) + xlab('Animal') + ylab("LT") + stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1)) + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + theme_classic(base_size = 20) + theme(legend.position = "none") + ggtitle('0 fam trials')
+
+# ggplot(data_df %>% mutate(animal = factor(animal, levels = c(1,2,3,4,5,6))) %>% filter(fam_or_test == 'test', !exclude), aes(x=animal, y=LT, color = orientation)) + geom_point(alpha=0.2, position = position_dodge(width = .1)) + xlab('Animal') + ylab("LT") + stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1)) + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + theme_classic(base_size = 20)  + ggtitle('across test trials') 
+
+# ggplot(data_df %>% filter(fam_or_test == 'fam', !exclude), aes(x=test_type, y=LT, color = fam_duration)) + geom_point(alpha=0.2, position = position_dodge(width = .1)) + xlab('Fam duration') + ylab("LT at fam") + stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1)) + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + theme_classic(base_size = 20) + theme(legend.position = "none") 
+
+
+# main effect by violation type
+ggplot(data_df %>% filter(fam_or_test == 'test', !exclude), aes(x=test_type, y=LT)) + geom_jitter(alpha=0.2, position = position_dodge(width = .2)) + 
+    stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1))  + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + xlab('Trial type') + ylab('LT in s') + labs(color = 'fam dur') + theme_classic(base_size = 20) + 
+  theme(strip.text.x = element_text(size = 20, colour = "black")) +ggtitle('exp7')
+
+
+# #split by age
+# mean_age = data_df %>% distinct(subject_num, age) %>% pull(age) %>% mean()
+
+# ggplot(data_df %>% filter(fam_or_test == 'test', !exclude, age < mean_age), aes(x=test_type, y=LT, group=fam_duration, color = fam_duration)) + geom_jitter(alpha=0.2, position = position_dodge(width = .2)) + 
+#     stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1))  + 
+#   stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + facet_wrap(~fam_duration) + xlab('Trial type') + ylab('LT in s') + labs(color = 'fam dur') + theme_classic(base_size = 20) + 
+#   theme(strip.text.x = element_text(size = 20, colour = "black")) +ggtitle('exp7, young')
+
+# ggplot(data_df %>% filter(fam_or_test == 'test', !exclude, age >= mean_age), aes(x=test_type, y=LT, group=fam_duration, color = fam_duration)) + geom_jitter(alpha=0.2, position = position_dodge(width = .2)) + 
+#     stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1))  + 
+#   stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + facet_wrap(~fam_duration) + xlab('Trial type') + ylab('LT in s') + labs(color = 'fam dur') + theme_classic(base_size = 20) + 
+#   theme(strip.text.x = element_text(size = 20, colour = "black")) +ggtitle('exp7, old')
+
+# # main effect by fam duration
+# ggplot(data_df %>% filter(fam_or_test == 'test', !exclude), aes(x=test_type, y=LT, group=fam_duration, color = fam_duration)) + geom_jitter(alpha=0.2, position = position_dodge(width = .2)) + 
+#     stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1))  + 
+#   stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + facet_wrap(~fam_duration) + xlab('Trial type') + ylab('LT in s') + labs(color = 'fam dur') + theme_classic(base_size = 20) + 
+#   theme(strip.text.x = element_text(size = 20, colour = "black")) + ggtitle('exp7')
+
+
+```
+Combined plots
+```{r}
+
+# fot his plot, don't distinguish between background & deviant on 0 fam trials
+plot_df = data_df %>% mutate(test_type = case_when(fam_duration == 0 ~ 'baseline', TRUE ~ test_type))
+
+plot_df %<>% mutate(log_dodge = log10(as.numeric(fam_duration)))
+
+group.colors <- c(baseline = "#333BFF", fam = "#CC6600", nov ="#9633FF")
+
+
+# LOG TRANSFORMED X, NO 0 FAM
+ggplot(data_df %>% filter(fam_or_test == 'test', !exclude, fam_duration > 0), aes(x=(as.numeric(fam_duration)) + 0.01, y=LT, group=test_type, color = test_type)) + geom_point(alpha=0.2, size = 2, position = position_jitterdodge(jitter.width = 0.15)) + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = 1), size = 1) + xlab('fam duration') + ylab('LT in s') + labs(color = 'Test type') + theme_classic(base_size = 25) + theme(strip.text.x = element_text(size = 20, colour = "black")) + scale_y_log10() + scale_x_continuous(breaks = c(1,3,4,8,9)) + geom_hline(yintercept = data_df %>% filter(fam_or_test == 'test', fam_duration == 0) %>% pull(LT) %>% mean(), linetype = 'dashed') 
+
+
+
+ggplot(data_df %>% filter(fam_or_test == 'test', !exclude), aes(x=(as.numeric(fam_duration)) + 0.01, y=LT, group=test_type, color = test_type)) + geom_point(alpha=0.2, size = 2, position = position_jitterdodge(jitter.width = 0.15)) + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = 1), size = 1) + xlab('fam duration') + ylab('LT in s') + labs(color = 'Test type') + theme_classic(base_size = 25) + theme(strip.text.x = element_text(size = 20, colour = "black")) + scale_y_log10() + scale_x_continuous(breaks = c(1,3,4,8,9)) + geom_hline(yintercept = data_df %>% filter(fam_or_test == 'test', fam_duration == 0) %>% pull(LT) %>% mean(), linetype = 'dashed') + scale_color_manual(values = c("grey", "blue", "red")) 
+
+
+ggplot(data_df %>% filter(fam_or_test == 'test', !exclude, fam_duration > 0), aes(x=as.numeric(fam_duration) + 0.01, y=LT, group=test_type, color = test_type)) + geom_point(alpha=0.2, size = 2, position = position_dodge(width = 0.2)) + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = 0.2), size = 1) + xlab('fam duration') + ylab('LT in s') + labs(color = 'Test type') + theme_classic(base_size = 20) + 
+  theme(strip.text.x = element_text(size = 20, colour = "black")) + scale_x_log10() + scale_y_log10() + scale_color_manual(values = c("blue", "red")) 
+
+
+ggplot(data_df %>% filter(fam_or_test == 'test', !exclude, fam_duration > 0), aes(x=log(as.numeric(fam_duration) + 0.01), y=LT, group=test_type, color = test_type)) + geom_point(alpha=0.2, size = 2, position = position_jitterdodge(jitter.width = 0.01, dodge.width = 0.1)) + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = 0.2), size = 1) + xlab('fam duration') + ylab('LT in s') + labs(color = 'Test type') + theme_classic(base_size = 20) + 
+  theme(strip.text.x = element_text(size = 20, colour = "black")) +  scale_y_log10() + scale_color_manual(values = c("blue", "red")) 
+
+ggplot(data_df %>% filter(fam_or_test == 'test', !exclude, fam_duration > 0), aes(x=log(as.numeric(fam_duration)+ 0.01) , y=LT, group=test_type, color = test_type)) + geom_point(alpha=0.2, size = 2, position = position_jitterdodge(jitter.width = 0.15)) + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = 1), size = 1) + xlab('log fam duration') + ylab('LT in s') + labs(color = 'Test type') + theme_classic(base_size = 25) + theme(strip.text.x = element_text(size = 20, colour = "black")) + scale_y_log10() + geom_hline(yintercept = data_df %>% filter(fam_or_test == 'test', fam_duration == 0) %>% pull(LT) %>% mean(), linetype = 'dashed') + scale_color_manual(values = c("blue", "red")) 
+
+
+
+ggplot(data_df %>% filter(fam_or_test == 'test', !exclude), aes(x=(as.numeric(fam_duration)) + 0.01, y=LT, group=test_type, color = test_type)) + geom_point(alpha=0.2, size = 2, position = position_jitterdodge(jitter.width = 0.15)) + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = 1), size = 1) + xlab('fam duration') + ylab('LT in s') + labs(color = 'Test type') + theme_classic(base_size = 25) + theme(strip.text.x = element_text(size = 20, colour = "black")) + scale_y_log10() + scale_x_continuous(breaks = c(1,3,4,8,9)) + geom_hline(yintercept = data_df %>% filter(fam_or_test == 'test', fam_duration == 0) %>% pull(LT) %>% mean(), linetype = 'dashed') + scale_color_manual(values = c("grey", "blue", "red")) + geom_smooth()
+
+ggplot(plot_df %>% filter(fam_or_test == 'test', !exclude), aes(x=as.numeric(fam_duration), y=LT, group=test_type, color = test_type)) + geom_point(alpha=0.1, size = 2, position = position_jitterdodge(jitter.width = 0.15)) + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = 1), size = 1) + xlab('fam duration') + ylab('LT in s') + labs(color = 'Test type') + theme_classic(base_size = 25) + theme(strip.text.x = element_text(size = 20, colour = "black")) + scale_x_continuous(breaks = c(1,3,4,8,9)) + scale_color_manual(values = c("grey", "blue", "red")) + geom_smooth(method ="lm", alpha = 0.4) + coord_trans(y = "log10") + geom_hline(yintercept = data_df %>% filter(fam_or_test == 'test', !exclude, fam_duration == 0) %>% pull(LT) %>% mean(), linetype = "dashed") + scale_y_continuous(breaks = c(3,10,30)) 
+
+```
+
+
+Pre-registered models
+```{r}
+
+# exclude stuff invalid trials
+data_df %<>% filter(!exclude)
+
+# prepare test df with exclusions
+test_df = data_df %>% filter(fam_or_test == 'test') %>% mutate(fam_duration = as.numeric(fam_duration), test_type = case_when(fam_duration == 0 ~ 'fam', TRUE ~ test_type), centered_age = age - (data_df %>% distinct(subject_num,age) %>% pull(age) %>% mean() ))
+
+fam_df = data_df %>% filter(fam_or_test == 'fam') %>% mutate(fam_duration = as.numeric(fam_duration), centered_age = age - (data_df %>% distinct(subject_num age) %>% pull(age) %>% mean() ))
+
+
+mA <- lmer(log(LT) ~ poly(fam_duration,1) * test_type + block_num + (1|animal) + (1 | subject_num), data = test_df)
+summary(mA)
+
+m0 <- lmer(log(LT) ~ poly(fam_duration,1) * test_type + block_num + (1 | subject_num), data = test_df)
+summary(m0)
+
+m <- lmer(log(LT) ~ poly(fam_duration,1) * test_type + block_num + (1 | animal), data = test_df)
+summary(m)
+
+exactRLRT(m.slope, mA, m0)
+# Exp 3
+
+# interaction model
+model_1 <- lmer(log(LT) ~ poly(fam_duration,1) * test_type + as.factor(animal) + block_num + (1 | subject_num), data = test_df)
+summary(model_1)
+
+model_1a<- lmer(log(LT) ~ poly(fam_duration,1) * test_type +  block_num + (1 | subject_num) + (1|animal), data = test_df)
+summary(model_1a)
+
+anova(model_1, model_1a)
+
+# ns. because of non-linear interaction
+
+# dishabituation
+model_2 <- lmer(log(LT) ~ test_type + block_num + (1 | subject_num), data = test_df %>% filter(fam_duration >= 8) %>% mutate(fam_duration = scale(fam_duration)))
+summary(model_2)
+
+# fam pref (EXPLORATORY)
+model_2b <- lmer(log(LT) ~ test_type + trial_num + (1 | subject_num), data = test_df %>% filter(experiment == 3, fam_duration == 4))
+summary(model_2b)
+
+# cheked for fam pref, but didn't find
+
+# habituation
+model_3 <- lmer(log(LT) ~ fam_duration + trial_num + (1 | subject_num), data = test_df %>% filter(experiment == 3, test_type == 'fam'))
+summary(model_3)
+
+
+
+# Exp 4
+
+# interaction model
+model_1 <- lmer(log(LT) ~ fam_duration *test_type + trial_num + (1 | subject_num), data = test_df %>% filter(experiment == 4))
+summary(model_1)
+
+
+
+# ns. because of non-linear interaction
+
+# dishabituation
+model_2 <- lmer(log(LT) ~ test_type + trial_num + (1 | subject_num), data = test_df %>% filter(experiment == 4, fam_duration > 8))
+summary(model_2)
+
+# fam pref (EXPLORATORY)
+model_2b <- lmer(log(LT) ~ test_type + trial_num + (1 | subject_num), data = test_df %>% filter(experiment == 3, fam_duration == 4))
+summary(model_2b)
+
+# cheked for fam pref, but didn't find
+
+# habituation
+model_3 <- lmer(log(LT) ~ fam_duration + trial_num + (1 | subject_num), data = test_df %>% filter(experiment == 4, test_type == 'fam'))
+summary(model_3)
+
+# check for baseline differences
+
+model_baseline_diffs <- lmer(log(LT) ~ as.factor(animal) + trial_num + background_deviant + (1 | subject_num), data = test_df %>% filter(experiment == 4, test_type == 'fam'))
+summary(model_3)
+
+```
+
+
+
+

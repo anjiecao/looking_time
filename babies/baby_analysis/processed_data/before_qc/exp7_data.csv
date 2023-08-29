@@ -1,0 +1,17 @@
+SubjectInfo.subjID,SubjectInfo.testAge,SubjectInfo.gender,SubjectInfo.sessionNumber,Trials.trialType,Trials.ordinal,Looks.confidence,Trials.duration,Trials.excludeTrial,Trials.excludeReason,Looks.duration_onLooks
+PKBB_01,284.0,F,1,fam-8-background-5,0,0.8786845649946242,39.999,False,,28.296999999999993
+PKBB_01,284.0,F,1,test-8-background-5,1,0.7785518547067757,9.217,False,,5.019000000000001
+PKBB_01,284.0,F,1,fam-9-animacy-6,2,0.6526594579219818,44.998999999999995,True,total on-look time in trial is less than the minimum cumulative duration (min_durationOn),0.04100000000000392
+PKBB_01,284.0,F,1,test-9-animacy-6,3,0.5634497314691543,26.976,False,,5.018000000000002
+PKBB_01,284.0,F,1,fam-8-identity-1,4,0.738158759524176,39.999,False,,20.594
+PKBB_01,284.0,F,1,test-8-identity-1,5,0.5010019414015362,13.379000000000001,False,,3.244
+PKBB_01,284.0,F,1,fam-9-pose-3,6,0.5953466714360169,44.998999999999995,False,,16.226000000000006
+PKBB_01,284.0,F,1,test-9-pose-3,7,0.9059214387639376,10.447000000000001,False,,9.254999999999997
+PKBB_02,225.0,M,1,fam-8-animacy-1,0,0.7477762805116777,39.999,True,total on-look time in trial is less than the minimum cumulative duration (min_durationOn),0.7909999999999968
+PKBB_02,225.0,M,1,test-8-animacy-1,1,0.7971582526411384,60.0,False,NA,30.513
+PKBB_02,225.0,M,1,fam-9-identity-5,2,0.7230167983165529,44.999,False,NA,14.234000000000005
+PKBB_02,225.0,M,1,test-9-identity-5,3,0.7975721342532411,60.0,False,NA,18.795
+PKBB_02,225.0,M,1,fam-8-pose-2,4,0.6813227895793683,39.999,False,NA,24.540000000000006
+PKBB_02,225.0,M,1,test-8-pose-2,5,0.762936950720716,44.557,False,NA,14.338000000000005
+PKBB_02,225.0,M,1,fam-9-background-3,6,0.6352430481136865,44.999,False,NA,7.601999999999997
+PKBB_02,225.0,M,1,test-9-background-3,7,0.66291903271957,15.885,False,NA,4.079000000000001
