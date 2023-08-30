@@ -199,7 +199,8 @@ function curtain_open_from_middle() {
             }
 
             console.log(data.rt)
-
+	    // send things to the database?
+	    //socket.emit('currentData',data)
             this.jsPsych.pluginAPI.setTimeout(()=>{
               this.jsPsych.finishTrial(data)
             }, 500);
