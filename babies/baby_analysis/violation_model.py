@@ -5,7 +5,7 @@ import numpy as np
 import bootstrapped.bootstrap as bs
 import bootstrapped.stats_functions as bs_stats
 
-# # # Read the CSV and specify column names
+# # Read the CSV and specify column names
 # df = pd.read_csv('processed_data/model_data/summarized_results_detailed_new.csv',
 #                  names=["sub_id", "batch_id", "trial_num", "stim_sequence", "violation", 
 #                         "epsilon", "b_val", "d_val", "mu_prior", "v_prior", "alpha_prior", 
@@ -13,12 +13,14 @@ import bootstrapped.stats_functions as bs_stats
 #                  header=None)  # add header=None if the file does not contain a header
 
 # # grab forced exposure from first exposure
-# df['forced_exposure_max'] = df.groupby(['batch_id', 'sub_id'])['n_samples'].transform('first')
+# df['forced_exposure_max'] = df.groupby(['batch_id', 'sub_id','stim_sequence'])['n_samples'].transform('first')
 
-# # set baseline trials to no forced exposure
-# df.loc[df['stim_sequence'] == 'B', 'forced_exposure_max'] = np.nan
+# # set baseline trials to 5 or 10, doesn't matter since no fam occurred
+# num_baseline = len(df[df['stim_sequence'] == 'B'])
+# random_values = np.random.choice([5, 10], size=num_baseline)
+# df.loc[df['stim_sequence'] == 'B', 'forced_exposure_max'] = random_values
 
-# df = df.groupby(['batch_id', 'sub_id']).tail(1)
+# df = df.groupby(['batch_id', 'sub_id','stim_sequence']).tail(1)
 
 # # # Now df contains the data with the specified column names
 # df['test_type'] = ['nov' if 'D' in seq else 'fam' for seq in df['stim_sequence']]

@@ -1,5 +1,5 @@
 ---
-title: "exposure_duration_analysis"
+title: "exp4_analysis"
 author: "gal"
 date: '2023-01-18'
 output: html_document
@@ -129,21 +129,16 @@ Exclusions
 # preallocate exclude from output
 data_df %<>% mutate(exclude = as.logical(Trials.excludeTrial))
 
+
 # drop na from exclusions
 for (x in 1:nrow(exclusions_df)){
   exclusion_info = exclusions_df[x,]
-  
-  # need to add 0 for for subject numbers < 10
-  if (x < 10) {
-    extra_str = "0"
-  }
-  else {extra_str = ""}
-  
+  print(exclusion_info$onwards)
   if (exclusion_info$onwards){   # if onwards = T, then remove all trials starting from that trial onwards
       data_df %<>% mutate(
       exclude = case_when(
-                        experiment == exclusion_info$experiment & 
-                  subject_num == paste0("PKBB_", extra_str, exclusion_info$subject_number) & 
+                experiment == exclusion_info$experiment & 
+                  subject_num == paste0("PKBB_", exclusion_info$subject_number) & 
                   block_num >= exclusion_info$trial_number ~ T,
             TRUE ~ exclude))
     
@@ -151,8 +146,8 @@ for (x in 1:nrow(exclusions_df)){
   else {  # if onwards = F, then only mark trial of that number
     data_df %<>% mutate(
       exclude = case_when(
-                        experiment == exclusion_info$experiment & 
-                  subject_num == paste0("PKBB_", extra_str, exclusion_info$subject_number) & 
+                experiment == exclusion_info$experiment & 
+                  subject_num == paste0("PKBB_", exclusion_info$subject_number) & 
                   block_num == exclusion_info$trial_number ~ T,
             TRUE ~ exclude))
     
@@ -175,90 +170,15 @@ write.csv(data_df %>% mutate(experiment = case_when(experiment == 3 ~ 'A', exper
 ```
 
 
-Auxiliary analyses
-```{r}
-
-## Baseline interest by species
-
-# O fam
-
-ggplot(data_df %>% mutate(animal = factor(animal, levels = c(1,2,3,4,5,6,7,8,9,10,11,12))) %>% filter(fam_or_test == 'test', fam_duration == 0, !exclude), aes(x=animal, y=LT)) + geom_point(alpha=0.2, position = position_dodge(width = .1)) + xlab('Animal') + ylab("LT") + stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1)) + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + theme_classic(base_size = 20) + theme(legend.position = "none") + ggtitle('0 fam trials')
-
-# all trial
-
-ggplot(data_df %>% mutate(animal = factor(animal, levels = c(1,2,3,4,5,6,7,8,9,10,11,12))) %>% filter(fam_or_test == 'test', !exclude), aes(x=animal, y=LT)) + geom_point(alpha=0.2, position = position_dodge(width = .1)) + xlab('Animal') + ylab("LT") + stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1)) + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + theme_classic(base_size = 20)  + ggtitle('across test trials') 
-
-
-## Block number effect
-ggplot(data_df %>% filter(fam_or_test == 'test', !exclude, LT > 2), aes(x=block_num, y=LT)) + geom_point(alpha=0.2) + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = 1), size = 1) + xlab('fam duration') + ylab('LT in s') + labs(color = 'Test type') + theme_classic(base_size = 25) + theme(strip.text.x = element_text(size = 20, colour = "black")) + scale_x_continuous(breaks = c(1,2,3,4,6,8,9)) + scale_color_manual(values = c("grey", "blue", "red")) + geom_smooth()
-
-
-
-```
 Combined plots
 ```{r}
 
-median_age = data_df %>% group_by(subject_num) %>% summarize(age = mean(age)) %>% pull(age) %>%median() 
-
-
-# fot his plot, don't distinguish between background & deviant on 0 fam trials
-plot_df = data_df %>% mutate(test_type = case_when(fam_duration == 0 ~ 'baseline', TRUE ~ test_type),
-                             age_category = if_else(age < median_age, 'young','old'),
-                             age_category = factor(age_category, levels=c('young','old')))
-
-
-## Exposure duration x test trial
-ggplot(plot_df %>% filter(fam_or_test == 'test', !exclude, LT > 2), aes(x=as.numeric(fam_duration), y=LT, group=test_type, color = test_type)) + geom_point(alpha=0.1, size = 2, position = position_jitterdodge(jitter.width = 0.15)) + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = 1), size = 1) + xlab('fam duration') + ylab('LT in s') + labs(color = 'Test type') + theme_classic(base_size = 25) + theme(strip.text.x = element_text(size = 20, colour = "black")) + scale_x_continuous(breaks = c(1,2,3,4,6,8,9)) + scale_color_manual(values = c("grey", "blue", "red")) + geom_smooth(method ="lm", alpha = 0.4) + geom_hline(yintercept = plot_df %>% dplyr::filter(fam_or_test == 'test', !exclude, test_type == 'baseline') %>% pull(LT) %>% mean(), linetype = "dashed") + coord_trans(y = "log10")
-
-```
-
-Within subject main effect
-```{r}
-
-plot_df %>% dplyr::filter(fam_or_test == 'test', !exclude, test_type == 'fam', fam_duration == 8) %>% mean(LT) 
-
-ggplot(plot_df %>% filter(fam_or_test == 'test', !exclude), aes(x=block_num, y=log(LT))) + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = 1), size = 1) + xlab('block number') + geom_smooth() + ylab('LT in log s') + labs(color = 'Test type') + theme_classic(base_size = 25)
-
-data_df_wide <- data_df %>% filter(fam_or_test == 'test', fam_duration>0,!exclude) 
-data_df_wide$fam_test <- paste(data_df_wide$test_type,data_df_wide$fam_duration, sep = '')
-data_df_wide <- data_df_wide %>% select(subject_num, fam_test, LT)
-data_df_wide <- pivot_wider(data_df_wide, names_from = fam_test, values_from = LT)
-data_df_wide$difference1 <- data_df_wide$nov1 - data_df_wide$fam1
-data_df_wide$difference2 <- data_df_wide$nov2 - data_df_wide$fam2
-data_df_wide$difference3 <- data_df_wide$nov3 - data_df_wide$fam3
-data_df_wide$difference4 <- data_df_wide$nov4 - data_df_wide$fam4
-data_df_wide$difference6 <- data_df_wide$nov6 - data_df_wide$fam6
-data_df_wide$difference8 <- data_df_wide$nov8 - data_df_wide$fam8
-data_df_wide$difference9 <- data_df_wide$nov9 - data_df_wide$fam9
-data_df_wide <- data_df_wide %>% select(subject_num, difference1, difference2, difference3, difference4, difference6, difference8,difference9)
-data_df_wide <- pivot_longer(data_df_wide, cols = c(difference1, difference2, difference3, difference4, difference6, difference8,difference9), names_to = 'type', values_to = 'difference')
-data_df_wide$type <- substr(data_df_wide$type, nchar(data_df_wide$type), nchar(data_df_wide$type))
 # fot his plot, don't distinguish between background & deviant on 0 fam trials
 plot_df = data_df %>% mutate(test_type = case_when(fam_duration == 0 ~ 'baseline', TRUE ~ test_type))
 
 group.colors <- c(baseline = "#333BFF", fam = "#CC6600", nov ="#9633FF")
 
-#within subjects 
-ggplot(data_df_wide %>% filter(type>0), aes(x=as.numeric(type), y=difference))  + geom_abline(intercept = 0,slope=0,linetype='dashed') + 
-  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + xlab('Fam duration') + ylab('Novel - Familiar (s)')  + theme_classic(base_size = 22) + 
-  theme(strip.text.x = element_text(size = 20, colour = "black")) + scale_x_continuous(breaks = c(1,2,3,4,6,8,9))
-
-
-```
-
-
-Test effect of adaptive sampling ("missingness analysis")
-```{r}
-
-# number of missing trials per block number
-ggplot(plot_df %>% group_by(block_num) %>% summarize(num_excluded = sum(exclude)), aes(x = block_num, y = num_excluded)) + geom_point() + geom_line() + theme_classic(base_size = 20)
-
-
-# check whether effect is there for block num < 5
-ggplot(plot_df %>% filter(fam_or_test == 'test', !exclude, LT > 2), aes(x=as.numeric(fam_duration), y=LT, group=test_type, color = test_type)) + geom_point(alpha=0.1, size = 2, position = position_jitterdodge(jitter.width = 0.15)) + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = 1), size = 1) + xlab('fam duration') + ylab('LT in s') + labs(color = 'Test type') + theme_classic(base_size = 25) + theme(strip.text.x = element_text(size = 20, colour = "black")) + scale_x_continuous(breaks = c(1,2,3,4,6,8,9)) + scale_color_manual(values = c("grey", "blue", "red")) + geom_smooth(method ="lm", alpha = 0.4) + geom_hline(yintercept = plot_df %>% dplyr::filter(fam_or_test == 'test', !exclude, test_type == 'baseline') %>% pull(LT) %>% mean(), linetype = "dashed") + coord_trans(y = "log10")
-
-
-# predict missingness?
+ggplot(plot_df %>% filter(fam_or_test == 'test', !exclude), aes(x=as.numeric(fam_duration), y=LT, group=test_type, color = test_type)) + geom_point(alpha=0.1, size = 2, position = position_jitterdodge(jitter.width = 0.15)) + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = 1), size = 1) + xlab('fam duration') + ylab('LT in s') + labs(color = 'Test type') + theme_classic(base_size = 25) + theme(strip.text.x = element_text(size = 20, colour = "black")) + scale_x_continuous(breaks = c(1,3,4,8,9)) + scale_color_manual(values = c("grey", "blue", "red")) + geom_smooth(method ="lm", alpha = 0.4) + coord_trans(y = "log10") + geom_hline(yintercept = data_df %>% filter(fam_or_test == 'test', !exclude, fam_duration == 0) %>% pull(LT) %>% mean(), linetype = "dashed") + scale_y_continuous(breaks = c(3,10,30)) 
 
 ```
 
@@ -270,11 +190,7 @@ Pre-registered models
 data_df %<>% filter(!exclude)
 
 # prepare test df with exclusions
-test_df = data_df %>% dplyr::filter(fam_or_test == 'test') %>% 
-  dplyr::mutate(fam_duration = as.numeric(fam_duration), 
-         test_type = case_when(fam_duration == 0 ~ 'fam', TRUE ~ test_type))
-
-test_df$centered_age = scale(test_df$age)
+test_df = data_df %>% filter(fam_or_test == 'test') %>% mutate(fam_duration = as.numeric(fam_duration), test_type = case_when(fam_duration == 0 ~ 'fam', TRUE ~ test_type), centered_age = age - (data_df %>% distinct(subject_num, experiment, age) %>% pull(age) %>% mean() ))
 
 fam_df = data_df %>% filter(fam_or_test == 'fam') %>% mutate(fam_duration = as.numeric(fam_duration), centered_age = age - (data_df %>% distinct(subject_num, experiment, age) %>% pull(age) %>% mean() ))
 
@@ -282,12 +198,13 @@ fam_df = data_df %>% filter(fam_or_test == 'fam') %>% mutate(fam_duration = as.n
 mA <- lmer(log(LT) ~ poly(fam_duration,1) * test_type + block_num + (1|animal) + (1 | subject_num), data = test_df)
 summary(mA)
 
-m0 <- lmer(log(LT) ~ poly(fam_duration,1) * test_type + centered_age + block_num + (1 | subject_num), data = test_df)
+m0 <- lmer(log(LT) ~ poly(fam_duration,1) * test_type + block_num + (1 | subject_num), data = test_df)
 summary(m0)
 
 m <- lmer(log(LT) ~ poly(fam_duration,1) * test_type + block_num + (1 | animal), data = test_df)
 summary(m)
 
+exactRLRT(m.slope, mA, m0)
 # Exp 3
 
 # interaction model
@@ -320,13 +237,9 @@ summary(model_3)
 # Exp 4
 
 # interaction model
-model_1 <- lmer(log(LT) ~ fam_duration *test_type + block_num + (1 | subject_num), data = test_df )
+model_1 <- lmer(log(LT) ~ fam_duration *test_type + trial_num + (1 | subject_num), data = test_df %>% filter(experiment == 4))
 summary(model_1)
 
-
-# Exp 5
-model_1 <- lmer(log(LT) ~ test_type + block_num + (1 | subject_num), data = test_df %>% filter(experiment == 5, fam_duration == 6))
-summary(model_1)
 
 
 # ns. because of non-linear interaction
@@ -351,7 +264,3 @@ model_baseline_diffs <- lmer(log(LT) ~ as.factor(animal) + trial_num + backgroun
 summary(model_3)
 
 ```
-
-
-
-

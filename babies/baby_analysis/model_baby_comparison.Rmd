@@ -31,7 +31,7 @@ model_data = model_data %>% mutate(param_info = paste("mu", mu_prior, "v", v_pri
 # only keep parameters for which all fam durations have been computed
 model_data <- model_data %>%
   group_by(param_info, test_type) %>%
-  filter(all(1:8 %in% fam_duration)) %>%
+  filter(all(0:9 %in% fam_duration)) %>%
   ungroup() %>%
   group_by(param_info) %>%
   filter(all(c("nov", "fam") %in% test_type)) %>%
@@ -51,8 +51,9 @@ combined_df = model_data %>%
          scaled_stim_sample_n = LT + (n_samples - mean(n_samples)) * multiply_const)
 
 # compute per param_setting correlation and sort by max corr, and select
-top_corr_param = combined_df %>% summarize(corr = cor(scaled_stim_sample_n, LT), rmse = rmse(LT, scaled_stim_sample_n)) %>% arrange(desc(corr)) %>% pull(param_info) %>% first()
- 
+top_corr_param = combined_df %>% summarize(corr = cor(scaled_stim_sample_n, LT), rmse = rmse(LT, scaled_stim_sample_n)) %>% arrange(desc(corr))  %>% pull(param_info) %>% first() 
+
+
 # grab top parameter setting and make plot ready
 top_sim_result = combined_df %>% filter(param_info == top_corr_param) %>% pivot_longer(cols = c("scaled_stim_sample_n", "LT"), 
                names_to = "value_type", 
@@ -64,8 +65,9 @@ top_sim_result = combined_df %>% filter(param_info == top_corr_param) %>% pivot_
 
 # histogram of correlations across param values
 
+
 # plot 
-ggplot(top_sim_result, aes(x = fam_duration, y = value, color = test_type)) + geom_point(size = 2) + geom_line() + facet_grid(~value_type) + ylab('LT') + xlab('fam duration') + theme_classic(20)
+ggplot(top_sim_result, aes(x = fam_duration, y = value, color = test_type)) + geom_point(size = 2) + geom_line() + facet_grid(~value_type) + ylab('LT') + xlab('fam duration') + scale_y_log10() + theme_classic(20)
 
 
 ```
