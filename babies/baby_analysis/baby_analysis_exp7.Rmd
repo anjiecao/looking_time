@@ -1,0 +1,45 @@
+
+# load packages
+```{r}
+library(tidyverse)
+library(lmerTest)
+library(contrasts)
+library(lme4)
+```
+
+# Load data
+```{r}
+data_df <- read.csv('processed_data/before_qc/exp7_data.csv')
+
+```
+
+# Plots
+```{r}
+test_df <- data_df %>% filter(fam_or_test == 'test')
+
+ggplot(test_df, aes(x = violation_type, y = LT)) + geom_point(alpha = 0.1) + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) 
+
+
+```
+
+
+# Pre-registered models
+```{r}
+# model 1A and model 1B
+model_1A <- lmer(log(LT) ~ block_number + (1|subj), data = data_df) 
+model_1B <- lmer(log(LT) ~ violation_type + block_number + (1|subj), data = data_df)
+
+anova(model_1A, model_1B)
+
+# prepare model 2A (yes/no)
+data_df = data_df %>% mutate(violation = case_when(violation_type == "background" ~ "background", TRUE ~ "deviant") )
+model_2A <- lmer(log(LT) ~ violation + block_number + (1|subj), data = data_df)
+model_2B <- lmer(log(LT) ~ violation_type + block_number + (1|subj), data = data_df) 
+
+anova(model_2A, model_2B) # evaluate on AIC/BIC because these are not nested
+
+# contrasts
+emm <- emmeans(model, ~ ViolationType)
+pairs(emm)
+
+```

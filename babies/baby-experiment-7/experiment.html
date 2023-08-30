@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="js/jspsych.js"></script>
+  <script src="js/instruction_and_transition.js"></script>
+  <script src="js/jspsych-video-sequential-stimulus-presentation.js"></script>
+  <script src= "js/jspsych-video-keyboard-response.js"></script>
+  <script src = "js/practice_trial_package.js"></script>
+  <script src = "js/demog_question_package.js"></script>
+  <script src="js/jspsych-pratctice-block.js"></script>
+  <script src="js/jspsych-stimulus-presentation.js"></script>
+  <script src="js/jspsych-sequential-stimulus-presentation.js"></script>
+  <script src = "js/jspsych-multi-stim-multi-response.js"></script>
+  <script src="js/jspsych-task-instructions.js"></script>
+  <script src="js/jspsych-instructions.js"></script>
+  <script src="js/instructions.js"></script>
+  <script src= "js/jspsych-survey-text.js"></script>
+  <script src= "js/jspsych-survey-likert.js"></script>
+  <script src= "js/jspsych-survey-multi-choice.js"></script>
+  <script src="js/jspsych-html-slider-response.js"></script>
+  <script src="js/jspsych-html-keyboard-response.js"></script>
+  <script src="js/jspsych-image-keyboard-response.js"></script>
+  <script src= "js/jspsych-survey-text.js"></script>
+  <script src= "js/jspsych-categorize-image.js"></script>
+  <script src= "js/jspsych-fullscreen.js"></script>
+  <script src="js/helper_for_generating_stimuli_array.js"></script>
+  <script src="js/helper_for_checking_duplicate_stimuli.js"></script>
+  <script src= "js/jspsych-demog-age.js"></script>
+  <script src= "js/jspsych-demog-ethnic-US.js"></script>
+  <script src= "js/jspsych-demog-gender-and-education.js"></script>
+  <script src= "js/jspsych-fullscreen.js"></script>
+  <script src= "js/jspsych-audio-keyboard-response.js"></script>
+  <style>
+    #jspsych-survey-text-form{ background-color: white; width:1200px; padding-top: 186.1px; padding-bottom: 186.1px; }
+    #fullscreen{ background-color: white; padding: 40px; margin:0px; padding: 30px; }
+    #jspsych-fullscreen-btn{ color: grey; background-color: white;margin:15px; } 
+    .jspsych-survey-multi-choice-response{margin-left:10px}
+    .jspsych-survey-multi-choice-option{background-color: white; margin-right: 10px;}
+    .jspsych-survey-multi-choice-text.survey-multi-choice{padding-right:109px}
+</style>
+
+  <link rel="stylesheet" href="css/jspsych.css"></link>
+</head>
+<body></body>
+<script>
+
+SUBJECT_NUM = 50 // 1,2,3... 30
+CONDITION_ORDER = ['pose','animacy','identity','background'];
+
+// Experiment setup
+    var verbose = false
+    var timenum = Date.now();
+    var turkInfo = jsPsych.turk.turkInfo();
+
+    // if we're not on MTurk, create a timestamp-based subject number; otherwise use turker ID
+    var subject_id = 'SS' + timenum;
+    var survey_code = 'SS' + timenum
+    jsPsych.data.addProperties({ subject: subject_id });
+
+// Stimuli setup
+TEST_RUN = false //test run with smaller number of species etc.
+
+if (TEST_RUN) {
+  SHOW_INTRO = false
+  NUM_BLOCKS = 2
+  NUM_TRIAL_PER_BLOCK = 1
+  DEVIANT_POSITIONS = [1]
+  BREAK_EVERY_N_BLOCKS = 1
+  SPECIES_NUM = 4
+
+}
+else {
+  SHOW_INTRO = true
+  NUM_BLOCKS = 4
+
+  NUM_TRIAL_PER_BLOCK = 4
+  BREAK_EVERY_N_BLOCKS = 3
+  SPECIES_NUM = 12
+
+}
+
+ONSET_SOUNDS = true // toggle for sounds during trial onset
+
+if (ONSET_SOUNDS) {
+  sound_setting = ''
+}
+else if (ONSET_SOUNDS)  {
+  sound_setting = 'muted'
+}
+
+// autoplay beginning of block
+autoplay_block = false
+
+all_blocks_information = generate_all_block(condition_order = CONDITION_ORDER,
+                                            num_blocks = NUM_BLOCKS)
+
+console.log('all_blocks_information')
+console.log(all_blocks_information)
+
+timeline = []
+
+if (SHOW_INTRO) {
+  timeline = instructions(timeline)
+}
+
+function changeBackground(color) {
+   document.body.style.background = color;
+}
+
+window.addEventListener("load",function() { changeBackground('black') });
+
+// loop through all blocks
+for (var block_index = 0; block_index < all_blocks_information.length; block_index++){
+
+    block_counter = 0
+    block_information = all_blocks_information[block_index]
+    block_timeline_variable = generate_timeline_variables(block_information)
+
+    console.log('block_timeline_variable')
+    console.log(block_timeline_variable)
+
+
+// give option to pause before every block except first
+  if (block_index > 0) {
+    var between_block = {
+      type: 'html-keyboard-response',
+      stimulus: '<p><img src="stimuli/images/attngetter_blank.png"></p>',
+      choices: jsPsych.ALL_KEYS,
+      data: {stimulus_type: 'between_block'}
+    }
+    timeline.push(between_block)
+  }
+
+var attention_getter = {
+  type: 'video-keyboard-response',
+  stimulus: [
+      'stimuli/images/attngetter_quiet.mp4'],
+  autoplay: true,
+  trial_ends_after_video: true,
+  width: 1000,
+  data: {stimulus_type: 'attention_getter'}
+}
+
+var block = {
+  type: 'video-keyboard-response',
+  stimulus: [block_information['stimulus_path']],
+  autoplay: true,
+  trial_ends_after_video: true,
+  width: 1460,
+  data: {subject_num: SUBJECT_NUM, block_number: block_index + 1,
+  stimulus_type: 'trial', stimulus_displayed: block_timeline_variable['stimulus_path'], 
+  violation_type: block_timeline_variable['violation_type'],
+  species: block_timeline_variable['species'],  
+  fam_duration: block_timeline_variable['fam_duration'],
+}
+}
+
+  timeline.push(attention_getter)
+  timeline.push(block)
+
+}
+
+var calibration_end = {
+  type: 'video-keyboard-response',
+  stimulus: [
+      'stimuli/images/calibration_end.mp4'],
+  autoplay: true,
+  trial_ends_after_video: true,
+  width: 1000,
+  data: {stimulus_type: 'calibration_end'}
+}
+
+timeline.push(calibration_end)
+
+  var thank_you = {
+      type: "html-keyboard-response",
+      stimulus: "<p><span style=\"font-family: arial, helvetica, sans-serif; font-size: 48px; color: #993300; background-color: white; padding-right: 63.61px; padding-left: 63.61px; padding-bottom: 306.84px; padding-top: 306.84px; \"> That's it! Thank you so much for your participation! </span></p>"
+  }
+
+  timeline.push(thank_you)
+
+  consent_options = ["<b>Option 0 (Withdrawal)</b>: You would like to withdraw your child’s data from the study. </h1> <br>",
+                    "<b>Option 1 (Private)</b>: Your child’s data will be kept in a secure location and viewed only by authorized research personnel in our lab. </h1><br>",
+                    "<b>Option 2 (Scientific and Educational)</b>: You would like to share child’s data with other researchers or students for scientific or educational purposes. </h1>",
+                    "<b>Option 3 (General Public)</b>: Like Option 2 but includes more public venues. You would like to share your child’s data to help us communicate our research with the general public. Your child’s data will never be used for commercial purposes. <br></h1>"]
+
+  var consent_level = {
+      type: "survey-multi-choice",
+      questions: [
+      {prompt: '<span style=\"font-family: arial, helvetica, sans-serif; font-size: 48px; background-color: white; padding: 6px; padding-right: 109px; padding-bottom: 30px; color: #993300;\"> Please choose a privacy option for this session’s video: </span> <br> <span text-align="center" style=\"font-family: arial, helvetica, sans-serif; font-size: 20px; color: #993300; font-style:italic\"> Note: Each level is described in greater detail in the consent form. </span>', name: 'Consent', options: consent_options},
+        ]
+      }
+
+  timeline.push(consent_level)
+
+console.log('timeline')
+console.log(timeline)
+
+
+jsPsych.init({
+        timeline: timeline,
+        show_progress_bar: false,
+        //use_webaudio: true, // this won't work for local testing (CORS), but maybe on server
+        on_finish: function(){
+          jsPsych.data.get().localSave('csv','mydata.csv');
+        }
+        //preload_video: VIDEO,
+            //jsPsych.data.displayData();
+            //setTimeout(function() { turk.submit(jsPsych.data.get().ignore('external-html').json()); }, 5000);
+    })
+
+    </script>
+</html>

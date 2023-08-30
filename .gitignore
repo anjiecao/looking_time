@@ -1,7 +1,11 @@
+
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
+
+*.mp4
+babies/baby_analysis/processed_data/model_data/*
 
 adult_analysis/data/raw_data/*
 adult_analysis/study_1/data/00_raw_data/*

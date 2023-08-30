@@ -1,0 +1,102 @@
+---
+title: "exp4_analysis"
+author: "gal"
+date: '2023-01-18'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(magrittr)
+library(ggforce)
+library(pracma)
+library(lmerTest)
+library(readr)
+library(stringr)
+```
+
+Load data
+```{r}
+
+# data
+exp6_data = read.csv('processed_data/before_qc/exp6_data.csv') %>% mutate(experiment = 6)
+exclusions_df = read.csv('data/exp6/exclusions/exclusions.csv') %>% mutate(experiment = 6)
+```
+
+
+Wrangle data df
+```{r}
+
+# create trial type column base
+data_df <- exp6_data %<>% mutate(trial_type = case_when(str_detect(Trials.trialType, "veggie") ~ "veggie", 
+                                                        str_detect(Trials.trialType, "single") ~ "single animal",
+                                                        TRUE ~ "animal pair"),
+                                 pose = case_when(str_detect(Trials.trialType, 'left') ~ 'left',
+                                                  str_detect(Trials.trialType, 'right') ~ 'right',
+                                                  TRUE ~ 'no_pose')) %>% mutate(block_num = Trials.ordinal + 1)
+
+# rename a bunch of columns
+data_df %<>% rename(subject_num = SubjectInfo.subjID, LT = Looks.duration_onLooks, age = SubjectInfo.testAge, sex = SubjectInfo.gender)
+
+```
+
+
+Exclusions
+```{r}
+
+# preallocate exclude from output
+data_df %<>% mutate(exclude = as.logical(Trials.excludeTrial))
+
+
+# drop na from exclusions
+for (x in 1:nrow(exclusions_df)){
+  exclusion_info = exclusions_df[x,]
+  print(exclusion_info$onwards)
+  if (exclusion_info$onwards){   # if onwards = T, then remove all trials starting from that trial onwards
+      data_df %<>% mutate(
+      exclude = case_when(
+                experiment == exclusion_info$experiment & 
+                  subject_num == paste0("PKBB_", exclusion_info$subject_number) & 
+                  block_num >= exclusion_info$trial_number ~ T,
+            TRUE ~ exclude))
+    
+  }
+  else {  # if onwards = F, then only mark trial of that number
+    data_df %<>% mutate(
+      exclude = case_when(
+                experiment == exclusion_info$experiment & 
+                  subject_num == paste0("PKBB_", exclusion_info$subject_number) & 
+                  block_num == exclusion_info$trial_number ~ T,
+            TRUE ~ exclude))
+  }
+}
+
+```
+
+New plots
+```{r}
+# main effect by trial type
+ggplot(data_df %>% filter(!exclude, LT > 2), aes(x=trial_type, y=LT)) + geom_jitter(width = 0.03, alpha = 0.2) + 
+    stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1))  + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + xlab('Trial type') + ylab('LT in s') + labs(color = 'fam dur') + theme_classic(base_size = 20) + 
+  theme(strip.text.x = element_text(size = 20, colour = "black")) +ggtitle('exp6')
+
+
+# main effect by trial type
+ggplot(data_df %>% filter(!exclude, LT > 2), aes(x=block_num, y=LT)) + geom_jitter(width = 0.03, alpha = 0.2) + 
+    stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1))  + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + xlab('Block number') + ylab('LT in s') + labs(color = 'fam dur') + theme_classic(base_size = 20) + 
+  theme(strip.text.x = element_text(size = 20, colour = "black"))
+
+```
+
+```{r}
+
+data_df$trial_type <- relevel(as.factor(data_df$trial_type), ref="single animal")
+
+model_1 <- lmer(log(LT) ~ trial_type + block_num + (1 | subject_num), data = data_df %>% filter(!exclude))
+summary(model_1)
+
+```
+
+

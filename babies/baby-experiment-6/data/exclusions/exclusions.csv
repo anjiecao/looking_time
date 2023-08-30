@@ -1,0 +1,11 @@
+subject_number,trial_number,onwards
+1,1,T
+3,2,F
+6,1,T
+9,1,T
+16,5,T
+18,6,T
+26,6,T
+27,3,F
+27,4,F
+31,6,F

@@ -8,7 +8,7 @@ function get_all_stimuli(unique_pair = true){
 
 
     TOTAL_STIM_EACH_LEVEL = 6
-    MAIN_DIR = "media/animal_stim/"
+    MAIN_DIR = "media/animal_stim/whitened/"
     if (unique_pair){
         for (var i = 1; i < TOTAL_STIM_EACH_LEVEL + 1; i++){
             for (var pair_id = 0; pair_id < pair_ids.length; pair_id++){
@@ -101,7 +101,6 @@ function get_block_information(all_stimuli, fam_trial_params = [1, 3, 9]){
 
 }
 
-get_block_information(all_stimuli)
 
 
 

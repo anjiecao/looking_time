@@ -1,0 +1,27 @@
+success,trial_type,trial_index,time_elapsed,internal_node_id,subject,rt,responses,stimulus,key_press,view_history,stimulus_type,subject_num,condition_order,block_number,stimulus_displayed,response,question_order,violation_type,species,fam_duration
+TRUE,fullscreen,0,1718,0.0-0.0,SS1691507989510,,,,,,,,,,,,,,,
+,survey-text,1,7217,0.0-1.0,SS1691507989510,5495.1,"{""Age"":""284"",""Gender"":""F""}",,,,,,,,,,,,,
+,audio-keyboard-response,2,14301,0.0-2.0,SS1691507989510,7080.5,,stimuli/audio/music_intro.wav,39,,,,,,,,,,,
+,html-keyboard-response,3,18755,0.0-3.0,SS1691507989510,4452,,<p><img src=stimuli/intro/intro2.jpeg width ='1200' height = '667'></p>,39,,,,,,,,,,,
+,html-keyboard-response,4,100160,0.0-4.0,SS1691507989510,81404.6,,<p><img src=stimuli/intro/intro3.jpeg width ='1200' height = '667'></p>,39,,,,,,,,,,,
+,html-keyboard-response,5,125226,0.0-5.0,SS1691507989510,25065.2,,<p><img src=stimuli/intro/intro4.jpeg width ='1200' height = '667'></p>,39,,,,,,,,,,,
+,html-keyboard-response,6,132477,0.0-6.0,SS1691507989510,7250.9,,<p><img src=stimuli/intro/intro5.jpeg width ='1200' height = '667'></p>,39,,,,,,,,,,,
+,html-keyboard-response,7,146288,0.0-7.0,SS1691507989510,13811,,<p><img src=stimuli/intro/intro6.jpeg width ='1200' height = '667'></p>,39,,,,,,,,,,,
+,html-keyboard-response,8,162313,0.0-8.0,SS1691507989510,16024,,<p><img src=stimuli/intro/intro7.jpeg width ='1200' height = '667'></p>,39,,,,,,,,,,,
+,html-keyboard-response,9,273442,0.0-9.0,SS1691507989510,111128.4,,<p><img src=stimuli/intro/intro8.jpeg width ='1200' height = '667'></p>,39,,,,,,,,,,,
+,instructions,10,274220,0.0-10.0,SS1691507989510,777.3999999,,,,"[{""page_index"":0,""viewing_time"":777.1999998092651}]",,,,,,,,,,
+,video-keyboard-response,11,292481,0.0-11.0,SS1691507989510,null,,"[""stimuli/images/calibration.mp4""]",null,,calibration,,,,,,,,,
+,video-keyboard-response,12,297144,0.0-12.0,SS1691507989510,null,,"[""stimuli/images/attngetter_quiet.mp4""]",null,,attention_getter,,,,,,,,,
+,video-keyboard-response,13,346364,0.0-13.0,SS1691507989510,49217.5,,"[""stimuli/images/unity_stims/fam8/background/animate_05_8fam_background_new.mp4""]",39,,trial,1,"background,animacy,identity,pose",1,stimuli/images/unity_stims/fam8/background/animate_05_8fam_background_new.mp4,,,background,5,8
+,html-keyboard-response,14,348740,0.0-14.0,SS1691507989510,2375.8,,"<p><img src=""stimuli/images/attngetter_blank.png""></p>",39,,between_block,,,,,,,,,
+,video-keyboard-response,15,353398,0.0-15.0,SS1691507989510,null,,"[""stimuli/images/attngetter_quiet.mp4""]",null,,attention_getter,,,,,,,,,
+,video-keyboard-response,16,425376,0.0-16.0,SS1691507989510,71976.1,,"[""stimuli/images/unity_stims/fam9/animacy/animate_06_9fam_animacy_new.mp4""]",39,,trial,1,"background,animacy,identity,pose",2,stimuli/images/unity_stims/fam9/animacy/animate_06_9fam_animacy_new.mp4,,,animacy,6,9
+,html-keyboard-response,17,432097,0.0-17.0,SS1691507989510,6721,,"<p><img src=""stimuli/images/attngetter_blank.png""></p>",39,,between_block,,,,,,,,,
+,video-keyboard-response,18,436750,0.0-18.0,SS1691507989510,null,,"[""stimuli/images/attngetter_quiet.mp4""]",null,,attention_getter,,,,,,,,,
+,video-keyboard-response,19,490131,0.0-19.0,SS1691507989510,53379.7,,"[""stimuli/images/unity_stims/fam8/identity/animate_01_8fam_identity_new.mp4""]",39,,trial,1,"background,animacy,identity,pose",3,stimuli/images/unity_stims/fam8/identity/animate_01_8fam_identity_new.mp4,,,identity,1,8
+,html-keyboard-response,20,506467,0.0-20.0,SS1691507989510,16335,,"<p><img src=""stimuli/images/attngetter_blank.png""></p>",39,,between_block,,,,,,,,,
+,video-keyboard-response,21,511150,0.0-21.0,SS1691507989510,null,,"[""stimuli/images/attngetter_quiet.mp4""]",null,,attention_getter,,,,,,,,,
+,video-keyboard-response,22,566600,0.0-22.0,SS1691507989510,55447.8,,"[""stimuli/images/unity_stims/fam9/pose/animate_03_9fam_pose_new.mp4""]",39,,trial,1,"background,animacy,identity,pose",4,stimuli/images/unity_stims/fam9/pose/animate_03_9fam_pose_new.mp4,,,pose,3,9
+,video-keyboard-response,23,589704,0.0-23.0,SS1691507989510,null,,"[""stimuli/images/calibration_end.mp4""]",null,,calibration_end,,,,,,,,,
+,html-keyboard-response,24,605940,0.0-24.0,SS1691507989510,16235.1,,"<p><span style=""font-family: arial, helvetica, sans-serif; font-size: 48px; color: #993300; background-color: white; padding-right: 63.61px; padding-left: 63.61px; padding-bottom: 306.84px; padding-top: 306.84px; ""> That's it! Thank you so much for your participation! </span></p>",39,,,,,,,,,,,
+,survey-multi-choice,25,631546,0.0-25.0,SS1691507989510,25605.1,,,,,,,,,,"{""Consent"":""<b>Option 1 (Private)</b>: Your child’s data will be kept in a secure location and viewed only by authorized research personnel in our lab. </h1><br>""}",0,,,

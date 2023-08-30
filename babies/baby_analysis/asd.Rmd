@@ -1,0 +1,266 @@
+---
+title: "exp4_analysis"
+author: "gal"
+date: '2023-01-18'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(magrittr)
+library(ggforce)
+library(pracma)
+library(lmerTest)
+library(readr)
+library(stringr)
+```
+
+Load data
+```{r}
+
+# data
+exp3_data = read.csv('processed_data/after_qc/exp3_data.csv') %>% mutate(experiment = 3)
+exp4_data = read.csv('processed_data/after_qc/exp4_data.csv') %>% mutate(experiment = 4) 
+exp5_data = read.csv('processed_data/after_qc/exp5_data.csv') %>% mutate(experiment = 5) 
+
+
+# experimenter manual exclusions
+exclusions_exp3 = read.csv('data/exp3/exclusions/exclusions.csv') %>% mutate(experiment = 3)
+exclusions_exp4 = read.csv('data/exp4/exclusions/exclusions.csv') %>% mutate(experiment = 4)
+exclusions_exp5 = read.csv('data/exp5/exclusions/exclusions.csv') %>% mutate(experiment = 5)
+
+```
+
+
+Combine datasets & exclusions files
+```{r}
+common_columns = Reduce(intersect,list(colnames(exp3_data), colnames(exp4_data), colnames(exp5_data)))
+
+data_df = rbind(
+  subset(exp3_data, select = common_columns), 
+  subset(exp4_data, select = common_columns),
+    subset(exp5_data, select = common_columns)
+)
+
+exclusions_df =  rbind(exclusions_exp3, exclusions_exp4, exclusions_exp5
+                       )
+
+```
+
+
+Wrangle data df
+```{r}
+
+# separate trial type column
+data_df %<>% separate(Trials.trialType, sep = '-', into = c('fam_or_test', 'fam_duration', 'test_type')) 
+
+# create block number variable
+data_df <- data_df %>% arrange(experiment, SubjectInfo.subjID, Trials.ordinal) %>% group_by(experiment, SubjectInfo.subjID) %>%   mutate(value_change = (fam_duration != lag(fam_duration, default = first(fam_duration))) | 
+           (test_type != lag(test_type, default = first(test_type)))) %>% # Create a logical column indicating whether the values changed compared to the previous row
+  mutate(block_num = 1 + cumsum(value_change)) %>% # Create a new column 'group_number' by cumulative sum of value_change
+  select(-value_change) # Remove the intermediate value_change column
+
+# make fam duration numeric
+# data_df %<>% mutate(fam_duration = as.numeric(fam_duration))
+
+data_df %<>% mutate(test_type = case_when(fam_duration == 0 ~ "fam",
+                                          test_type == 'background' ~ "fam",
+                                           test_type == 'deviant' ~ "nov"))
+
+# rename a bunch of columns
+data_df %<>% rename(subject_num = SubjectInfo.subjID, LT = Looks.duration_onLooks, age = SubjectInfo.testAge, sex = SubjectInfo.gender)
+
+# add fam durations to make plots complete
+data_df %<>% complete(fam_duration)
+```
+
+
+# Get stimuli & sharing level
+
+```{r}
+
+# jspsych files
+jspsych_files_exp3 <- list.files("data/exp3", full.names = T) 
+jspsych_list_exp3 <- lapply(jspsych_files_exp3[2:length(jspsych_files_exp3)], read.csv)
+jspsych_list_exp3 <- lapply(jspsych_list_exp3, function(x) {x['success'] = NULL; x})
+subject_numbers_exp3 = parse_number(str_replace(jspsych_files_exp3[2:length(jspsych_files_exp3)], "data/exp3/",""))
+subject_mapping_exp3 <- data.frame(old_subject = as.character(seq(1, length(subject_numbers_exp3))), new_subject = subject_numbers_exp3)
+jspsych_df_exp3 <- map_dfr(jspsych_list_exp3, ~ .x, .id = 'subjectid') %>% mutate(experiment = 3) %>% 
+  left_join(subject_mapping_exp3, by = c("subjectid" = "old_subject")) %>% select(-subjectid) %>% rename(subjectid = new_subject)
+
+jspsych_files_exp4 <- list.files("data/exp4", full.names = T) 
+jspsych_list_exp4 <- lapply(jspsych_files_exp4[2:length(jspsych_files_exp4)], read.csv)
+jspsych_list_exp4 <- lapply(jspsych_list_exp4, function(x) {x['success'] = NULL; x})
+subject_numbers_exp4 = parse_number(str_replace(jspsych_files_exp4[2:length(jspsych_files_exp4)], "data/exp4/",""))
+subject_mapping_exp4 <- data.frame(old_subject = as.character(seq(1, length(subject_numbers_exp4))), new_subject = subject_numbers_exp4)
+jspsych_df_exp4 <- map_dfr(jspsych_list_exp4, ~ .x, .id = 'subjectid') %>% mutate(experiment = 4) %>% 
+  left_join(subject_mapping_exp4, by = c("subjectid" = "old_subject")) %>% select(-subjectid) %>% rename(subjectid = new_subject)
+
+
+jspsych_files_exp5 <- list.files("data/exp5", full.names = T) 
+jspsych_list_exp5 <- lapply(jspsych_files_exp5[2:length(jspsych_files_exp5)], read.csv)
+jspsych_list_exp5 <- lapply(jspsych_list_exp5, function(x) {x['success'] = NULL; x})
+subject_numbers_exp5 = parse_number(str_replace(jspsych_files_exp5[2:length(jspsych_files_exp5)], "data/exp5/",""))
+subject_mapping_exp5 <- data.frame(old_subject = as.character(seq(1, length(subject_numbers_exp5))), new_subject = subject_numbers_exp5)
+jspsych_df_exp5 <- map_dfr(jspsych_list_exp5, ~ .x, .id = 'subjectid') %>% mutate(experiment = 5) %>% 
+  left_join(subject_mapping_exp5, by = c("subjectid" = "old_subject")) %>% select(-subjectid) %>% rename(subjectid = new_subject)
+
+trial_df = rbind(jspsych_df_exp3,jspsych_df_exp4, jspsych_df_exp5) %>% filter(stimulus_type == 'trial') %>% 
+  mutate(stimulus_displayed = str_replace(stimulus_displayed, 'stimuli/images/unity_stims/unitystims_', "")) %>% select(-c(subject_num)) %>% rename(block_num = block_number, subject_num = subjectid) %>%
+  mutate(subject_num = as.numeric(subject_num)) %>% separate(stimulus_displayed, sep = '_', into = c("animal_pair", 'orientation', 'fam','block_type','pair_counterbalancing', 'junk')) %>% mutate(
+    animal_pair = as.numeric(animal_pair), pair_counterbalancing = as.numeric(pair_counterbalancing)) %>%
+  select(subject_num, block_num, experiment, animal_pair, "orientation", 'pair_counterbalancing')
+
+consent_df_exp4 <- jspsych_df_exp4 %>% filter(nchar(response) > 5) %>% select(subjectid, response) %>% 
+  mutate(consent_level = case_when(str_detect(response, 'Private') ~ 'private', 
+                                   str_detect(response, 'Scientific') ~ 'scientific',
+                                   str_detect(response, 'General Public') ~ 'public'))
+
+consent_df_exp5 <- jspsych_df_exp5 %>% filter(nchar(response) > 5) %>% select(subjectid, response) %>% 
+  mutate(consent_level = case_when(str_detect(response, 'Private') ~ 'private', 
+                                   str_detect(response, 'Scientific') ~ 'scientific',
+                                   str_detect(response, 'General Public') ~ 'public'))
+
+```
+
+Exclusions
+```{r}
+
+# preallocate exclude from output
+data_df %<>% mutate(exclude = as.logical(Trials.excludeTrial))
+
+
+# drop na from exclusions
+for (x in 1:nrow(exclusions_df)){
+  exclusion_info = exclusions_df[x,]
+  print(exclusion_info$onwards)
+  if (exclusion_info$onwards){   # if onwards = T, then remove all trials starting from that trial onwards
+      data_df %<>% mutate(
+      exclude = case_when(
+                experiment == exclusion_info$experiment & 
+                  subject_num == paste0("PKBB_", exclusion_info$subject_number) & 
+                  block_num >= exclusion_info$trial_number ~ T,
+            TRUE ~ exclude))
+    
+  }
+  else {  # if onwards = F, then only mark trial of that number
+    data_df %<>% mutate(
+      exclude = case_when(
+                experiment == exclusion_info$experiment & 
+                  subject_num == paste0("PKBB_", exclusion_info$subject_number) & 
+                  block_num == exclusion_info$trial_number ~ T,
+            TRUE ~ exclude))
+    
+  
+  }
+}
+
+# merge with stim info
+
+data_df <- data_df %>% mutate(subject_num = parse_number(subject_num)) %>% left_join(trial_df, by = c('subject_num','block_num','experiment')) %>% mutate(animal = 
+  case_when(pair_counterbalancing == 1 ~ 1 + (animal_pair-1) * 2,
+            pair_counterbalancing == 2 ~ 2 + (animal_pair-1) * 2)) %>%
+  mutate(animal = case_when(test_type == 'nov' & fam_or_test == 'test' & mod(animal,2) == 1 ~ animal + 1,
+                            test_type == 'nov' & fam_or_test == 'test' & mod(animal,2) == 0 ~ animal - 1,
+                             TRUE ~ animal))
+
+         
+write.csv(data_df %>% mutate(experiment = case_when(experiment == 3 ~ 'A', experiment == 4 ~ 'B', experiment == 5 ~ 'C')) %>% select(experiment, fam_or_test, subject_num, block_num, test_type, fam_duration, LT, exclude, age, sex), 'infant_processed_data.csv')
+
+```
+
+
+Combined plots
+```{r}
+
+# fot his plot, don't distinguish between background & deviant on 0 fam trials
+plot_df = data_df %>% mutate(test_type = case_when(fam_duration == 0 ~ 'baseline', TRUE ~ test_type))
+
+group.colors <- c(baseline = "#333BFF", fam = "#CC6600", nov ="#9633FF")
+
+ggplot(plot_df %>% filter(fam_or_test == 'test', !exclude), aes(x=as.numeric(fam_duration), y=LT, group=test_type, color = test_type)) + geom_point(alpha=0.1, size = 2, position = position_jitterdodge(jitter.width = 0.15)) + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = 1), size = 1) + xlab('fam duration') + ylab('LT in s') + labs(color = 'Test type') + theme_classic(base_size = 25) + theme(strip.text.x = element_text(size = 20, colour = "black")) + scale_x_continuous(breaks = c(1,3,4,8,9)) + scale_color_manual(values = c("grey", "blue", "red")) + geom_smooth(method ="lm", alpha = 0.4) + coord_trans(y = "log10") + geom_hline(yintercept = data_df %>% filter(fam_or_test == 'test', !exclude, fam_duration == 0) %>% pull(LT) %>% mean(), linetype = "dashed") + scale_y_continuous(breaks = c(3,10,30)) 
+
+```
+
+
+Pre-registered models
+```{r}
+
+# exclude stuff invalid trials
+data_df %<>% filter(!exclude)
+
+# prepare test df with exclusions
+test_df = data_df %>% filter(fam_or_test == 'test') %>% mutate(fam_duration = as.numeric(fam_duration), test_type = case_when(fam_duration == 0 ~ 'fam', TRUE ~ test_type), centered_age = age - (data_df %>% distinct(subject_num, experiment, age) %>% pull(age) %>% mean() ))
+
+fam_df = data_df %>% filter(fam_or_test == 'fam') %>% mutate(fam_duration = as.numeric(fam_duration), centered_age = age - (data_df %>% distinct(subject_num, experiment, age) %>% pull(age) %>% mean() ))
+
+
+mA <- lmer(log(LT) ~ poly(fam_duration,1) * test_type + block_num + (1|animal) + (1 | subject_num), data = test_df)
+summary(mA)
+
+m0 <- lmer(log(LT) ~ poly(fam_duration,1) * test_type + block_num + (1 | subject_num), data = test_df)
+summary(m0)
+
+m <- lmer(log(LT) ~ poly(fam_duration,1) * test_type + block_num + (1 | animal), data = test_df)
+summary(m)
+
+exactRLRT(m.slope, mA, m0)
+# Exp 3
+
+# interaction model
+model_1 <- lmer(log(LT) ~ poly(fam_duration,1) * test_type + as.factor(animal) + block_num + (1 | subject_num), data = test_df)
+summary(model_1)
+
+model_1a<- lmer(log(LT) ~ poly(fam_duration,1) * test_type +  block_num + (1 | subject_num) + (1|animal), data = test_df)
+summary(model_1a)
+
+anova(model_1, model_1a)
+
+# ns. because of non-linear interaction
+
+# dishabituation
+model_2 <- lmer(log(LT) ~ test_type + block_num + (1 | subject_num), data = test_df %>% filter(fam_duration >= 8) %>% mutate(fam_duration = scale(fam_duration)))
+summary(model_2)
+
+# fam pref (EXPLORATORY)
+model_2b <- lmer(log(LT) ~ test_type + trial_num + (1 | subject_num), data = test_df %>% filter(experiment == 3, fam_duration == 4))
+summary(model_2b)
+
+# cheked for fam pref, but didn't find
+
+# habituation
+model_3 <- lmer(log(LT) ~ fam_duration + trial_num + (1 | subject_num), data = test_df %>% filter(experiment == 3, test_type == 'fam'))
+summary(model_3)
+
+
+
+# Exp 4
+
+# interaction model
+model_1 <- lmer(log(LT) ~ fam_duration *test_type + trial_num + (1 | subject_num), data = test_df %>% filter(experiment == 4))
+summary(model_1)
+
+
+
+# ns. because of non-linear interaction
+
+# dishabituation
+model_2 <- lmer(log(LT) ~ test_type + trial_num + (1 | subject_num), data = test_df %>% filter(experiment == 4, fam_duration > 8))
+summary(model_2)
+
+# fam pref (EXPLORATORY)
+model_2b <- lmer(log(LT) ~ test_type + trial_num + (1 | subject_num), data = test_df %>% filter(experiment == 3, fam_duration == 4))
+summary(model_2b)
+
+# cheked for fam pref, but didn't find
+
+# habituation
+model_3 <- lmer(log(LT) ~ fam_duration + trial_num + (1 | subject_num), data = test_df %>% filter(experiment == 4, test_type == 'fam'))
+summary(model_3)
+
+# check for baseline differences
+
+model_baseline_diffs <- lmer(log(LT) ~ as.factor(animal) + trial_num + background_deviant + (1 | subject_num), data = test_df %>% filter(experiment == 4, test_type == 'fam'))
+summary(model_3)
+
+```

@@ -59,10 +59,18 @@ var curtainDisplay = (function (jspsych) {
 
 
         var context = new AudioContext()
-        var audio_string = '<audio id="audio" controls style="display:none"> <source src="' + 
-        "media/error.wav"+ '"</audio>'
 
-        var test_stimulus = "<img src = 'media/animal_stim/ezgif-1-d9558f1ec0.gif' style = 'width:800px; height:800px'>"
+
+        //var audio_string = '<audio id="audio" controls style="display:none"> <source src="' + 
+        //"media/error.wav"+ '"</audio>'
+
+        var bell_sound = '<audio id="audio" controls style="display:none" playsinline> <source src="' + 
+        "media/ding.mp3"+ '"</audio>'
+
+        //var silence = '<iframe src="media/silence.mp3" allow="autoplay" id="audio" style="display: none"></iframe>'
+
+
+        var test_stimulus = trial.stimulus
         //var test_stimulus = "<video playsinline autoplay muted loop width = '320' height = '240' style='z-index: 0;'><source src = 'media/animal_stim/unitystims_001_Left_2fam_background_1_new.mp4' type = 'video/mp4'>"
 
         if (trial.demo_mode == false){
@@ -73,7 +81,7 @@ var curtainDisplay = (function (jspsych) {
           </div>\
       </div>'
   
-          display_element.innerHTML  =  display_element.innerHTML  + audio_string
+          display_element.innerHTML  =  display_element.innerHTML + bell_sound
 
         }else{
           display_element.innerHTML = trial.demo_string + '<div class="outsideWrapper">\
@@ -173,6 +181,10 @@ function curtain_open_from_middle() {
       
         curtain_open_from_middle()
 
+        if (trial.familiarization_phase == false){
+          display_element.querySelector('#audio').play()
+        }
+
 
         const after_key_response = (info) => {
           
@@ -214,6 +226,8 @@ function curtain_open_from_middle() {
 
 
           if (trial.familiarization_phase == false){
+
+            
 
             this.jsPsych.pluginAPI.setTimeout(()=>{
               this.jsPsych.pluginAPI.getKeyboardResponse({

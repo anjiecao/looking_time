@@ -1,0 +1,73 @@
+
+# libraries
+```{r}
+
+library(tidyverse)
+library(here)
+library(ggthemes)
+library(Metrics)
+
+```
+
+```{r}
+# Load model data
+model_data = read.csv('processed_data/model_data/grouped_model_means.csv')
+
+
+# Load infant data (only test trials)
+infant_data = read.csv('processed_data/model_data/infant_processed_data.csv') %>% filter(fam_or_test == 'test', !exclude)
+
+```
+
+# Preprocessing
+```{r}
+# Put infant data in grouped means format
+grouped_infant_means = infant_data %>% group_by(test_type, fam_duration) %>% summarize(LT = mean(LT))
+
+
+# put parameter ID to model data
+model_data = model_data %>% mutate(param_info = paste("mu", mu_prior, "v", v_prior, "a", alpha_prior, "b", beta_prior, "ep", epsilon, "expos", forced_exposure_max, sep = "_"))
+
+# only keep parameters for which all fam durations have been computed
+model_data <- model_data %>%
+  group_by(param_info, test_type) %>%
+  filter(all(0:9 %in% fam_duration)) %>%
+  ungroup() %>%
+  group_by(param_info) %>%
+  filter(all(c("nov", "fam") %in% test_type)) %>%
+  ungroup()
+
+```
+
+
+
+```{r}
+# combine model with data
+combined_df = model_data %>% 
+  left_join(grouped_infant_means, by = c("test_type", "fam_duration")) %>%
+  filter(!is.na(LT)) %>% # remove the fam durations that don't exist in baby data
+  group_by(param_info) %>%
+  mutate(multiply_const = sd(LT) / sd(n_samples),
+         scaled_stim_sample_n = LT + (n_samples - mean(n_samples)) * multiply_const)
+
+# compute per param_setting correlation and sort by max corr, and select
+top_corr_param = combined_df %>% summarize(corr = cor(scaled_stim_sample_n, LT), rmse = rmse(LT, scaled_stim_sample_n)) %>% arrange(desc(corr))  %>% pull(param_info) %>% first() 
+
+
+# grab top parameter setting and make plot ready
+top_sim_result = combined_df %>% filter(param_info == top_corr_param) %>% pivot_longer(cols = c("scaled_stim_sample_n", "LT"), 
+               names_to = "value_type", 
+               values_to = "value")
+
+```
+# Plot the results
+```{r}
+
+# histogram of correlations across param values
+
+
+# plot 
+ggplot(top_sim_result, aes(x = fam_duration, y = value, color = test_type)) + geom_point(size = 2) + geom_line() + facet_grid(~value_type) + ylab('LT') + xlab('fam duration') + scale_y_log10() + theme_classic(20)
+
+
+```

@@ -86,8 +86,8 @@ function get_instruction(){
 
 
 
-    instruction = [consent, instruction1, demo_1, demo_2, demo_3, instruction2]
-
+    //instruction = [consent, instruction1, demo_1, demo_2, demo_3, instruction2]
+    instruction = [consent]
     return (instruction)
 
 }
