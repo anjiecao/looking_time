@@ -19,7 +19,7 @@ Load data
 ```{r}
 
 # data
-exp6_data = read.csv('processed_data/before_qc/exp6_data.csv') %>% mutate(experiment = 6)
+exp6_data = read.csv('processed_data/after_qc/exp6_data.csv') %>% mutate(experiment = 6)
 exclusions_df = read.csv('data/exp6/exclusions/exclusions.csv') %>% mutate(experiment = 6)
 ```
 
@@ -50,13 +50,20 @@ data_df %<>% mutate(exclude = as.logical(Trials.excludeTrial))
 
 # drop na from exclusions
 for (x in 1:nrow(exclusions_df)){
+  print(x)
   exclusion_info = exclusions_df[x,]
   print(exclusion_info$onwards)
+  
+  # need to add 0 for for subject numbers < 10
+  if (x < 10) {
+    extra_str = "0"
+  }
+  else {extra_str = ""}
+  
   if (exclusion_info$onwards){   # if onwards = T, then remove all trials starting from that trial onwards
       data_df %<>% mutate(
       exclude = case_when(
-                experiment == exclusion_info$experiment & 
-                  subject_num == paste0("PKBB_", exclusion_info$subject_number) & 
+                  subject_num == paste0("PKBB_", extra_str, exclusion_info$subject_number) & 
                   block_num >= exclusion_info$trial_number ~ T,
             TRUE ~ exclude))
     
@@ -64,13 +71,13 @@ for (x in 1:nrow(exclusions_df)){
   else {  # if onwards = F, then only mark trial of that number
     data_df %<>% mutate(
       exclude = case_when(
-                experiment == exclusion_info$experiment & 
-                  subject_num == paste0("PKBB_", exclusion_info$subject_number) & 
+                  subject_num == paste0("PKBB_", extra_str, exclusion_info$subject_number) & 
                   block_num == exclusion_info$trial_number ~ T,
             TRUE ~ exclude))
+    
+  
   }
 }
-
 ```
 
 New plots
@@ -78,14 +85,14 @@ New plots
 # main effect by trial type
 ggplot(data_df %>% filter(!exclude, LT > 2), aes(x=trial_type, y=LT)) + geom_jitter(width = 0.03, alpha = 0.2) + 
     stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1))  + 
-  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + xlab('Trial type') + ylab('LT in s') + labs(color = 'fam dur') + theme_classic(base_size = 20) + 
-  theme(strip.text.x = element_text(size = 20, colour = "black")) +ggtitle('exp6')
+  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + xlab('Trial type') + ylab('LT in s') + labs(color = 'fam dur') + theme_grey(base_size = 20) + 
+  theme(strip.text.x = element_text(size = 20, colour = "black")) +ggtitle('exp6') + coord_cartesian(ylim = c(15,35))
 
 
 # main effect by trial type
 ggplot(data_df %>% filter(!exclude, LT > 2), aes(x=block_num, y=LT)) + geom_jitter(width = 0.03, alpha = 0.2) + 
     stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1))  + 
-  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + xlab('Block number') + ylab('LT in s') + labs(color = 'fam dur') + theme_classic(base_size = 20) + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + xlab('Block number') + ylab('LT in s') + labs(color = 'fam dur') + theme_grey(base_size = 20) + 
   theme(strip.text.x = element_text(size = 20, colour = "black"))
 
 ```

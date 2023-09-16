@@ -6,6 +6,7 @@ library(tidyverse)
 library(here)
 library(ggthemes)
 library(Metrics)
+library(broom)
 
 ```
 
@@ -21,41 +22,65 @@ infant_data = read.csv('processed_data/model_data/infant_processed_data.csv') %>
 
 # Preprocessing
 ```{r}
-# Put infant data in grouped means format
-grouped_infant_means = infant_data %>% group_by(test_type, fam_duration) %>% summarize(LT = mean(LT))
 
+# Put infant data in grouped means format
+grouped_infant_means = infant_data %>% group_by(test_type, fam_duration) %>% dplyr::summarize(LT = mean(LT))
 
 # put parameter ID to model data
 model_data = model_data %>% mutate(param_info = paste("mu", mu_prior, "v", v_prior, "a", alpha_prior, "b", beta_prior, "ep", epsilon, "expos", forced_exposure_max, sep = "_"))
 
+# duplicate the "B" ones to have both 5 and 10
+rows_to_duplicate <- model_data %>% filter(stim_sequence == "B")
+
+rows_to_duplicate <- rows_to_duplicate %>%
+  mutate(forced_exposure_max = ifelse(forced_exposure_max == 10, 5, 10))
+
+model_data <- rbind(model_data, rows_to_duplicate)
+
 # only keep parameters for which all fam durations have been computed
 model_data <- model_data %>%
   group_by(param_info, test_type) %>%
-  filter(all(0:9 %in% fam_duration)) %>%
+  filter(all(1:9 %in% fam_duration)) %>%
   ungroup() %>%
   group_by(param_info) %>%
   filter(all(c("nov", "fam") %in% test_type)) %>%
   ungroup()
+
+
 
 ```
 
 
 
 ```{r}
+
 # combine model with data
-combined_df = model_data %>% 
+combined_df = model_data %>% mutate(fam_duration = as.integer(fam_duration)) %>%
   left_join(grouped_infant_means, by = c("test_type", "fam_duration")) %>%
-  filter(!is.na(LT)) %>% # remove the fam durations that don't exist in baby data
+  filter(!is.na(LT)) 
+
+# new way of scaling
+
+# group by parameter info and find groupwise intercept and slope
+grouped_stats <- combined_df %>%
   group_by(param_info) %>%
-  mutate(multiply_const = sd(LT) / sd(n_samples),
-         scaled_stim_sample_n = LT + (n_samples - mean(n_samples)) * multiply_const)
+  do(tidy(lm(LT ~ n_samples, data = .))) %>%
+  select(-c(std.error, statistic, p.value)) %>%
+  ungroup() %>%
+  spread(term, estimate)
+
+# merge with intercept and slope and scale the samples
+combined_df <- combined_df %>%
+  left_join(grouped_stats, by = c("param_info")) %>% 
+  rename(intercept = "(Intercept)", slope = n_samples.y, n_samples = n_samples.x) %>% 
+  mutate(scaled_samples = n_samples * slope + intercept)
 
 # compute per param_setting correlation and sort by max corr, and select
-top_corr_param = combined_df %>% summarize(corr = cor(scaled_stim_sample_n, LT), rmse = rmse(LT, scaled_stim_sample_n)) %>% arrange(desc(corr))  %>% pull(param_info) %>% first() 
+top_corr_param = combined_df %>% group_by(param_info) %>% dplyr::summarize(corr = cor(scaled_samples, LT), rmse = rmse(LT, scaled_samples)) %>% arrange(desc(corr)) %>% pull(param_info) %>% first() 
 
 
 # grab top parameter setting and make plot ready
-top_sim_result = combined_df %>% filter(param_info == top_corr_param) %>% pivot_longer(cols = c("scaled_stim_sample_n", "LT"), 
+top_sim_result = combined_df %>% filter(param_info == top_corr_param) %>% pivot_longer(cols = c("scaled_samples", "LT"), 
                names_to = "value_type", 
                values_to = "value")
 
@@ -65,9 +90,12 @@ top_sim_result = combined_df %>% filter(param_info == top_corr_param) %>% pivot_
 
 # histogram of correlations across param values
 
-
 # plot 
-ggplot(top_sim_result, aes(x = fam_duration, y = value, color = test_type)) + geom_point(size = 2) + geom_line() + facet_grid(~value_type) + ylab('LT') + xlab('fam duration') + scale_y_log10() + theme_classic(20)
+ggplot(top_sim_result, aes(x = fam_duration, y = value, color = test_type)) + geom_point(size = 2) + geom_line() + facet_grid(~value_type) + ylab('LT') + xlab('fam duration') + theme_classic(20) + scale_color_manual(values = c("blue", "red"))
 
+
+ggplot(model_data, aes(x = fam_duration, y = n_samples, group = test_type, color + test_type)) + geom_point(aes(color = test_type)) + geom_line(aes(color = test_type)) + facet_wrap(vars(param_info), nrow = 2) + theme_classic(base_size = 10) + theme(strip.text.x = element_text(size = 4)) + scale_color_manual(values = c("blue", "red"))
+
+top_sim_result
 
 ```

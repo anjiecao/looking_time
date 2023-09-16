@@ -17,7 +17,6 @@ library(stringr)
 
 Load data
 ```{r}
-
 # data
 data_df = read.csv("processed_data/before_qc/exp7_data.csv") %>% mutate(experiment = 7)
 
@@ -147,11 +146,28 @@ plot_df = data_df %>% filter(fam_or_test == 'test', !exclude) %>% mutate(test_ty
 # main effect by violation type
 ggplot(plot_df, aes(x=test_type, y=LT, color = test_type)) + geom_jitter(alpha=0.2, position = position_dodge(width = .2)) + 
     stat_summary(fun.data = "mean_cl_boot", geom = "line", linewidth = 2, position = position_dodge(width = .1))  + 
-  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", size = 1, position = position_dodge(width = .1)) + xlab('Trial type') + ylab('LT in s') + labs(color = 'violation type') + theme_classic(base_size = 30) + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", size = 1, position = position_dodge(width = .1)) + xlab('Trial type') + ylab('LT in s') + labs(color = 'violation type') + theme_classic(base_size = 10) + 
   theme(strip.text.x = element_text(size = 20, colour = "black")) +ggtitle('exp7') + coord_cartesian(ylim = c(0,30)) 
 
+# within subject dishabituation
 
+# Separate the background condition
+backgrounds <- plot_df %>% 
+  filter(test_type == "background")
+
+# Compute the within-subject differences
+within_subject_diff <- plot_df %>%
+  filter(test_type != "background") %>%
+  left_join(backgrounds, by = "subject_num", suffix = c("_exp", "_bg")) %>%
+  mutate(diff = LT_exp - LT_bg)
+
+ggplot(within_subject_diff, aes(x = test_type_exp, y = diff, color = test_type_exp)) + geom_jitter(alpha=0.3, position = position_dodge(width = .2)) + 
+  stat_summary(fun.data = "mean_cl_boot", geom = "line", linewidth = 2, position = position_dodge(width = .1)) + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", size = 1, position = position_dodge(width = .1)) + 
+  ylab(' deviant - background (in sec)') + xlab('Test type') + theme_grey(base_size = 15) 
 ```
+
+
+
 
 Pre-registered models
 ```{r}
@@ -164,22 +180,14 @@ model_df$test_type = relevel(as.factor(model_df$test_type), ref = "background")
 
 
 # model 1A and model 1B
-model_1A <- lmer(log(LT) ~ block_num + (1|subject_num), data = model_df) 
-model_1B <- lmer(log(LT) ~ block_num + is_violation + (1|subject_num), data = model_df) 
+model_1A <- lmer(log(LT) ~ log(block_num) + (1|subject_num), data = model_df) 
+model_1B <- lmer(log(LT) ~ log(block_num) + is_violation + (1|subject_num), data = model_df) 
 model_1C <- lmer(log(LT) ~ block_num + test_type  + (1|subject_num), data = model_df)
 
 anova(model_1A, model_1B, model_1C)
 
-# prepare model 2A (yes/no)
-data_df = data_df %>% mutate(violation = case_when(violation_type == "background" ~ "background", TRUE ~ "deviant") )
-model_2A <- lmer(log(LT) ~ violation + block_number + (1|subj), data = data_df)
-model_2B <- lmer(log(LT) ~ violation_type + block_number + (1|subj), data = data_df) 
-
-anova(model_2A, model_2B) # evaluate on AIC/BIC because these are not nested
-
-# contrasts
-emm <- emmeans(model, ~ ViolationType)
-pairs(emm)
+summary(model_1A)
+summary(model_1C)
 
 
 ```

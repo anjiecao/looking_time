@@ -13,6 +13,8 @@ library(pracma)
 library(lmerTest)
 library(readr)
 library(stringr)
+library(gridExtra)
+
 ```
 
 Load data
@@ -208,7 +210,36 @@ plot_df = data_df %>% mutate(test_type = case_when(fam_duration == 0 ~ 'baseline
 
 
 ## Exposure duration x test trial
-ggplot(plot_df %>% filter(fam_or_test == 'test', !exclude, LT > 2), aes(x=as.numeric(fam_duration), y=LT, group=test_type, color = test_type)) + geom_point(alpha=0.1, size = 2, position = position_jitterdodge(jitter.width = 0.15)) + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = 1), size = 1) + xlab('fam duration') + ylab('LT in s') + labs(color = 'Test type') + theme_classic(base_size = 25) + theme(strip.text.x = element_text(size = 20, colour = "black")) + scale_x_continuous(breaks = c(1,2,3,4,6,8,9)) + scale_color_manual(values = c("grey", "blue", "red")) + geom_smooth(method ="lm", alpha = 0.4) + geom_hline(yintercept = plot_df %>% dplyr::filter(fam_or_test == 'test', !exclude, test_type == 'baseline') %>% pull(LT) %>% mean(), linetype = "dashed") + coord_trans(y = "log10")
+ggplot(plot_df %>% filter(fam_or_test == 'test', !exclude, LT > 2), aes(x=as.numeric(fam_duration), y=LT, group=test_type, color = test_type)) + geom_point(alpha=0.1, size = 2, position = position_jitterdodge(jitter.width = 0.15)) + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = 1), size = 1) + xlab('fam duration') + ylab('LT in s') + labs(color = 'Test type') + theme_classic(base_size = 25) + theme(strip.text.x = element_text(size = 20, colour = "black")) + scale_x_continuous(breaks = c(1,2,3,4,6,8,9)) + scale_y_continuous(breaks = c(3, 10, 30)) + scale_color_manual(values = c("grey", "blue", "red")) + geom_smooth(method ="lm", alpha = 0.4) + geom_hline(yintercept = plot_df %>% dplyr::filter(fam_or_test == 'test', !exclude, test_type == 'baseline') %>% pull(LT) %>% mean(), linetype = "dashed")  + coord_trans(y = "log10")
+
+
+plot_list <- list()
+
+for(i in 1:3){
+  
+  shuffled_subjects <- sample(unique(plot_df$subject_num))
+  
+  # Split the shuffled subjects into two halves
+  half_n <- length(shuffled_subjects) / 2
+  first_half_subjects <- shuffled_subjects[1:half_n]
+  second_half_subjects <- shuffled_subjects[(half_n + 1):length(shuffled_subjects)]
+  
+  # Create two subsets of data
+  first_half_df <- plot_df %>% filter(subject_num %in% first_half_subjects)
+  second_half_df <- plot_df %>% filter(subject_num %in% second_half_subjects)
+ 
+  plot_first_half <- ggplot(first_half_df %>% filter(fam_or_test == 'test', !exclude, LT > 2), aes(x=as.numeric(fam_duration), y=LT, group=test_type, color = test_type)) + geom_point(alpha=0.1, size = 2, position = position_jitterdodge(jitter.width = 0.15)) + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = 1), size = 1) + xlab('fam duration') + ylab('LT in s') + labs(color = 'Test type')  + theme(strip.text.x = element_text(size = 20, colour = "black")) + scale_x_continuous(breaks = c(1,2,3,4,6,8,9)) + scale_y_continuous(breaks = c(3, 10, 30)) + scale_color_manual(values = c("grey", "blue", "red")) + geom_smooth(method ="lm", alpha = 0.4) + geom_hline(yintercept = plot_df %>% dplyr::filter(fam_or_test == 'test', !exclude, test_type == 'baseline') %>% pull(LT) %>% mean(), linetype = "dashed")  + coord_trans(y = "log10") + ggtitle(paste("Split", i))
+  
+ plot_second_half <- ggplot(second_half_df %>% filter(fam_or_test == 'test', !exclude, LT > 2), aes(x=as.numeric(fam_duration), y=LT, group=test_type, color = test_type)) + geom_point(alpha=0.1, size = 2, position = position_jitterdodge(jitter.width = 0.15)) + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = 1), size = 1) + xlab('fam duration') + ylab('LT in s') + labs(color = 'Test type')  + theme(strip.text.x = element_text(size = 20, colour = "black")) + scale_x_continuous(breaks = c(1,2,3,4,6,8,9)) + scale_y_continuous(breaks = c(3, 10, 30)) + scale_color_manual(values = c("grey", "blue", "red")) + geom_smooth(method ="lm", alpha = 0.4) + geom_hline(yintercept = plot_df %>% dplyr::filter(fam_or_test == 'test', !exclude, test_type == 'baseline') %>% pull(LT) %>% mean(), linetype = "dashed")  + coord_trans(y = "log10") + ggtitle(paste("Split", i))
+  
+ # Save each pair of ggplot objects to the list
+  plot_list[[2 * i - 1]] <- plot_first_half
+  plot_list[[2 * i]] <- plot_second_half
+
+  
+}
+
+do.call(grid.arrange, c(plot_list, ncol = 2))
 
 ```
 
@@ -239,7 +270,7 @@ plot_df = data_df %>% mutate(test_type = case_when(fam_duration == 0 ~ 'baseline
 group.colors <- c(baseline = "#333BFF", fam = "#CC6600", nov ="#9633FF")
 
 #within subjects 
-ggplot(data_df_wide %>% filter(type>0), aes(x=as.numeric(type), y=difference))  + geom_abline(intercept = 0,slope=0,linetype='dashed') + 
+ggplot(data_df_wide %>% filter(type>0), aes(x=as.numeric(type), y=difference))  + geom_abline(intercept = 0,slope=0,linetype='dashed') + geom_point( alpha = 0.2) +
   stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + xlab('Fam duration') + ylab('Novel - Familiar (s)')  + theme_classic(base_size = 22) + 
   theme(strip.text.x = element_text(size = 20, colour = "black")) + scale_x_continuous(breaks = c(1,2,3,4,6,8,9))
 
@@ -259,6 +290,8 @@ ggplot(plot_df %>% filter(fam_or_test == 'test', !exclude, LT > 2), aes(x=as.num
 
 
 # predict missingness?
+
+
 
 ```
 
@@ -302,7 +335,7 @@ anova(model_1, model_1a)
 # ns. because of non-linear interaction
 
 # dishabituation
-model_2 <- lmer(log(LT) ~ test_type + block_num + (1 | subject_num), data = test_df %>% filter(fam_duration >= 8) %>% mutate(fam_duration = scale(fam_duration)))
+model_2 <- lmer(log(LT) ~ test_type + block_num + (1 | subject_num), data = test_df %>% filter(fam_duration == 5))
 summary(model_2)
 
 # fam pref (EXPLORATORY)
@@ -332,7 +365,7 @@ summary(model_1)
 # ns. because of non-linear interaction
 
 # dishabituation
-model_2 <- lmer(log(LT) ~ test_type + trial_num + (1 | subject_num), data = test_df %>% filter(experiment == 4, fam_duration > 8))
+model_2 <- lmer(log(LT) ~ test_type + block_num + (1 | subject_num), data = test_df %>% filter(experiment == 4, fam_duration > 8))
 summary(model_2)
 
 # fam pref (EXPLORATORY)
