@@ -99,3 +99,42 @@ ggplot(model_data, aes(x = fam_duration, y = n_samples, group = test_type, color
 top_sim_result
 
 ```
+
+
+# Cross validation
+```{r}
+# leave one out in a for loop
+
+# grab relevant model results:
+top_model_data = model_data %>% filter(param_info == "mu_0_v_2_a_5_b_15_ep_1e-05_expos_5") %>% select(fam_duration, test_type, n_samples)
+
+# create unique subject id's
+infant_data = infant_data %>% unite("unique_id", experiment, subject_num) 
+
+# number of folds for crossvalidation
+subj_ids = infant_data %>% pull(unique_id) %>% unique() 
+
+n_folds = length(subj_ids) 
+
+for (k in 1:n_folds) {
+  train_subj = subj_ids[-k]
+  train_data = infant_data[infant_data$unique_id %in% train_subj,]
+  
+  test_subj = subj_ids[k]
+  test_data = infant_data %>% filter(unique_id == test_subj)
+  
+  train_set = train_data %>% right_join(top_model_data, by = c("fam_duration", "test_type")) %>% distinct() 
+  
+  fitted_stats = train_set %>% do(tidy(lm(LT ~ n_samples + block_num, data = .))) %>% select(-c(std.error, statistic, p.value))
+  
+  sample_slope = fitted_stats %>% filter(term == 'n_samples') %>% pull(estimate)
+  block_num_slope = fitted_stats %>% filter(term == 'block_num') %>% pull(estimate)
+  intercept = fitted_stats %>% filter(term == '(Intercept)') %>% pull(estimate)
+    
+  train_set = test_data %>% left_join(top_model_data, by = c("fam_duration", "test_type")) %>% distinct() %>% 
+    mutate(scaled_samples = n_samples * sample_slope + block_num * block_num_slope + intercept)
+
+}
+
+
+```
