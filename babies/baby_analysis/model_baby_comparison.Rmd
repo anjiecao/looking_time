@@ -14,6 +14,9 @@ library(broom)
 # Load model data
 model_data = read.csv('processed_data/model_data/grouped_model_means.csv')
 
+model_data_no_noise = read.csv('processed_data/model_data/grouped_model_means_no_noise.csv') %>% select(n_samples,stim_sequence,test_type, fam_duration)
+
+model_data_no_learning = read.csv('processed_data/model_data/grouped_model_means_no_learning.csv') %>% select(n_samples,stim_sequence,test_type,fam_duration)
 
 # Load infant data (only test trials)
 infant_data = read.csv('processed_data/model_data/infant_processed_data.csv') %>% filter(fam_or_test == 'test', !exclude)
@@ -46,8 +49,6 @@ model_data <- model_data %>%
   filter(all(c("nov", "fam") %in% test_type)) %>%
   ungroup()
 
-
-
 ```
 
 
@@ -73,16 +74,51 @@ grouped_stats <- combined_df %>%
 combined_df <- combined_df %>%
   left_join(grouped_stats, by = c("param_info")) %>% 
   rename(intercept = "(Intercept)", slope = n_samples.y, n_samples = n_samples.x) %>% 
-  mutate(scaled_samples = n_samples * slope + intercept)
+  mutate(scaled_samples = n_samples * slope + intercept) %>% select(-n_samples)
+
+
+# scale baseline models the same way
+combined_df_no_noise = model_data_no_noise %>% mutate(fam_duration = as.integer(fam_duration)) %>%
+  left_join(grouped_infant_means, by = c("test_type", "fam_duration")) %>%
+  filter(!is.na(LT)) 
+
+grouped_stats <- combined_df_no_noise %>%
+  do(tidy(lm(LT ~ n_samples, data = .))) %>%
+  select(-c(std.error, statistic, p.value)) %>%
+  ungroup() %>%
+  spread(term, estimate)
+
+model_data_no_noise <- model_data_no_noise %>%
+  mutate(scaled_samples = n_samples * grouped_stats$n_samples + grouped_stats$`(Intercept)`) %>% select(-n_samples)
+
+combined_df_no_learning = model_data_no_learning %>% mutate(fam_duration = as.integer(fam_duration)) %>%
+  left_join(grouped_infant_means, by = c("test_type", "fam_duration")) %>%
+  filter(!is.na(LT)) 
+
+grouped_stats <- combined_df_no_learning %>%
+  do(tidy(lm(LT ~ n_samples, data = .))) %>%
+  select(-c(std.error, statistic, p.value)) %>%
+  ungroup() %>%
+  spread(term, estimate)
+
+model_data_no_learning <- model_data_no_learning %>%
+  mutate(scaled_samples = n_samples * grouped_stats$n_samples + grouped_stats$`(Intercept)`) %>% select(-n_samples)
+
 
 # compute per param_setting correlation and sort by max corr, and select
 top_corr_param = combined_df %>% group_by(param_info) %>% dplyr::summarize(corr = cor(scaled_samples, LT), rmse = rmse(LT, scaled_samples)) %>% arrange(desc(corr)) %>% pull(param_info) %>% first() 
 
 
-# grab top parameter setting and make plot ready
-top_sim_result = combined_df %>% filter(param_info == top_corr_param) %>% pivot_longer(cols = c("scaled_samples", "LT"), 
-               names_to = "value_type", 
-               values_to = "value")
+# grab top parameter setting and merge with baseline models
+top_sim_result = combined_df %>% filter(param_info == top_corr_param) %>% left_join(model_data_no_learning , by = c("stim_sequence"), suffix = c('_GRANCH', '_nolearning')) %>% left_join(model_data_no_noise , by = c("stim_sequence")) %>% rename(scaled_samples_nonoise = scaled_samples) 
+  
+
+
+plot_df = top_sim_result %>% rename(Infants = LT, GRANCH = scaled_samples_GRANCH, `No learning` = scaled_samples_nolearning, `No noise` = scaled_samples_nonoise) %>%
+  pivot_longer(cols = c("GRANCH", "No learning", "No noise", "Infants"), 
+               names_to = "value_type", values_to = "value") %>% mutate(value_type = factor(value_type, levels = c("Infants", "GRANCH", "No noise", "No learning")),
+                                                                        test_type = ifelse(test_type == 'nov', 'Novel', 'Familiar')) 
+  
 
 ```
 # Plot the results
@@ -91,12 +127,17 @@ top_sim_result = combined_df %>% filter(param_info == top_corr_param) %>% pivot_
 # histogram of correlations across param values
 
 # plot 
-ggplot(top_sim_result, aes(x = fam_duration, y = value, color = test_type)) + geom_point(size = 2) + geom_line() + facet_grid(~value_type) + ylab('LT') + xlab('fam duration') + theme_classic(20) + scale_color_manual(values = c("blue", "red"))
+ggplot(plot_df, aes(x = fam_duration, y = value, color = test_type, group = test_type)) +  geom_smooth(method ="lm", alpha = 0.4) + geom_point(size = 2)  + ylab('Looking time') + xlab('fam duration') + theme_classic(20) + scale_color_manual(values = c("blue", "red")) + coord_trans(y = "log10") + coord_cartesian(ylim=c(0,25)) +  scale_x_continuous(breaks = c(1,2,3,4,6,8,9)) + facet_grid(~model) + xlab('Exposure duration') + labs(color = 'Test type')
+
+
+# plot GRANCH vs infants
+
+ggplot(plot_df %>% filter(value_type == 'GRANCH' | value_type == 'Infants'), aes(x = fam_duration, y = value, color = test_type)) +  geom_smooth(aes(linetype = value_type, color = test_type), method ="lm", alpha = 0.4, se = F) + geom_point(aes(shape = value_type, color = test_type), size = 2)  + ylab('Looking time') + xlab('fam duration') + theme_classic(20) + scale_color_manual(values = c("blue", "red")) + coord_trans(y = "log10") + coord_cartesian(ylim=c(0,25)) +  scale_x_continuous(breaks = c(1,2,3,4,6,8,9)) + xlab('Exposure duration') + labs(color = 'Test type') + scale_shape_manual(values = c("Infants" = 15, "GRANCH" = 1))  
+
 
 
 ggplot(model_data, aes(x = fam_duration, y = n_samples, group = test_type, color + test_type)) + geom_point(aes(color = test_type)) + geom_line(aes(color = test_type)) + facet_wrap(vars(param_info), nrow = 2) + theme_classic(base_size = 10) + theme(strip.text.x = element_text(size = 4)) + scale_color_manual(values = c("blue", "red"))
 
-top_sim_result
 
 ```
 
@@ -131,10 +172,19 @@ for (k in 1:n_folds) {
   block_num_slope = fitted_stats %>% filter(term == 'block_num') %>% pull(estimate)
   intercept = fitted_stats %>% filter(term == '(Intercept)') %>% pull(estimate)
     
-  train_set = test_data %>% left_join(top_model_data, by = c("fam_duration", "test_type")) %>% distinct() %>% 
+  test_set = test_data %>% left_join(top_model_data, by = c("fam_duration", "test_type")) %>% distinct() %>% 
     mutate(scaled_samples = n_samples * sample_slope + block_num * block_num_slope + intercept)
+  
+  test_set
+  
 
 }
 
+
+```
+
+
+# Compute a noise ceiling
+```{r}
 
 ```
