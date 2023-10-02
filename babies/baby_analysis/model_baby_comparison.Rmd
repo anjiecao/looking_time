@@ -8,6 +8,7 @@ library(ggthemes)
 library(Metrics)
 library(broom)
 library(confintr)
+library(colf)
 
 ```
 
@@ -99,14 +100,13 @@ combined_df_no_learning = model_data_no_learning %>% mutate(fam_duration = as.in
   left_join(grouped_infant_means, by = c("test_type", "fam_duration")) %>%
   filter(!is.na(LT)) 
 
-grouped_stats <- combined_df_no_learning %>%
-  do(tidy(lm(LT ~ n_samples, data = .))) %>%
-  select(-c(std.error, statistic, p.value)) %>%
-  ungroup() %>%
-  spread(term, estimate)
+# restrict this coefficient to 0, otherwise it becomes negative
+res <- colf_nlxb(LT ~ n_samples, data = combined_df_no_learning, lower = c(-Inf, -Inf))
+
+grouped_stats <- res$coefficients
 
 model_data_no_learning <- model_data_no_learning %>%
-  mutate(scaled_samples = n_samples * grouped_stats$n_samples + grouped_stats$`(Intercept)`)
+  mutate(scaled_samples = n_samples * grouped_stats[2] + grouped_stats[1])
 
 
 # compute per param_setting correlation and sort by max corr, and select
@@ -120,23 +120,27 @@ top_sim_result = combined_df %>% filter(param_info == top_corr_param) %>% left_j
   
 
 
-plot_df = top_sim_result %>% rename(Infants = LT, GRANCH = scaled_samples_GRANCH, `No learning` = scaled_samples_nolearning, `No noise` = scaled_samples_nonoise) %>%
-  pivot_longer(cols = c("GRANCH", "No learning", "No noise", "Infants"), 
-               names_to = "value_type", values_to = "value") %>% mutate(value_type = factor(value_type, levels = c("Infants", "GRANCH", "No noise", "No learning")),
+plot_df = top_sim_result %>% rename(`Infant behavior` = LT, `RANCH (infants)` = scaled_samples_GRANCH, `No Learning` = scaled_samples_nolearning, `No Noise` = scaled_samples_nonoise) %>%
+  pivot_longer(cols = c("RANCH (infants)", "No Learning", "No Noise", "Infant behavior"), 
+               names_to = "value_type", values_to = "value") %>% mutate(value_type = factor(value_type, levels = c("Infant behavior", "RANCH (infants)", "No Learning", "No Noise")),
                                                                         test_type = ifelse(test_type == 'nov', 'Novel', 'Familiar')) 
   
 
 ```
 # Plot the results
-```{r}
+```{r, fig.width=6, fig.height=3}
 
 # histogram of correlations across param values
 
 # plot 
-ggplot(plot_df, aes(x = fam_duration, y = value, color = test_type, group = test_type)) +  geom_smooth(method ="lm", alpha = 0.4) + geom_point(size = 2)  + ylab('Looking time') + xlab('fam duration') + theme_classic(20) + scale_color_manual(values = c("blue", "red")) + coord_trans(y = "log10") + coord_cartesian(ylim=c(0,25)) +  scale_x_continuous(breaks = c(1,2,3,4,6,8,9)) + facet_grid(~value_type) + xlab('Exposure duration') + labs(color = 'Test type')
+ggplot(plot_df, aes(x = 5*fam_duration, y = value, color = test_type, group = test_type)) + geom_smooth(method = "lm", size = 3) +  geom_point(size = 3)  + ylab('Looking time (s)') + xlab('fam duration') + theme_classic(20) + scale_color_manual(values = c("blue", "red")) +  scale_x_continuous(breaks = c(0,5,10,15,20,30,40,45)) + facet_grid(~value_type) + xlab('Prior exposure to background (s)') + labs(color = 'Test type') + theme(legend.position = "bottom", legend.text = element_text(size = 25))
 
 
-# plot GRANCH vs infants
+write_csv(plot_df, "processed_data/model_data/plot_df.csv")
+
+# plot GRANCH vs infants directly (all in black)
+
+# reshape df 
 
 ggplot(plot_df %>% filter(value_type == 'GRANCH' | value_type == 'Infants'), aes(x = fam_duration, y = value, color = test_type)) +  geom_smooth(aes(linetype = value_type, color = test_type), method ="lm", alpha = 0.4, se = F) + geom_point(aes(shape = value_type, color = test_type), size = 2)  + ylab('Looking time') + xlab('fam duration') + theme_classic(20) + scale_color_manual(values = c("blue", "red")) + coord_trans(y = "log10") + coord_cartesian(ylim=c(0,25)) +  scale_x_continuous(breaks = c(1,2,3,4,6,8,9)) + xlab('Exposure duration') + labs(color = 'Test type') + scale_shape_manual(values = c("Infants" = 15, "GRANCH" = 1))  
 
@@ -300,7 +304,7 @@ grouped_stats <- combined_test_df %>%
 combined_test_df <- combined_test_df %>% 
   mutate(scaled_samples = n_samples * grouped_stats$n_samples + grouped_stats$`(Intercept)`) 
 
-
+cor(combined_test_df$n_samples, combined_test_df$LT)
 
 ```
 
