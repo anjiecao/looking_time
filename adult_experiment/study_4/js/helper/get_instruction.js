@@ -26,8 +26,9 @@ function get_instruction(){
         "<p> So we really appreciate your help! </p>"
         ,
         "<p>Since this task was designed for babies, it's going to be really easy!</p>" +
-        "<p>You will repeatedly see a stage on the screen. </p>" + 
-        "<p>At the beginning of each trial, you will see a gray curtain being raised that reveals the animation behind the curtain. </p>"+
+        "<p>You will repeatedly see a stage on the screen with gray curtains opening and closing </p>" + 
+        "<p>At some point, you will hear a bell sound. </p>"+
+        "<p>That sound is our cue to let you know that it is your turn to decide how long you want to look at the stimulus.</p>" + 
         "<p>Whenever you feel like you have seen enough of the animation, you can press the space bar to proceed to the next trial.</p>" + 
         "<p>You will see a few example trials next." 
         ],
@@ -37,38 +38,43 @@ function get_instruction(){
     
     var demo_1 = {    
         type: curtainDisplay, 
-        demo_mode: true, 
-        demo_string: "Press the space whenever you have seen enough of this animation.",
-        stimulus: '<img src="' + "media/practice/p1.jpeg" + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + 50 + '%;\
-        transform: translate(-50%, -50%);left:' + 50 + '%"></img>', 
-        valid_key_press: [" "], 
-        data: {stimulus_type:'instructions'}
+        demo_mode: true,
+        demo_string: "This is a trial where you watch.",
+        stimulus: generate_html_string_for_stimulus("media/practice/p1.gif"), 
+        valid_key_press: [" "],
+        familiarization_time: familiarization_time, 
+        familiarization_phase: true, 
+        data: {stimulus_type: "practice"}
     }
 
     var demo_2 = {    
         type: curtainDisplay, 
-        demo_mode: true, 
-        demo_string: "You did great! Let's try again! Press the spacebar whenever you want to go to the next trial",
-        stimulus: '<img src="' + "media/practice/p1.jpeg" + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + 44 + '%;\
-        transform: translate(-50%, -50%);left:' + 34 + '%"></img>', 
-        valid_key_press: [" "], 
-        data: {stimulus_type:'instructions'}
+        demo_mode: true,
+        demo_string: "This is a trial where you watch.",
+        stimulus: generate_html_string_for_stimulus("media/practice/p1.gif"), 
+        valid_key_press: [" "],
+        familiarization_time: familiarization_time, 
+        familiarization_phase: true, 
+        data: {stimulus_type: "practice"}
     }
 
     var demo_3 = {    
         type: curtainDisplay, 
-        demo_mode: true, 
-        demo_string: "Awesome! You are almost ready for the experiment!",
-        stimulus: '<img src="' + "media/practice/p2.png" + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + 54 + '%;\
-        transform: translate(-50%, -50%);left:' + 54 + '%"></img>', 
-        valid_key_press: [" "], 
-        data: {stimulus_type:'instructions'}
+        demo_mode: true,
+        demo_string: "Now, you can press the space bar whenever you want to move on to the next trial.",
+        stimulus: generate_html_string_for_stimulus("media/practice/p1.gif"), 
+        valid_key_press: [" "],
+        familiarization_time: familiarization_time, 
+        familiarization_phase: false, 
+        data: {stimulus_type: "practice"}
     }
 
     var instruction2 = {
         type: jsPsychInstructions,
     
-        pages: [          "<p> Before we get started, please know that if you experienced significant lag in the preceding animations, it will probably get better once we start the actual experiment. </p>" +
+        pages: [
+            "<p>You did great!</p>" + 
+            "<p> Before we get started, please know that if you experienced significant lag in the preceding animations, it will probably get better once we start the actual experiment. </p>" +
     "<p> If the lagginess persists however, we would really appreciate if you could let us know in the feedback section at the end of the experiment. </p>",
     "<p> Final point about the experiment:</p> <p>  Every couple of trials, we will ask you a simple question. </p>" +
     "<p> Then you will see a new set of creatures to look at for as long as you like, </p>" +
@@ -87,7 +93,7 @@ function get_instruction(){
 
 
     //instruction = [consent, instruction1, demo_1, demo_2, demo_3, instruction2]
-    instruction = [consent]
+    instruction = [consent,instruction1, demo_1, demo_2, demo_3, instruction2]
     return (instruction)
 
 }

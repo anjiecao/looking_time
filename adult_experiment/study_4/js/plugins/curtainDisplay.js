@@ -61,8 +61,8 @@ var curtainDisplay = (function (jspsych) {
         var context = new AudioContext()
 
 
-        //var audio_string = '<audio id="audio" controls style="display:none"> <source src="' + 
-        //"media/error.wav"+ '"</audio>'
+        var audio_string = '<audio id="error" controls style="display:none"> <source src="' + 
+        "media/error.wav"+ '"</audio>'
 
         var bell_sound = '<audio id="audio" controls style="display:none" playsinline> <source src="' + 
         "media/ding.mp3"+ '"</audio>'
@@ -81,7 +81,7 @@ var curtainDisplay = (function (jspsych) {
           </div>\
       </div>'
   
-          display_element.innerHTML  =  display_element.innerHTML + bell_sound
+          display_element.innerHTML  =  display_element.innerHTML + bell_sound + audio_string
 
         }else{
           display_element.innerHTML = trial.demo_string + '<div class="outsideWrapper">\
@@ -91,7 +91,7 @@ var curtainDisplay = (function (jspsych) {
           </div>\
       </div>'
 
-      display_element.innerHTML  =  display_element.innerHTML  + audio_string
+      display_element.innerHTML  =  display_element.innerHTML  + bell_sound + audio_string
 
         }
        
@@ -202,44 +202,68 @@ function curtain_open_from_middle() {
 	    // send things to the database?
 	    //socket.emit('currentData',data)
             this.jsPsych.pluginAPI.setTimeout(()=>{
+              this.jsPsych.pluginAPI.clearAllTimeouts()
               this.jsPsych.finishTrial(data)
             }, 500);
           }
                       
           
         
-          // set up a keyboard event to respond only to the spacebar
+          
+
+          if (trial.familiarization_phase == false){
+
+            this.jsPsych.pluginAPI.setTimeout(()=>{
+              let data = {
+                rt: info.rt,
+                total_rt: 500 + info.rt
+              }
+
+              console.log("timeout function")
+              console.log(trial.stimulus)
+              this.jsPsych.finishTrial(data)
+              this.jsPsych.pluginAPI.clearAllTimeouts()
+            }, 15000);
+
+            
+            var annoying_sound = document.querySelector("#error");
+            annoying_sound.muted = true
+
+            this.jsPsych.pluginAPI.setTimeout(()=>{
+             
+              
+              this.jsPsych.pluginAPI.getKeyboardResponse({
+                callback_function: after_key_response,
+                valid_responses: trial.valid_key_press,
+                persist: false 
+              });
+  
+  
+            }, 500)
+
+            
+
+           
+
+          }else{ 
+
+            // set up a keyboard event to respond only to the spacebar
+          
           var annoying_sound_listener = this.jsPsych.pluginAPI.getKeyboardResponse({
             callback_function: function(){
                 context.resume().then(() => {
-                  display_element.querySelector('#audio').play()
+                  display_element.querySelector('#error').play()
               });             
               },//after_key_response,
             valid_responses: trial.valid_key_press,
             persist: true
           });
 
-
-
           this.jsPsych.pluginAPI.setTimeout(()=>{
             jsPsych.pluginAPI.cancelKeyboardResponse(annoying_sound_listener);
           }, 500)
 
 
-          if (trial.familiarization_phase == false){
-
-            
-
-            this.jsPsych.pluginAPI.setTimeout(()=>{
-              this.jsPsych.pluginAPI.getKeyboardResponse({
-                callback_function: after_key_response,
-                valid_responses: trial.valid_key_press,
-                persist: false
-              });
-  
-  
-            }, 500)
-          }else{
             this.jsPsych.pluginAPI.setTimeout(()=>{
               curtain_to_right()
               curtain_to_left()

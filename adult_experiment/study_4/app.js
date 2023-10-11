@@ -95,7 +95,7 @@ var serveFile = function(req, res) {
 
 var writeDataToMongo = function(data) {
       sendPostRequest(
-        'http://localhost:4000/db/insert',
+        'http://localhost:3000/db/insert',
         { json: data },
         (error, res, body) => {
       if (!error && res.statusCode === 200) {
