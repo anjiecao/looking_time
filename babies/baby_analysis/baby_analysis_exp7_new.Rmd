@@ -13,12 +13,13 @@ library(pracma)
 library(lmerTest)
 library(readr)
 library(stringr)
+library(bbmle)
 ```
 
 Load data
 ```{r}
 # data
-data_df = read.csv("processed_data/before_qc/exp7_data.csv") %>% mutate(experiment = 7)
+data_df = read.csv("processed_data/after_qc/exp7_data.csv") %>% mutate(experiment = 7)
 
 # experimenter manual exclusions
 exclusions_df = read.csv('data/exp7/exclusions/exclusions.csv') %>% mutate(experiment = 7)
@@ -182,13 +183,23 @@ model_df$test_type = relevel(as.factor(model_df$test_type), ref = "background")
 # model 1A and model 1B
 model_1A <- lmer(log(LT) ~ log(block_num) + (1|subject_num), data = model_df) 
 model_1B <- lmer(log(LT) ~ log(block_num) + is_violation + (1|subject_num), data = model_df) 
-model_1C <- lmer(log(LT) ~ block_num + test_type  + (1|subject_num), data = model_df)
+model_1C <- lmer(log(LT) ~ log(block_num)* test_type - test_type  + (1|subject_num), data = model_df)
 
-anova(model_1A, model_1B, model_1C)
+anova(model_1B, model_1C)
 
-summary(model_1A)
-summary(model_1C)
+AICtab(model_1A, model_1B)
 
+```
+
+Power analysis + adjusted p-value size
+```{r}
+
+# Start with 50 subjects, for null hypothesis vs. 
+
+
+# p-value adjustment based on: https://onlinelibrary.wiley.com/doi/pdf/10.1002/ejsp.2023
+
+https://www.sciencedirect.com/science/article/pii/S0163638318300894?via%3Dihub Box 1
 
 ```
 

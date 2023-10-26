@@ -213,6 +213,9 @@ plot_df = data_df %>% mutate(test_type = case_when(fam_duration == 0 ~ 'baseline
 ggplot(plot_df %>% filter(fam_or_test == 'test', !exclude, LT > 2), aes(x=as.numeric(fam_duration), y=LT, group=test_type, color = test_type)) + geom_point(alpha=0.1, size = 2, position = position_jitterdodge(jitter.width = 0.15)) + stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = 1), size = 1) + xlab('fam duration') + ylab('LT in s') + labs(color = 'Test type') + theme_classic(base_size = 25) + theme(strip.text.x = element_text(size = 20, colour = "black")) + scale_x_continuous(breaks = c(1,2,3,4,6,8,9)) + scale_y_continuous(breaks = c(3, 10, 30)) + scale_color_manual(values = c("grey", "blue", "red")) + geom_smooth(method ="lm", alpha = 0.4) + geom_hline(yintercept = plot_df %>% dplyr::filter(fam_or_test == 'test', !exclude, test_type == 'baseline') %>% pull(LT) %>% mean(), linetype = "dashed")  + coord_trans(y = "log10")
 
 
+
+write_csv(plot_df, 'plot_df_infants.csv')
+
 plot_list <- list()
 
 for(i in 1:3){

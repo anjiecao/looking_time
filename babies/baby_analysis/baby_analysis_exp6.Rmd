@@ -83,10 +83,13 @@ for (x in 1:nrow(exclusions_df)){
 New plots
 ```{r}
 # main effect by trial type
-ggplot(data_df %>% filter(!exclude, LT > 2), aes(x=trial_type, y=LT)) + geom_jitter(width = 0.03, alpha = 0.2) + 
-    stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1))  + 
+ggplot(data_df %>% filter(!exclude, LT > 2) %>% mutate(trial_type = factor(trial_type, levels = c("single animal", "animal pair", "veggie"))), aes(x=trial_type, y=LT)) + geom_jitter(width = 0.03, alpha = 0.2) + stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .1))  + 
   stat_summary(fun.data = "mean_cl_boot", geom = "pointrange", position = position_dodge(width = .1)) + xlab('Trial type') + ylab('LT in s') + labs(color = 'fam dur') + theme_grey(base_size = 20) + 
-  theme(strip.text.x = element_text(size = 20, colour = "black")) +ggtitle('exp6') + coord_cartesian(ylim = c(15,35))
+  theme(strip.text.x = element_text(size = 20, colour = "black")) + coord_cartesian(ylim = c(15,35)) + theme_bw(25)
+
+
+
+
 
 
 # main effect by trial type
