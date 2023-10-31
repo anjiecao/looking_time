@@ -84,16 +84,7 @@ function setupGame(){
           timeline.push(enter_fullscreen)
           timeline = timeline.concat(instruction)
           timeline = timeline.concat(all_blocks)
-    
-          var pre_rating_trial = {
-            type:jsPsychInstructions,
-            pages: ["<p>You are almost done with the study!</p>" + 
-                    "<p>Now we will just ask you some questions about our animation.</p>"
-            ],
-            show_clickable_nav: true,
           
-          }
-    
          
     
           timeline = timeline.concat(demog)

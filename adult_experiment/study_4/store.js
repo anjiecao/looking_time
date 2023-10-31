@@ -11,7 +11,7 @@ const colors = require('colors/safe');
 
 const app = express();
 const MongoClient = mongodb.MongoClient;
-const port = 4000;
+const port = 3000;
 const mongoCreds = require('./auth.json');
 const mongoURL = `mongodb://${mongoCreds.user}:${mongoCreds.password}@localhost:27017/`;
 const handlers = {};
@@ -65,9 +65,9 @@ function mongoConnectWithRetry(delayInMilliseconds, callback) {
 }
 
 function serve() {
-
+  log("served")
   mongoConnectWithRetry(2000, (connection) => {
-
+    console.log("is it called")
     app.use(bodyParser.json({limit: "50mb"})); // added bll
     app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
 
@@ -76,7 +76,8 @@ function serve() {
         return failure(response, '/db/insert needs post request body');
       }
       log(`got request to insert into ${request.body.colname}`);
-      
+      console.log("printing request body")
+     	    
       const databaseName = request.body.dbname;
       const collectionName = request.body.colname;
       console.log(request.body.dbname)
@@ -90,7 +91,8 @@ function serve() {
       }
 
       const database = connection.db(databaseName);
-      
+      console.log(request.body)
+	    
       // Add collection if it doesn't already exist
       if (!database.collection(collectionName)) {
         console.log('creating collection ' + collectionName);

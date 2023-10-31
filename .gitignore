@@ -15,6 +15,9 @@ adult_analysis/study_1/prepping_followup/*.csv
 adult_analysis/study_3/data/00_raw_data/*
 adult_analysis/study_4/get_data.ipynb
 adult_analysis/study_4/get_data.py
+adult_experiment/study_4/auth.json 
+adult_experiment/study_4/media/*
+
 
 adult_analysis/study_1_followup/data/00_raw_data/*
 

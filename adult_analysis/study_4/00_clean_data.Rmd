@@ -1,0 +1,135 @@
+
+```{r}
+library(tidyverse)
+library(here)
+
+#exclude_d <- read.csv(here("data/00_raw_data/postfeasibility_smallbatch.csv")) %>% filter(prolific_id != "") %>% distinct(prolific_id) %>% pull()
+
+d <- read.csv(here("data/00_raw_data/full_raw_256.csv")) %>% filter(prolific_id != "") 
+
+#%>% filter(!prolific_id %in% exclude_d)
+```
+
+# Participant-based exclusion
+
+(a) spent more than three absolute deviations above the median of the task completion time as reported by Prolific
+
+```{r}
+prolific_d <- read_csv(here("data/00_raw_data/prolific_256.csv"))
+
+summary <- prolific_d %>% select(`Participant id`, `Time taken`) %>% 
+  filter(!is.na(`Time taken`)) %>% 
+  summarise(median = median(`Time taken`), 
+            abs_d = mad(`Time taken`)) %>% 
+  mutate(ub = median + 3*abs_d)
+
+exclude_too_much_time_id <- prolific_d %>% 
+  filter(`Time taken` > summary$ub) %>% 
+  pull(`Participant id`)
+```
+
+
+(b) had more than 50% test trials excluded from the analysis
+
+```{r}
+rt_d_summary <- d %>% 
+  filter(!trial_type %in% c("preload", "fullscreen", "instructions")) %>% 
+  filter(background != "") %>% 
+  filter(!is.na(rt)) %>% 
+  filter(rt < 15000) %>% 
+  summarise(
+    median= median(rt), 
+    abs_d = mad(rt)
+  ) %>% 
+  mutate(ub = median + 3 * abs_d)
+
+exclude_too_much_exclusion_id <- d %>% 
+  filter(!trial_type %in% c("preload", "fullscreen", "instructions")) %>% 
+  filter(background != "") %>% 
+  filter(!is.na(rt)) %>% 
+  mutate(rt_exclude = case_when(
+    rt > 15000 ~ TRUE, 
+    rt > rt_d_summary$ub ~ TRUE, 
+    TRUE ~ FALSE
+  )) %>% 
+  group_by(prolific_id) %>% 
+  summarise(
+    p_exclude = mean(rt_exclude)
+  ) %>% 
+  filter(p_exclude >= 0.5) %>% 
+  pull(prolific_id)
+
+```
+
+
+(c) provided the same response to more than 80% of the filler task,
+
+```{r}
+exclude_same_response_id <- d %>% 
+  filter(trial_type == "survey-likert") %>% 
+  filter(!is.na(response)) %>% 
+  group_by(prolific_id, response) %>% 
+  count() %>% 
+  filter(n >= (6*.8)) %>% 
+  distinct(prolific_id) %>% 
+  pull(prolific_id)
+```
+
+
+```{r}
+all_exclude <- c(exclude_same_response_id, exclude_too_much_exclusion_id, exclude_too_much_time_id)
+```
+
+```{r}
+trimmed_d <- d %>% filter(!prolific_id %in% all_exclude)
+```
+
+
+
+# Trial based exclusion
+
+We exclude any trial with 15 seconds of looking time (i.e. the ceiling for looking time at test trials). This criteria is chosen because the average maximum adult self-paced looking time at each trial in our previous work is around 5 seconds, far below the 15 second threshold. After this exclusion, we exclude a trial if it is three absolute deviations away from the median in the log-transformed space across all participants.
+
+```{r}
+rt_d_summary <- trimmed_d %>% 
+  filter(!trial_type %in% c("preload", "fullscreen", "instructions")) %>% 
+  filter(background != "") %>% 
+  filter(!is.na(rt)) %>% 
+  filter(rt < 15000) %>% 
+  summarise(
+    median= median(rt), 
+    abs_d = mad(rt)
+  ) %>% 
+  mutate(ub = median + 3 * abs_d)
+
+trimmed_d <- trimmed_d %>% 
+  filter(rt < 15000) %>% 
+  filter(!trial_type %in% c("preload", "fullscreen", "instructions")) %>% 
+  filter(background != "") %>% 
+  filter(!is.na(rt)) %>% 
+  group_by(prolific_id) %>%
+  mutate(block_id = row_number(prolific_id)) %>% 
+  filter(rt <  rt_d_summary$ub, block_id < 7)
+```
+
+
+# Write the final dataset 
+
+```{r}
+
+tidy_d <- trimmed_d %>% 
+  filter(!trial_type %in% c("preload", "fullscreen", "instructions")) %>% 
+  filter(background != "") %>% 
+  filter(!is.na(rt)) %>% 
+  select(prolific_id, rt, block_type, fam_trial, background, deviant, block_id) 
+
+write_csv(tidy_d, here("data/01_clean_data/tidy_d_256.csv"))
+```
+
+
+
+
+
+
+
+

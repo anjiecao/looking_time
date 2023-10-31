@@ -81,7 +81,7 @@ function generate_block(block_info, familiarization_time){
             "A little curious", 
             "Somewhat curious", 
             "Pretty curious", "Very Curious"],
-            rrequired: true
+            required: true
           }
         ],
         data: {
@@ -100,9 +100,12 @@ function generate_all_blocks(all_blocks_info, familiarization_time){
     all_blocks = []
     for (var i= 0; i < all_blocks_info.length; i++){
         block = generate_block(all_blocks_info[i], familiarization_time)
-        all_blocks = all_blocks.concat(block)
+        all_blocks.push(block)
         
     }
+    shuffleArray(all_blocks)
+    all_blocks = all_blocks.flat()
+    console.log(all_blocks)
     return (all_blocks)
 }
 
@@ -229,7 +232,7 @@ function generate_html_string_for_filler_task(stimulus){
     
     //s = "<img src = '" + stimulus + "' style = 'width:100px; height:100px; position:fixed; top:" + top_position + '%;\
     //transform: translate(-50%, -50%);left:' + left_postion + '%"></img>'
-    s = "<img src = '" + stimulus + "' style = 'width:800px; height:800px'>"
+    s = "<img src = '" + stimulus + "' style = 'width:650px; height:650px'>"
     return(s)
  }
  

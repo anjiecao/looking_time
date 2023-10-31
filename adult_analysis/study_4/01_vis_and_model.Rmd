@@ -1,0 +1,292 @@
+
+```{r}
+library(tidyverse)
+library(here)
+library(lme4)
+library(lmerTest)
+
+
+d <- bind_rows(
+  read_csv(here("data/01_clean_data/tidy_d_048.csv")) %>% mutate(exp = "experiment048"),
+  read_csv(here("data/01_clean_data/tidy_d_256.csv")) %>% mutate(exp = "experiment256"), 
+  read_csv(here("data/01_clean_data/tidy_d_139.csv")) %>% mutate(exp = "experiment139"))
+```
+
+```{r}
+d %>% distinct(prolific_id) %>% count()
+```
+
+
+# Raw
+
+```{r}
+d %>% 
+  mutate(log_rt = log(rt)) %>% 
+  ggplot(aes(x = rt)) + 
+  geom_histogram(bins = 50) + 
+  facet_wrap(fam_trial ~ exp)
+```
+
+
+# Split 
+
+
+
+```{r}
+
+```
+
+
+```{r}
+d %>% 
+  mutate(block_type = case_when(
+    fam_trial == 0 ~ "baseline", 
+    TRUE ~ block_type
+  )) %>% 
+  mutate(fam_trial = as.factor(fam_trial)) %>% 
+  ggplot(aes(x = fam_trial, y = rt, color = block_type)) + 
+  #geom_jitter(alpha = .3, position = position_dodge(width = .2)) + 
+   geom_smooth(method = "lm") +
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  theme_classic() 
+
+d %>% 
+  mutate(block_type = case_when(
+    fam_trial == 0 ~ "baseline", 
+    TRUE ~ block_type
+  )) %>% 
+  mutate(fam_trial = fam_trial)%>% 
+  ggplot(aes(x = fam_trial, y = rt, color = block_type)) + 
+  scale_x_continuous(breaks = seq(0, 9)) + 
+  #geom_jitter(alpha = .3, position = position_dodge(width = .2)) + 
+ #  geom_smooth(method = "gam") +
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  theme_classic() 
+```
+
+
+```{r}
+
+d %>% 
+  mutate(block_type = case_when(
+    fam_trial == 0 ~ "baseline", 
+    TRUE ~ block_type
+  )) %>% 
+  mutate(fam_trial = fam_trial)%>% 
+  mutate(fam_trial_group = case_when(
+    fam_trial == 0 ~ "0",
+    fam_trial == 1 | fam_trial == 2 ~ "1&2&3", 
+    fam_trial == 6 | fam_trial == 4 | fam_trial == 5 ~ "4&5&6", 
+    TRUE ~ "8&9"
+  )) %>% 
+  ggplot(aes(x = fam_trial_group, y = rt, color = block_type)) + 
+  #geom_jitter(alpha = .3, position = position_dodge(width = .2)) + 
+ #  geom_smooth(method = "gam") +
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  theme_classic() 
+```
+
+
+
+```{r}
+d %>% 
+  #filter(block_id < 4) %>% 
+  mutate(block_type = case_when(
+    fam_trial == 0 ~ "baseline", 
+    TRUE ~ block_type
+  )) %>% 
+  mutate(fam_trial = fam_trial) %>% 
+  ggplot(aes(x = fam_trial, y = rt, color = block_type)) + 
+  scale_x_continuous(breaks = seq(0, 9)) + 
+  #geom_jitter(alpha = .3, position = position_dodge(width = .2)) + 
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  #geom_smooth(method = "lm", formula = y ~ poly(x, 2)) +
+  theme_classic()  +
+  facet_grid(~exp)
+```
+
+
+# Combined Dataset 
+
+
+log(LT) ~ poly(familiarization duration, 2) * test event + block number + (1|subject)
+
+```{r}
+model_d <- d %>% mutate(log_rt = log(rt), 
+                        block_type_factor = case_when(
+                          block_type == "deviant" ~ 0, block_type == "all_background" ~ 1
+                        )
+                        )
+
+m1 <- lmer(log_rt ~  poly(fam_trial, 2) * block_type + block_id + (1|prolific_id), 
+     data = model_d)
+
+m1 %>% summary()
+
+m2 <- lmer(log_rt ~  poly(fam_trial, 2) * block_type - block_type + block_id + (1|prolific_id), 
+     data = model_d)
+
+m_nest <- lmer(log_rt ~  poly(fam_trial, 2) * block_type  + block_id  + (1|exp:prolific_id) + (1|exp), 
+     data = model_d)
+
+
+
+m_lin <- lmer(log_rt ~ fam_trial *  block_type - block_type + block_id + (1|prolific_id), 
+     data = model_d)
+
+m2 %>% summary()
+```
+
+```{r}
+#There is no option for computing standard errors of predictions because it is difficult to define an efficient method that incorporates uncertainty in the variance parameters; we recommend bootMer for this task.
+
+model_d$pred = predict(m_nest)
+
+model_d %>% 
+  mutate(block_type = case_when(
+    fam_trial == 0 ~ "baseline", 
+    TRUE ~ block_type
+  )) %>% 
+  mutate(fam_trial = fam_trial)%>% 
+  ggplot(aes(x = fam_trial, y = log_rt, color = block_type)) + 
+  scale_x_continuous(breaks = seq(0, 9)) + 
+  #geom_jitter(alpha = .3, position = position_dodge(width = .2)) + 
+ #  geom_smooth(method = "gam") +
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  theme_classic() +
+  facet_wrap(~exp) 
+
+model_d %>% 
+  mutate(block_type = case_when(
+    fam_trial == 0 ~ "baseline", 
+    TRUE ~ block_type
+  )) %>% 
+  mutate(fam_trial = fam_trial)%>% 
+  ggplot(aes(x = fam_trial, y = pred, color = block_type)) + 
+  #geom_point(aes(x = fam_trial, y = log_rt, color = block_type), alpha = 0) + 
+  stat_summary(aes(x = fam_trial, y = log_rt), fun.data = "mean_cl_boot", position = position_dodge(width = .2)) +
+  scale_x_continuous(breaks = seq(0, 9)) + 
+  #geom_jitter(alpha = .3, position = position_dodge(width = .2)) + 
+  #geom_smooth(method = "lm") +
+  geom_smooth(method = "lm", formula = y ~ poly(x, 2))+
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2), alpha = 0) + 
+  theme_classic() 
+
+
+model_d %>% 
+  mutate(block_type = case_when(
+    fam_trial == 0 ~ "baseline", 
+    TRUE ~ block_type
+  )) %>% 
+  mutate(fam_trial = fam_trial)%>% 
+  ggplot(aes(x = fam_trial, y = pred, color = block_type, shape = val_type)) + 
+  #geom_point(aes(x = fam_trial, y = log_rt, color = block_type), alpha = 0) + 
+  stat_summary(aes(x = fam_trial, y = log_rt), fun.data = "mean_cl_boot", position = position_dodge(width = .2)) +
+  scale_x_continuous(breaks = seq(0, 9)) + 
+  #geom_jitter(alpha = .3, position = position_dodge(width = .2)) + 
+  #geom_smooth(method = "lm") +
+  geom_smooth(method = "lm")+
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2), alpha = 0) + 
+  theme_classic()  + 
+  facet_wrap(~exp)
+  #facet_wrap(~exp) 
+
+model_d %>% 
+  mutate(block_type = case_when(
+    fam_trial == 0 ~ "baseline", 
+    TRUE ~ block_type
+  )) %>% 
+  mutate(fam_trial = fam_trial)%>% 
+  pivot_longer(cols = c(log_rt, pred), values_to = "val", names_to = "val_type") %>% 
+  ggplot(aes(x = fam_trial, y = val, color = block_type, shape = val_type)) + 
+  #geom_point(aes(x = fam_trial, y = log_rt, color = block_type), alpha = 0) + 
+  #stat_summary(aes(x = fam_trial, y = log_rt), fun.data = "mean_cl_boot", position = position_dodge(width = .2)) +
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .4)) +
+  scale_x_continuous(breaks = seq(0, 9)) + 
+  #geom_jitter(alpha = .3, position = position_dodge(width = .2)) + 
+  #geom_smooth(method = "lm") +
+  #geom_smooth(method = "lm")+
+  #stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  theme_classic()  + 
+  facet_wrap(~val_type)
+  #facet_wrap(~exp) 
+```
+
+```{r}
+model_d %>% 
+  mutate(block_type = case_when(
+    fam_trial == 0 ~ "baseline", 
+    TRUE ~ block_type
+  )) %>% 
+  mutate(fam_trial = fam_trial)%>% 
+  pivot_longer(cols = c(log_rt, pred), values_to = "val", names_to = "val_type") %>% 
+  ggplot(aes(x = fam_trial, y = val, color = val_type)) + 
+  #geom_point(aes(x = fam_trial, y = log_rt, color = block_type), alpha = 0) + 
+  #stat_summary(aes(x = fam_trial, y = log_rt), fun.data = "mean_cl_boot", position = position_dodge(width = .2)) +
+  scale_x_continuous(breaks = seq(0, 9)) + 
+  #geom_jitter(alpha = .3, position = position_dodge(width = .2)) + 
+  #geom_smooth(method = "lm") +
+  #geom_smooth(method = "lm")+
+  stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+  theme_classic()  + 
+  facet_wrap(~block_type)
+```
+
+
+
+
+# Single Data Model
+
+log(LT at test) ~ test event * familiarization length + block number + (1 | subject) + (1|item)
+
+```{r}
+
+model_d <- d %>% 
+  mutate(item = case_when(
+    block_type == "deviant" ~ deviant, 
+    block_type == "all_background" ~ background
+  )) %>% 
+  mutate(log_rt = log(rt))
+
+#lme4 error: boundary (singular) fit
+#m0 <- lmer(log_rt ~ block_type * fam_trial + block_id + (1|prolific_id) + (1|item), model_d)
+
+m1 <- lmer(log_rt ~ block_type * fam_trial + block_id + (1|prolific_id), model_d)
+```
+
+
+(2)log(LT at test after 9 fams) ~ test event + block number + (1 | subject) + (1|item)
+
+```{r}
+model2_d <- model_d %>% filter(fam_trial == 9)
+
+#lme4 error: boundary (singular) fit
+#m2_0 <- lmer(log_rt ~ block_type + block_id  + (1|prolific_id) + (1|item), model2_d)
+m2_1 <- lmer(log_rt ~ block_type + block_id  + (1|prolific_id), model2_d)
+```
+
+
+(3)log(LT on background test trials) ~ familiarization duration + block number + (1|subject) + (1|item)
+
+```{r}
+model3_d <- model_d %>% filter(block_type == "all_background") %>% mutate(fam_trial = as.factor(block_id))
+
+#lme4 error: boundary (singular) fit
+#m3_0 <- lmer(log_rt ~ fam_trial + block_id + (1|prolific_id) + (1|item), data = model3_d)
+
+m3_1 <- lmer(log_rt ~ fam_trial + block_id + (1|prolific_id), data = model3_d)
+```
+
+```{r}
+ lmer(log_rt ~ poly(fam_trial, 2) * block_type + block_id + (1|prolific_id), model_d)
+
+ lmer(log_rt ~ poly(fam_trial, 2) * block_type - block_type + block_id + (1|prolific_id), model_d)
+
+log(LT) ~ poly(familiarization duration, 2) * test event - test event + block number + (1|subject)
+```
+
+
+
+
+
+
