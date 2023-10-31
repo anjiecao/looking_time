@@ -3,8 +3,11 @@
 library(tidyverse)
 library(here)
 
-exclude_d <- read.csv(here("data/00_raw_data/postfeasibility_smallbatch.csv")) %>% filter(prolific_id != "") %>% distinct(prolific_id) %>% pull()
-d <- read.csv(here("data/00_raw_data/full_raw.csv")) %>% filter(prolific_id != "") %>% filter(!prolific_id %in% exclude_d)
+#exclude_d <- read.csv(here("data/00_raw_data/postfeasibility_smallbatch.csv")) %>% filter(prolific_id != "") %>% distinct(prolific_id) %>% pull()
+
+d <- read.csv(here("data/00_raw_data/full_raw_256.csv")) %>% filter(prolific_id != "") 
+
+#%>% filter(!prolific_id %in% exclude_d)
 ```
 
 # Participant-based exclusion
@@ -12,7 +15,7 @@ d <- read.csv(here("data/00_raw_data/full_raw.csv")) %>% filter(prolific_id != "
 (a) spent more than three absolute deviations above the median of the task completion time as reported by Prolific
 
 ```{r}
-prolific_d <- read_csv(here("data/00_raw_data/prolific_info.csv"))
+prolific_d <- read_csv(here("data/00_raw_data/prolific_256.csv"))
 
 summary <- prolific_d %>% select(`Participant id`, `Time taken`) %>% 
   filter(!is.na(`Time taken`)) %>% 
@@ -104,7 +107,9 @@ trimmed_d <- trimmed_d %>%
   filter(!trial_type %in% c("preload", "fullscreen", "instructions")) %>% 
   filter(background != "") %>% 
   filter(!is.na(rt)) %>% 
-  filter(rt <  rt_d_summary$ub)
+  group_by(prolific_id) %>%
+  mutate(block_id = row_number(prolific_id)) %>% 
+  filter(rt <  rt_d_summary$ub, block_id < 7)
 ```
 
 
@@ -116,9 +121,9 @@ tidy_d <- trimmed_d %>%
   filter(!trial_type %in% c("preload", "fullscreen", "instructions")) %>% 
   filter(background != "") %>% 
   filter(!is.na(rt)) %>% 
-  select(prolific_id, rt, block_type, fam_trial, background, deviant) 
+  select(prolific_id, rt, block_type, fam_trial, background, deviant, block_id) 
 
-write_csv(tidy_d, here("data/01_clean_data/tidy_d.csv"))
+write_csv(tidy_d, here("data/01_clean_data/tidy_d_256.csv"))
 ```
 
 
