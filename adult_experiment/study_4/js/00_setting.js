@@ -9,6 +9,7 @@ console.log(fam_trial_info)
 console.log(all_blocks)
 
 demog  = get_demog_questions()
+console.log(demog)
 
 instruction = get_instruction()
 

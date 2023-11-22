@@ -47,8 +47,18 @@ function get_demog_questions(){
         ]
     }
   
+    lagginess_q =  "Last question: We are interested in your experinece with our experiment. Did you experience any loading issues with our stimuli?"
+    lagginess_a = ["Many animals did not load",  "Some animals loaded more slowly than others", "No apparent issues"]
+    
+    var lagginess_survey = {
+       type: jsPsychSurveyMultiChoice,
+       button_label: "Done",
+       questions: [
+           {prompt: lagginess_q, name: "experience", options:lagginess_a, required: true}
+       ]
+   }
 
-    demog_questions = [pre_demog_instruction, demog_question_age, demog_question_ethnicity, demog_gender, demog_education]
+    demog_questions = [pre_demog_instruction, demog_question_age, demog_question_ethnicity, demog_gender, demog_education, lagginess_survey]
   
     return demog_questions 
   }

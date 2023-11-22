@@ -1,8 +1,14 @@
 
+
+
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
+
+
+adult_experiment/study_4/auth.json
+adult_experiment/study_4/get_data.ipynb
 
 *.mp4
 babies/baby_analysis/processed_data/model_data/*
