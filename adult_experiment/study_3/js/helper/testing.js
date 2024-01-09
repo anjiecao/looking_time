@@ -1,48 +1,67 @@
-function check_no_duplciate(ALL_FAM_NOVEL_PAIRS){
 
-    flat_pairs = ALL_FAM_NOVEL_PAIRS.flat()
-    if(hasDuplicates(flat_pairs)){
-        console.log("has duplicated pairs!")
-    }else{
-        console.log("no duplicated pairs!")
-    }
-}
+function check_violation_type(all_blocks_info){
 
-function check_all_blocks(all_blocks){
+    background_counter = 0
+    deviant_counter = 0
+    // check there are eight blocks 
+    all_blocks_info.forEach((block) => {
 
-    all_stimuli_in_blocks = []
-    for (var b = 0; b < all_blocks.length; b++){
-        current_block = all_blocks[b]
-        paired_trial = current_block[3] // sorry about the magic number that's how it is packaged
-        
-        all_stimuli_in_blocks.push(paired_trial.data.left_stimulus_raw)
-        all_stimuli_in_blocks.push(paired_trial.data.right_stimulus_raw)
-    }
-
-    if(hasDuplicates(all_stimuli_in_blocks)){
-        console.log("has duplicated pairs in blocks!")
-    }else{
-        console.log("no duplicated pairs in blocks!")
-    }
     
-}
 
-function check_block_pref_rating_stimui(all_blocks, all_ratings){
+        if (block.block_type == "deviant_block"){
+            deviant_counter = deviant_counter + 1
 
-    all_pref_rating_pairs = all_ratings.map(x => [x.data.left_stimulus_raw, x.data.right_stimulus_raw]).flat()
-    all_stimuli_in_blocks = []
-    for (var b = 0; b < all_blocks.length; b++){
-        current_block = all_blocks[b]
-        paired_trial = current_block[3] // sorry about the magic number that's how it is packaged
+            //get all the information
+            block_background_animacy = block.background_stimulus.includes("inanimate") ? "inanimate" : "animate"
+            block_background_id = block.background_stimulus.match(/\d+/g)[0];
+            block_background_pose = block.background_stimulus.includes("left") ? "left" : "right"
+
+            block_deviant_animacy = block.deviant_stimulus.includes("inanimate") ? "inanimate" : "animate"
+            block_deviant_id =  block.deviant_stimulus.match(/\d+/g)[0]
+            block_deviant_pose = block.deviant_stimulus.includes("left") ? "left" : "right"
+
+            
+            // check violation type 
+            if (block.violation_type == "identity"){
+                // if identity, the difference should only be the number
+                console.log(
+                    "pass identity check:", 
+                    (block_background_animacy == block_deviant_animacy) & (block_background_pose == block_deviant_pose) & (block_background_id != block_deviant_id)
+                )
+               
+            }else if(block.violation_type == "animacy"){
+                console.log(
+                    "pass animacy check:", 
+                    (block_background_animacy != block_deviant_animacy) & (block_background_pose == block_deviant_pose)
+                )
+
+            }else if(block.violation_type == "pose"){
+                console.log(
+                    "pass pose check:", 
+                    (block_background_animacy == block_deviant_animacy)  & (block_background_pose != block_deviant_pose) & (block_background_id == block_deviant_id)
+                )
+
+            }else if(block.violation_type == "number"){
+                console.log(
+                    "pass number check:", 
+                    (block_background_animacy == block_deviant_animacy)  & (block_background_pose == block_deviant_pose) & (block_background_id == block_deviant_id)
+                )
+            }
+
+
+
+        }else{
+            background_counter = background_counter + 1
+        }
+
+      
+
+      
         
-        all_stimuli_in_blocks.push(paired_trial.data.left_stimulus_raw)
-        all_stimuli_in_blocks.push(paired_trial.data.right_stimulus_raw)
-    }
+    });
 
-    if(all_pref_rating_pairs.sort().join(',')=== all_stimuli_in_blocks.sort().join(',')){
-        console.log("pref rating and block has the same members")
-    }else  console.log("pref rating and block DOES NOT have the same members")
-
+    console.log("8 background blocks:", background_counter == 8)
+    console.log("8 deviant blocks:", deviant_counter == 8 )
 
 
 }

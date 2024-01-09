@@ -18,8 +18,18 @@ library(ggthemes)
 library(here)
 library(lme4)
 
-d <- read_csv(here("data/01_trimmed_data/trimmed_lt_d.csv"))
+#d <- read_csv(here("data/01_trimmed_data/trimmed_lt_d.csv"))
+d <- read_csv(here("data/01_trimmed_data/corrected_lt_d.csv"))
 
+```
+
+```{r}
+d %>% 
+  filter(block_type == "deviant_block", trial_type == "deviant") %>% 
+  ggplot(aes(x = val, y = total_rt)) + 
+  geom_point() + 
+  facet_wrap(~trial_number) + 
+  geom_smooth(method = "lm")
 ```
 
 
@@ -453,9 +463,27 @@ d %>%
 ```
 
 # super bad precision analysis
+```{r}
+d %>% 
+  filter(violation_type != "error!") %>% 
+  mutate(violation_type_with_background = case_when(
+    trial_type == "background" ~ "background", 
+    TRUE ~ violation_type
+  )) %>% 
+  filter(trial_type != "background") |>
+   ggplot(aes(x = violation_type, y = total_rt, color = violation_type_with_background)) + 
+   stat_summary(fun.data = "mean_cl_boot", position = position_dodge(width = .2)) + 
+    stat_summary(fun.data = "mean_cl_boot", geom = "line", position = position_dodge(width = .2)) + 
+  theme_few() +
+  scale_color_discrete(guide = "none") + 
+  scale_y_log10() + 
+  labs(title = "original")
+```
+
 
 ```{r}
 p1 <- d %>% 
+   filter(violation_type != "error!") %>% 
   mutate(violation_type_with_background = case_when(
     trial_type == "background" ~ "background", 
     TRUE ~ violation_type
@@ -479,6 +507,7 @@ p2 <- bind_rows(d,
           d |> mutate(subject = str_c(subject, "-8")), 
           d |> mutate(subject = str_c(subject, "-9")), 
           d |> mutate(subject = str_c(subject, "-10"))) %>% 
+   filter(violation_type != "error!") %>% 
   mutate(violation_type_with_background = case_when(
     trial_type == "background" ~ "background", 
     TRUE ~ violation_type

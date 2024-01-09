@@ -22,6 +22,12 @@ d <- read_csv(MERGED_DATA_PATH)
 ```
 
 ```{r}
+library(stringr)
+
+```
+
+
+```{r}
 # looking time
 lt_d <- d %>% 
   filter(trial_type == "curtain-display") %>% 
@@ -60,6 +66,40 @@ lt_d <- d %>%
     )
   
     )
+
+lt_d <- lt_d %>% 
+  mutate(
+    background_id = str_extract_all(background_stimulus, "\\d+")[[1]], 
+    background_animacy = ifelse(grepl("inanimate", background_stimulus), "inanimate", "animate"), 
+    background_pose = ifelse(grepl("left", background_stimulus), "left", "right"), 
+    background_number = ifelse(grepl("pair", background_type), "pair", "single"), 
+    deviant_id = ifelse(grepl("null", deviant_stimulus), "NA", 
+                        str_extract_all(deviant_stimulus, "\\d+")[[1]]), 
+    deviant_animacy = ifelse(grepl("inanimate", deviant_stimulus), "inanimate", "animate"), 
+    deviant_pose = ifelse(grepl("left", deviant_stimulus), "left", "right"), 
+    deviant_number = ifelse(grepl("pair", deviant_type), "pair", "single"), 
+  ) %>% 
+  mutate(
+    same_animacy = (background_animacy == deviant_animacy), 
+    same_number = (background_number == deviant_number), 
+    same_pose = (background_pose == deviant_pose),
+    same_id = (background_id == deviant_id)
+  ) %>% 
+  mutate(
+    violation_type = case_when(
+      # animacy violation
+      same_animacy == FALSE & same_number == TRUE & same_pose == TRUE & same_id == FALSE ~ "animacy", 
+      # pose violation 
+      same_animacy == TRUE & same_number == TRUE & same_pose == FALSE & same_id == TRUE ~ "pose", 
+      # identity violation 
+      same_animacy == TRUE & same_number == TRUE & same_pose == TRUE & same_id == FALSE ~ "identity", 
+      # number violation
+      same_animacy == TRUE & same_number == FALSE & same_pose == TRUE & same_id == TRUE ~ "number", 
+      block_type == "background_block" ~ "background", 
+      TRUE ~ "error!"
+    )
+  ) %>% 
+  filter(violation_type != "error")
   
   
 # curiosity rating 
@@ -196,6 +236,7 @@ all excluded subject
 participants_exclusion <- bind_rows(df_low_var, df_prolific)
 write_csv(participants_exclusion, here("data/p_level_exclusion.csv"))
 
+participants_exclusion <- read_csv(here("data/p_level_exclusion.csv"))
 
 exclude_participant <- unique(c(
                                p_sbj, 
@@ -207,7 +248,7 @@ exclude_participant <- unique(c(
 ```{r}
 
 trimmed_lt_d <- lt_d %>% 
-  filter(!(subject %in% exclude_participant))
+  filter(!(subject %in% participants_exclusion$sbj))
 
 trimmed_curiosity_rating_df <- curiosity_rating_df %>% 
   filter(!(subject %in% exclude_participant))
@@ -281,6 +322,16 @@ write_csv(final_trimmed_lt_d, here("data/01_trimmed_data/trimmed_lt_d.csv"))
 write_csv(trimmed_curiosity_rating_df, here("data/01_trimmed_data/trimmed_curiosity_rating.csv"))
 
 ```
+
+
+
+# try some data exploration on the datasets
+
+```{r}
+write_csv(final_trimmed_lt_d, here("data/01_trimmed_data/corrected_lt_d.csv"))
+```
+
+
 
 
 

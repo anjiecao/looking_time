@@ -38,12 +38,39 @@ function get_all_stimuli(){
 // 4 inaimate - 2 left 2 right 
 // return an object of eight feature
 function get_background_stimuli(all_stimuli){
+
     animate_left = getRandomSubarray(all_stimuli.filter(stimulus => !stimulus.includes("inanimate") & stimulus.includes("left")), 4)
-    animate_right = getRandomSubarray(all_stimuli.filter(stimulus => !stimulus.includes("inanimate") & stimulus.includes("right")), 4)
+    idArray = animate_left.map(item => {
+        let match = item.match(/\d+/g);
+        return match ? match[0] : null;
+    })
+    excluding_stimuli = all_stimuli.filter(item => {
+        return idArray.some(substring => item.includes(substring)) & !item.includes("inanimate");
+    });    
+    remaining_stimuli = all_stimuli.filter(item => !excluding_stimuli.includes(item))
+
+    animate_right = getRandomSubarray(remaining_stimuli.filter(stimulus => !stimulus.includes("inanimate") & stimulus.includes("right")), 4)
+    idArray = animate_right.map(item => {
+        let match = item.match(/\d+/g);
+        return match ? match[0] : null;
+    })
+    excluding_stimuli = remaining_stimuli.filter(item => {
+        return idArray.some(substring => item.includes(substring)) & !item.includes("inanimate");
+    });    
+    remaining_stimuli = remaining_stimuli.filter(item => !excluding_stimuli.includes(item))
+
     inanimate_left = getRandomSubarray(all_stimuli.filter(stimulus => stimulus.includes("inanimate") & stimulus.includes("left")), 4)
-    inanimate_right = getRandomSubarray(all_stimuli.filter(stimulus => stimulus.includes("inanimate") & stimulus.includes("right")), 4)
+    idArray = inanimate_left.map(item => {
+        let match = item.match(/\d+/g);
+        return match ? match[0] : null;
+    })
+    excluding_stimuli = remaining_stimuli.filter(item => {
+        return idArray.some(substring => item.includes(substring)) & !item.includes("inanimate");
+    });    
+    remaining_stimuli = remaining_stimuli.filter(item => !excluding_stimuli.includes(item))
 
 
+    inanimate_right = getRandomSubarray(remaining_stimuli.filter(stimulus => stimulus.includes("inanimate") & stimulus.includes("right")), 4)
 
 
     background_collection = {
@@ -77,6 +104,7 @@ function remove_used_stimuli(all_stimuli, background_collection){
         !background_collection.inanimate_pair_right.includes(stimulus)
     
     ))
+    
     return(remaining_stimuli)
 }
 
@@ -151,22 +179,63 @@ function generate_all_block_info(background_collection, remaining_pool){
     // get all deviant blocks
     for (const background_type in background_collection){
         deviant_object = get_deviant_object(background_type)
+        //console.log("printing background type, deviant object")
+        //console.log(background_type, deviant_object)
+
+
         // [animacy, number, pose]
 
         deviant_type_array = deviant_object.deviant_type.split("_")
-        if(deviant_type_array[0] == "inanimate"){
-            deviant = getRandomSubarray(remaining_pool.filter(stimulus => stimulus.includes("inanimate") & stimulus.includes(deviant_type_array[2])), 1)[0]
-        }else{
-            deviant = getRandomSubarray(remaining_pool.filter(stimulus => !stimulus.includes("inanimate") & stimulus.includes(deviant_type_array[2])), 1)[0]
+      
+        // here we impose the first item of the background would be used as the one in deviant block
+        background_for_deviant = background_collection[background_type][0]
+        var numberPattern = /\d+/g;
+        var background_id = background_for_deviant.match(numberPattern)[0];
+
+        deviant_animacy = deviant_type_array[0]
+        deviant_number = deviant_type_array[1]
+        deviant_pose = deviant_type_array[2]
+
+        if(deviant_object.violation_type == "animacy"){
+            // if the violation is animacy violation, takes: different animacy, same orientation stimulus  
+            if(deviant_animacy == "inanimate"){
+                deviant = getRandomSubarray(remaining_pool.filter(stimulus => stimulus.includes("inanimate") & stimulus.includes(deviant_pose)), 1)[0]
+            }else{
+                deviant = getRandomSubarray(remaining_pool.filter(stimulus => !stimulus.includes("inanimate") & stimulus.includes(deviant_pose)), 1)[0]
+            }
+
+        }else if(deviant_object.violation_type == "pose"){
+           // if the violation is pose: same animacy, same id, different orientation 
+  
+           if(deviant_pose == "left"){
+                deviant = background_for_deviant.replace("right", "left")
+            }else{
+                deviant = background_for_deviant.replace("left", "right")
+            }
+
+        }else if(deviant_object.violation_type == "number"){
+            // if the violation is number: same animacy, same id, same orientation 
+            deviant = background_for_deviant
+
+        }else if(deviant_object.violation_type == "identity"){
+            // if the violation is identity, same animacy, same orientation, different id
+            if(deviant_animacy == "inanimate"){
+                deviant = getRandomSubarray(remaining_pool.filter(stimulus => stimulus.includes("inanimate") & !stimulus.includes(background_id) & stimulus.includes(deviant_pose)), 1)[0]
+            }else{
+                deviant = getRandomSubarray(remaining_pool.filter(stimulus => !stimulus.includes("inanimate") & !stimulus.includes(background_id) & stimulus.includes(deviant_pose)), 1)[0]
+            }
+
         }
 
         remaining_pool = remaining_pool.filter(stimulus => !(deviant == stimulus))
+
+
         trials = [2, 4, 6]
         trial_number = trials[Math.floor(Math.random() * 3)]
 
         deviant_block_info = {
             block_type: "deviant_block", 
-            background_stimulus: background_collection[background_type][0], // there are two in each, in random order, just use the first one
+            background_stimulus: background_for_deviant, 
             deviant_stimulus: deviant,
             background_type: background_type, 
             deviant_type: deviant_object.deviant_type, 
