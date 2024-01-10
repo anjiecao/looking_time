@@ -18,8 +18,8 @@ library(ggthemes)
 library(here)
 library(lme4)
 
-#d <- read_csv(here("data/01_trimmed_data/trimmed_lt_d.csv"))
-d <- read_csv(here("data/01_trimmed_data/corrected_lt_d.csv"))
+d <- read_csv(here("data/01_trimmed_data/trimmed_lt_d.csv"))
+#d <- read_csv(here("data/01_trimmed_data/corrected_lt_d.csv"))
 
 ```
 

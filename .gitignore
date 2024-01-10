@@ -6,9 +6,17 @@
 .RData
 .Ruserdata
 
-
+adult_experiment/study_4/get_data.py
 adult_experiment/study_4/auth.json
 adult_experiment/study_4/get_data.ipynb
+adult_experiment/study_4/00_raw_data/*
+
+
+adult_experiment/study_3b/get_data.ipynb
+adult_experiment/study_3b/get_data.py
+adult_experiment/study_3b/auth.json
+
+
 
 *.mp4
 babies/baby_analysis/processed_data/model_data/*

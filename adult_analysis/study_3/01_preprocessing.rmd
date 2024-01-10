@@ -8,42 +8,46 @@ output: html_document
 library(tidyverse)
 library(here)
 library(jsonlite)
+library(stringr)
+
 
 source(here("helper/tidy_rt_task_data.r"))
 
+d <- read.csv(here("data/lol.csv")) %>% filter(prolific_id != "") %>% 
+  distinct(prolific_id, trial_index, .keep_all = TRUE)
+
+# get rid of the incompplete files 
+
+incomplete_prolific_id <- d %>% 
+  group_by(prolific_id) %>% 
+  count() %>% 
+  filter(n < 100) %>% 
+  pull(prolific_id)
+
+d <- d %>% filter(!prolific_id %in% incomplete_prolific_id)
+
 ```
 
-# set up paths 
-```{r}
 
-MERGED_DATA_PATH <- here("data/merged_data.csv")
-d <- read_csv(MERGED_DATA_PATH)
-
-```
-
-```{r}
-library(stringr)
-
-```
-
+# extract looking time data 
 
 ```{r}
 # looking time
 lt_d <- d %>% 
   filter(trial_type == "curtain-display") %>% 
-  filter(!is.na(background_type)) %>% 
-  select(subject, trial_type, total_rt, block_type, 
+  filter(!is.na(background_type) & background_type != "") %>% 
+  select(prolific_id, trial_type, total_rt, block_type, 
          background_stimulus, deviant_stimulus, background_type, deviant_type, violation_type, 
          trial_number) %>% 
   select(-trial_type) %>% 
   rename(total_trial_number = trial_number) %>% 
-  group_by(subject, background_stimulus, deviant_stimulus) %>% 
+  group_by(prolific_id, background_stimulus, deviant_stimulus) %>% 
   mutate(trial_number = row_number()) %>% 
   left_join(
-    d %>% filter(trial_type == "curtain-display") %>% 
-  filter(!is.na(background_type)) %>% distinct(subject, background_stimulus, deviant_stimulus) %>% 
-    group_by(subject) %>% mutate(block_number = row_number()), 
-  by = c("subject", "background_stimulus", "deviant_stimulus")
+    d %>% filter(trial_type == "curtain-display") %>%
+  filter(!is.na(background_type) & background_type != "") %>% distinct(prolific_id, background_stimulus, deviant_stimulus) %>% 
+    group_by(prolific_id) %>% mutate(block_number = row_number()), 
+  by = c("prolific_id", "background_stimulus", "deviant_stimulus")
   ) %>% 
   mutate(
     animacy = case_when(
@@ -65,7 +69,8 @@ lt_d <- d %>%
       TRUE ~ "background"
     )
   
-    )
+    ) %>% 
+  filter(!is.na(total_trial_number))
 
 lt_d <- lt_d %>% 
   mutate(
@@ -88,7 +93,7 @@ lt_d <- lt_d %>%
   mutate(
     violation_type = case_when(
       # animacy violation
-      same_animacy == FALSE & same_number == TRUE & same_pose == TRUE & same_id == FALSE ~ "animacy", 
+      same_animacy == FALSE & same_number == TRUE & same_pose == TRUE  ~ "animacy", 
       # pose violation 
       same_animacy == TRUE & same_number == TRUE & same_pose == FALSE & same_id == TRUE ~ "pose", 
       # identity violation 
@@ -98,21 +103,27 @@ lt_d <- lt_d %>%
       block_type == "background_block" ~ "background", 
       TRUE ~ "error!"
     )
-  ) %>% 
-  filter(violation_type != "error")
+  )
   
   
+
+```
+
+# extract curiosity rating data
+
+```{r}
 # curiosity rating 
 curiosity_rating_df <- d %>% 
   filter(trial_type == "survey-likert") %>% 
-  filter(!is.na(rating_type)) %>% 
-  select(subject, rating_type, response) %>% 
+  filter(rating_type != "") %>% 
+  select(prolific_id, rating_type, response) %>% 
+  mutate(response = gsub("'", "\"", response)) %>% 
   mutate(curiosity_rating = map(response, ~ fromJSON(.) %>% as.data.frame()) %>% unlist()) %>% 
   select(-response) %>% 
-  group_by(subject) %>% 
+  group_by(prolific_id) %>% 
   mutate(block_number = row_number()) %>% 
-  left_join(lt_d %>% ungroup() %>%  distinct(subject, background_type, deviant_type, block_number) %>% 
-              select(subject, background_type, deviant_type, block_number), by = c("subject", "block_number")) %>% 
+  left_join(lt_d %>% ungroup() %>%  distinct(prolific_id, background_type, deviant_type, block_number) %>% 
+              select(prolific_id, background_type, deviant_type, block_number), by = c("prolific_id", "block_number")) %>% 
   mutate(rating_stimus_type = case_when(
     rating_type == "background" ~ background_type, 
     rating_type == "deviant" ~ deviant_type
@@ -132,11 +143,55 @@ curiosity_rating_df <- d %>%
     TRUE ~ "right"
   )
     ) %>% 
-  select(subject, rating_type, curiosity_rating, block_number, rating_stimus_type, animacy, number, pose)
+  select(prolific_id, rating_type, curiosity_rating, block_number, rating_stimus_type, animacy, number, pose)
 
 
 
 ```
+
+
+# extract complexity & similarity rating data 
+
+```{r}
+c_s_ratings <- d %>% 
+  filter(trial_type == "survey-likert") %>% 
+  filter(rating_type == "") %>% 
+  select(prolific_id, violation_type, similarity_rating_background, similarity_rating_deviant, similarity_rating_violation, complexity_rating_type, complexity_rating_stimulus, response) %>% 
+  mutate(rating_type = 
+           case_when(
+    complexity_rating_type == "" ~ "similarity_rating", 
+    similarity_rating_violation == "" ~ "complexity_rating"
+  )) %>% 
+   mutate(response = gsub("'", "\"", response)) %>% 
+  mutate(rating = map(response, ~ fromJSON(.) %>% as.data.frame()) %>% unlist()) %>% 
+  select(-response) 
+
+  
+```
+
+
+# sneak peak of the raw looking time data 
+
+```{r}
+lt_d %>% 
+  ggplot(aes(x = trial_number, y = total_rt, color = trial_type)) + 
+  stat_summary(fun.data = "mean_cl_boot")+
+  facet_wrap(~total_trial_number)
+
+lt_d %>% 
+  filter(trial_type == "deviant") %>% 
+  ggplot(aes(x = violation_type, y = total_rt)) + 
+  stat_summary(fun.data = "mean_cl_boot")
+  
+
+
+```
+
+```{r}
+lt_d %>% write_csv(here("data/pilot_look.csv"))
+```
+
+
 
 
 
@@ -148,11 +203,12 @@ We exclude participants if either
 (a) the standard deviation of log-transformed of their reaction times on all trials is less than 0.15 
 ```{r}
 low_var_in_sbj <- lt_d %>% 
-  group_by(subject) %>% 
+  ungroup() %>% 
+  group_by(prolific_id) %>% 
   summarise(mean_rt = mean(total_rt), 
             sd = sd(total_rt)) %>% 
   filter(sd < 0.15) %>% 
-  pull(subject)
+  pull(prolific_id)
 
 low_var_in_sbj
 
@@ -161,40 +217,6 @@ df_low_var <- tibble("exclude_reason" = rep("low_var", length(low_var_in_sbj)),
 ```
 
 (b) spent more than three absolute deviations away from the medians of the task completion time as reported by Prolific.
-
-```{r}
-# gather all of the prolific data
-
-MIN_ROW <- 90  #subject to change 
-
-merge_and_deidentify_data <- function(raw_data_directory, 
-                                      min_row){
-  
-  raw_files <- str_c(raw_data_directory, dir(here(raw_data_directory), "*.csv"))
-  
-  # count how many rows in each file 
-  RAW_count <- map_df(raw_files, function(file) {
-    d <- read_csv(file) %>% 
-      count() %>% 
-      mutate(
-        file_name = file 
-      )
-  })   
-  
-  
-  RAW_DATA <- map_df((RAW_count %>% filter(n > min_row))$file_name,
-                     function(file){
-                       d <- read_csv(file)
-                     }) 
-  
-  
-  return (RAW_DATA)
-  
-}
-
-raw_d <- merge_and_deidentify_data(here("data/00_raw_data/"), MIN_ROW)
-
-```
 
 
 ```{r}
@@ -214,33 +236,48 @@ p_id <- p_df %>%
   select(participant_id) %>% 
   pull()
 
-p_sbj <- raw_d %>% 
-  distinct(subject, prolific_id) %>% 
-  filter(prolific_id %in% p_id) %>% 
-  pull(subject)
-  
-p_sbj
 
-df_prolific <- tibble("exclude_reason" = rep("prolific", length(p_sbj)), 
-                     sbj = p_sbj)
+df_prolific <- tibble("exclude_reason" = rep("prolific", length(p_id)), 
+                     sbj = p_id)
+```
+
+(c) provided the same response to 80% the complexity rating task 
+
+```{r}
+same_ratings <- c_s_ratings %>% 
+  filter(rating_type == "complexity_rating") %>% 
+  group_by(prolific_id) %>% 
+  count() %>% 
+  rename(total_n = n) %>% 
+  left_join(
+    
+    c_s_ratings %>% 
+  filter(rating_type == "complexity_rating") %>% 
+  group_by(prolific_id, rating) %>% 
+  count(), by = c("prolific_id") ) %>% 
+  filter(
+    n / total_n > .8
+  )
+
+
+df_same_ratings <- tibble("exclude_reason" = rep("same_rating", length(same_ratings$prolific_id)), 
+                     sbj = same_ratings$prolific_id)
+
 ```
 
 
 
 
 
-
 all excluded subject 
+
 ```{r}
 
-participants_exclusion <- bind_rows(df_low_var, df_prolific)
+participants_exclusion <- bind_rows(df_low_var, df_prolific, df_same_ratings)
 write_csv(participants_exclusion, here("data/p_level_exclusion.csv"))
 
 participants_exclusion <- read_csv(here("data/p_level_exclusion.csv"))
 
-exclude_participant <- unique(c(
-                               p_sbj, 
-                               low_var_in_sbj))
 
 ```
 
@@ -248,10 +285,13 @@ exclude_participant <- unique(c(
 ```{r}
 
 trimmed_lt_d <- lt_d %>% 
-  filter(!(subject %in% participants_exclusion$sbj))
+  filter(!(prolific_id %in% participants_exclusion$sbj))
 
 trimmed_curiosity_rating_df <- curiosity_rating_df %>% 
-  filter(!(subject %in% exclude_participant))
+  filter(!(prolific_id %in% participants_exclusion$sbj))
+
+trimmed_c_s_rating_df <- c_s_ratings %>% 
+  filter(!(prolific_id %in% participants_exclusion$sbj))
 
 
 ```
@@ -290,7 +330,7 @@ final_trimmed_lt_d <- final_trimmed_lt_d %>%
 
 
 get_distance <- function(stim_a_name, stim_b_name,  dist){
-  if (stim_a_name  == "null" | stim_b_name  == "null"){
+  if (stim_a_name  == "" | stim_b_name  == ""){
     return (tibble("val" = NA_real_))
   }else{
     return( 
@@ -320,15 +360,8 @@ final_trimmed_lt_d <- final_trimmed_lt_d %>%
 ```{r}
 write_csv(final_trimmed_lt_d, here("data/01_trimmed_data/trimmed_lt_d.csv"))
 write_csv(trimmed_curiosity_rating_df, here("data/01_trimmed_data/trimmed_curiosity_rating.csv"))
+write_csv(trimmed_c_s_rating_df, here("data/01_trimmed_data/trimmed_cs_rating.csv"))
 
-```
-
-
-
-# try some data exploration on the datasets
-
-```{r}
-write_csv(final_trimmed_lt_d, here("data/01_trimmed_data/corrected_lt_d.csv"))
 ```
 
 
