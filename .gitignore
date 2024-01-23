@@ -15,7 +15,9 @@ adult_experiment/study_4/00_raw_data/*
 adult_experiment/study_3b/get_data.ipynb
 adult_experiment/study_3b/get_data.py
 adult_experiment/study_3b/auth.json
-
+adult_experiment/study_3c/get_data.ipynb
+adult_experiment/study_3c/get_data.py
+adult_experiment/study_3c/auth.json
 
 
 *.mp4
@@ -29,8 +31,14 @@ adult_analysis/study_1/prepping_followup/*.csv
 adult_analysis/study_3/data/00_raw_data/*
 adult_analysis/study_4/get_data.ipynb
 adult_analysis/study_4/get_data.py
+adult_analysis/study_3c/data/raw.csv
+adult_analysis/study_3/data/raw.csv
+
+
+
 adult_experiment/study_4/auth.json 
 adult_experiment/study_4/media/*
+adult_experiment/study_ec/media/*
 
 
 adult_analysis/study_1_followup/data/00_raw_data/*

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://unpkg.com/jspsych@7.2.3"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+
+    <script src="https://unpkg.com/@jspsych/plugin-preload@1.1.1"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-html-button-response@1.1.1"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-fullscreen@1.1.1"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response@1.1.1"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-instructions@1.1.1"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-survey-likert@1.1.1"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-survey-text@1.1.1"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-survey-multi-select@1.1.1"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-survey-multi-choice@1.1.1"></script>
+
+  
+    <script src="js/plugins/curtainDisplay.js"></script>
+   
+    <script src="js/helper/array.js"></script>
+    <script src="js/helper/testing.js"></script>
+    <script src="js/helper/get_instruction.js"></script>
+    <script src="js/helper/get_stimuli.js"></script>
+    <script src="js/helper/get_blocks.js"></script>
+    <script src="js/helper/get_ratings.js"></script>
+    <script src= "js/helper/get_demog.js"></script>
+    <script src= "js/helper/testing.js"></script>
+
+    
+    <script src="js/00_setting.js"></script>
+    <script src="js/01_instruction.js"></script>
+    
+    <script src="js/03_main.js"></script>
+    <script src="js/04_rating.js"></script>
+    <script src="js/05_demog.js"></script>
+    <script src="js/setup.js"></script>
+   <script src="https://cdn.socket.io/4.6.0/socket.io.min.js" integrity="sha384-c79GN5VsunZvi+Q/WObgk2in0CbZsHnjEqvFxC5DxHn9lTfNce2WW6h2pH6u/kF+" crossorigin="anonymous"></script>	
+
+    <script type = "text/javascript">
+		
+	socket = io.connect()
+	console.log(socket)
+	socket.on('onConnected', (d)=>{console.log("received")})
+	console.log("onConnected ran?")
+    window.onload = function(){
+      setupGame()
+    }    
+    </script>
+   
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/jspsych@7.2.3/css/jspsych.css"
+    />
+    <style>
+      .outsideWrapper{ 
+      width:800px; height:600px; 
+      border:1px solid black;}
+  .insideWrapper{ 
+      width:100%; height:100%; 
+      position:relative;}
+  .coveredImage{ 
+      width:100%; height:100%; 
+      position:absolute; top:0px; left:0px;
+  }
+  .coveringCanvas{ 
+      width:100%; height:100%; 
+      position:absolute; top:0px; left:0px;
+      
+  }
+  .row {
+    display: flex;
+  }
+  
+  .column {
+    flex: 5%;
+    padding: 5px;
+  }
+  
+  
+  img.test {
+    animation: shake 2s;
+    animation-iteration-count: infinite;
+  }
+  
+  
+  @keyframes shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-1px, -2px) rotate(-2deg);}
+    20% { transform: translate(-3px, 0px) rotate(2deg); }
+    30% { transform: translate(3px, 2px) rotate(0deg); }
+    40% { transform: translate(1px, -1px) rotate(2deg); }
+    50% { transform: translate(-1px, 2px) rotate(-2deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(3px, 1px) rotate(-2deg); }
+    80% { transform: translate(-1px, -1px) rotate(2deg); }
+    90% { transform: translate(1px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -1px) rotate(-2deg); }
+  }
+  
+  
+  
+  @keyframes shake {
+    0% { transform: translate(2px, 2px) rotate(0deg);  width: 75px; height: 75px} 
+    10% { transform: translate(-2px, -4px) rotate(-4deg);  width: 80px; height: 80px};
+    20% { transform: translate(-6px, 0px) rotate(4deg); width: 85px; height: 85px}
+    30% { transform: translate(6px, 4px) rotate(0deg); width: 90px; height: 90px}
+    40% { transform: translate(2px, -2px) rotate(4deg);width: 95px; height:95px }
+    50% { transform: translate(-2px, 4px) rotate(-4deg); width: 100px; height: 100px }
+    60% { transform: translate(2px, -2px) rotate(4deg);width: 95px; height: 95px}
+    70% { transform: translate(6px, 4px) rotate(0deg); width: 90px; height: 90px}
+    80% { transform: translate(-6px, 0px) rotate(4deg);  width: 85px; height:85px}
+    90% { transform: translate(-2px, -4px) rotate(-4deg);  width: 80px; height: 80px}
+    100% { transform: translate(2px, 2px) rotate(0deg); width: 75px; height:75px}
+  }
+  
+  
+  
+    </style>
+  </head>
+  <body>
+
+
+  </body>
+  <script>
+
+
+  </script>
+</html>

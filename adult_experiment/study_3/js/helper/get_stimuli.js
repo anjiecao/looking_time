@@ -86,7 +86,6 @@ function get_background_stimuli(all_stimuli){
     }
 
     
-    
     return background_collection
 
 }
