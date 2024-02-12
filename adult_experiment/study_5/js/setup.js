@@ -1,6 +1,6 @@
 
 var dbname = "pokebaby"
-var colname = "study_5"
+var colname = "study_6"
 //var itname = "pkbb_4"
 
 

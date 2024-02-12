@@ -10,8 +10,7 @@ function reorder_all_blocks(all_blocks_info){
     exposure_duration_b_blocks = all_blocks_info.filter(item => item.exposure_duration == 2 || item.exposure_duration == 3)
     exposure_duration_c_blocks = all_blocks_info.filter(item => item.exposure_duration == 4 || item.exposure_duration == 6)
     exposure_duration_d_blocks = all_blocks_info.filter(item => item.exposure_duration == 8 || item.exposure_duration == 9)
-    console.log(all_blocks_info)
-    console.log(exposure_duration_a_blocks)
+    
 
     // 4 groups in total, each group has 2 background, 1 identity, 1 animacy, 1 number, 1 pose
     
@@ -77,7 +76,7 @@ function generate_block(block_info, block_id){
         // add filler task 
         var filler_trial = {
             type: jsPsychSurveyMultiChoice,
-            preamble:  generate_html_string_for_filler_task(memory_test_stimulus),
+            preamble:  generate_html_string_for_filler_task( block_info.memory_test_stimulus),
             questions: [
               {prompt:
                       'Have you seen this before?', 
@@ -94,7 +93,6 @@ function generate_block(block_info, block_id){
           
 
   
-    console.log("ahhh",block)
     return (block)
 
 
