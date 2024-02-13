@@ -79,7 +79,7 @@ function generate_block(block_info, block_id){
             preamble:  generate_html_string_for_filler_task( block_info.memory_test_stimulus),
             questions: [
               {prompt:
-                      'Have you seen this before?', 
+                      'Did this animal appear in the preceding trials?', 
                options: ["Yes", "No"], 
                required: true, 
                horizontal: true},
@@ -107,7 +107,7 @@ function generate_html_string_for_stimulus(stimulus_string){
     var top_position = getRandomInt(35, 65)
     var left_postion = getRandomInt(40, 60)
     
-    s = '<img src="' + stimulus_string + '" class="coveredImage test" style = "width:100px; height:100px;position:fixed; top:' + top_position + '%;\
+    s = '<img src="' + stimulus_string + '" class="coveredImage test" style = "width:200px; height:200px;position:fixed; top:' + top_position + '%;\
         transform: translate(-50%, -50%);left:' + left_postion + '%"></img>'
 
 

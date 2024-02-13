@@ -6,7 +6,7 @@ function get_instruction(){
                 "<div style='width: 600px; margin: 0 auto; text-align: center; background-color: #8C1516; padding: 20px 15px 10px 10px'>" +
                 "<img src='media/stanford.png' height='46' width='360' alt='Stanford University'></div>"+
                 "<center><p><strong>Stanford Language and Cognition Lab</strong></p></center>"+
-                "<p>In this experiment, you'll be watching a series of animations at your own pace. You will be asked to judge the similarity and complexity of these animations afterwards." +
+                "<p>In this experiment, you'll be watching a series of animations at your own pace." +
                 "<p class='block-text' id='legal'>Legal information: By answering the following questions, you are participating in a study being performed by cognitive scientists in the Stanford Department of Psychology. If you have questions about this research, please contact Anjie Cao at <a href='mailto://anjiecao@stanford.edu'>anjiecao@stanford.edu</a>. You must be at least 18 years old to participate. Your participation in this research is voluntary. You may decline to answer any or all of the following questions. You may decline further participation, at any time, without adverse consequences. Your anonymity is assured; the researchers who have requested your participation will not receive any personal information about you.</p></div><p />" //,
         ],
         show_clickable_nav: true,
@@ -74,9 +74,7 @@ function get_instruction(){
     "<p> Then you will see a new set of animations to look at for as long as you like, </p>" +
     "<p> and you can still move between animations by pressing the space bar. </p>",
     "<p> We hope you enjoy our baby stimuli! </p>" +
-    "<p> The task should take no longer than 6 minutes, </p>" +
-    "<p> after which we will ask you some questions about the stimuli for 2-3 minutes, </p>" +
-    "<p> and then you'll be all done! </p>",
+    "<p> The task should take no longer than 10 minutes. </p>" +
     "<p> Many thanks again for your participation. :) </p> ",
     "<p> <b> The experiment begins now! </b> </p> <br></br>",
         ],
