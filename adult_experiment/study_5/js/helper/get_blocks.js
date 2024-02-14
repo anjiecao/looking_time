@@ -20,7 +20,7 @@ function reorder_all_blocks(all_blocks_info){
     // 4 groups in total, each group has 2 background, 1 identity, 1 animacy, 1 number, 1 pose
     
     all_block_groups = []
-    for (var i in [0, 1, 2]){
+    for (var i in [0, 1]){
         current_block_group = []
 
         current_block_group.push(exposure_duration_a_blocks.pop())
@@ -36,6 +36,7 @@ function reorder_all_blocks(all_blocks_info){
     // two more extra background blocks 
     all_block_groups.push([all_background_blocks.pop()])
     all_block_groups.push([all_background_blocks.pop()])
+    all_block_groups.push([all_background_blocks.pop()])
 
     // randomly locating 
     shuffleArray(all_block_groups)
@@ -48,7 +49,6 @@ function reorder_all_blocks(all_blocks_info){
 
 function generate_all_blocks(all_blocks_info){
     all_blocks = []
-
 
     for (var i= 0; i < all_blocks_info.length; i++){
         

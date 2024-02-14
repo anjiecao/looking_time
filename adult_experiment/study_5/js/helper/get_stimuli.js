@@ -87,7 +87,6 @@ function get_background_stimuli(all_stimuli){
             pose_level[Math.floor(Math.random() * pose_level.length)] + ".png"
         background_stimuli.push(current_stimuli_path)
     }
-    console.log(background_stimuli)
 
     return background_stimuli
 
@@ -109,9 +108,7 @@ function remove_used_stimuli(all_stimuli, background_stimuli){
     return filename.split('_left')[0].split('_right')[0];
     });
 
-    console.log(background_stimuli)
-    console.log(reduced_all_stimuli_used)
-
+    
 
     // use the reduced array to filter down the remaining stimuli
 
@@ -249,7 +246,7 @@ function generate_all_block_info(all_backgrounds, remaining_pool, all_distractor
 
     all_blocks_info = []
 
-    for (d_id in all_deviant_exposure_duration.length){
+    for (var d_id = 0; d_id < all_deviant_exposure_duration.length; d_id++){
 
         // get the background 
         background_stimulus = all_backgrounds[d_id]
@@ -264,7 +261,6 @@ function generate_all_block_info(all_backgrounds, remaining_pool, all_distractor
         let match = deviant_stimulus.match(/\d+/g);
         deviant_id = match ? match[0] : null;
         remaining_pool = remaining_pool.filter(item => !item.includes(deviant_id))
-        console.log(remaining_pool)
 
          // get the distractor
      var memory_test_type = all_memory_test_type.pop()
@@ -284,7 +280,7 @@ function generate_all_block_info(all_backgrounds, remaining_pool, all_distractor
             block_type: "deviant_block", 
             background_stimulus: background_stimulus, 
             deviant_stimulus: deviant_stimulus,
-            exposure_duration:all_exposure_duration[d_id], 
+            exposure_duration:all_deviant_exposure_duration[d_id], 
             memory_test_type: memory_test_type, 
             memory_test_stimulus: memory_test_stimulus
         }
@@ -293,10 +289,10 @@ function generate_all_block_info(all_backgrounds, remaining_pool, all_distractor
 
     }
 
-    for (b_id in all_background_exposure_duration.length){
+    for (var b_id = 0; b_id < all_background_exposure_duration.length; b_id ++){
 
         // get the background 
-        background_stimulus = all_backgrounds[b_id]
+        background_stimulus = all_backgrounds[ all_deviant_exposure_duration.length + b_id]
 
 
          // get the distractor
@@ -316,7 +312,7 @@ function generate_all_block_info(all_backgrounds, remaining_pool, all_distractor
             block_type: "background_block", 
             background_stimulus: background_stimulus, 
             deviant_stimulus: deviant_stimulus,
-            exposure_duration:all_exposure_duration[b_id], 
+            exposure_duration:all_background_exposure_duration[b_id], 
             memory_test_type: memory_test_type, 
             memory_test_stimulus: memory_test_stimulus
         }
@@ -324,7 +320,6 @@ function generate_all_block_info(all_backgrounds, remaining_pool, all_distractor
         all_blocks_info.push(background_block_info)
 
     }
-    console.log(all_blocks_info)
 
 
 
