@@ -1,8 +1,5 @@
 // get paths for all stimuli
 
-const { getRandomValues } = require("crypto")
-
-
 
 function get_all_stimuli(){
     all_stimuli = []
@@ -10,7 +7,7 @@ function get_all_stimuli(){
     pose_level = ["left", "right"]
 
 
-    TOTAL_STIM_EACH_LEVEL = 32
+    TOTAL_STIM_EACH_LEVEL = 25
     MAIN_DIR = "media/padded_stims/"
     for (var i = 1; i < TOTAL_STIM_EACH_LEVEL + 1; i++){
       for (var animacy_index = 0; animacy_index < animacy_level.length; animacy_index++){
@@ -40,7 +37,7 @@ function get_all_distractor(){
 
     TOTAL_STIM_EACH_LEVEL = 40
     MAIN_DIR = "media/padded_stims/"
-    for (var i = 33; i < TOTAL_STIM_EACH_LEVEL + 1; i++){
+    for (var i = 26; i < TOTAL_STIM_EACH_LEVEL + 1; i++){
       for (var animacy_index = 0; animacy_index < animacy_level.length; animacy_index++){
 
         if (i < 10){
@@ -72,7 +69,7 @@ function get_all_distractor(){
 function get_background_stimuli(all_stimuli){
 
     // generate all the unique id 
-    total_stimuli_to_sample = 16
+    total_stimuli_to_sample = 15
     idArray = all_stimuli.map(item => {
         let match = item.match(/\d+/g);
         return match ? match[0] : null;
@@ -228,26 +225,34 @@ function generate_all_block_info(all_backgrounds, remaining_pool, all_distractor
 
     all_blocks = []
 
-    all_memory_test_type = [...Array(8).fill('appeared'),  ...Array(8).fill('distractor')];
+    all_memory_test_type = [...Array(8).fill('appeared'),  ...Array(7).fill('distractor')];
     // sampled 1 from each levels, and creates 4 blocks for each level sampled
-    exposure_duration_a  = [0, 1]
-    exposure_duration_b  = [2, 3]
-    exposure_duration_c = [4, 6]
-    exposure_duration_d = [8, 9]
-    all_exposure_duration = [...Array(4).fill(exposure_duration_a[Math.floor(Math.random() * exposure_duration_a.length)]), 
-    ...Array(4).fill(exposure_duration_b[Math.floor(Math.random() * exposure_duration_b.length)]), ...Array(4).fill(exposure_duration_c[Math.floor(Math.random() * exposure_duration_c.length)]), 
-    ...Array(4).fill(exposure_duration_d[Math.floor(Math.random() * exposure_duration_d.length)])
+    exposure_duration_a  = [1, 2]
+    exposure_duration_b  = [3, 4]
+    exposure_duration_c = [5, 6]
+    exposure_duration_d = [7, 8]
+    exposure_duration_e = [9, 10]
+    all_deviant_exposure_duration = [...Array(2).fill(exposure_duration_a[Math.floor(Math.random() * exposure_duration_a.length)]), 
+    ...Array(2).fill(exposure_duration_b[Math.floor(Math.random() * exposure_duration_b.length)]), ...Array(2).fill(exposure_duration_c[Math.floor(Math.random() * exposure_duration_c.length)]), 
+    ...Array(2).fill(exposure_duration_d[Math.floor(Math.random() * exposure_duration_d.length)]), ...Array(2).fill(exposure_duration_e[Math.floor(Math.random() * exposure_duration_e.length)])
                             ]
+
+    all_background_exposure_duration = [...Array(1).fill(exposure_duration_a[Math.floor(Math.random() * exposure_duration_a.length)]), 
+    ...Array(1).fill(exposure_duration_b[Math.floor(Math.random() * exposure_duration_b.length)]), ...Array(1).fill(exposure_duration_c[Math.floor(Math.random() * exposure_duration_c.length)]), 
+    ...Array(1).fill(exposure_duration_d[Math.floor(Math.random() * exposure_duration_d.length)]), ...Array(1).fill(exposure_duration_e[Math.floor(Math.random() * exposure_duration_e.length)])
+                            ]
+
+
 
     shuffleArray(all_memory_test_type)
 
 
     all_blocks_info = []
 
-    for (b_id in all_backgrounds){
+    for (d_id in all_deviant_exposure_duration.length){
 
         // get the background 
-        background_stimulus = all_backgrounds[b_id]
+        background_stimulus = all_backgrounds[d_id]
 
         // get the deviant with matched pose 
         background_pose = background_stimulus.includes("left") ? "left" : "right"
@@ -261,27 +266,25 @@ function generate_all_block_info(all_backgrounds, remaining_pool, all_distractor
         remaining_pool = remaining_pool.filter(item => !item.includes(deviant_id))
         console.log(remaining_pool)
 
+         // get the distractor
+     var memory_test_type = all_memory_test_type.pop()
+     if(memory_test_type == "distractor"){
+         memory_test_stimulus = all_distractors.pop()
+     }else{
+        
+             options = [background_stimulus, deviant_stimulus]
+             memory_test_stimulus = getRandomSubarray(options, 1)[0]
+         
+     }
 
 
-        // get the distractor
-        var memory_test_type = all_memory_test_type.pop()
-        if(memory_test_type == "distractor"){
-            memory_test_stimulus = all_distractors.pop()
-        }else{
-            if (all_exposure_duration == 0){
-                memory_test_stimulus = "background_stimulus"
-            }else{
-                options = [background_stimulus, deviant_stimulus]
-                memory_test_stimulus = getRandomSubarray(options, 1)[0]
-            }
-        }
-
+       
         // set up the deviant block 
         deviant_block_info = {
             block_type: "deviant_block", 
             background_stimulus: background_stimulus, 
             deviant_stimulus: deviant_stimulus,
-            exposure_duration:all_exposure_duration[b_id], 
+            exposure_duration:all_exposure_duration[d_id], 
             memory_test_type: memory_test_type, 
             memory_test_stimulus: memory_test_stimulus
         }
@@ -289,7 +292,48 @@ function generate_all_block_info(all_backgrounds, remaining_pool, all_distractor
         all_blocks_info.push(deviant_block_info)
 
     }
+
+    for (b_id in all_background_exposure_duration.length){
+
+        // get the background 
+        background_stimulus = all_backgrounds[b_id]
+
+
+         // get the distractor
+     var memory_test_type = all_memory_test_type.pop()
+     if(memory_test_type == "distractor"){
+         memory_test_stimulus = all_distractors.pop()
+     }else{
+        
+             memory_test_stimulus = background_stimulus
+         
+     }
+
+
+       
+        // set up the deviant block 
+        background_block_info = {
+            block_type: "background_block", 
+            background_stimulus: background_stimulus, 
+            deviant_stimulus: deviant_stimulus,
+            exposure_duration:all_exposure_duration[b_id], 
+            memory_test_type: memory_test_type, 
+            memory_test_stimulus: memory_test_stimulus
+        }
+
+        all_blocks_info.push(background_block_info)
+
+    }
     console.log(all_blocks_info)
+
+
+
+
+
+
+
+    
+
     
     
     return (all_blocks_info)

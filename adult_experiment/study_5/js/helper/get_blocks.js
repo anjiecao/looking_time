@@ -1,31 +1,44 @@
 
 function reorder_all_blocks(all_blocks_info){
 
-    exposure_duration_a  = [0, 1]
-    exposure_duration_b  = [2, 3]
-    exposure_duration_c = [4, 6]
-    exposure_duration_d = [8, 9]
+    shuffleArray(all_blocks_info)
 
-    exposure_duration_a_blocks = all_blocks_info.filter(item => item.exposure_duration == 0 || item.exposure_duration == 1)
-    exposure_duration_b_blocks = all_blocks_info.filter(item => item.exposure_duration == 2 || item.exposure_duration == 3)
-    exposure_duration_c_blocks = all_blocks_info.filter(item => item.exposure_duration == 4 || item.exposure_duration == 6)
-    exposure_duration_d_blocks = all_blocks_info.filter(item => item.exposure_duration == 8 || item.exposure_duration == 9)
+    exposure_duration_a  = [1, 2]
+    exposure_duration_b  = [3, 4]
+    exposure_duration_c = [5, 6]
+    exposure_duration_d = [7, 8]
+    exposure_duration_e = [9, 10]
+
+    exposure_duration_a_blocks = all_blocks_info.filter(item => (item.exposure_duration == 1 || item.exposure_duration == 2) && item.block_type == "deviant_block")
+    exposure_duration_b_blocks = all_blocks_info.filter(item => (item.exposure_duration == 3 || item.exposure_duration == 4) && item.block_type == "deviant_block")
+    exposure_duration_c_blocks = all_blocks_info.filter(item => (item.exposure_duration == 5 || item.exposure_duration == 6) && item.block_type == "deviant_block")
+    exposure_duration_d_blocks = all_blocks_info.filter(item => (item.exposure_duration == 7 || item.exposure_duration == 8) && item.block_type == "deviant_block")
+    exposure_duration_e_blocks = all_blocks_info.filter(item => (item.exposure_duration == 9 || item.exposure_duration == 10) && item.block_type == "deviant_block")
     
+    all_background_blocks = all_blocks_info.filter(item => item.block_type == "background_block")
 
     // 4 groups in total, each group has 2 background, 1 identity, 1 animacy, 1 number, 1 pose
     
     all_block_groups = []
-    for (var i in [0, 1, 2, 3]){
+    for (var i in [0, 1, 2]){
         current_block_group = []
 
         current_block_group.push(exposure_duration_a_blocks.pop())
         current_block_group.push(exposure_duration_b_blocks.pop())
         current_block_group.push(exposure_duration_c_blocks.pop())
         current_block_group.push(exposure_duration_d_blocks.pop())
+        current_block_group.push(exposure_duration_e_blocks.pop())
+        current_block_group.push(all_background_blocks.pop())
         shuffleArray(current_block_group)
         all_block_groups.push(current_block_group)
     }
 
+    // two more extra background blocks 
+    all_block_groups.push([all_background_blocks.pop()])
+    all_block_groups.push([all_background_blocks.pop()])
+
+    // randomly locating 
+    shuffleArray(all_block_groups)
     all_block_groups = all_block_groups.flat()
     return(all_block_groups)
 
