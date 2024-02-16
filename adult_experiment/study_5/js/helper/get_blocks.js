@@ -94,6 +94,7 @@ function generate_block(block_info, block_id){
                 valid_key_press: [" "],
                 data: block_info
             }
+            block.push(trial)
         }
         
 
