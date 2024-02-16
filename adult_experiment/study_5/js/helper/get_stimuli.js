@@ -234,9 +234,13 @@ function generate_all_block_info(all_backgrounds, remaining_pool, all_distractor
     ...Array(2).fill(exposure_duration_d[Math.floor(Math.random() * exposure_duration_d.length)]), ...Array(2).fill(exposure_duration_e[Math.floor(Math.random() * exposure_duration_e.length)])
                             ]
 
+    // change the weight for the last exposure duration to account for the sampling error early on 
+    randomNumber = Math.random();
+    longest_duration = randomNumber < 0.4 ? 9 : 10
+
     all_background_exposure_duration = [...Array(1).fill(exposure_duration_a[Math.floor(Math.random() * exposure_duration_a.length)]), 
     ...Array(1).fill(exposure_duration_b[Math.floor(Math.random() * exposure_duration_b.length)]), ...Array(1).fill(exposure_duration_c[Math.floor(Math.random() * exposure_duration_c.length)]), 
-    ...Array(1).fill(exposure_duration_d[Math.floor(Math.random() * exposure_duration_d.length)]), ...Array(1).fill(exposure_duration_e[Math.floor(Math.random() * exposure_duration_e.length)])
+    ...Array(1).fill(exposure_duration_d[Math.floor(Math.random() * exposure_duration_d.length)]), ...Array(1).fill(longest_duration)
                             ]
 
 

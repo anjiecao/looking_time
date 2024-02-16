@@ -69,7 +69,9 @@ function test_stimuli(all_blocks_info){
 
     console.log("five exposure duration levels:", all_exposure_duration_level.length == all_deviant_exposure_duration.length)  
     for (var i = 0; i < all_exposure_duration_level.length; i++){
-        console.log("includes the level:", all_exposure_duration_level[i].includes(all_deviant_exposure_duration[i]))
+        //console.log(all_exposure_duration_level)
+        //console.log(all_deviant_exposure_duration)
+        //console.log("includes the level:", all_exposure_duration_level[i].includes(all_deviant_exposure_duration[i]))
     }
 
 

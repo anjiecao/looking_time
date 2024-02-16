@@ -87,6 +87,13 @@ function generate_block(block_info, block_id){
                 data: block_info
             }
             block.push(trial)
+        }else{
+            trial = {
+                type: curtainDisplay, 
+                stimulus: generate_html_string_for_stimulus(block_info.background_stimulus), 
+                valid_key_press: [" "],
+                data: block_info
+            }
         }
         
 
