@@ -262,6 +262,8 @@ function generate_all_block_info(all_backgrounds, remaining_pool, all_distractor
         deviant_id = match ? match[0] : null;
         remaining_pool = remaining_pool.filter(item => !item.includes(deviant_id))
 
+        console.log("pair:", background_stimulus, deviant_stimulus)
+
          // get the distractor
      var memory_test_type = all_memory_test_type.pop()
      if(memory_test_type == "distractor"){
@@ -311,7 +313,7 @@ function generate_all_block_info(all_backgrounds, remaining_pool, all_distractor
         background_block_info = {
             block_type: "background_block", 
             background_stimulus: background_stimulus, 
-            deviant_stimulus: deviant_stimulus,
+            deviant_stimulus: null,
             exposure_duration:all_background_exposure_duration[b_id], 
             memory_test_type: memory_test_type, 
             memory_test_stimulus: memory_test_stimulus

@@ -78,13 +78,17 @@ function generate_block(block_info, block_id){
         block.push(trial)
         }
         // add deviant at the end
-        trial = {
-            type: curtainDisplay, 
-            stimulus: generate_html_string_for_stimulus(block_info.deviant_stimulus), 
-            valid_key_press: [" "],
-            data: block_info
+
+        if (block_info.block_type == "deviant_block"){
+            trial = {
+                type: curtainDisplay, 
+                stimulus: generate_html_string_for_stimulus(block_info.deviant_stimulus), 
+                valid_key_press: [" "],
+                data: block_info
+            }
+            block.push(trial)
         }
-        block.push(trial)
+        
 
         // add filler task 
         var filler_trial = {
